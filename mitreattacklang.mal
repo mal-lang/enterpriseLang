@@ -1,0 +1,232 @@
+category Person {
+  asset User {
+    | stolenCredentials
+      ->  computer.sendData,
+          adversary.compressData,
+          adversary.obfuscateData
+    | linkClicked [UniformDistribution(20,1)]
+      rationale: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
+      -> browser.spearphishingLink
+    | adminLogin
+      -> adminCheck
+    & adminCheck
+       -> administrator.adminRights,
+        os.adminTerminal
+    # adminAccess
+      -> adminCheck
+    | userCredential 
+      -> employee.userLogin
+    | editFile
+      -> computer.deleteFiles
+    | commandlineUsage
+      -> os.policyDiscovery
+    | runCode
+      -> windows.dynamicLinkLibraryInjection,
+        windows.portableExecutableInjection,
+        windows.threadExecutionHijacking,
+        windows.asynchronousProcedureCall,
+        windows.threadLocalStorage,
+
+        linux.ldLibraryPath,
+        linux.vdsoHijacking,
+        linux.readOrWriteMem,
+        linux.ldPreload,
+        linux.ptraceSystemCalls,
+
+        macOS.ptraceSystemCalls,
+        macOS.readOrWriteMem,
+        macOS.vdsoHijacking,
+        macOS.dyldInsertLibraies,
+
+        os.runFile
+        
+  }
+  asset Administrator {
+    | adminRights
+        info: "access to one sudo password"
+        -> runCodeAdmin
+    | runCodeAdmin
+      -> computer.infectedComputer
+  }
+  asset Adversary {
+    | compressData
+      -> externalNetwork.sendInfo
+    | obfuscateData
+      -> externalNetwork.sendInfoSecretly
+    | spearphishingLinkAttack
+      -> browser.spearphishingLink,
+        user.linkClicked
+
+  }
+  asset Employee {
+    | insertMedia
+      -> removableMedia.connected
+    | removeMedia 
+      -> insertMedia
+    | userLogin
+        -> loginCheck
+    & loginCheck
+        -> user.adminLogin
+    # passwordEncryption
+        -> loginCheck
+  }
+}
+
+
+category Hardware {
+  asset Computer {
+    | connectedToNetwork
+      info: "To be used to ensure that computers must be connected to be able to send data via the internet"
+    | sendData
+        -> externalNetwork.sendInfo,
+          externalNetwork.sendInfoSecretly
+    | infectedComputer
+        -> externalNetwork.sendInfo,
+          removableMedia.infectedMedia, 
+          collectAudio,
+          adversary.compressData,
+          adversary.obfuscateData
+    | deleteFiles
+
+    | haveMicrphone
+      -> collectAudio
+
+    & collectAudio
+      -> sendData
+  }
+
+  asset ExternalNetwork {
+      &  networkIntrusionDetectionAndPreventionSystemsCheck
+        -> upload
+      # networkIntrusionDetectionAndPreventionSystems
+        -> networkIntrusionDetectionAndPreventionSystemsCheck
+      | upload
+
+      | collectSendInfo
+        -> networkIntrusionDetectionAndPreventionSystemsCheck
+
+      | sendInfo 
+        -> collectSendInfo
+
+      | sendInfoSecretly
+        -> collectSendInfo
+            
+      | downloadeFile
+        -> computer.infectedComputer
+  }
+  asset PrivateNetwork {
+    | connectToOtherComputer
+      info: "problem"
+  }
+  asset RemovableMedia {
+    | infectedMedia
+      -> connected
+    & connected
+      -> os.autoRun
+  }
+}
+
+category Software {
+  asset Browser {
+    | spearphishingLink 
+      -> detectionCheck
+    & detectionCheck
+      -> os.downloaded, 
+         user.stolenCredentials
+    # phishingDetection 
+      -> detectionCheck
+    
+  }
+  abstractAsset OS {
+    | downloaded 
+      -> antivirusCheck
+    & antivirusCheck
+        -> runFile,
+          externalNetwork.downloadeFile
+    # antivirus
+      -> antivirusCheck
+    | runFile
+        -> computer.infectedComputer
+    | autoRun
+      -> autoRunDisabledCheck
+    & autoRunDisabledCheck
+      -> runFile
+    # autoRunDisabled
+      -> autoRunDisabledCheck
+    | policyDiscovery
+        -> computer.sendData
+    | commandLineInterface
+      -> adminTerminal
+    & adminTerminal
+      -> computer.infectedComputer
+    | infectedOS
+      -> computer.infectedComputer
+  }
+  asset Linux extends OS {
+    | ptraceSystemCalls
+      ->  administrator.runCodeAdmin
+    | vdsoHijacking
+      ->  administrator.runCodeAdmin
+    | ldPreload
+      ->  administrator.runCodeAdmin
+    | ldLibraryPath
+      ->  administrator.runCodeAdmin
+    | readOrWriteMem
+      ->  administrator.runCodeAdmin
+  }
+  asset MacOS extends OS {
+    | ptraceSystemCalls
+      ->  administrator.runCodeAdmin
+    | vdsoHijacking
+      ->  administrator.runCodeAdmin
+    | dyldInsertLibraies
+      ->  administrator.runCodeAdmin
+    | readOrWriteMem
+      ->  administrator.runCodeAdmin
+  }
+  asset Windows extends OS {
+    | dynamicLinkLibraryInjection
+      info: "Another process with all its threads is running inside another virtual address space"
+      ->  administrator.runCodeAdmin
+    | portableExecutableInjection
+      ->  administrator.runCodeAdmin
+    | threadExecutionHijacking 
+      ->  administrator.runCodeAdmin
+    | asynchronousProcedureCall
+      ->  administrator.runCodeAdmin
+    | threadLocalStorage  
+      ->  administrator.runCodeAdmin
+  }
+}
+
+associations {
+  Computer [computer] 1-* <-- system --> 1-* [os] OS
+  Computer [computer] 1-* <-- system --> 1 [externalNetwork] ExternalNetwork
+  Computer [computer] 1-* <-- system --> 1-* [removableMedia] RemovableMedia
+  ExternalNetwork [externalNetwork] 1 <-- system --> 1 [os] OS
+  RemovableMedia [removableMedia] 1 <-- system --> 1 [os] OS
+
+
+  Administrator [administrator] 1-* <-- ui --> 1-* [computer] Computer
+  Browser [browser] 1-* <-- ui --> 1-* [user] User
+  Administrator [administrator] 1-* <-- ui --> 1-* [os] OS
+  RemovableMedia [removableMedia] 1-* <-- ui --> 1-* [employee] Employee
+  Computer [computer] 1-* <-- ui --> 1-* [user] User
+  User [user] 1-* <-- ui --> 1-* [os] OS
+  User [winUser] 1-* <-- ui --> 1-* [windows] Windows
+  User [linxUser] 1-* <-- ui --> 1-* [linux] Linux  
+  Administrator [administrator] 1 <-- system --> 1 [externalNetwork] ExternalNetwork
+  User [macUser] 1-* <-- ui --> 1-* [macOS] MacOS
+  Adversary [adversary] 1-* <-- ui --> 1-* [computer] Computer
+
+
+  OS [os] 1-* <-- software --> 1-* [browser] Browser
+  
+  User [user] 1-* <-- use --> 1-* [administrator] Administrator
+  User [user] 1 <-- use --> 1 [employee] Employee 
+  User [user] 1-* <-- use --> 1-* [adversary] Adversary
+
+  Adversary [adversary] 1-* <-- attack --> 1-* [browser] Browser
+  ExternalNetwork [externalNetwork] 1-* <-- attack --> 1-* [adversary] Adversary
+
+}

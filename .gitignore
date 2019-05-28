@@ -1,0 +1,7 @@
+/target/
+/.settings
+/.classpath
+*.malinc
+*.swp
+/lib/*.ttc
+/lib/*.json
