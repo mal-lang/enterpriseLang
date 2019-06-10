@@ -77,6 +77,7 @@ category Hardware {
   asset Computer {
     | connectedToNetwork
       info: "To be used to ensure that computers must be connected to be able to send data via the internet"
+      -> privateNetwork.connectedToNetwork
     | sendData
         -> externalNetwork.sendInfo,
           externalNetwork.sendInfoSecretly
@@ -115,6 +116,8 @@ category Hardware {
         -> computer.infectedComputer
   }
   asset PrivateNetwork {
+    |connectedToNetwork
+      -> connectToOtherComputer
     | connectToOtherComputer
       info: "problem"
   }
@@ -199,18 +202,36 @@ category Software {
   }
 }
 
+category ThirdParty {
+  asset NetworkUnitThirdParty{
+    | connectedToLocalNetwork
+      -> privateNetwork.connectedToNetwork 
+  }  
+
+  asset EmployeeThirdParty {
+    | insertMedia
+      -> removableMedia.connected
+    | removeMedia 
+      -> insertMedia
+  }
+}
+
 associations {
   Computer [computer] 1-* <-- system --> 1-* [os] OS
   Computer [computer] 1-* <-- system --> 1 [externalNetwork] ExternalNetwork
   Computer [computer] 1-* <-- system --> 1-* [removableMedia] RemovableMedia
+  Computer [computer] 1-* <-- system --> 1-* [privateNetwork] PrivateNetwork
   ExternalNetwork [externalNetwork] 1 <-- system --> 1 [os] OS
   RemovableMedia [removableMedia] 1 <-- system --> 1 [os] OS
+  NetworkUnitThirdParty [networkUnitThirdParty] 1-* <-- system --> 1-* [privateNetwork] PrivateNetwork
+
 
 
   Administrator [administrator] 1-* <-- ui --> 1-* [computer] Computer
   Browser [browser] 1-* <-- ui --> 1-* [user] User
   Administrator [administrator] 1-* <-- ui --> 1-* [os] OS
   RemovableMedia [removableMedia] 1-* <-- ui --> 1-* [employee] Employee
+  RemovableMedia [removableMedia] 1-* <-- ui --> 1-* [employeeThirdParty] EmployeeThirdParty
   Computer [computer] 1-* <-- ui --> 1-* [user] User
   User [user] 1-* <-- ui --> 1-* [os] OS
   User [winUser] 1-* <-- ui --> 1-* [windows] Windows
