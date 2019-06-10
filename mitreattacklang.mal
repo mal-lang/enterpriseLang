@@ -56,6 +56,11 @@ category Person {
     | spearphishingLinkAttack
       -> browser.spearphishingLink,
         user.linkClicked
+    | insertInfectedMedia
+      -> removableMedia.infectedMedia,
+        employeeThirdParty.insertMedia,
+        employee.insertMedia
+
 
   }
   asset Employee {
@@ -239,6 +244,8 @@ associations {
   Administrator [administrator] 1 <-- system --> 1 [externalNetwork] ExternalNetwork
   User [macUser] 1-* <-- ui --> 1-* [macOS] MacOS
   Adversary [adversary] 1-* <-- ui --> 1-* [computer] Computer
+  Adversary [adversary] 1-* <-- ui --> 1-* [removableMedia] RemovableMedia
+
 
 
   OS [os] 1-* <-- software --> 1-* [browser] Browser
@@ -246,6 +253,9 @@ associations {
   User [user] 1-* <-- use --> 1-* [administrator] Administrator
   User [user] 1 <-- use --> 1 [employee] Employee 
   User [user] 1-* <-- use --> 1-* [adversary] Adversary
+  Employee [employee] 1-* <-- use --> 1-* [adversary] Adversary
+  EmployeeThirdParty [employeeThirdParty] 1-* <-- use --> 1-* [adversary] Adversary
+  
 
   Adversary [adversary] 1-* <-- attack --> 1-* [browser] Browser
   ExternalNetwork [externalNetwork] 1-* <-- attack --> 1-* [adversary] Adversary
