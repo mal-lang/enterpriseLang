@@ -6,27 +6,26 @@ import attack.*;
 
 public class  trustedRelationshipTest{
 
-  // @Test
-  // public void test1(){
-  //   // Section 1: Asset instantiation
-  //   Adversary adversary = new Adversary("adversary");
-  //   Employee employee1 = new Employee("employee1");
+  @Test
+  public void test1(){
+    // Section 1: Asset instantiation
+    Adversary adversary = new Adversary("adversary");
+    NetworkUnitThirdParty networkUnitThirdParty = new NetworkUnitThirdParty("networkUnitThirdParty");
+    PrivateNetwork privateNetwork = new PrivateNetwork("privateNetwork");
 
-  //   Computer computer = new Computer("computer");
-  //   ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-  //   PrivateNetwork privateNetwork = new PrivateNetwork("privateNetwork");
+    // Section 2: Asset connections and attacker creation
 
-  //   // Section 2: Asset connections and attacker creation
+    adversary.addNetworkUnitThirdParty(networkUnitThirdParty);
+    networkUnitThirdParty.addPrivateNetwork(privateNetwork);
 
-  
-  //   Attacker attacker = new Attacker();
-  //   attacker.addAttackPoint(adversary.spearphishingLinkAttack);
-  //   attacker.attack();
+    Attacker attacker = new Attacker();
+    attacker.addAttackPoint(adversary.thirdPartySystemAccess);
+    attacker.attack();
 
-  //   // Section 3: Assertions
-  //   computer.infectedComputer.assertCompromisedInstantaneously();
+    // Section 3: Assertions
+    privateNetwork.connectedToNetwork.assertCompromisedInstantaneously();
 
-  // }
+  }
 
 
   @Test
@@ -50,7 +49,7 @@ public class  trustedRelationshipTest{
     employeeThirdParty.addRemovableMedia(removableMedia);
 
 
-  
+
     Attacker attacker = new Attacker();
     attacker.addAttackPoint(adversary.insertInfectedMedia);
     attacker.attack();

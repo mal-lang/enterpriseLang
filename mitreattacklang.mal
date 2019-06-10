@@ -60,6 +60,8 @@ category Person {
       -> removableMedia.infectedMedia,
         employeeThirdParty.insertMedia,
         employee.insertMedia
+    | thirdPartySystemAccess
+      -> networkUnitThirdParty.connectedToLocalNetwork
 
 
   }
@@ -245,6 +247,7 @@ associations {
   User [macUser] 1-* <-- ui --> 1-* [macOS] MacOS
   Adversary [adversary] 1-* <-- ui --> 1-* [computer] Computer
   Adversary [adversary] 1-* <-- ui --> 1-* [removableMedia] RemovableMedia
+  Adversary [adversary] 1-* <-- ui --> 1-* [networkUnitThirdParty] NetworkUnitThirdParty
 
 
 
