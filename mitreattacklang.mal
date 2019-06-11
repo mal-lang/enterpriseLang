@@ -63,7 +63,7 @@ category Person {
     | thirdPartySystemAccess
       -> networkUnitThirdParty.connectedToLocalNetwork
     | useHardwareTool
-      -> adversaryHardwareTool.networkTapping
+      -> adversaryHardwareTool.networkTapping 
   }
   asset Employee {
     | insertMedia
