@@ -62,8 +62,8 @@ category Person {
         employee.insertMedia
     | thirdPartySystemAccess
       -> networkUnitThirdParty.connectedToLocalNetwork
-
-
+    | useHardwareTool
+      -> adversaryHardwareTool.networkTapping
   }
   asset Employee {
     | insertMedia
@@ -133,6 +133,11 @@ category Hardware {
       -> connected
     & connected
       -> os.autoRun
+  }
+  asset AdversaryHardwareTool {
+    | networkTapping
+     -> externalNetwork.upload,
+      externalNetwork.downloadeFile
   }
 }
 
@@ -231,6 +236,7 @@ associations {
   ExternalNetwork [externalNetwork] 1 <-- system --> 1 [os] OS
   RemovableMedia [removableMedia] 1 <-- system --> 1 [os] OS
   NetworkUnitThirdParty [networkUnitThirdParty] 1-* <-- system --> 1-* [privateNetwork] PrivateNetwork
+  ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
 
 
 
@@ -248,6 +254,7 @@ associations {
   Adversary [adversary] 1-* <-- ui --> 1-* [computer] Computer
   Adversary [adversary] 1-* <-- ui --> 1-* [removableMedia] RemovableMedia
   Adversary [adversary] 1-* <-- ui --> 1-* [networkUnitThirdParty] NetworkUnitThirdParty
+  Adversary [adversary] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
 
 
 
