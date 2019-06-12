@@ -12,7 +12,7 @@ public class dataObfuscationTest{
     User user = new User("user",false);
     Adversary adversary = new Adversary("adversary");
     Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",false);
+    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",false,false);
 
     // Section 2: Asset connections and attacker creation
     adversary.addUser(user);
@@ -40,7 +40,7 @@ public class dataObfuscationTest{
      User user = new User("user",false);
      Adversary adversary = new Adversary("adversary");
      Computer computer = new Computer("computer");
-     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",true);
+     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",true,false);
  
      // Section 2: Asset connections and attacker creation
      adversary.addUser(user);

@@ -3,7 +3,10 @@ category Person {
     | stolenCredentials
       ->  computer.sendData,
           adversary.compressData,
-          adversary.obfuscateData
+          adversary.obfuscateData,
+          editFile,
+          commandlineUsage,
+          connectToVpn
     | linkClicked [UniformDistribution(20,1)]
       rationale: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
       -> browser.spearphishingLink
@@ -39,7 +42,8 @@ category Person {
         macOS.dyldInsertLibraies,
 
         os.runFile
-        
+    | connectToVpn
+      -> externalNetwork.connectToVpn        
   }
   asset Administrator {
     | adminRights
@@ -124,6 +128,11 @@ category Hardware {
 
       | vpnExternalConnection
         -> privateNetwork.vpnInternalConnection
+      & connectToVpn
+        -> vpnExternalConnection
+      # multiFactorAuthentication
+        -> connectToVpn
+        
   }
   asset PrivateNetwork {
     |connectedToNetwork
@@ -254,6 +263,7 @@ associations {
   User [user] 1-* <-- ui --> 1-* [os] OS
   User [winUser] 1-* <-- ui --> 1-* [windows] Windows
   User [linxUser] 1-* <-- ui --> 1-* [linux] Linux  
+  User [linxUser] 1-* <-- ui --> 1-* [externalNetwork] ExternalNetwork 
   Administrator [administrator] 1 <-- system --> 1 [externalNetwork] ExternalNetwork
   User [macUser] 1-* <-- ui --> 1-* [macOS] MacOS
   Adversary [adversary] 1-* <-- ui --> 1-* [computer] Computer
