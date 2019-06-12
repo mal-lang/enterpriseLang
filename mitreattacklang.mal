@@ -121,12 +121,16 @@ category Hardware {
             
       | downloadeFile
         -> computer.infectedComputer
+
+      | vpnExternalConnection
+        -> privateNetwork.vpnInternalConnection
   }
   asset PrivateNetwork {
     |connectedToNetwork
       -> connectToOtherComputer
     | connectToOtherComputer
       info: "problem"
+    | vpnInternalConnection
   }
   asset RemovableMedia {
     | infectedMedia
@@ -237,6 +241,7 @@ associations {
   RemovableMedia [removableMedia] 1 <-- system --> 1 [os] OS
   NetworkUnitThirdParty [networkUnitThirdParty] 1-* <-- system --> 1-* [privateNetwork] PrivateNetwork
   ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
+  ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [privateNetwork] PrivateNetwork
 
 
 
