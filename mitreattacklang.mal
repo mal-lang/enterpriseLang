@@ -82,9 +82,11 @@ category Person {
       -> user.adminLogin
     # passwordEncryption
       -> loginCheck
-    | socialEngineering 
+    & socialEngineering 
       -> privateComputer.infectedComputer,
         user.stolenCredentials
+    # restrictSiteAndPrograms
+      -> socialEngineering
   }
 }
 
