@@ -10,7 +10,7 @@ public class commandLineInterfaceTest{
     // Section 1: Asset instantiation
     OS os = new OS("os",true,false);
     User user = new User("user",false);
-    Employee employee = new Employee("employee",false);
+    Employee employee = new Employee("employee",false,false);
     Administrator administrator = new Administrator("administrator");
     Computer computer = new Computer("computer");
 
@@ -33,7 +33,7 @@ public class commandLineInterfaceTest{
   public void test2() {
     OS os = new OS("os",true,false);
     User user = new User("user",true);
-    Employee employee = new Employee("employee",true);
+    Employee employee = new Employee("employee",true,false);
     Administrator administrator = new Administrator("administrator");
     Computer computer = new Computer("computer");
 
