@@ -68,6 +68,8 @@ category Person {
       -> networkUnitThirdParty.connectedToLocalNetwork
     | useHardwareTool
       -> adversaryHardwareTool.networkTapping 
+    | spearphishingViaService
+      -> employee.socialEngineering 
   }
   asset Employee {
     | insertMedia
@@ -75,17 +77,20 @@ category Person {
     | removeMedia 
       -> insertMedia
     | userLogin
-        -> loginCheck
+      -> loginCheck
     & loginCheck
-        -> user.adminLogin
+      -> user.adminLogin
     # passwordEncryption
-        -> loginCheck
+      -> loginCheck
+    | socialEngineering 
+      -> privateComputer.infectedComputer,
+        user.stolenCredentials
   }
 }
 
 
 category Hardware {
-  asset Computer {
+  abstractAsset Computer {
     | connectedToNetwork
       info: "To be used to ensure that computers must be connected to be able to send data via the internet"
       -> privateNetwork.connectedToNetwork
@@ -105,6 +110,10 @@ category Hardware {
 
     & collectAudio
       -> sendData
+  }
+
+  asset PrivateComputer extends Computer{
+
   }
 
   asset ExternalNetwork {
@@ -270,6 +279,7 @@ associations {
   Adversary [adversary] 1-* <-- ui --> 1-* [removableMedia] RemovableMedia
   Adversary [adversary] 1-* <-- ui --> 1-* [networkUnitThirdParty] NetworkUnitThirdParty
   Adversary [adversary] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
+  PrivateComputer [privateComputer] 1-* <-- ui --> 1-* [employee] Employee
 
 
 
