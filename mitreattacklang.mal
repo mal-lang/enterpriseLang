@@ -70,6 +70,8 @@ category Person {
       -> adversaryHardwareTool.networkTapping 
     | spearphishingViaService
       -> employee.socialEngineering 
+    | supplyChainCompromiseAttack
+      -> supplyChain.supplyChainCompromise
   }
   asset Employee {
     | insertMedia
@@ -200,11 +202,6 @@ category Software {
       -> computer.infectedComputer
     | infectedOS
       -> computer.infectedComputer
-    &  supplyChainCompromise
-      -> computer.infectedComputer
-    # supplyChainRiskManagementSCRM
-      -> supplyChainCompromise
-
   }
   asset Linux extends OS {
     | ptraceSystemCalls
@@ -255,6 +252,13 @@ category ThirdParty {
     | removeMedia 
       -> insertMedia
   }
+
+  asset SupplyChain {
+   &  supplyChainCompromise
+      -> computer.infectedComputer
+    # supplyChainRiskManagementSCRM
+      -> supplyChainCompromise
+  }
 }
 
 associations {
@@ -265,9 +269,10 @@ associations {
   ExternalNetwork [externalNetwork] 1 <-- system --> 1 [os] OS
   RemovableMedia [removableMedia] 1 <-- system --> 1 [os] OS
   NetworkUnitThirdParty [networkUnitThirdParty] 1-* <-- system --> 1-* [privateNetwork] PrivateNetwork
+  SupplyChain [supplyChain] 1-* <-- system --> 1-* [computer] Computer
+  
   ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
   ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [privateNetwork] PrivateNetwork
-
   Administrator [administrator] 1-* <-- ui --> 1-* [computer] Computer
   Browser [browser] 1-* <-- ui --> 1-* [user] User
   Administrator [administrator] 1-* <-- ui --> 1-* [os] OS
@@ -296,4 +301,5 @@ associations {
   
   Adversary [adversary] 1-* <-- attack --> 1-* [browser] Browser
   ExternalNetwork [externalNetwork] 1-* <-- attack --> 1-* [adversary] Adversary
+  Adversary [adversary] 1-* <-- attack --> 1-* [supplyChain] SupplyChain
 }

@@ -35,7 +35,7 @@ public class  trustedRelationshipTest{
     Computer computer = new Computer("computer");
     RemovableMedia removableMedia = new RemovableMedia("removableMedia");
     Adversary adversary = new Adversary("adversary");
-    Linux linux= new Linux("linux",false,false);
+    Linux linux= new Linux("linux");
 
 
     // Section 2: Asset connections and attacker creation
