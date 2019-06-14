@@ -200,6 +200,11 @@ category Software {
       -> computer.infectedComputer
     | infectedOS
       -> computer.infectedComputer
+    &  supplyChainCompromise
+      -> computer.infectedComputer
+    # supplyChainRiskManagementSCRM
+      -> supplyChainCompromise
+
   }
   asset Linux extends OS {
     | ptraceSystemCalls
@@ -263,8 +268,6 @@ associations {
   ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
   ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [privateNetwork] PrivateNetwork
 
-
-
   Administrator [administrator] 1-* <-- ui --> 1-* [computer] Computer
   Browser [browser] 1-* <-- ui --> 1-* [user] User
   Administrator [administrator] 1-* <-- ui --> 1-* [os] OS
@@ -283,8 +286,6 @@ associations {
   Adversary [adversary] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
   PrivateComputer [privateComputer] 1-* <-- ui --> 1-* [employee] Employee
 
-
-
   OS [os] 1-* <-- software --> 1-* [browser] Browser
   
   User [user] 1-* <-- use --> 1-* [administrator] Administrator
@@ -293,8 +294,6 @@ associations {
   Employee [employee] 1-* <-- use --> 1-* [adversary] Adversary
   EmployeeThirdParty [employeeThirdParty] 1-* <-- use --> 1-* [adversary] Adversary
   
-
   Adversary [adversary] 1-* <-- attack --> 1-* [browser] Browser
   ExternalNetwork [externalNetwork] 1-* <-- attack --> 1-* [adversary] Adversary
-
 }
