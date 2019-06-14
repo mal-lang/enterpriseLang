@@ -6,7 +6,7 @@ import attack.*;
 public class replicationThroughRemovableMediaTest{
 
   @Test
-  public void test1(){
+  public void testWithAutoRun(){
     // Section 1: Asset instantiation
     OS os = new OS("os",false,false);
     User user = new User("user",false);
@@ -30,7 +30,7 @@ public class replicationThroughRemovableMediaTest{
   }
 
   @Test
-  public void test2() {
+  public void testWithoutAutoRun() {
     OS os = new OS("os",false,true);
     User user = new User("user",false);
     Computer computer = new Computer("computer");

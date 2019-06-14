@@ -6,11 +6,11 @@ import attack.*;
 public class commandLineInterfaceTest{
 
   @Test
-  public void test1(){
+  public void testAnminUserCredential(){
     // Section 1: Asset instantiation
     OS os = new OS("os",true,false);
-    User user = new User("user",false);
-    Employee employee = new Employee("employee",false,false);
+    User user = new User("user");
+    Employee employee = new Employee("employee");
     Administrator administrator = new Administrator("administrator");
     Computer computer = new Computer("computer");
 
@@ -30,10 +30,10 @@ public class commandLineInterfaceTest{
   }
 
   @Test
-  public void test2() {
+  public void testNormanUserCredential() {
     OS os = new OS("os",true,false);
     User user = new User("user",true);
-    Employee employee = new Employee("employee",true,false);
+    Employee employee = new Employee("employee");
     Administrator administrator = new Administrator("administrator");
     Computer computer = new Computer("computer");
 

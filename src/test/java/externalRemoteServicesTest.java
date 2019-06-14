@@ -7,7 +7,7 @@ import attack.*;
 public class externalRemoteServicesTest{
 
   @Test
-  public void test1() {
+  public void testWithoutMultiFactorAuthentication() {
     // Section 1: Asset instantiation
     User user = new User("user");
     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
@@ -27,7 +27,7 @@ public class externalRemoteServicesTest{
   }
 
   @Test
-  public void test2() {
+  public void testWithMultiFactorAuthentication() {
     // Section 1: Asset instantiation
     User user = new User("user");
     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",false,true);

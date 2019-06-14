@@ -8,13 +8,13 @@ public class spearphishingLinkTest{
 
   
   @Test
-  public void test1() {
+  public void testNoDefens() {
     User user = new User("user");
     Adversary adversary = new Adversary("adversary");
     Computer computer = new Computer("computer");
     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    Browser browser = new Browser("browser",false);
-    Linux linux= new Linux("linux",false,false);
+    Browser browser = new Browser("browser");
+    Linux linux= new Linux("linux");
 
     // Section 2: Asset connections and attacker creation
     adversary.addBrowser(browser);
@@ -43,7 +43,7 @@ public class spearphishingLinkTest{
   }
 
   @Test
-  public void test2() {
+  public void testAllDefenses() {
     User user = new User("user");
     Adversary adversary = new Adversary("adversary");
     Computer computer = new Computer("computer");
@@ -77,12 +77,12 @@ public class spearphishingLinkTest{
   }
 
   @Test
-  public void test3() {
+  public void testWithAntivirus() {
     User user = new User("user");
     Adversary adversary = new Adversary("adversary");
     Computer computer = new Computer("computer");
     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    Browser browser = new Browser("browser",false);
+    Browser browser = new Browser("browser");
     Linux linux= new Linux("linux",true,false);
 
     // Section 2: Asset connections and attacker creation
@@ -111,13 +111,13 @@ public class spearphishingLinkTest{
   }
 
   @Test
-  public void test4() {
+  public void testWithPhishingDetection() {
     User user = new User("user");
     Adversary adversary = new Adversary("adversary");
     Computer computer = new Computer("computer");
     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
     Browser browser = new Browser("browser",true);
-    Linux linux= new Linux("linux",false,false);
+    Linux linux= new Linux("linux");
 
     // Section 2: Asset connections and attacker creation
     adversary.addBrowser(browser);

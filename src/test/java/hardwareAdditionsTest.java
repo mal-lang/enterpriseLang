@@ -7,7 +7,7 @@ import attack.*;
 public class hardwareAdditionsTest {
 
   @Test
-  public void test1() {
+  public void testHardwareAdditions() {
     // Section 1: Asset instantiation
     Adversary adversary = new Adversary("adversary");
     ExternalNetwork externalNetwork = new ExternalNetwork("Network");

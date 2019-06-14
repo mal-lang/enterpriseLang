@@ -6,7 +6,7 @@ import attack.*;
 public class dataObfuscationTest{
 
   @Test
-  public void test1(){
+  public void testWithoutDetectionAndPreventionSystems(){
     // Section 1: Asset instantiation
     OS os = new OS("os",false,false);
     User user = new User("user",false);
@@ -34,7 +34,7 @@ public class dataObfuscationTest{
   }
 
   @Test
-  public void test2() {
+  public void testWithDetectionAndPreventionSystems() {
      // Section 1: Asset instantiation
      OS os = new OS("os",false,false);
      User user = new User("user",false);

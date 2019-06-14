@@ -10,7 +10,7 @@ public class spearphishingviaServiceTest{
 
 
   @Test 
-  public void test1() {
+  public void testNoDefens() {
     Adversary adversary = new Adversary("adversary");
     User user = new User("user");
     PrivateComputer computer = new PrivateComputer("computer");
@@ -29,7 +29,7 @@ public class spearphishingviaServiceTest{
   }
 
   @Test 
-  public void test2() {
+  public void testWithRestrictSiteAndPrograms() {
     Adversary adversary = new Adversary("adversary");
     User user = new User("user");
     PrivateComputer computer = new PrivateComputer("computer");
