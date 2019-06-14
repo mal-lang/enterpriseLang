@@ -7,7 +7,7 @@ import attack.*;
 public class  trustedRelationshipTest{
 
   @Test
-  public void test1(){
+  public void testNetworkUnitThirdParty(){
     // Section 1: Asset instantiation
     Adversary adversary = new Adversary("adversary");
     NetworkUnitThirdParty networkUnitThirdParty = new NetworkUnitThirdParty("networkUnitThirdParty");
@@ -29,7 +29,7 @@ public class  trustedRelationshipTest{
 
 
   @Test
-  public void test2(){
+  public void testEmployeeThirdPartyRemovableMedia(){
     // Section 1: Asset instantiation
     EmployeeThirdParty employeeThirdParty = new EmployeeThirdParty ("employeeThirdParty");
     Computer computer = new Computer("computer");
