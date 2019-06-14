@@ -44,7 +44,7 @@ public class replicationThroughRemovableMediaTest{
     removableMedia.addOs(os);
 
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.userCredential);
+    attacker.addAttackPoint(removableMedia.connected);
     attacker.attack();
 
     computer.infectedComputer.assertUncompromised();
