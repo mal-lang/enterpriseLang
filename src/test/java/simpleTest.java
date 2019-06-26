@@ -19,8 +19,8 @@ public class simpleTest{
     PrivateNetwork privateNetwork = new PrivateNetwork("privateNetwork");
     RemovableMedia removableMedia = new RemovableMedia("removableMedia");
 
-    Browser browser = new Browser("browser",false);
-    Linux linux = new Linux("linux",false,false);
+    Browser browser = new Browser("browser");
+    Linux linux = new Linux("linux");
 
     // Section 2: Asset connections and attacker creation
 

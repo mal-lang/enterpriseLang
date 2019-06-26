@@ -216,9 +216,11 @@ category Software {
       ->  administrator.runCodeAdmin
     | readOrWriteMem
       ->  administrator.runCodeAdmin
-    |  bashHistory 
+    &  bashHistory 
       -> linxUser.adminLogin,
         linxUser.stolenCredentials
+    # turnOfBashHistory
+      -> bashHistory
   }
   asset MacOS extends OS {
     | ptraceSystemCalls
@@ -229,9 +231,11 @@ category Software {
       ->  administrator.runCodeAdmin
     | readOrWriteMem
       ->  administrator.runCodeAdmin
-    |  bashHistory 
+    &  bashHistory 
       -> macUser.adminLogin,
         macUser.stolenCredentials
+    # turnOfBashHistory
+      -> bashHistory       
   }
   asset Windows extends OS {
     | dynamicLinkLibraryInjection
