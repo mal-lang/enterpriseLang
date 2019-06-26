@@ -106,7 +106,9 @@ category Hardware {
           removableMedia.infectedMedia, 
           collectAudio,
           adversary.compressData,
-          adversary.obfuscateData
+          adversary.obfuscateData,
+          linux.bashHistory,
+          macOS.bashHistory
     | deleteFiles
 
     | haveMicrphone
@@ -214,6 +216,9 @@ category Software {
       ->  administrator.runCodeAdmin
     | readOrWriteMem
       ->  administrator.runCodeAdmin
+    |  bashHistory 
+      -> linxUser.adminLogin,
+        linxUser.stolenCredentials
   }
   asset MacOS extends OS {
     | ptraceSystemCalls
@@ -224,6 +229,9 @@ category Software {
       ->  administrator.runCodeAdmin
     | readOrWriteMem
       ->  administrator.runCodeAdmin
+    |  bashHistory 
+      -> macUser.adminLogin,
+        macUser.stolenCredentials
   }
   asset Windows extends OS {
     | dynamicLinkLibraryInjection
@@ -270,6 +278,9 @@ associations {
   RemovableMedia [removableMedia] 1 <-- system --> 1 [os] OS
   NetworkUnitThirdParty [networkUnitThirdParty] 1-* <-- system --> 1-* [privateNetwork] PrivateNetwork
   SupplyChain [supplyChain] 1-* <-- system --> 1-* [computer] Computer
+  Linux [linux] 1-* <-- system --> 1-* [linuxComputer] Computer
+  Windows [windows] 1-* <-- system --> 1-* [windowsComputer] Computer
+  MacOS [macOS] 1-* <-- system --> 1-* [macComputer] Computer
   
   ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
   ExternalNetwork [externalNetwork] 1-* <-- ui --> 1-* [privateNetwork] PrivateNetwork
@@ -282,9 +293,9 @@ associations {
   User [user] 1-* <-- ui --> 1-* [os] OS
   User [winUser] 1-* <-- ui --> 1-* [windows] Windows
   User [linxUser] 1-* <-- ui --> 1-* [linux] Linux  
+  User [macUser] 1-* <-- ui --> 1-* [macOS] MacOS
   User [linxUser] 1-* <-- ui --> 1-* [externalNetwork] ExternalNetwork 
   Administrator [administrator] 1 <-- system --> 1 [externalNetwork] ExternalNetwork
-  User [macUser] 1-* <-- ui --> 1-* [macOS] MacOS
   Adversary [adversary] 1-* <-- ui --> 1-* [computer] Computer
   Adversary [adversary] 1-* <-- ui --> 1-* [removableMedia] RemovableMedia
   Adversary [adversary] 1-* <-- ui --> 1-* [networkUnitThirdParty] NetworkUnitThirdParty
