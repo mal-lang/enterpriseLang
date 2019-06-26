@@ -8,8 +8,8 @@ public class replicationThroughRemovableMediaTest{
   @Test
   public void testWithAutoRun(){
     // Section 1: Asset instantiation
-    OS os = new OS("os",false,false);
-    User user = new User("user",false);
+    OS os = new OS("os");
+    User user = new User("user");
     Computer computer = new Computer("computer");
     RemovableMedia removableMedia = new RemovableMedia("removableMedia");
 
@@ -31,8 +31,8 @@ public class replicationThroughRemovableMediaTest{
 
   @Test
   public void testWithoutAutoRun() {
-    OS os = new OS("os",false,true);
-    User user = new User("user",false);
+    OS os = new OS("os",false,true,false);
+    User user = new User("user");
     Computer computer = new Computer("computer");
     RemovableMedia removableMedia = new RemovableMedia("removableMedia");
 

@@ -8,11 +8,11 @@ public class dataObfuscationTest{
   @Test
   public void testWithoutDetectionAndPreventionSystems(){
     // Section 1: Asset instantiation
-    OS os = new OS("os",false,false);
-    User user = new User("user",false);
+    OS os = new OS("os");
+    User user = new User("user");
     Adversary adversary = new Adversary("adversary");
     Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",false,false);
+    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
 
     // Section 2: Asset connections and attacker creation
     adversary.addUser(user);
@@ -36,8 +36,8 @@ public class dataObfuscationTest{
   @Test
   public void testWithDetectionAndPreventionSystems() {
      // Section 1: Asset instantiation
-     OS os = new OS("os",false,false);
-     User user = new User("user",false);
+     OS os = new OS("os");
+     User user = new User("user");
      Adversary adversary = new Adversary("adversary");
      Computer computer = new Computer("computer");
      ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",true,false);

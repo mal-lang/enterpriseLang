@@ -49,7 +49,7 @@ public class spearphishingLinkTest{
     Computer computer = new Computer("computer");
     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
     Browser browser = new Browser("browser",true);
-    Linux linux= new Linux("linux",false,true,false);
+    Linux linux= new Linux("linux",false,true,false,false);
 
     // Section 2: Asset connections and attacker creation
     adversary.addBrowser(browser);
@@ -83,7 +83,7 @@ public class spearphishingLinkTest{
     Computer computer = new Computer("computer");
     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
     Browser browser = new Browser("browser");
-    Linux linux= new Linux("linux",false,true,false);
+    Linux linux= new Linux("linux",false,true,false,false);
 
     // Section 2: Asset connections and attacker creation
     adversary.addBrowser(browser);

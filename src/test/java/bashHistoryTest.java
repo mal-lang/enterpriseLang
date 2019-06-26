@@ -46,7 +46,7 @@ public class bashHistoryTest {
   public void linuxTestWithDefense() {
     User user = new User("user");
     Computer computer = new Computer("computer");
-    Linux linux= new Linux("linux",true,false,false);
+    Linux linux= new Linux("linux",true,false,false,false);
 
     user.addLinux(linux);
     computer.addLinux(linux);
@@ -65,7 +65,7 @@ public class bashHistoryTest {
   public void macOSTestwithDefense() {
     User user = new User("user");
     Computer computer = new Computer("computer");
-    MacOS macOS= new MacOS("macOS",true,false,false);
+    MacOS macOS= new MacOS("macOS",true,false,false,false);
 
     user.addMacOS(macOS);
     computer.addMacOS(macOS);

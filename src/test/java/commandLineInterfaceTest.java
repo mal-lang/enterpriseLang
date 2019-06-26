@@ -8,7 +8,7 @@ public class commandLineInterfaceTest{
   @Test
   public void testAnminUserCredential(){
     // Section 1: Asset instantiation
-    OS os = new OS("os",true,false);
+    OS os = new OS("os",true,false,false);
     User user = new User("user");
     Employee employee = new Employee("employee");
     Administrator administrator = new Administrator("administrator");
@@ -31,7 +31,7 @@ public class commandLineInterfaceTest{
 
   @Test
   public void testNormanUserCredential() {
-    OS os = new OS("os",true,false);
+    OS os = new OS("os",true,false,false);
     User user = new User("user",true);
     Employee employee = new Employee("employee");
     Administrator administrator = new Administrator("administrator");

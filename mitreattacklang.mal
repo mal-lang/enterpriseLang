@@ -204,6 +204,12 @@ category Software {
       -> computer.infectedComputer
     | infectedOS
       -> computer.infectedComputer
+    & clipboardData
+      -> user.adminLogin,
+        user.stolenCredentials
+        // data copromos or data collect?
+    # whiteListforClipboard
+      -> clipboardData
   }
   asset Linux extends OS {
     | ptraceSystemCalls
