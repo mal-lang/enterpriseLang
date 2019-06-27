@@ -45,12 +45,19 @@ category Person {
     | connectToVpn
       -> externalNetwork.connectToVpn        
   }
-  asset Administrator {
+
+  abstractAsset Administrator {
     | adminRights
         info: "access to one sudo password"
         -> runCodeAdmin
     | runCodeAdmin
       -> computer.infectedComputer
+  }
+
+  asset System extends Administrator {
+    | accountManipulation
+      ->  adminRights,
+        user.stolenCredentials
   }
   asset Adversary {
     | compressData
