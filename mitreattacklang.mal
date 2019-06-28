@@ -6,7 +6,8 @@ category Person {
           adversary.obfuscateData,
           editFile,
           commandlineUsage,
-          connectToVpn
+          connectToVpn,
+          adminLogin
     | linkClicked [UniformDistribution(20,1)]
       rationale: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
       -> browser.spearphishingLink
@@ -54,9 +55,13 @@ category Person {
       -> computer.infectedComputer
   }
 
-  asset System extends Administrator {
+  asset WindowsAdmin extends Administrator {
+    | adminRights
+      info: "access to one sudo password"
+      -> runCodeAdmin,
+        accountManipulation
     | accountManipulation
-      ->  adminRights,
+      ->  user.adminLogin,
         user.stolenCredentials
   }
   asset Adversary {
@@ -115,7 +120,8 @@ category Hardware {
           adversary.compressData,
           adversary.obfuscateData,
           linux.bashHistory,
-          macOS.bashHistory
+          macOS.bashHistory,
+          os.screenCapture
     | deleteFiles
 
     | haveMicrphone
@@ -215,8 +221,11 @@ category Software {
       -> user.adminLogin,
         user.stolenCredentials
         // data copromos or data collect?
-    # whiteListforClipboard
-      -> clipboardData
+    # whiteList
+      -> clipboardData,
+        screenCapture
+    & screenCapture
+      -> computer.sendData 
   }
   asset Linux extends OS {
     | ptraceSystemCalls

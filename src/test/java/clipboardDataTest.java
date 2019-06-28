@@ -6,7 +6,6 @@ import attack.*;
 
 public class clipboardDataTest {
 
-  
   @Test
   public void clipboardTestNoDefens() {
     User user = new User("user");
@@ -20,7 +19,7 @@ public class clipboardDataTest {
     attacker.addAttackPoint(computer.infectedComputer);
     attacker.attack();
 
-    //linux.bashHistory.assertCompromisedInstantaneously();
+    // linux.bashHistory.assertCompromisedInstantaneously();
     user.stolenCredentials.assertCompromisedInstantaneously();
     user.adminLogin.assertCompromisedInstantaneously();
   }
