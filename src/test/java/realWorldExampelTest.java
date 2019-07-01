@@ -8,8 +8,8 @@ public class realWorldExampelTest{
   Adversary adversary = new Adversary("adversary");
   Computer computer = new Computer("computer");
   ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-  Browser browser = new Browser("browser",false);
-  Windows windows= new Windows("windows",false,false,false);
+  Browser browser = new Browser("browser");
+  Windows windows= new Windows("windows");
 
 
   @Test

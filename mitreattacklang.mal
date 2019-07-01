@@ -51,7 +51,8 @@ category Person {
     | adminRights
         info: "access to one sudo password"
         -> runCodeAdmin,
-          createUserAccount
+          createUserAccount,
+          windows.appInitDLLs
     | runCodeAdmin
       -> computer.infectedComputer
     | createUserAccount 
@@ -60,9 +61,7 @@ category Person {
 
   asset WindowsAdmin extends Administrator {
     | adminRights
-      info: "access to one sudo password"
-      -> runCodeAdmin,
-        accountManipulation
+      +>  accountManipulation
     | accountManipulation
       ->  user.adminLogin,
         user.stolenCredentials
@@ -196,6 +195,7 @@ category Software {
       -> detectionCheck
     
   }
+  
   abstractAsset OS {
     | downloaded 
       -> antivirusCheck
@@ -230,7 +230,10 @@ category Software {
     & screenCapture
       -> computer.sendData 
     | persistance
+
+    //# secureBoot
   }
+
   asset Linux extends OS {
     | ptraceSystemCalls
       ->  administrator.runCodeAdmin
@@ -248,6 +251,7 @@ category Software {
     # turnOfBashHistory
       -> bashHistory
   }
+
   asset MacOS extends OS {
     | ptraceSystemCalls
       ->  administrator.runCodeAdmin
@@ -263,6 +267,7 @@ category Software {
     # turnOfBashHistory
       -> bashHistory       
   }
+
   asset Windows extends OS {
     | dynamicLinkLibraryInjection
       info: "Another process with all its threads is running inside another virtual address space"
@@ -275,6 +280,12 @@ category Software {
       ->  administrator.runCodeAdmin
     | threadLocalStorage  
       ->  administrator.runCodeAdmin
+    & appInitDLLs 
+      -> persistance
+    # whiteList
+      +> appInitDLLs
+    # secureBoot
+      +> appInitDLLs
   }
 }
 
@@ -283,16 +294,14 @@ category ThirdParty {
     | connectedToLocalNetwork
       -> privateNetwork.connectedToNetwork 
   }  
-
   asset EmployeeThirdParty {
     | insertMedia
       -> removableMedia.connected
     | removeMedia 
       -> insertMedia
   }
-
   asset SupplyChain {
-   &  supplyChainCompromise
+    &  supplyChainCompromise
       -> computer.infectedComputer
     # supplyChainRiskManagementSCRM
       -> supplyChainCompromise
@@ -331,6 +340,7 @@ associations {
   Adversary [adversary] 1-* <-- ui --> 1-* [networkUnitThirdParty] NetworkUnitThirdParty
   Adversary [adversary] 1-* <-- ui --> 1-* [adversaryHardwareTool] AdversaryHardwareTool
   PrivateComputer [privateComputer] 1-* <-- ui --> 1-* [employee] Employee
+  Administrator [administrator] 1-* <-- ui --> 1-* [windows] Windows
 
   OS [os] 1-* <-- software --> 1-* [browser] Browser
   
