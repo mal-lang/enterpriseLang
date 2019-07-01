@@ -23,4 +23,22 @@ public class clipboardDataTest {
     user.stolenCredentials.assertCompromisedInstantaneously();
     user.adminLogin.assertCompromisedInstantaneously();
   }
+
+  @Test
+  public void clipboardTestWithDefens() {
+    User user = new User("user");
+    Computer computer = new Computer("computer");
+    OS os = new OS("os",false,false,true);
+
+    user.addOs(os);
+    computer.addOs(os);
+
+    Attacker attacker = new Attacker();
+    attacker.addAttackPoint(computer.infectedComputer);
+    attacker.attack();
+
+    // linux.bashHistory.assertCompromisedInstantaneously();
+    user.stolenCredentials.assertUncompromised();
+    user.adminLogin.assertUncompromised();
+  }
 }

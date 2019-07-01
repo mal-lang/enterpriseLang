@@ -49,22 +49,26 @@ category Person {
 
   abstractAsset Administrator {
     | adminRights
-        info: "access to one sudo password"
-        -> runCodeAdmin,
-          createUserAccount,
-          windows.appInitDLLs
+      info: "access to one sudo password"
+      -> runCodeAdmin,
+        createUserAccount,
+        windows.appInitDLLs
     | runCodeAdmin
       -> computer.infectedComputer
-    | createUserAccount 
+    & createUserAccount 
       -> os.persistance
+    # multiFactorAuthentication
+      -> createUserAccount
   }
 
   asset WindowsAdmin extends Administrator {
     | adminRights
       +>  accountManipulation
-    | accountManipulation
+    & accountManipulation
       ->  user.adminLogin,
         user.stolenCredentials
+    # multiFactorAuthentication
+      +> accountManipulation
   }
   asset Adversary {
     | compressData
