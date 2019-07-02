@@ -122,10 +122,10 @@ category Software {
             info: "Adversaries with admin rights may get better details of the hosts enumerated"
         
         & adminCommandLineInterface
-            -> // entrypoints of attacks that can be done with command line interface under admin rights
+            //-> // entrypoints of attacks that can be done with command line interface under admin rights
         
         & userCommandLineInterface
-            -> // entrypoints of attacks that can be done with command line interface under user rights
+            //-> // entrypoints of attacks that can be done with command line interface under user rights
     
 
         # whitelisting
@@ -304,7 +304,7 @@ category Hardware {
             -> compressData
 
         & compressData
-            -> // exfiltration attack entry points
+            //-> // exfiltration attack entry points
 
         | infectedWindowsComputer
 
