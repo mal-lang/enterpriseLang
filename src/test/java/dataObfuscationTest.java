@@ -1,61 +1,34 @@
 import org.junit.Test;
 
 import core.*;
+import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class dataObfuscationTest{
 
-  @Test
-  public void test1(){
-    // Section 1: Asset instantiation
-    OS os = new OS("os",false,false);
-    User user = new User("user",false);
-    Adversary adversary = new Adversary("adversary");
-    Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",false);
+    @Test
+    public void test1(){
+        ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork", true, true);
+        C2Server c2Server = new C2Server("c2Server");
 
-    // Section 2: Asset connections and attacker creation
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
-    adversary.addComputer(computer);
+        externalNetwork.addC2Server(c2Server);
 
-    computer.addOs(os);
-    computer.addExternalNetwork(externalNetwork);
-    user.addComputer(computer);
- 
-    
-    Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.stolenCredentials);
-    attacker.attack();
+        Attacker attacker = new Attacker();
+        attacker.addAttackPoint(c2Server.c2Connexion);
+        attacker.attack();
 
-    // Section 3: Assertions
-    adversary.obfuscateData.assertCompromisedInstantaneously();
-    externalNetwork.upload.assertCompromisedInstantaneouslyFrom(adversary.obfuscateData);
-  }
+        externalNetwork.bypassNetworkDetection.assertUncompromised();
+    }
+    public void test2(){
+        ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork", false, false);
+        C2Server c2Server = new C2Server("c2Server");
 
-  @Test
-  public void test2() {
-     // Section 1: Asset instantiation
-     OS os = new OS("os",false,false);
-     User user = new User("user",false);
-     Adversary adversary = new Adversary("adversary");
-     Computer computer = new Computer("computer");
-     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",true);
- 
-     // Section 2: Asset connections and attacker creation
-     adversary.addUser(user);
-     adversary.addExternalNetwork(externalNetwork);
-     adversary.addComputer(computer);
+        externalNetwork.addC2Server(c2Server);
 
-     computer.addOs(os);
-     computer.addExternalNetwork(externalNetwork);
-     user.addComputer(computer);
-     Attacker attacker = new Attacker();
-     attacker.addAttackPoint(user.stolenCredentials);
-     attacker.attack();
- 
-     // Section 3: Assertions
-     adversary.obfuscateData.assertCompromisedInstantaneously();
-     externalNetwork.upload.assertUncompromisedFrom(adversary.obfuscateData);
-  }
+        Attacker attacker = new Attacker();
+        attacker.addAttackPoint(c2Server.c2Connexion);
+        attacker.attack();
+
+        externalNetwork.bypassNetworkDetection.assertCompromisedInstantaneously();
+    }
 }

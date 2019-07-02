@@ -1,0 +1,30 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.runningProcessDiscovery
+    }
+    asset Administrator {
+        | adminRights
+            -> os.detailedRunningProcessDiscovery
+    }
+
+  
+} 
+
+categroy Software {
+    asset OS {
+        & runningProcessDiscovery
+            info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
+            
+
+        & detailedRunningProcessDiscovery
+
+        # whitelisting
+            -> runningProcessDiscovery,
+            detailedRunningProcessDiscovery
+    }
+}
+associations{
+    User [user] 1 <-- ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--ui--> 1-* [os] OS
+}

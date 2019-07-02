@@ -1,0 +1,28 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.remoteSystemDiscovery
+        
+    asset Administrator{
+        | adminRights
+            -> os.detailedRemoteSystemDiscovery
+    }
+  
+}
+
+category Software {
+    asset OS {
+        & remoteSystemDiscovery
+
+        & detailedRemoteSystemDiscovery
+        
+        # whitelisting 
+            -> remoteSystemDiscovery,
+               detailedRemoteSystemDiscovery
+    }
+}
+
+associations{
+    User [user] 1 <-- ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--ui--> 1-* [os] OS
+}

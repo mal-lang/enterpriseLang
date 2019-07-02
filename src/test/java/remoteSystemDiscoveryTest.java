@@ -4,7 +4,7 @@ import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class commandLineInterfaceTest{
+public class remoteSystemDiscoveryTest{
 
     @Test
     public void test1(){
@@ -12,45 +12,44 @@ public class commandLineInterfaceTest{
         Administrator administrator = new Administrator("administrator");
         OS os = new OS("os", true);
 
-
         user.addOs(os);
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
+        attacker.addAttackerPoint(user.userRights);
         attacker.attack();
 
-        os.userCommandLineInterface.assertUncompromised();
+        os.remoteSystemDiscovery.assertUncompromised();
+
     }
     public void test2(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
         OS os = new OS("os", false);
 
-
         user.addOs(os);
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
+        attacker.addAttackerPoint(user.userRights);
         attacker.attack();
 
-        os.userCommandLineInterface.assertCompromisedInstantaneously();
+        os.remoteSystemDiscovery.assertCompromisedInstantaneously();
+
     }
     public void test3(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
         OS os = new OS("os", false);
 
-
         user.addOs(os);
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(admin.adminRights);
+        attacker.addAttackerPoint(administrator.adminRights);
         attacker.attack();
 
-        os.adminCommandLineInterface.assertCompromisedInstantaneously();
-    }   
-}
+        os.detailedRemoteSystemDiscovery.assertCompromisedInstantaneously();
+
+    }
 }

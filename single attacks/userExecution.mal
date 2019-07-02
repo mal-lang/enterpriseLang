@@ -1,0 +1,26 @@
+category Hardware {
+    asset Computer {
+        | infectedComputer
+    }
+}
+
+category Software{
+    asset OS {
+        # antivirus
+            -> employee.userExecution
+    }
+}
+
+category Person {
+    asset Employee {
+        & userExecution
+            -> computer.infectedComputer
+        # trainedUser
+            -> userExection
+    }
+}
+
+associations{
+    Employee [employee] 1 <--use--> 1-* [computer] Computer
+    Employee [employee] 1 <--use--> 1-* [os] OS
+}

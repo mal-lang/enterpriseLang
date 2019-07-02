@@ -1,0 +1,20 @@
+category Person {
+    asset User {
+        | userRights 
+            -> os.bruteForce
+        | userCredentials
+    }
+}
+
+category Software {
+    asset OS {
+        & bruteForce   
+            -> user.userCredentials
+
+        # lockoutPolicies
+            -> bruteForce
+    }
+}
+associations {
+    User [user] 1 <-- ui--> 1-* [os] OS
+}

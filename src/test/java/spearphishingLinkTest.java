@@ -1,147 +1,62 @@
-import org.antlr.runtime.tree.Tree;
 import org.junit.Test;
 
 import core.*;
+import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class spearphishingLinkTest{
 
-  
-  @Test
-  public void test1() {
-    User user = new User("user");
-    Adversary adversary = new Adversary("adversary");
-    Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    Browser browser = new Browser("browser",false);
-    Linux linux= new Linux("linux",false,false);
+    @Test
+    public void test1(){
+        Employee employee = new Employee("employee", true);
+        Adversary adversary = new Adversary("adversary");
+        Browser browser = new Browser("browser", true);
+        OS os = new OS("os", true);
 
-    // Section 2: Asset connections and attacker creation
-    adversary.addBrowser(browser);
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
+        employee.addBrowser(browser);
+        adversary.addEmployee(employee);
+        adversary.addBrowser(browser);
+        browser.addOs(os);
+        
+        Attacker attacker = new Attacker();
+        attacker.addAttackPoint(adversary.spearphishingLinkAttack);
+        attacker.attack();
 
-    computer.addOs(linux);
-    computer.addExternalNetwork(externalNetwork);
-    computer.addUser(user);
+        os.spearphishingLinkDownload.assertUncompromised();
+    }
 
-    user.addBrowser(browser);
-    user.addComputer(computer);
+    public void test2(){
+        Employee employee = new Employee("employee", false);
+        Adversary adversary = new Adversary("adversary");
+        Browser browser = new Browser("browser", false);
+        OS os = new OS("os", true);
 
-    linux.addBrowser(browser);
+        employee.addBrowser(browser);
+        adversary.addEmployee(employee);
+        adversary.addBrowser(browser);
+        browser.addOs(os);
+        
+        Attacker attacker = new Attacker();
+        attacker.addAttackPoint(adversary.spearphishingLinkAttack);
+        attacker.attack();
 
+        os.spearphishingLinkDownload.assertUncompromised();
+    }
+    public void test3(){
+        Employee employee = new Employee("employee", false);
+        Adversary adversary = new Adversary("adversary");
+        Browser browser = new Browser("browser", false);
+        OS os = new OS("os", false);
 
+        employee.addBrowser(browser);
+        adversary.addEmployee(employee);
+        adversary.addBrowser(browser);
+        browser.addOs(os);
+        
+        Attacker attacker = new Attacker();
+        attacker.addAttackPoint(adversary.spearphishingLinkAttack);
+        attacker.attack();
 
-    // Attack  
-    Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.linkClicked);
-    attacker.attack();
-
-    // Section 3: Assertions
-    user.stolenCredentials.assertCompromisedInstantaneously();
-    computer.infectedComputer.assertCompromisedInstantaneously();
-  }
-
-  @Test
-  public void test2() {
-    User user = new User("user");
-    Adversary adversary = new Adversary("adversary");
-    Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    Browser browser = new Browser("browser",true);
-    Linux linux= new Linux("linux",true,false);
-
-    // Section 2: Asset connections and attacker creation
-    adversary.addBrowser(browser);
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
-
-    computer.addOs(linux);
-    computer.addExternalNetwork(externalNetwork);
-    computer.addUser(user);
-
-    user.addBrowser(browser);
-    user.addComputer(computer);
-
-    linux.addBrowser(browser);
-
-
-    // Attack  
-    Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.linkClicked);
-    attacker.attack();
-
-    // Section 3: Assertions
-    user.stolenCredentials.assertUncompromised();
-    computer.infectedComputer.assertUncompromised();
-  }
-
-  @Test
-  public void test3() {
-    User user = new User("user");
-    Adversary adversary = new Adversary("adversary");
-    Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    Browser browser = new Browser("browser",false);
-    Linux linux= new Linux("linux",true,false);
-
-    // Section 2: Asset connections and attacker creation
-    adversary.addBrowser(browser);
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
-
-    computer.addOs(linux);
-    computer.addExternalNetwork(externalNetwork);
-    computer.addUser(user);
-
-    user.addBrowser(browser);
-    user.addComputer(computer);
-
-    linux.addBrowser(browser);
-
-
-    // Attack  
-    Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.linkClicked);
-    attacker.attack();
-
-    // Section 3: Assertions
-    user.stolenCredentials.assertCompromisedInstantaneously();
-    computer.infectedComputer.assertUncompromised();
-  }
-
-  @Test
-  public void test4() {
-    User user = new User("user");
-    Adversary adversary = new Adversary("adversary");
-    Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    Browser browser = new Browser("browser",true);
-    Linux linux= new Linux("linux",false,false);
-
-    // Section 2: Asset connections and attacker creation
-    adversary.addBrowser(browser);
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
-
-    computer.addOs(linux);
-    computer.addExternalNetwork(externalNetwork);
-    computer.addUser(user);
-
-    user.addBrowser(browser);
-    user.addComputer(computer);
-
-    linux.addBrowser(browser);
-
-
-    // Attack  
-    Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.linkClicked);
-    attacker.attack();
-
-    // Section 3: Assertions
-    user.stolenCredentials.assertUncompromised();
-    computer.infectedComputer.assertUncompromised();
-  }
-  
+        os.spearphishingLinkDownload.assertCompromisedInstantaneously();
+    }
 }

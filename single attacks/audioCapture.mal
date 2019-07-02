@@ -1,0 +1,27 @@
+category Person{
+    asset User {
+        | userRights
+            -> computer.collectAudio
+    }
+}
+category Hardware {
+    asset Computer {
+        E Microphone
+            <- microphone
+            -> collectAudio
+
+        & collectAudio
+            -> dataCollected
+            
+        # whitelisting
+            -> collectAudio
+        | dataCollected
+    }
+    asset Microphone {
+
+    }
+}
+
+associations{
+    User [user] 1 <-- ui--> 1 [computer] Computer
+}

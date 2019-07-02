@@ -1,0 +1,28 @@
+category Person {
+    asset Administrator{
+        | adminRights
+            -> windows.createService
+        
+    }
+
+    asset WindowsAdmin {
+        | systemRights
+            -> windows.executeService
+    }
+}
+
+category Software {
+    asset Windows extends OS {
+        & createService
+            -> executeService
+        # whitelisting
+            -> createService
+        & executeService
+            -> persistance
+        | persistance
+    }
+}
+associations {
+    User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
+}

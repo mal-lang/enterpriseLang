@@ -1,0 +1,42 @@
+
+category Person {
+    asset Employee {
+        & spearphishingAttachmentDownload
+            -> browser.spearphishingAttachment
+        # trainedEmployee 
+            -> attachmentDownload
+
+    }
+    asset Adversary {
+        | spearphishingAttachmentAttack
+            -> employee.spearphishingAttachmentDownload,
+                browser.spearphishingAttachment
+    }
+}
+
+category Software {
+    asset OS {
+        & spearphishingAttachmentDownload
+            -> user.userExecution
+        # antivirus    
+            -> spearphishingAttachmentDownload
+    }
+}
+category Network {
+    asset Browser {
+        & spearphishingAttachment
+            -> os.spearphishingAttachmentDownload
+        # blockAttachmentsCheck //Block unknown or unused attachments by default that should not be transmitted over email 
+            -> spearphishingAttachment
+        # phishingdetection
+            -> spearphishingAttachment
+        
+    }
+}
+associations{
+    Employee [employee] 1 <--use--> 1-* [browser] Browser
+    Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
+    Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser 
+    User [user] 1 <-- ui--> 1-* [os] OS
+    Browser [browser] 1-* <-- software --> 1 [os] OS
+}

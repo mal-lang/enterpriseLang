@@ -4,53 +4,51 @@ import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class commandLineInterfaceTest{
+public class dataDestructionTest{
 
     @Test
     public void test1(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os", true);
+        Computer computer = new Computer("computer", true, true);
 
-
-        user.addOs(os);
-        administrator.addOs(os);
+        user.addComputer(computer);
+        administrator.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-        os.userCommandLineInterface.assertUncompromised();
+        computer.userDataDestruction.assertUncompromised();
     }
+    
     public void test2(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os", false);
+        Computer computer = new Computer("computer", false, false);
 
-
-        user.addOs(os);
-        administrator.addOs(os);
+        user.addComputer(computer);
+        administrator.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-        os.userCommandLineInterface.assertCompromisedInstantaneously();
+        computer.userDataDestruction.assertCompromisedInstantaneously();
     }
     public void test3(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os", false);
+        Computer computer = new Computer("computer", false, false);
 
-
-        user.addOs(os);
-        administrator.addOs(os);
+        user.addComputer(computer);
+        administrator.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(admin.adminRights);
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
-        os.adminCommandLineInterface.assertCompromisedInstantaneously();
-    }   
-}
+        computer.adminDataDestruction.assertCompromisedInstantaneously();
+    }
+
 }
