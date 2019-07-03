@@ -22,7 +22,7 @@ public class processInjectionTest{
 
         administrator.adminRights.assertCompromisedInstantaneously();
         os.bypassAntivirus.assertCompromisedInstantaneously();
-        os.bypassWhitelisting.assertUncompromised.assertCompromisedInstantaneously();
+        os.bypassWhitelisting.assertCompromisedInstantaneously();
     }
     public void test2(){
         User user = new User("user");
@@ -39,7 +39,7 @@ public class processInjectionTest{
 
         administrator.adminRights.assertUncompromised();
         os.bypassAntivirus.assertUncompromised();
-        os.bypassWhitelisting.assertUncompromised.assertUncompromised();
+        os.bypassWhitelisting.assertUncompromised();
     }
     
 }

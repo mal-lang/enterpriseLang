@@ -11,7 +11,7 @@ public class bootkitTest{
         Administrator administrator = new Administrator("administrator");
         Windows windows = new Windows("windows", true);
         
-        administrator.addOs(windows);
+        administrator.addWindows(windows);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
@@ -23,7 +23,7 @@ public class bootkitTest{
         Administrator administrator = new Administrator("administrator");
         Windows windows = new Windows("windows", false);
         
-        administrator.addOs(windows);
+        administrator.addWindows(windows);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
@@ -35,7 +35,7 @@ public class bootkitTest{
         Administrator administrator = new Administrator("administrator");
         Linux linux = new Linux("linux", false);
         
-        administrator.addOs(linux);
+        administrator.addLinux(linux);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
@@ -47,7 +47,7 @@ public class bootkitTest{
         Administrator administrator = new Administrator("administrator");
         Linux linux = new Linux("linux", true);
         
-        administrator.addOs(linux);
+        administrator.addLinux(linux);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);

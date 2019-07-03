@@ -2,8 +2,8 @@ category Person {
     asset User {
         | userRights
             -> os.remoteSystemDiscovery
-        
-    asset Administrator{
+    }    
+    asset Administrator {
         | adminRights
             -> os.detailedRemoteSystemDiscovery
     }

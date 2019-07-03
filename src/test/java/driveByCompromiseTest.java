@@ -19,7 +19,7 @@ public class driveByCompromiseTest{
         employee.addBrowser(browser);
         adversary.addBrowser(browser);
         adversary.addEmployee(employee);
-        adversary.addOs(os);
+        //adversary.addOs(os);
         browser.addOs(os);
         os.addComputer(computer);
 
@@ -43,7 +43,7 @@ public class driveByCompromiseTest{
         employee.addBrowser(browser);
         adversary.addBrowser(browser);
         adversary.addEmployee(employee);
-        adversary.addOs(os);
+        //adversary.addOs(os);
         browser.addOs(os);
         os.addComputer(computer);
 
@@ -67,7 +67,7 @@ public class driveByCompromiseTest{
         employee.addBrowser(browser);
         adversary.addBrowser(browser);
         adversary.addEmployee(employee);
-        adversary.addOs(os);
+        //adversary.addOs(os);
         browser.addOs(os);
         os.addComputer(computer);
 
@@ -91,7 +91,7 @@ public class driveByCompromiseTest{
         employee.addBrowser(browser);
         adversary.addBrowser(browser);
         adversary.addEmployee(employee);
-        adversary.addOs(os);
+        //adversary.addOs(os);
         browser.addOs(os);
         os.addComputer(computer);
 

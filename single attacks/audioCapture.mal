@@ -24,4 +24,6 @@ category Hardware {
 
 associations{
     User [user] 1 <-- ui--> 1 [computer] Computer
+    Microphone [microphone] 1-* <-- sys --> 1 [computer] Computer
+    
 }

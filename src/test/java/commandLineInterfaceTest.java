@@ -47,10 +47,9 @@ public class commandLineInterfaceTest{
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(admin.adminRights);
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
         os.adminCommandLineInterface.assertCompromisedInstantaneously();
     }   
-}
 }

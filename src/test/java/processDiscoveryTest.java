@@ -10,8 +10,8 @@ public class processDiscoveryTest{
     public void test1(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        Administrator administrator = new administrator("administrator")
-        Os os = new OS("os", true);
+        Administrator administrator = new Administrator("administrator");
+        OS os = new OS("os", true);
 
 
         // Section 2: Asset connections and attacker creation
@@ -19,7 +19,7 @@ public class processDiscoveryTest{
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(administrator.adminRights);
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
         os.detailedRunningProcessDiscovery.assertUncompromised();
@@ -28,8 +28,8 @@ public class processDiscoveryTest{
     public void test2(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        Administrator administrator = new administrator("administrator")
-        Os os = new OS("os", false);
+        Administrator administrator = new Administrator("administrator");
+        OS os = new OS("os", false);
 
 
         // Section 2: Asset connections and attacker creation
@@ -37,7 +37,7 @@ public class processDiscoveryTest{
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(administrator.adminRights);
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
         os.detailedRunningProcessDiscovery.assertCompromisedInstantaneously();
@@ -46,8 +46,8 @@ public class processDiscoveryTest{
     public void test3(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        Administrator administrator = new administrator("administrator")
-        Os os = new OS("os", true);
+        Administrator administrator = new Administrator("administrator");
+        OS os = new OS("os", true);
 
 
         // Section 2: Asset connections and attacker creation
@@ -55,7 +55,7 @@ public class processDiscoveryTest{
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(user.userRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         os.runningProcessDiscovery.assertUncompromised();

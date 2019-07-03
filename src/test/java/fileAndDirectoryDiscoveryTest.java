@@ -14,7 +14,7 @@ public class fileAndDirectoryDiscoveryTest{
         user.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(user.userRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         computer.fileDiscovery.assertUncompromised();
@@ -27,7 +27,7 @@ public class fileAndDirectoryDiscoveryTest{
         user.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(user.userRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         computer.fileDiscovery.assertCompromisedInstantaneously();

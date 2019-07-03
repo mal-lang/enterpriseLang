@@ -10,13 +10,13 @@ public class passwordPolicyDiscoveryTest{
     public void test1(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        Os os = new OS("os");
+        OS os = new OS("os");
 
         // Section 2: Asset connections and attacker creation
         user.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(user.userRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         // Section 3: Assertions

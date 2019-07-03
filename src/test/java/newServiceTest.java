@@ -12,11 +12,11 @@ public class newServiceTest{
         WindowsAdmin windowsAdmin = new WindowsAdmin("windowsAdmin");
         Windows windows = new Windows("windows", true);
 
-        administrator.addOs(windows);
-        windowsAdmin.addOs(windows);
+        administrator.addWindows(windows);
+        windowsAdmin.addWindows(windows);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(windowsAdmin.systemRights);
+        attacker.addAttackPoint(windowsAdmin.systemRights);
         attacker.attack();
 
         windows.persistance.assertUncompromised();
@@ -27,11 +27,11 @@ public class newServiceTest{
         WindowsAdmin windowsAdmin = new WindowsAdmin("windowsAdmin");
         Windows windows = new Windows("windows", false);
 
-        administrator.addOs(windows);
-        windowsAdmin.addOs(windows);
+        administrator.addWindows(windows);
+        windowsAdmin.addWindows(windows);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(windowsAdmin.systemRights);
+        attacker.addAttackPoint(windowsAdmin.systemRights);
         attacker.attack();
 
         windows.persistance.assertCompromisedInstantaneously();

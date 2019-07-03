@@ -16,7 +16,9 @@ category Person {
         & userExecution
             -> computer.infectedComputer
         # trainedUser
-            -> userExection
+            -> userExecution
+        | test
+            -> userExecution
     }
 }
 

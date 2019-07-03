@@ -12,7 +12,7 @@ category Person {
 }
 
 category Software {
-    asset Windows extends OS {
+    asset Windows {
         & createService
             -> executeService
         # whitelisting
@@ -23,6 +23,8 @@ category Software {
     }
 }
 associations {
-    User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
-    Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
+    //User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
+    Administrator [Administrator] 1 <--ui--> 1-* [windows] Windows
+
 }

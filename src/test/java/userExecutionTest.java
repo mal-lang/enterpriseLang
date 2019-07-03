@@ -9,16 +9,16 @@ public class userExecutionTest{
         @Test
         public void test1() {
             Computer computer = new Computer("computer");
-            Os os = new Os ("os", true);
+            OS os = new OS("os", true);
             Employee employee = new Employee ("employee");
 
-            computer.addOs(os);
+            employee.addOs(os);
             computer.addEmployee(employee);
 
             employee.addComputer(computer);
 
             Attacker attacker = new Attacker();
-            attacker.addAttackPoint(employee.userExecution);
+            attacker.addAttackPoint(employee.test);
             attacker.attack();
 
             computer.infectedComputer.assertUncompromised();
@@ -26,10 +26,10 @@ public class userExecutionTest{
 
         public void test2() {
             Computer computer = new Computer("computer");
-            Os os = new Os ("os", false);
+            OS os = new OS("os", false);
             Employee employee = new Employee ("employee");
 
-            computer.addOs(os);
+            employee.addOs(os);
             computer.addEmployee(employee);
 
             employee.addComputer(computer);

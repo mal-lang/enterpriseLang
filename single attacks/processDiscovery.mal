@@ -11,17 +11,16 @@ category Person {
   
 } 
 
-categroy Software {
+category Software {
     asset OS {
         & runningProcessDiscovery
             info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
-            
 
         & detailedRunningProcessDiscovery
 
         # whitelisting
-            -> runningProcessDiscovery,
-            detailedRunningProcessDiscovery
+            ->  runningProcessDiscovery,
+                detailedRunningProcessDiscovery
     }
 }
 associations{

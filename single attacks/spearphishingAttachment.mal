@@ -4,7 +4,8 @@ category Person {
         & spearphishingAttachmentDownload
             -> browser.spearphishingAttachment
         # trainedEmployee 
-            -> attachmentDownload
+            -> spearphishingAttachmentDownload
+        
 
     }
     asset Adversary {
@@ -17,7 +18,7 @@ category Person {
 category Software {
     asset OS {
         & spearphishingAttachmentDownload
-            -> user.userExecution
+            //-> user.userExecution 
         # antivirus    
             -> spearphishingAttachmentDownload
     }
@@ -37,6 +38,6 @@ associations{
     Employee [employee] 1 <--use--> 1-* [browser] Browser
     Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
     Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser 
-    User [user] 1 <-- ui--> 1-* [os] OS
+    //User [user] 1 <-- ui--> 1-* [os] OS
     Browser [browser] 1-* <-- software --> 1 [os] OS
 }

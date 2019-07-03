@@ -27,6 +27,6 @@ category Hardware {
 }
 
 associations{
-    User [user] 1 <-- ui--> 1-* [os] OS
-    Administrator [administrator] 1 <--ui--> 1-* [os] OS
+    User [user] 1 <-- ui--> 1-* [computer] Computer
+    Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
 }

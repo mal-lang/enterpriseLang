@@ -16,7 +16,7 @@ public class remoteSystemDiscoveryTest{
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(user.userRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         os.remoteSystemDiscovery.assertUncompromised();
@@ -31,7 +31,7 @@ public class remoteSystemDiscoveryTest{
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(user.userRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         os.remoteSystemDiscovery.assertCompromisedInstantaneously();
@@ -46,7 +46,7 @@ public class remoteSystemDiscoveryTest{
         administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(administrator.adminRights);
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
         os.detailedRemoteSystemDiscovery.assertCompromisedInstantaneously();

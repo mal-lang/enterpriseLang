@@ -17,8 +17,9 @@ category Person {
         & userExecution
             -> computer.infectedWindowsComputer
         # trainedUser
-            -> userExecution
-        | manualManipulation
+            ->  userExecution,
+                manualManipulation
+        & manualManipulation
             -> user.userRights
     }
     asset User {

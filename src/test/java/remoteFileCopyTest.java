@@ -14,7 +14,7 @@ public class remoteFileCopyTest{
         user.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(user.userRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         computer.uploadRemoteFile.assertUncompromised();
@@ -28,7 +28,7 @@ public class remoteFileCopyTest{
         user.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(user.userRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         computer.uploadRemoteFile.assertCompromisedInstantaneously();
