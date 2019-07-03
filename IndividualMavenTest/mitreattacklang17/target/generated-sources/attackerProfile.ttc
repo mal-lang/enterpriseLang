@@ -1,0 +1,5 @@
+User.userRights = Zero
+Administrator.adminRights = Zero
+OS.remoteSystemDiscovery = Zero
+OS.detailedRemoteSystemDiscovery = Zero
+OS.whitelisting = Zero

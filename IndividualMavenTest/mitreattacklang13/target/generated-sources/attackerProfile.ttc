@@ -1,0 +1,3 @@
+User.userRights = Zero
+OS.passwordPolicyDiscovery = Zero
+OS.bruteForce = Zero

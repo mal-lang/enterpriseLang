@@ -1,0 +1,5 @@
+ExternalNetwork.intrusionDetection = Zero
+ExternalNetwork.signatureIdentification = Zero
+ExternalNetwork.bypassNetworkDetection = Zero
+C2Server.c2Connexion = Zero
+C2Server.obfuscatedData = Zero

@@ -1,0 +1,7 @@
+Employee.spearphishingLinkClicked = Zero
+Employee.trainedEmployee = Zero
+Adversary.spearphishingLinkAttack = Zero
+Browser.spearphishingLink = Zero
+Browser.phishingDetection = Zero
+OS.spearphishingLinkDownload = Zero
+OS.antivirus = Zero

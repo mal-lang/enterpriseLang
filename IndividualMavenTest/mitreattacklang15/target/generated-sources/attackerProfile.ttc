@@ -1,0 +1,7 @@
+User.userRights = Zero
+Administrator.adminRights = Zero
+OS.runningProcessDiscovery = Zero
+OS.processInjection = Zero
+OS.bypassAntivirus = Zero
+OS.bypassWhitelisting = Zero
+OS.whitelisting = Zero

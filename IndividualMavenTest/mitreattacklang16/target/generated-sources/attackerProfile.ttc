@@ -1,0 +1,4 @@
+User.userRights = Zero
+Computer.uploadRemoteFile = Zero
+Computer.downloadRemoteFile = Zero
+Computer.networkIntrusionDetection = Zero

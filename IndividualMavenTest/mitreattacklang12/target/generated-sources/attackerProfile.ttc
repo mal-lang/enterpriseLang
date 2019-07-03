@@ -1,0 +1,6 @@
+Administrator.adminRights = Zero
+WindowsAdmin.systemRights = Zero
+Windows.createService = Zero
+Windows.whitelisting = Zero
+Windows.executeService = Zero
+Windows.persistance = Zero

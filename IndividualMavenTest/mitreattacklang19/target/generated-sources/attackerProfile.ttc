@@ -1,0 +1,8 @@
+Employee.spearphishingAttachmentDownload = Zero
+Employee.trainedEmployee = Zero
+Adversary.spearphishingAttachmentAttack = Zero
+OS.spearphishingAttachmentDownload = Zero
+OS.antivirus = Zero
+Browser.spearphishingAttachment = Zero
+Browser.blockAttachmentsCheck = Zero
+Browser.phishingdetection = Zero

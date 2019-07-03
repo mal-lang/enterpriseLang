@@ -1,0 +1,5 @@
+User.userRights = Zero
+Computer.Microphone = Zero
+Computer.collectAudio = Zero
+Computer.whitelisting = Zero
+Computer.dataCollected = Zero

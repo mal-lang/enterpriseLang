@@ -1,0 +1,5 @@
+Computer.infectedComputer = Zero
+OS.antivirus = Zero
+Employee.userExecution = Zero
+Employee.trainedUser = Zero
+Employee.test = Zero

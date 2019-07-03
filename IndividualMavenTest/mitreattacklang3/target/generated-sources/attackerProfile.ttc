@@ -1,0 +1,7 @@
+Administrator.adminRights = Zero
+Windows.bootkit = Zero
+Windows.secureBootProcess = Zero
+Windows.persistance = Zero
+Linux.bootkit = Zero
+Linux.secureBootProcess = Zero
+Linux.persistance = Zero
