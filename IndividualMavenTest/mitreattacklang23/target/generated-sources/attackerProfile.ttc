@@ -1,3 +1,8 @@
-User.userRights = Zero
-OS.applicationWindowDiscovery = Zero
-OS.whitelisting = Zero
+Computer.dataCollected = Zero
+Computer.dataCompressed = Zero
+Computer.dataEncrypted = Zero
+Computer.exfiltrationOverPhysicalMedium = Zero
+RemovableMedia.dataExfiltrated = Zero
+Employee.mediaInserted = Zero
+Employee._mediaInserted = Zero
+Employee.trainedUser = Zero

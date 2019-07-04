@@ -5,8 +5,8 @@ attack/User.class
 attack/OS$Whitelisting$Disable.class
 attack/OS$Whitelisting.class
 core/Defense.class
-core/Asset.class
 core/CPT_AttackStep.class
+core/Asset.class
 core/Component.class
 core/AttackStep.class
 attack/User$UserRights.class

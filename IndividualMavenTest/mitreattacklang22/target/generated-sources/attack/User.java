@@ -38,8 +38,8 @@ public class User extends Asset {
    }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-for (OS oS_bEWVL : os) {
-oS_bEWVL.applicationWindowDiscovery.updateTtc(this, ttc, activeAttackSteps);
+for (OS oS_wmWDj : os) {
+oS_wmWDj.applicationWindowDiscovery.updateTtc(this, ttc, activeAttackSteps);
 }
 }
       @Override

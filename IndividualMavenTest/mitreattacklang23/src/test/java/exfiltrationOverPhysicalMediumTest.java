@@ -1,7 +1,6 @@
 import org.junit.Test;
 
 import core.*;
-import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class exfiltrationOverPhysicalMediumTest{
@@ -17,11 +16,10 @@ public class exfiltrationOverPhysicalMediumTest{
 
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(employee.mediaInserted);
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
-        attacker.addAttackerPoint(computer.dataEncrypted);
-
+        attacker.addAttackPoint(employee.mediaInserted);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataEncrypted);
         attacker.attack();
 
 
@@ -38,11 +36,11 @@ public class exfiltrationOverPhysicalMediumTest{
 
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(employee.mediaInserted);
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
-        attacker.addAttackerPoint(computer.dataEncrypted);
-
+        attacker.addAttackPoint(employee.mediaInserted);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataEncrypted);
+  
 
         attacker.attack();
 

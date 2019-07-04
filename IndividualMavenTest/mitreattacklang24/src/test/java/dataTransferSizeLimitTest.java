@@ -14,7 +14,7 @@ public class dataTransferSizeLimitTest{
         computer.addC2Server(c2Server);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCollected);
 
         attacker.attack();
 
@@ -29,7 +29,7 @@ public class dataTransferSizeLimitTest{
         computer.addC2Server(c2Server);
         
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCollected);
 
 
         attacker.attack();

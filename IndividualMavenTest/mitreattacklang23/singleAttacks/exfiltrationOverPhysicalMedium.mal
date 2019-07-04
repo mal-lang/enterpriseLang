@@ -28,7 +28,7 @@ category Person{
 }
 
 associations {
-    Employee [employee] 1 <-- Use --> 1-* [computer] Computer
+
     Employee [employee] 1 <-- Use --> 1-* [removableMedia] RemovableMedia
     Computer [computer] 1 <-- Use --> 1-* [removableMedia] RemovableMedia
 }
