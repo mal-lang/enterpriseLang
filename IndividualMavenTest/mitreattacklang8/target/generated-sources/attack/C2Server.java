@@ -12,6 +12,7 @@ import core.AttackStepMax;
 import core.AttackStepMin;
 import core.Defense;
 public class C2Server extends Asset {
+   public InternalNetwork internalNetwork;
    public ExternalNetwork externalNetwork;
 
    public C2Connexion c2Connexion;
@@ -72,6 +73,9 @@ public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
 if (externalNetwork != null) {
 externalNetwork.bypassNetworkDetection.updateTtc(this, ttc, activeAttackSteps);
 }
+if (internalNetwork != null) {
+internalNetwork.bypassNetworkDetection.updateTtc(this, ttc, activeAttackSteps);
+}
 }
       @Override
       public double localTtc() {
@@ -80,6 +84,11 @@ externalNetwork.bypassNetworkDetection.updateTtc(this, ttc, activeAttackSteps);
 
    }
 
+      public void addInternalNetwork(InternalNetwork internalNetwork) {
+         this.internalNetwork = internalNetwork;
+         internalNetwork.c2Server = this;
+      }
+
       public void addExternalNetwork(ExternalNetwork externalNetwork) {
          this.externalNetwork = externalNetwork;
          externalNetwork.c2Server = this;
@@ -87,6 +96,9 @@ externalNetwork.bypassNetworkDetection.updateTtc(this, ttc, activeAttackSteps);
 
    @Override
    public String getAssociatedAssetClassName(String roleName) {
+      if (roleName.equals("internalNetwork")) {
+         return internalNetwork.getClass().getName();
+      }
       if (roleName.equals("externalNetwork")) {
          return externalNetwork.getClass().getName();
       }
@@ -95,6 +107,10 @@ externalNetwork.bypassNetworkDetection.updateTtc(this, ttc, activeAttackSteps);
    @Override
    public java.util.Set<Asset> getAssociatedAssets(String roleName) {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
+      if (roleName.equals("internalNetwork")  && internalNetwork != null) {
+         assets.add(internalNetwork);
+         return assets;
+      }
       if (roleName.equals("externalNetwork")  && externalNetwork != null) {
          assets.add(externalNetwork);
          return assets;
@@ -105,6 +121,9 @@ externalNetwork.bypassNetworkDetection.updateTtc(this, ttc, activeAttackSteps);
    @Override
    public java.util.Set<Asset> getAllAssociatedAssets() {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
+      if (internalNetwork != null) {
+         assets.add(internalNetwork);
+      }
       if (externalNetwork != null) {
          assets.add(externalNetwork);
       }

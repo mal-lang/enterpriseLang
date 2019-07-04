@@ -15,18 +15,18 @@ public class Computer extends Asset {
    public User user;
    public java.util.Set<Microphone> microphone = new HashSet<>();
 
-   public Microphone Microphone;
+   public MicrophoneExists microphoneExists;
    public CollectAudio collectAudio;
    public Whitelisting whitelisting;
    public DataCollected dataCollected;
 
    public Computer(Boolean whitelistingState) {
       super();
-      if (Microphone != null) {
-         AttackStep.allAttackSteps.remove(Microphone.disable);
+      if (microphoneExists != null) {
+         AttackStep.allAttackSteps.remove(microphoneExists.disable);
       }
-      Defense.allDefenses.remove(Microphone);
-      Microphone = new Microphone(this.name);
+      Defense.allDefenses.remove(microphoneExists);
+      microphoneExists = new MicrophoneExists(this.name);
       if (whitelisting != null) {
          AttackStep.allAttackSteps.remove(whitelisting.disable);
       }
@@ -41,11 +41,11 @@ public class Computer extends Asset {
 
    public Computer(String name, Boolean whitelistingState) {
       super(name);
-      if (Microphone != null) {
-         AttackStep.allAttackSteps.remove(Microphone.disable);
+      if (microphoneExists != null) {
+         AttackStep.allAttackSteps.remove(microphoneExists.disable);
       }
-      Defense.allDefenses.remove(Microphone);
-      Microphone = new Microphone(this.name);
+      Defense.allDefenses.remove(microphoneExists);
+      microphoneExists = new MicrophoneExists(this.name);
       if (whitelisting != null) {
          AttackStep.allAttackSteps.remove(whitelisting.disable);
       }
@@ -69,8 +69,8 @@ public class Computer extends Asset {
    }
 
 
-   public class Microphone extends Defense {
-   public Microphone(String name) {
+   public class MicrophoneExists extends Defense {
+   public MicrophoneExists(String name) {
       super(name);
       disable = new Disable(name);
    }
@@ -86,11 +86,13 @@ public class Computer extends Asset {
 
          @Override
          public String fullName() {
-            return "computer.Microphone";
+            return "computer.microphoneExists";
          }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-collectAudio.updateTtc(this, ttc, activeAttackSteps);
+for (Microphone microphone_bVxgA : microphone) {
+microphone_bVxgA.collectAudio.updateTtc(this, ttc, activeAttackSteps);
+}
 }
    }
 }
@@ -105,8 +107,10 @@ public void setExpectedParents() {
 if (user != null) {
 addExpectedParent(user.userRights);
 }
-addExpectedParent(Microphone.disable);
 addExpectedParent(whitelisting.disable);
+for (Microphone microphone_YMNDN : microphone) {
+addExpectedParent(microphone_YMNDN.collectAudio);
+}
 }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {

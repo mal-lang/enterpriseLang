@@ -72,7 +72,7 @@ if(t==e.dx){for((r||f>e.dy)&&(f=e.dy);++u<o;)i=n[u],i.x=a,i.y=c,i.dy=f,a+=i.dx=M
       .append("svg:path")
       .attr("d", "M0,-5L10,0L0,5");
 
-    root = {"children":[{"name":"User","children":[{"name":"userRights","type":"or","targets":[{"name":"collectAudio","entity_name":"Computer","size":4000}]}]},{"name":"Computer","children":[{"name":"Microphone","type":"defense","targets":[{"name":"collectAudio","entity_name":"Computer","size":4000}]},{"name":"collectAudio","type":"and","targets":[{"name":"dataCollected","entity_name":"Computer","size":4000}]},{"name":"whitelisting","type":"defense","targets":[{"name":"collectAudio","entity_name":"Computer","size":4000}]},{"name":"dataCollected","type":"or"}]},{"name":"Microphone"}]};
+    root = {"children":[{"name":"User","children":[{"name":"userRights","type":"or","targets":[{"name":"collectAudio","entity_name":"Computer","size":4000}]}]},{"name":"Computer","children":[{"name":"microphoneExists","type":"defense","targets":[{"name":"collectAudio","entity_name":"Microphone","size":4000}]},{"name":"collectAudio","type":"and","targets":[{"name":"dataCollected","entity_name":"Computer","size":4000}]},{"name":"whitelisting","type":"defense","targets":[{"name":"collectAudio","entity_name":"Computer","size":4000}]},{"name":"dataCollected","type":"or"}]},{"name":"Microphone","children":[{"name":"collectAudio","type":"or","targets":[{"name":"collectAudio","entity_name":"Computer","size":4000}]}]}]};
     initialize(root);
     set_id(root);
     update();
