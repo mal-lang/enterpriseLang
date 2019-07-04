@@ -7,7 +7,6 @@ core/AttackStepMax.class
 attack/Computer$_automatedExfiltration.class
 attack/C2Server$NetworkDataTransferThresholdAlerts.class
 core/ConstraintChecker.class
-attack/C2Server$NetworkIntrusionDetection.class
 attack/C2Server.class
 core/Defense.class
 core/CPT_AttackStep.class
@@ -15,8 +14,10 @@ core/Asset.class
 attack/Computer.class
 core/Component.class
 core/AttackStep.class
+attack/InternalNetwork.class
 attack/Computer$ExfiltrationOverC2.class
 core/AnySet.class
 core/Attacker.class
-attack/C2Server$NetworkIntrusionDetection$Disable.class
+attack/InternalNetwork$NetworkIntrusionDetection$Disable.class
 attack/C2Server$DataExfiltrated.class
+attack/InternalNetwork$NetworkIntrusionDetection.class

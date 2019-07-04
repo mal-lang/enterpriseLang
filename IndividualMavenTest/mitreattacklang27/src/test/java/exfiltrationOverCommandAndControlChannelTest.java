@@ -9,7 +9,7 @@ public class exfiltrationOverCommandAndControlChannelTest{
     @Test
     public void test1(){
         Computer computer = new Computer("computer");
-        C2Server c2Server = new C2Server("c2Server", true, true);
+        C2Server c2Server = new C2Server("c2Server", true);
         InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true);
 
         internalNetwork.addC2Server(c2Server);
@@ -28,7 +28,7 @@ public class exfiltrationOverCommandAndControlChannelTest{
     }
     public void test2(){
         Computer computer = new Computer("computer");
-        C2Server c2Server = new C2Server("c2Server", false, false);
+        C2Server c2Server = new C2Server("c2Server", false);
         InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false);
 
         internalNetwork.addC2Server(c2Server);

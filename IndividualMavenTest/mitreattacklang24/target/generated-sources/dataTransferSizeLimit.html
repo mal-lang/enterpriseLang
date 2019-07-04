@@ -72,7 +72,7 @@ if(t==e.dx){for((r||f>e.dy)&&(f=e.dy);++u<o;)i=n[u],i.x=a,i.y=c,i.dy=f,a+=i.dx=M
       .append("svg:path")
       .attr("d", "M0,-5L10,0L0,5");
 
-    root = {"children":[{"name":"Computer","children":[{"name":"dataCollected","type":"or","targets":[{"name":"dataSizedTransfer","entity_name":"Computer","size":4000}]},{"name":"dataSizedTransfer","type":"or","targets":[{"name":"dataExfiltrated","entity_name":"C2Server","size":4000}]}]},{"name":"C2Server","children":[{"name":"dataExfiltrated","type":"and"},{"name":"networkIntrusionDetection","type":"defense","targets":[{"name":"dataExfiltrated","entity_name":"C2Server","size":4000}]}]}]};
+    root = {"children":[{"name":"Computer","children":[{"name":"dataCollected","type":"or","targets":[{"name":"dataSizedTransfer","entity_name":"Computer","size":4000}]},{"name":"dataSizedTransfer","type":"or","targets":[{"name":"dataExfiltrated","entity_name":"C2Server","size":4000}]}]},{"name":"C2Server","children":[{"name":"dataExfiltrated","type":"and"}]},{"name":"InternalNetwork","children":[{"name":"networkIntrusionDetection","type":"defense","targets":[{"name":"dataExfiltrated","entity_name":"C2Server","size":4000}]}]}]};
     initialize(root);
     set_id(root);
     update();
