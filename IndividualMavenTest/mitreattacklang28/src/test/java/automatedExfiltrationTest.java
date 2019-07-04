@@ -11,9 +11,9 @@ public class automatedExfiltrationTest{
         Computer computer = new Computer("computer", true);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
-        attacker.addAttackerPoint(computer.dataEncrypted);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataEncrypted);
 
         attacker.attack();
 
@@ -25,9 +25,9 @@ public class automatedExfiltrationTest{
         Computer computer = new Computer("computer", false);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
-        attacker.addAttackerPoint(computer.dataEncrypted);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataEncrypted);
 
         attacker.attack();
 

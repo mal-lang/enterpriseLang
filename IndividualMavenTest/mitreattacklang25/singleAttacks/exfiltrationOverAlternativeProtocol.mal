@@ -9,7 +9,7 @@ category Hardware {
         | dataEncrypted
             -> exfiltrationOverAternativeProtocol
 
-        | & _automatedExfiltration
+        & _automatedExfiltration
             -> exfiltrationOverAternativeProtocol
 
         | exfiltrationOverAternativeProtocol

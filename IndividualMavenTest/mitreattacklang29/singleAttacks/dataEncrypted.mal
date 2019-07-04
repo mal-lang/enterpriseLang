@@ -1,4 +1,4 @@
-categroy Hardware {
+category Hardware {
     asset Computer {
         | dataCollected
             -> dataEncrypted

@@ -1,3 +1,8 @@
-User.userRights = Zero
-OS.applicationWindowDiscovery = Zero
-OS.whitelisting = Zero
+Computer.dataCollected = Zero
+Computer.dataCompressed = Zero
+Computer.dataEncrypted = Zero
+Computer._automatedExfiltration = Zero
+Computer.exfiltrationOverC2 = Zero
+C2Server.dataExfiltrated = Zero
+C2Server.networkIntrusionDetection = Zero
+C2Server.networkDataTransferThresholdAlerts = Zero

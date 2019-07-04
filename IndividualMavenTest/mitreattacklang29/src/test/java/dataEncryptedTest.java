@@ -11,8 +11,8 @@ public class dataEncryptedTest{
         Computer computer = new Computer("computer", true);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
         attacker.attack();
 
 
@@ -23,8 +23,8 @@ public class dataEncryptedTest{
         Computer computer = new Computer("computer", false);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
         attacker.attack();
 
 

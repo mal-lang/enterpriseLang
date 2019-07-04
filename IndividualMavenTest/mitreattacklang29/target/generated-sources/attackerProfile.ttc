@@ -1,3 +1,5 @@
-User.userRights = Zero
-OS.applicationWindowDiscovery = Zero
-OS.whitelisting = Zero
+Computer.dataCollected = Zero
+Computer.dataCompressed = Zero
+Computer.dataEncrypted = Zero
+Computer._dataEncrypted = Zero
+Computer.whitelisting = Zero

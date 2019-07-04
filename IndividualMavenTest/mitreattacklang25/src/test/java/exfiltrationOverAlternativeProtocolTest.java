@@ -14,14 +14,14 @@ public class exfiltrationOverAlternativeProtocolTest{
         Firewall firewall = new Firewall("firewall");
 
         computer.addInternalNetwork(internalNetwork);
-        internalNetwork.addExternalNetwork(externalnetwork);
-        firewall.addInternalNetwork(internalNetwork)
+        internalNetwork.addExternalNetwork(externalNetwork);
+        firewall.addInternalNetwork(internalNetwork);
 
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
-        attacker.addAttackerPoint(computer.dataEncrypted);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataEncrypted);
 
         attacker.attack();
 
@@ -35,13 +35,13 @@ public class exfiltrationOverAlternativeProtocolTest{
         InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true);
         
         computer.addInternalNetwork(internalNetwork);
-        internalNetwork.addExternalNetwork(externalnetwork);
+        internalNetwork.addExternalNetwork(externalNetwork);
 
         
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
-        attacker.addAttackerPoint(computer.dataEncrypted);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataEncrypted);
 
         attacker.attack();
 

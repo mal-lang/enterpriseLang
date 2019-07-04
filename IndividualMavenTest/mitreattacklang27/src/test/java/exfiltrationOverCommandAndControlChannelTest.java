@@ -9,34 +9,36 @@ public class exfiltrationOverCommandAndControlChannelTest{
     @Test
     public void test1(){
         Computer computer = new Computer("computer");
-        C2Server c2server = new C2Server("c2server", true);
+        C2Server c2Server = new C2Server("c2Server", true, true);
 
-        computer.addC2Server(c2server);
+        computer.addC2Server(c2Server);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
-        attacker.addAttackerPoint(computer.dataEncrypted);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataEncrypted);
 
         attacker.attack();
 
 
-        c2server.dataExfiltrated.assertUncompromised();
+        c2Server.dataExfiltrated.assertUncompromised();
 
     }
     public void test2(){
         Computer computer = new Computer("computer");
-        C2Server c2server = new C2Server("c2server", true);
+        C2Server c2Server = new C2Server("c2Server", false, false);
+
+        computer.addC2Server(c2Server);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackerPoint(computer.dataCollected);
-        attacker.addAttackerPoint(computer.dataCompressed);
-        attacker.addAttackerPoint(computer.dataEncrypted);
+        attacker.addAttackPoint(computer.dataCollected);
+        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(computer.dataEncrypted);
 
         attacker.attack();
 
 
-        c2server.dataExfiltrated.assertCompromisedInstantaneously();
+        c2Server.dataExfiltrated.assertCompromisedInstantaneously();
 
     }
 }
