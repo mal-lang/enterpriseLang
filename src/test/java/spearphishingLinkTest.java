@@ -9,139 +9,107 @@ public class spearphishingLinkTest{
   
   @Test
   public void testNoDefens() {
-    User user = new User("user");
-    Adversary adversary = new Adversary("adversary");
-    Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
+    Employee employee = new Employee("employee");
     Browser browser = new Browser("browser");
-    Linux linux= new Linux("linux");
+    OS os = new OS("os");
+    User user = new User("user");
+    Computer computer = new Computer("computer");
 
-    // Section 2: Asset connections and attacker creation
-    adversary.addBrowser(browser);
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
-
-    computer.addOs(linux);
-    computer.addExternalNetwork(externalNetwork);
-    computer.addUser(user);
-
-    user.addBrowser(browser);
-    user.addComputer(computer);
-
-    linux.addBrowser(browser);
-
-
+    employee.addBrowser(browser);
+    browser.addOs(os);
+    browser.addUser(user);
+    computer.addOs(os);
+    employee.addOs(os);
+    employee.addUser(user);
+    employee.addComputer(computer);
 
     // Attack  
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.linkClicked);
+    attacker.addAttackPoint(employee.spearphishingLinkClicked);
     attacker.attack();
 
     // Section 3: Assertions
-    user.stolenCredentials.assertCompromisedInstantaneously();
+    user.userCredentials.assertCompromisedInstantaneously();
     computer.infectedComputer.assertCompromisedInstantaneously();
   }
 
   @Test
   public void testAllDefenses() {
+    Employee employee = new Employee("employee",true,false);
+    Browser browser = new Browser("browser",false,false,false,false,true);
+    OS os = new OS("os",false,false,true);
     User user = new User("user");
-    Adversary adversary = new Adversary("adversary");
     Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    Browser browser = new Browser("browser",true);
-    Linux linux= new Linux("linux",false,true,false,false);
 
-    // Section 2: Asset connections and attacker creation
-    adversary.addBrowser(browser);
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
-
-    computer.addOs(linux);
-    computer.addExternalNetwork(externalNetwork);
-    computer.addUser(user);
-
-    user.addBrowser(browser);
-    user.addComputer(computer);
-
-    linux.addBrowser(browser);
-
+    employee.addBrowser(browser);
+    browser.addOs(os);
+    browser.addUser(user);
+    computer.addOs(os);
+    employee.addOs(os);
+    employee.addUser(user);
+    employee.addComputer(computer);
 
     // Attack  
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.linkClicked);
+    attacker.addAttackPoint(employee.spearphishingLinkClicked);
     attacker.attack();
 
     // Section 3: Assertions
-    user.stolenCredentials.assertUncompromised();
+    user.userCredentials.assertUncompromised();
     computer.infectedComputer.assertUncompromised();
   }
 
   @Test
   public void testWithAntivirus() {
-    User user = new User("user");
-    Adversary adversary = new Adversary("adversary");
-    Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
+    Employee employee = new Employee("employee");
     Browser browser = new Browser("browser");
-    Linux linux= new Linux("linux",false,true,false,false);
+    OS os = new OS("os",false,false,true);
+    User user = new User("user");
+    Computer computer = new Computer("computer");
 
-    // Section 2: Asset connections and attacker creation
-    adversary.addBrowser(browser);
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
-
-    computer.addOs(linux);
-    computer.addExternalNetwork(externalNetwork);
-    computer.addUser(user);
-
-    user.addBrowser(browser);
-    user.addComputer(computer);
-
-    linux.addBrowser(browser);
-
+    employee.addBrowser(browser);
+    browser.addOs(os);
+    browser.addUser(user);
+    computer.addOs(os);
+    employee.addOs(os);
+    employee.addUser(user);
+    employee.addComputer(computer);
 
     // Attack  
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.linkClicked);
+    attacker.addAttackPoint(employee.spearphishingLinkClicked);
     attacker.attack();
 
     // Section 3: Assertions
-    user.stolenCredentials.assertCompromisedInstantaneously();
+    user.userCredentials.assertCompromisedInstantaneously();
     computer.infectedComputer.assertUncompromised();
   }
 
   @Test
   public void testWithPhishingDetection() {
+    Employee employee = new Employee("employee");
+    Browser browser = new Browser("browser",false,false,false,false,true);
+    OS os = new OS("os");
     User user = new User("user");
-    Adversary adversary = new Adversary("adversary");
     Computer computer = new Computer("computer");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    Browser browser = new Browser("browser",true);
-    Linux linux= new Linux("linux");
 
-    // Section 2: Asset connections and attacker creation
-    adversary.addBrowser(browser);
-    adversary.addUser(user);
-    adversary.addExternalNetwork(externalNetwork);
-
-    computer.addOs(linux);
-    computer.addExternalNetwork(externalNetwork);
-    computer.addUser(user);
-
-    user.addBrowser(browser);
-    user.addComputer(computer);
-
-    linux.addBrowser(browser);
-
+    employee.addBrowser(browser);
+    browser.addOs(os);
+    browser.addUser(user);
+    computer.addOs(os);
+    employee.addOs(os);
+    employee.addUser(user);
+    employee.addComputer(computer);
 
     // Attack  
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.linkClicked);
+    attacker.addAttackPoint(employee.spearphishingLinkClicked);
     attacker.attack();
 
     // Section 3: Assertions
-    user.stolenCredentials.assertUncompromised();
+    user.userCredentials.assertUncompromised();
     computer.infectedComputer.assertUncompromised();
   }
+  
   
 }

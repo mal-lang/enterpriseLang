@@ -1,52 +1,50 @@
 import org.junit.Test;
 
 import core.*;
+import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class replicationThroughRemovableMediaTest{
 
-  @Test
-  public void testWithAutoRun(){
-    // Section 1: Asset instantiation
-    OS os = new OS("os");
-    User user = new User("user");
-    Computer computer = new Computer("computer");
-    RemovableMedia removableMedia = new RemovableMedia("removableMedia");
+    @Test
+    public void test1(){
+        RemovableMedia removableMedia = new RemovableMedia("removableMedia");
+        Employee employee = new Employee("employee",true,false);
+        Computer computer = new Computer("computer");
+        User user = new User("user");
 
 
-    // Section 2: Asset connections and attacker creation
-    computer.addOs(os);
-    user.addComputer(computer);
+        removableMedia.addEmployee(employee);
+        employee.addComputer(computer);
+        employee.addUser(user);
 
-    removableMedia.addComputer(computer);
-    removableMedia.addOs(os);
-    
-    Attacker attacker = new Attacker();
-    attacker.addAttackPoint(removableMedia.connected);
-    attacker.attack();
+        Attacker attacker = new Attacker();
+        attacker.addAttackPoint(removableMedia.infectedMedia);
+        attacker.attack();
 
-    // Section 3: Assertions
-    computer.infectedComputer.assertCompromisedInstantaneously();
-  }
+        computer.infectedWindowsComputer.assertUncompromised();
+        //user.userRights.assertUncompromised(); //reached employee.restrictSiteAndPrograms should be possible!!!!!!
 
-  @Test
-  public void testWithoutAutoRun() {
-    OS os = new OS("os",false,true,false);
-    User user = new User("user");
-    Computer computer = new Computer("computer");
-    RemovableMedia removableMedia = new RemovableMedia("removableMedia");
+    }
+    @Test
+    public void test2(){
+        RemovableMedia removableMedia = new RemovableMedia("removableMedia");
+        Employee employee = new Employee("employee");
+        Computer computer = new Computer("computer");
+        User user = new User("user");
 
+        removableMedia.addEmployee(employee);
+        employee.addComputer(computer);
+        employee.addUser(user);
 
-    computer.addOs(os);
-    user.addComputer(computer);
+        Attacker attacker = new Attacker();
+        attacker.addAttackPoint(removableMedia.infectedMedia);
+        attacker.attack();
 
-    removableMedia.addComputer(computer);
-    removableMedia.addOs(os);
-
-    Attacker attacker = new Attacker();
-    attacker.addAttackPoint(removableMedia.connected);
-    attacker.attack();
-
-    computer.infectedComputer.assertUncompromised();
-  }
+        computer.infectedComputer.assertCompromisedInstantaneously();
+        computer.infectedWindowsComputer.assertCompromisedInstantaneously();
+        employee.insertMedia.assertCompromisedInstantaneously();
+        user.userRights.assertCompromisedInstantaneously();
+        
+    }
 }

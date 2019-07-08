@@ -11,12 +11,12 @@ public class  trustedRelationshipTest{
     // Section 1: Asset instantiation
     Adversary adversary = new Adversary("adversary");
     NetworkUnitThirdParty networkUnitThirdParty = new NetworkUnitThirdParty("networkUnitThirdParty");
-    PrivateNetwork privateNetwork = new PrivateNetwork("privateNetwork");
+    InternalNetwork privateNetwork = new InternalNetwork("privateNetwork");
 
     // Section 2: Asset connections and attacker creation
 
     adversary.addNetworkUnitThirdParty(networkUnitThirdParty);
-    networkUnitThirdParty.addPrivateNetwork(privateNetwork);
+    networkUnitThirdParty.addInternalNetwork(privateNetwork);
 
     Attacker attacker = new Attacker();
     attacker.addAttackPoint(adversary.thirdPartySystemAccess);
@@ -32,26 +32,20 @@ public class  trustedRelationshipTest{
   public void testEmployeeThirdPartyRemovableMedia(){
     // Section 1: Asset instantiation
     EmployeeThirdParty employeeThirdParty = new EmployeeThirdParty ("employeeThirdParty");
-    Computer computer = new Computer("computer");
     RemovableMedia removableMedia = new RemovableMedia("removableMedia");
-    Adversary adversary = new Adversary("adversary");
-    Linux linux= new Linux("linux");
+    Employee employee = new Employee("employee");
+    Computer computer = new Computer("computer");
+    User user = new User("user");
 
-
-    // Section 2: Asset connections and attacker creation
-
-    //employeeThirdParty.addComputer(computer);
-    adversary.addRemovableMedia(removableMedia);
-    adversary.addEmployeeThirdParty(employeeThirdParty);
-    computer.addRemovableMedia(removableMedia);
-    computer.addOs(linux);
-    linux.addRemovableMedia(removableMedia);
+    removableMedia.addEmployee(employee);
+    employee.addComputer(computer);
+    employee.addUser(user);
     employeeThirdParty.addRemovableMedia(removableMedia);
 
 
 
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(adversary.insertInfectedMedia);
+    attacker.addAttackPoint(employeeThirdParty.infectedMedia);
     attacker.attack();
 
     // Section 3: Assertions

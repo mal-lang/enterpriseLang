@@ -13,18 +13,18 @@ public class spearphishingviaServiceTest{
   public void testNoDefens() {
     Adversary adversary = new Adversary("adversary");
     User user = new User("user");
-    PrivateComputer computer = new PrivateComputer("computer");
+    Computer computer = new Computer("computer");
     Employee employee = new Employee("employee");
 
     adversary.addEmployee(employee);
-    employee.addPrivateComputer(computer);
+    employee.addComputer(computer);
     employee.addUser(user);
 
     Attacker attacker = new Attacker();
     attacker.addAttackPoint(adversary.spearphishingViaService);
     attacker.attack();
     
-    user.stolenCredentials.assertCompromisedInstantaneously();
+    user.userCredentials.assertCompromisedInstantaneously();
     computer.infectedComputer.assertCompromisedInstantaneously();
   }
 
@@ -32,18 +32,18 @@ public class spearphishingviaServiceTest{
   public void testWithRestrictSiteAndPrograms() {
     Adversary adversary = new Adversary("adversary");
     User user = new User("user");
-    PrivateComputer computer = new PrivateComputer("computer");
+    Computer computer = new Computer("computer");
     Employee employee = new Employee("employee",false,true);
 
     adversary.addEmployee(employee);
-    employee.addPrivateComputer(computer);
+    employee.addComputer(computer);
     employee.addUser(user);
 
     Attacker attacker = new Attacker();
     attacker.addAttackPoint(adversary.spearphishingViaService);
     attacker.attack();
     
-    user.stolenCredentials.assertUncompromised();
+    user.userCredentials.assertUncompromised();
     computer.infectedComputer.assertUncompromised();
   }
   

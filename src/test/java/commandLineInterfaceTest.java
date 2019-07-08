@@ -22,7 +22,7 @@ public class commandLineInterfaceTest{
     administrator.addOs(os);
     
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.userCredential);
+    attacker.addAttackPoint(user.userCredentials);
     attacker.attack();
 
     // Section 3: Assertions
@@ -45,7 +45,7 @@ public class commandLineInterfaceTest{
     administrator.addOs(os);
 
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user.userCredential);
+    attacker.addAttackPoint(user.userCredentials);
     attacker.attack();
 
     administrator.adminRights.assertUncompromised();

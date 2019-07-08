@@ -15,8 +15,9 @@ public class hardwareAdditionsTest {
 
     // Section 2: Asset connections and attacker creation
 
-    adversaryHardwareTool.addExternalNetwork(externalNetwork);
+    //adversaryHardwareTool.addExternalNetwork(externalNetwork);
     adversary.addAdversaryHardwareTool(adversaryHardwareTool);
+    externalNetwork.addAdversaryHardwareTool(adversaryHardwareTool);
     
 
     Attacker attacker = new Attacker();
@@ -24,8 +25,8 @@ public class hardwareAdditionsTest {
     attacker.attack();
     // Section 3: Assertions
 
-    externalNetwork.upload.assertCompromisedInstantaneously();
-    externalNetwork.downloadeFile.assertCompromisedInstantaneously();
+    
+    externalNetwork.wirelessAccessAndPassiveNetworkTapping.assertCompromisedInstantaneously();
 
   }
 }

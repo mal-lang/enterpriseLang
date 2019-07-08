@@ -11,12 +11,12 @@ public class externalRemoteServicesTest{
     // Section 1: Asset instantiation
     User user = new User("user");
     ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
-    PrivateNetwork privateNetwork = new PrivateNetwork("privateNetwork");
+    InternalNetwork privateNetwork = new InternalNetwork("privateNetwork");
 
 
     // Section 2: Asset connections and attacker creation
     user.addExternalNetwork(externalNetwork);
-    externalNetwork.addPrivateNetwork(privateNetwork);
+    externalNetwork.addInternalNetwork(privateNetwork);
 
     Attacker attacker = new Attacker();
     attacker.addAttackPoint(user.connectToVpn);
@@ -30,13 +30,13 @@ public class externalRemoteServicesTest{
   public void testWithMultiFactorAuthentication() {
     // Section 1: Asset instantiation
     User user = new User("user");
-    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",false,true);
-    PrivateNetwork privateNetwork = new PrivateNetwork("privateNetwork");
+    ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",false,false,true);
+    InternalNetwork privateNetwork = new InternalNetwork("privateNetwork");
 
 
     // Section 2: Asset connections and attacker creation
     user.addExternalNetwork(externalNetwork);
-    externalNetwork.addPrivateNetwork(privateNetwork);
+    externalNetwork.addInternalNetwork(privateNetwork);
 
     Attacker attacker = new Attacker();
     attacker.addAttackPoint(user.connectToVpn);

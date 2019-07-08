@@ -21,7 +21,7 @@ public class bashHistoryTest {
     attacker.attack();
 
     //linux.bashHistory.assertCompromisedInstantaneously();
-    user.stolenCredentials.assertCompromisedInstantaneously();
+    user.userCredentials.assertCompromisedInstantaneously();
     user.adminLogin.assertCompromisedInstantaneously();
   }
   
@@ -39,14 +39,14 @@ public class bashHistoryTest {
     attacker.addAttackPoint(computer.infectedComputer);
     attacker.attack();
 
-    user.stolenCredentials.assertCompromisedInstantaneously();
+    user.userCredentials.assertCompromisedInstantaneously();
     user.adminLogin.assertCompromisedInstantaneously();
   }
   @Test
   public void linuxTestWithDefense() {
     User user = new User("user");
     Computer computer = new Computer("computer");
-    Linux linux= new Linux("linux",true,false,false,false);
+    Linux linux= new Linux("linux",false,true,false,false,false);//turnOfBashHistory in win is the defens
 
     user.addLinux(linux);
     computer.addLinux(linux);
@@ -57,7 +57,7 @@ public class bashHistoryTest {
     attacker.attack();
 
     //linux.bashHistory.assertCompromisedInstantaneously();
-    user.stolenCredentials.assertUncompromised();
+    user.userCredentials.assertUncompromised();
     user.adminLogin.assertUncompromised();
   }
   
@@ -75,7 +75,7 @@ public class bashHistoryTest {
     attacker.addAttackPoint(computer.infectedComputer);
     attacker.attack();
 
-    user.stolenCredentials.assertUncompromised();
+    user.userCredentials.assertUncompromised();
     user.adminLogin.assertUncompromised();
   }
 }

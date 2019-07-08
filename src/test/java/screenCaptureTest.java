@@ -23,7 +23,7 @@ public class screenCaptureTest {
   @Test
   public void screenCaptureWithDefens() {
     Computer computer = new Computer("computer");
-    OS os = new OS("os",false,false,true);
+    OS os = new OS("os",true,false,false);
 
     computer.addOs(os);
 

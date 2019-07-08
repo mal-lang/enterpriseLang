@@ -14,11 +14,11 @@ public class accountManipulationTest {
     windowsAdmin.addUser(user);
 
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(windowsAdmin.adminRights);
+    attacker.addAttackPoint(user.userCredentials);
     attacker.attack();
 
     windowsAdmin.accountManipulation.assertCompromisedInstantaneously();
-    user.stolenCredentials.assertCompromisedInstantaneously();
+    user.userCredentials.assertCompromisedInstantaneously();
     user.adminLogin.assertCompromisedInstantaneously();
   }
 
@@ -36,13 +36,13 @@ public class accountManipulationTest {
     windowsAdmin.addUser(user3); 
 
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user1.stolenCredentials);
+    attacker.addAttackPoint(user1.userCredentials);
     attacker.attack();
 
     windowsAdmin.accountManipulation.assertCompromisedInstantaneously();
-    user2.stolenCredentials.assertCompromisedInstantaneously(); 
-    user3.stolenCredentials.assertCompromisedInstantaneously();
-    user4.stolenCredentials.assertUncompromised();
+    user2.userCredentials.assertCompromisedInstantaneously(); 
+    user3.userCredentials.assertCompromisedInstantaneously();
+    user4.userCredentials.assertUncompromised();
   }
 
   @Test
@@ -60,13 +60,13 @@ public class accountManipulationTest {
     windowsAdmin.addUser(user4);
 
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user1.stolenCredentials);
+    attacker.addAttackPoint(user1.userCredentials);
     attacker.attack();
 
     windowsAdmin.accountManipulation.assertCompromisedInstantaneously();
-    user2.stolenCredentials.assertCompromisedInstantaneously(); 
-    user3.stolenCredentials.assertCompromisedInstantaneously();
-    user4.stolenCredentials.assertCompromisedInstantaneously();
+    user2.userCredentials.assertCompromisedInstantaneously(); 
+    user3.userCredentials.assertCompromisedInstantaneously();
+    user4.userCredentials.assertCompromisedInstantaneously();
   }
 
   @Test
@@ -84,11 +84,11 @@ public class accountManipulationTest {
     windowsAdmin.addUser(user4);
 
     Attacker attacker = new Attacker();
-    attacker.addAttackPoint(user1.stolenCredentials);
+    attacker.addAttackPoint(user1.userCredentials);
     attacker.attack();
 
-    user2.stolenCredentials.assertUncompromised(); 
-    user3.stolenCredentials.assertUncompromised();
-    user4.stolenCredentials.assertUncompromised();
+    user2.userCredentials.assertUncompromised(); 
+    user3.userCredentials.assertUncompromised();
+    user4.userCredentials.assertUncompromised();
   }
 }
