@@ -36,5 +36,7 @@ associations{
     RemovableMedia [removableMedia] 1-* <-- ui --> 1 [employee] Employee
     Employee [employee] 1 <--use--> 1-* [user] User
     Employee [employee] 1 <--use--> 1-* [computer] Computer
+    Computer [computer] 1 <--use--> 1-* [removableMedia] RemovableMedia
+    
 
 }

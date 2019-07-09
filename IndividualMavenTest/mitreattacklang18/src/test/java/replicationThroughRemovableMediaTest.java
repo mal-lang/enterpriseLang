@@ -10,13 +10,16 @@ public class replicationThroughRemovableMediaTest{
     public void test1(){
         RemovableMedia removableMedia = new RemovableMedia("removableMedia");
         Employee employee = new Employee("employee", true);
-        Computer infectedInitialComputer = new Computer("computer");
-        Computer windowsComputer = new Computer("computer");
+        Computer infectedInitialComputer = new Computer("infectedInitialComputer");
+        Computer windowsComputer = new Computer("windowsComputer");
         User user = new User("user");
 
 
         removableMedia.addEmployee(employee);
-        employee.addComputer(computer);
+        employee.addComputer(infectedInitialComputer);
+        employee.addComputer(windowsComputer);
+        infectedInitialComputer.addRemovableMedia(removableMedia);
+        windowsComputer.addRemovableMedia(removableMedia);
         employee.addUser(user);
 
         Attacker attacker = new Attacker();
@@ -29,12 +32,17 @@ public class replicationThroughRemovableMediaTest{
     }
     public void test2(){
         RemovableMedia removableMedia = new RemovableMedia("removableMedia");
-        Employee employee = new Employee("employee", false);
-        Computer computer = new Computer("computer");
+        Employee employee = new Employee("employee", true);
+        Computer infectedInitialComputer = new Computer("infectedInitialComputer");
+        Computer windowsComputer = new Computer("windowsComputer");
         User user = new User("user");
 
+
         removableMedia.addEmployee(employee);
-        employee.addComputer(computer);
+        employee.addComputer(infectedInitialComputer);
+        employee.addComputer(windowsComputer);
+        infectedInitialComputer.addRemovableMedia(removableMedia);
+        windowsComputer.addRemovableMedia(removableMedia);
         employee.addUser(user);
 
         Attacker attacker = new Attacker();
