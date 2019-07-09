@@ -260,6 +260,7 @@ category Network {
 category Hardware {
     asset Computer {
         | infectedComputer
+            -> removableMedia.infectedMedia
 
         & fileDiscovery
             info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. "

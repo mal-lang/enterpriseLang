@@ -10,7 +10,8 @@ public class replicationThroughRemovableMediaTest{
     public void test1(){
         RemovableMedia removableMedia = new RemovableMedia("removableMedia");
         Employee employee = new Employee("employee", true);
-        Computer computer = new Computer("computer");
+        Computer infectedInitialComputer = new Computer("computer");
+        Computer windowsComputer = new Computer("computer");
         User user = new User("user");
 
 
@@ -19,10 +20,10 @@ public class replicationThroughRemovableMediaTest{
         employee.addUser(user);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(removableMedia.infectedMedia);
+        attacker.addAttackPoint(infectedInitialComputer.infectedComputer);
         attacker.attack();
 
-        computer.infectedWindowsComputer.assertUncompromised();
+        windowsComputer.infectedWindowsComputer.assertUncompromised();
         user.userRights.assertUncompromised();
 
     }
@@ -37,10 +38,10 @@ public class replicationThroughRemovableMediaTest{
         employee.addUser(user);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(removableMedia.infectedMedia);
+        attacker.addAttackPoint(infectedInitialComputer.infectedComputer);
         attacker.attack();
 
-        computer.infectedWindowsComputer.assertCompromisedInstantaneously();
+        windowsComputer.infectedWindowsComputer.assertCompromisedInstantaneously();
         user.userRights.assertCompromisedInstantaneously();
         
     }

@@ -5,7 +5,10 @@ category Hardware {
     }
     
     asset Computer {
-    | infectedWindowsComputer
+        | infectedComputer
+            -> removableMedia.infectedMedia
+
+        | infectedWindowsComputer
 }
 
 }
