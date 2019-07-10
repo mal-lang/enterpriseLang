@@ -10,7 +10,9 @@ public class dataTransferSizeLimitTest{
     public void test1(){
         Computer computer = new Computer("computer");
         C2Server c2Server = new C2Server("c2Server", true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true);
 
+        internalNetwork.addC2Server(c2Server);
         computer.addC2Server(c2Server);
 
         Attacker attacker = new Attacker();
@@ -25,7 +27,9 @@ public class dataTransferSizeLimitTest{
     public void test2(){
         Computer computer = new Computer("computer");
         C2Server c2Server = new C2Server("c2Server", false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false);
 
+        internalNetwork.addC2Server(c2Server);
         computer.addC2Server(c2Server);
         
         Attacker attacker = new Attacker();

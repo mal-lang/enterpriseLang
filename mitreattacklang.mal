@@ -61,7 +61,8 @@ category Person {
         # trainedEmployee 
             -> spearphishingAttachmentDownload, 
                spearphishingLinkClicked, 
-               userExecution
+               userExecution,
+               _mediaInserted
         
         & userExecution
             -> computer.infectedComputer,
@@ -71,6 +72,11 @@ category Person {
                manualManipulation
         | manualManipulation
             -> user.userRights
+        | mediaInserted
+            -> _mediaInserted
+        & _mediaInserted
+            -> removableMedia.dataExfiltrated
+        
 
     }
     asset Adversary {
@@ -245,16 +251,29 @@ category Network {
         # signatureIdentification
             -> c2Server.obfuscatedData
         | bypassNetworkDetection
+
+        | dataExfiltrated
     }
     asset InternalNetwork {
+        & dataExfiltration
+            -> externalNetwork.dataExfiltrated
+        
+        E firewallExists
+            <- firewall
+            -> firewall.bypassFirewall
+
+            
+        # networkIntrusionDetection
+            -> dataExfiltration,
+               c2Server.dataExfiltrated
+    }
+
+    asset Firewall {
+        & bypassFirewall
+            -> internalNetwork.dataExfiltration
 
     }
-    asset C2Server extends ExternalNetwork {
-        | c2Connexion
-            -> obfuscatedData
-        & obfuscatedData
-            -> externalNetwork.bypassNetworkDetection
-    }
+
 }
 
 category Hardware {
@@ -279,8 +298,10 @@ category Hardware {
                fileDeletion,
                userDataDestruction,
                adminDataDestruction, 
-               compressData, 
-               collectAudio
+               dataCompressed, 
+               collectAudio,
+               _automatedExfiltration,
+               _dataEncrypted
 
         & uploadRemoteFile
             // leads to file execution attacks
@@ -302,10 +323,57 @@ category Hardware {
                adminDataDestruction
 
         | dataCollected
-            -> compressData
+            -> dataCompressed,
+               exfiltrationOverPhysicalMedium,
+               dataSizedTransfer,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration,
+               dataEncrypted
 
-        & compressData
-            //-> // exfiltration attack entry points
+        & dataCompressed
+            -> exfiltrationOverPhysicalMedium,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration,
+               dataEncrypted
+
+        | dataEncrypted
+            info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
+            -> _dataEncrypted
+
+        & _dataEncrypted
+            -> exfiltrationOverPhysicalMedium,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration
+        
+        | automatedExfiltration
+            -> _automatedExfiltration
+
+        | exfiltrationOverC2
+            -> c2Server.dataExfiltrated
+
+        | scheduledExfiltration
+            -> exfiltrationOverC2,
+               exfiltrationOverAternativeProtocol
+        
+        & _automatedExfiltration
+            -> exfiltrationOverAternativeProtocol,
+               exfiltrationOverC2
+        
+        | exfiltrationOverAternativeProtocol
+            -> internalNetwork.dataExfiltration
+
+        | dataSizedTransfer
+            info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
+            -> c2Server.dataExfiltrated
+
+        | exfiltrationOverPhysicalMedium
+            -> removableMedia.dataExfiltrated
 
         | infectedWindowsComputer
 
@@ -318,9 +386,25 @@ category Hardware {
         
 
     }
+    asset C2Server {
+        | c2Connexion
+            -> obfuscatedData
+
+        & obfuscatedData
+            -> externalNetwork.bypassNetworkDetection
+
+        & dataExfiltrated
+
+        # thresholdAlert
+            info:" if the data transfered is to big, the attacker may use data transfer size limit attack to bypass the alert"
+            -> dataExfiltrated
+    }
+
     asset RemovableMedia {
         | infectedMedia
             -> employee.insertMedia
+
+        & dataExfiltrated
 
     }
     asset Microphone {
@@ -352,9 +436,19 @@ associations {
     Employee [employee] 1 <--use--> 1-* [computer] Computer
     Employee [employee] 1 <--use--> 1-* [user] User
     Employee [employee] 1 <--use--> 1-* [os] OS
+    Employee [employee] 1 <--use--> 1-* [removableMedia] RemovableMedia
+
+    Computer [computer] 1 <--use--> 1-* [removableMedia] RemovableMedia
+    Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
+
 
     Browser [browser] 1-* <-- software --> 1 [os] OS
     OS [os] 1 <-- system --> 1-* [computer] Computer
-    ExternalNetwork [externalNetwork] 1 <--system--> 1 [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+
+    InternalNetwork [ internalNetwork ] 1 <-- Protect --> 1 [firewall] Firewall
+    Computer [computer] 1-* <--use--> 1 [internalNetwork] InternalNetwork
+    InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
 
 }

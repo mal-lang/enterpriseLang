@@ -17,13 +17,16 @@ category Hardware{
 
     }
 }
+category Network {
+    asset InternalNetwork {
+        # networkIntrusionDetection 
+            -> c2Server.dataExfiltrated
+    }
+}
 
 category Hardware {
     asset C2Server {
         & dataExfiltrated
-
-        # networkIntrusionDetection
-            -> dataExfiltrated
 
         # networkDataTransferThresholdAlerts
             info:" if the data transfered is to big, the attacker may use data transfer size limit attack to bypass the alert"
@@ -31,5 +34,6 @@ category Hardware {
     }
 }
 associations {
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
 }

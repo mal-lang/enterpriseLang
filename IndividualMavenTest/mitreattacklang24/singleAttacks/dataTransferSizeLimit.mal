@@ -12,10 +12,18 @@ category Hardware{
     asset C2Server{
         & dataExfiltrated
 
+
+    }
+}
+
+category Network {
+    asset InternalNetwork {
         # networkIntrusionDetection
-            -> dataExfiltrated
+            -> c2Server.dataExfiltrated
     }
 }
 
 associations {
-    Computer [computer] 1 <--Control--> 1 [c2Server] C2Server}
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+    Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
+}

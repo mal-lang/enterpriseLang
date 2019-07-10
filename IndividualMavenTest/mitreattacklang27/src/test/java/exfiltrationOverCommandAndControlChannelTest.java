@@ -10,7 +10,9 @@ public class exfiltrationOverCommandAndControlChannelTest{
     public void test1(){
         Computer computer = new Computer("computer");
         C2Server c2Server = new C2Server("c2Server", true, true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true);
 
+        internalNetwork.addC2Server(c2Server);
         computer.addC2Server(c2Server);
 
         Attacker attacker = new Attacker();
@@ -27,7 +29,9 @@ public class exfiltrationOverCommandAndControlChannelTest{
     public void test2(){
         Computer computer = new Computer("computer");
         C2Server c2Server = new C2Server("c2Server", false, false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false);
 
+        internalNetwork.addC2Server(c2Server);
         computer.addC2Server(c2Server);
 
         Attacker attacker = new Attacker();
