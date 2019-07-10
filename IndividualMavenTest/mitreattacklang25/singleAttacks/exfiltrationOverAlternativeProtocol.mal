@@ -43,6 +43,9 @@ category Network{
     }
 }
 
-InternalNetwork [ internalNetwork ] 1 <-- Protect --> 1 [firewall] Firewall
-Computer [computer] 1-* <--use--> 1 [internalNetwork] InternalNetwork
-InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
+associations {
+
+    InternalNetwork [ internalNetwork ] 1 <-- Protect --> 1 [firewall] Firewall
+    Computer [computer] 1-* <--use--> 1 [internalNetwork] InternalNetwork
+    InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
+}

@@ -30,5 +30,6 @@ category Hardware {
             -> dataExfiltrated
     }
 }
-
-Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
+associations {
+    Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
+}
