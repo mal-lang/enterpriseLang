@@ -12,7 +12,7 @@ import core.AttackStepMax;
 import core.AttackStepMin;
 import core.Defense;
 public class Administrator extends Asset {
-   public Computer computer;
+   public Windows windows;
 
    public AdminRights adminRights;
 
@@ -38,8 +38,8 @@ public class Administrator extends Asset {
    }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-if (computer != null) {
-computer.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
+if (windows != null) {
+windows.scheduledTask.updateTtc(this, ttc, activeAttackSteps);
 }
 }
       @Override
@@ -49,23 +49,23 @@ computer.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
 
    }
 
-      public void addComputer(Computer computer) {
-         this.computer = computer;
-         computer.administrator.add(this);
+      public void addWindows(Windows windows) {
+         this.windows = windows;
+         windows.administrator.add(this);
       }
 
    @Override
    public String getAssociatedAssetClassName(String roleName) {
-      if (roleName.equals("computer")) {
-         return computer.getClass().getName();
+      if (roleName.equals("windows")) {
+         return windows.getClass().getName();
       }
       return null;
    }
    @Override
    public java.util.Set<Asset> getAssociatedAssets(String roleName) {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
-      if (roleName.equals("computer")  && computer != null) {
-         assets.add(computer);
+      if (roleName.equals("windows")  && windows != null) {
+         assets.add(windows);
          return assets;
       }
       assertTrue("The asset " + this.toString() + " does not feature the role name " + roleName + ".", false);
@@ -74,8 +74,8 @@ computer.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
    @Override
    public java.util.Set<Asset> getAllAssociatedAssets() {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
-      if (computer != null) {
-         assets.add(computer);
+      if (windows != null) {
+         assets.add(windows);
       }
       return assets;
    }

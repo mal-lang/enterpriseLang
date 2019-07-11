@@ -13,37 +13,43 @@ import core.AttackStepMin;
 import core.Defense;
 public class InternalNetwork extends Asset {
    public java.util.Set<Computer> computer = new HashSet<>();
+   public java.util.Set<User> user = new HashSet<>();
 
-   public NetworkIntrusionDetection networkIntrusionDetection;
-   public Whitelisting whitelisting;
+   public ExchangeServerCollection exchangeServerCollection;
+   public DataEncryption dataEncryption;
+   public TwoFactorsAuthentication twoFactorsAuthentication;
 
-   public InternalNetwork(Boolean networkIntrusionDetectionState, Boolean whitelistingState) {
+   public InternalNetwork(Boolean dataEncryptionState, Boolean twoFactorsAuthenticationState) {
       super();
-      if (networkIntrusionDetection != null) {
-         AttackStep.allAttackSteps.remove(networkIntrusionDetection.disable);
+      if (dataEncryption != null) {
+         AttackStep.allAttackSteps.remove(dataEncryption.disable);
       }
-      Defense.allDefenses.remove(networkIntrusionDetection);
-      networkIntrusionDetection = new NetworkIntrusionDetection(this.name, networkIntrusionDetectionState);
-      if (whitelisting != null) {
-         AttackStep.allAttackSteps.remove(whitelisting.disable);
+      Defense.allDefenses.remove(dataEncryption);
+      dataEncryption = new DataEncryption(this.name, dataEncryptionState);
+      if (twoFactorsAuthentication != null) {
+         AttackStep.allAttackSteps.remove(twoFactorsAuthentication.disable);
       }
-      Defense.allDefenses.remove(whitelisting);
-      whitelisting = new Whitelisting(this.name, whitelistingState);
+      Defense.allDefenses.remove(twoFactorsAuthentication);
+      twoFactorsAuthentication = new TwoFactorsAuthentication(this.name, twoFactorsAuthenticationState);
+      AttackStep.allAttackSteps.remove(exchangeServerCollection);
+      exchangeServerCollection = new ExchangeServerCollection(this.name);
       assetClassName = "InternalNetwork";
    }
 
-   public InternalNetwork(String name, Boolean networkIntrusionDetectionState, Boolean whitelistingState) {
+   public InternalNetwork(String name, Boolean dataEncryptionState, Boolean twoFactorsAuthenticationState) {
       super(name);
-      if (networkIntrusionDetection != null) {
-         AttackStep.allAttackSteps.remove(networkIntrusionDetection.disable);
+      if (dataEncryption != null) {
+         AttackStep.allAttackSteps.remove(dataEncryption.disable);
       }
-      Defense.allDefenses.remove(networkIntrusionDetection);
-      networkIntrusionDetection = new NetworkIntrusionDetection(this.name, networkIntrusionDetectionState);
-      if (whitelisting != null) {
-         AttackStep.allAttackSteps.remove(whitelisting.disable);
+      Defense.allDefenses.remove(dataEncryption);
+      dataEncryption = new DataEncryption(this.name, dataEncryptionState);
+      if (twoFactorsAuthentication != null) {
+         AttackStep.allAttackSteps.remove(twoFactorsAuthentication.disable);
       }
-      Defense.allDefenses.remove(whitelisting);
-      whitelisting = new Whitelisting(this.name, whitelistingState);
+      Defense.allDefenses.remove(twoFactorsAuthentication);
+      twoFactorsAuthentication = new TwoFactorsAuthentication(this.name, twoFactorsAuthenticationState);
+      AttackStep.allAttackSteps.remove(exchangeServerCollection);
+      exchangeServerCollection = new ExchangeServerCollection(this.name);
       assetClassName = "InternalNetwork";
    }
 
@@ -58,8 +64,34 @@ public class InternalNetwork extends Asset {
    }
 
 
-   public class NetworkIntrusionDetection extends Defense {
-   public NetworkIntrusionDetection(String name, Boolean enabled) {
+   public class ExchangeServerCollection extends AttackStepMax {
+   public ExchangeServerCollection(String name) {
+      super(name);
+      assetClassName = "InternalNetwork";
+   }
+@Override
+public void setExpectedParents() {
+for (User user_SXQUo : user) {
+addExpectedParent(user_SXQUo.userCredentials);
+}
+addExpectedParent(dataEncryption.disable);
+addExpectedParent(twoFactorsAuthentication.disable);
+}
+@Override
+public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
+for (Computer computer_WpWar : computer) {
+computer_WpWar.dataCollected.updateTtc(this, ttc, activeAttackSteps);
+}
+}
+      @Override
+      public double localTtc() {
+         return ttcHashMap.get("InternalNetwork.exchangeServerCollection");
+      }
+
+   }
+
+   public class DataEncryption extends Defense {
+   public DataEncryption(String name, Boolean enabled) {
       super(name);
       defaultValue = enabled;
       disable = new Disable(name);
@@ -72,19 +104,17 @@ public class InternalNetwork extends Asset {
 
          @Override
          public String fullName() {
-            return "internalNetwork.networkIntrusionDetection";
+            return "internalNetwork.dataEncryption";
          }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-for (Computer computer_NFoxa : computer) {
-computer_NFoxa.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
-}
+exchangeServerCollection.updateTtc(this, ttc, activeAttackSteps);
 }
    }
 }
 
-   public class Whitelisting extends Defense {
-   public Whitelisting(String name, Boolean enabled) {
+   public class TwoFactorsAuthentication extends Defense {
+   public TwoFactorsAuthentication(String name, Boolean enabled) {
       super(name);
       defaultValue = enabled;
       disable = new Disable(name);
@@ -97,13 +127,11 @@ computer_NFoxa.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
 
          @Override
          public String fullName() {
-            return "internalNetwork.whitelisting";
+            return "internalNetwork.twoFactorsAuthentication";
          }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-for (Computer computer_WEDFJ : computer) {
-computer_WEDFJ.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
-}
+exchangeServerCollection.updateTtc(this, ttc, activeAttackSteps);
 }
    }
 }
@@ -113,10 +141,20 @@ computer_WEDFJ.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
          computer.internalNetwork = this;
       }
 
+      public void addUser(User user) {
+         this.user.add(user);
+         user.internalNetwork = this;
+      }
+
    @Override
    public String getAssociatedAssetClassName(String roleName) {
       if (roleName.equals("computer")) {
          for (Object o: computer) {
+            return o.getClass().getName();
+         }
+      }
+      if (roleName.equals("user")) {
+         for (Object o: user) {
             return o.getClass().getName();
          }
       }
@@ -129,6 +167,10 @@ computer_WEDFJ.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
          assets.addAll(computer);
          return assets;
       }
+      if (roleName.equals("user")  && user != null) {
+         assets.addAll(user);
+         return assets;
+      }
       assertTrue("The asset " + this.toString() + " does not feature the role name " + roleName + ".", false);
       return null;
    }
@@ -136,6 +178,7 @@ computer_WEDFJ.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
    public java.util.Set<Asset> getAllAssociatedAssets() {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
       assets.addAll(computer);
+      assets.addAll(user);
       return assets;
    }
 }

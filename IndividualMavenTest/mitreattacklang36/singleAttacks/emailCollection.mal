@@ -4,7 +4,7 @@ category Person {
             -> windows.emailStorageCollection
 
         | userCredentials
-            -> windows.outlookEmailCollection
+            -> windows.outlookEmailCollection,
                internalNetwork.exchangeServerCollection
     }
 }

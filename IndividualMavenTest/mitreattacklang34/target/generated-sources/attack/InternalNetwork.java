@@ -76,8 +76,8 @@ public class InternalNetwork extends Asset {
          }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-for (Computer computer_NFoxa : computer) {
-computer_NFoxa.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
+for (Computer computer_WcCJR : computer) {
+computer_WcCJR.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
 }
 }
    }
@@ -101,8 +101,8 @@ computer_NFoxa.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
          }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-for (Computer computer_WEDFJ : computer) {
-computer_WEDFJ.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
+for (Computer computer_tJwxM : computer) {
+computer_tJwxM.networkServiceScan.updateTtc(this, ttc, activeAttackSteps);
 }
 }
    }

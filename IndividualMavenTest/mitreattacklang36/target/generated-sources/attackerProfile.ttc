@@ -1,4 +1,10 @@
-Administrator.adminRights = Zero
-Computer.networkServiceScan = Zero
-InternalNetwork.networkIntrusionDetection = Zero
-InternalNetwork.whitelisting = Zero
+User.userRights = Zero
+User.userCredentials = Zero
+Windows.emailStorageCollection = Zero
+Windows.outlookEmailCollection = Zero
+Windows.dataEncryption = Zero
+Computer.dataCollected = Zero
+Computer.whitelisting = Zero
+InternalNetwork.exchangeServerCollection = Zero
+InternalNetwork.dataEncryption = Zero
+InternalNetwork.twoFactorsAuthentication = Zero

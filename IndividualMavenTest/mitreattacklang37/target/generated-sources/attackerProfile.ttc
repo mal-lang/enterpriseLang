@@ -1,4 +1,11 @@
-Administrator.adminRights = Zero
-Computer.networkServiceScan = Zero
-InternalNetwork.networkIntrusionDetection = Zero
-InternalNetwork.whitelisting = Zero
+User.userRights = Zero
+Windows.webcamCollection = Zero
+MacOS.webcamCollection = Zero
+VideoCallApplication.collectVideo = Zero
+Computer.webcamExists = Zero
+Computer.videoCallApplicationExists = Zero
+Computer.collectVideo = Zero
+Computer._collectVideo = Zero
+Computer.whitelisting = Zero
+Computer.dataCollected = Zero
+Webcam.collectVideo = Zero

@@ -39,8 +39,8 @@ public class Computer extends Asset {
    }
 @Override
 public void setExpectedParents() {
-for (Administrator administrator_jaUBk : administrator) {
-addExpectedParent(administrator_jaUBk.adminRights);
+for (Administrator administrator_EVCPW : administrator) {
+addExpectedParent(administrator_EVCPW.adminRights);
 }
 if (internalNetwork != null) {
 addExpectedParent(internalNetwork.networkIntrusionDetection.disable);

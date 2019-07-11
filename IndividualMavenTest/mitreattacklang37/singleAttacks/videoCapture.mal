@@ -9,16 +9,17 @@ category Person {
 category Software {
     asset Windows{
         | webcamCollection
-            -> computer.collectVideo,
+            -> computer.collectVideo
 
     }
     asset MacOS {
         | webcamCollection
-            -> computer.collectVideo,
+            -> computer.collectVideo
 
     }
+    
   
-    asset videoCallApplication extends Service {
+    asset VideoCallApplication  { //asset extends Service
         | collectVideo
             -> computer._collectVideo
     }
@@ -57,5 +58,5 @@ associations {
     Computer [computer] 1-* <--software--> 1 [windows] Windows
     Computer [computer] 1-* <--software--> 1 [macOS] MacOS
     VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
-    Webcan [webcam] 1 <--hardware--> 1 [computer] Computer
+    Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
 }
