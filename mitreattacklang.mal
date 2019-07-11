@@ -367,8 +367,11 @@ category Hardware {
                 internalNetwork.connectedToNetwork,
                 systemNetworkConfigurationDiscovery,
                 systemNetworkConnectionsDiscovery,
-                SystemOwnerUserDiscovery
+                SystemOwnerUserDiscovery,
+                dataFromRemovableMedia
 
+        & dataFromRemovableMedia
+            -> removableMedia.data
         &  systemNetworkConfigurationDiscovery 
             info: "Examples include Arp, ipconfig/ifconfig, nbtstat, and route."
         &  systemNetworkConnectionsDiscovery 
@@ -399,7 +402,8 @@ category Hardware {
                collectAudio,
                systemNetworkConfigurationDiscovery,
                systemNetworkConnectionsDiscovery,
-               SystemOwnerUserDiscovery
+               SystemOwnerUserDiscovery,
+               dataFromRemovableMedia
 
         | uploadRemoteFile
             -> _uploadRemoteFile
@@ -446,6 +450,7 @@ category Hardware {
     asset RemovableMedia {
         | infectedMedia
             -> employee.insertMedia
+        | data
 
     }
     asset Microphone {
@@ -534,4 +539,6 @@ associations {
     Server [server] 1-* <-- system --> 1-* [c2Server] C2Server
     NetworkSharedDrive [networkSharedDrive] 1-* <-- system --> 1-* [internalNetwork] InternalNetwork
     NetworkSharedDrive [networkSharedDrive] 1-* <-- system --> 1-* [c2Server] C2Server
+    RemovableMedia [removableMedia] 1-* <-- ui --> 1-* [computer] Computer
+
 }
