@@ -2,7 +2,6 @@ attack/Computer$DataCollected.class
 core/AttackStepMin.class
 core/AttackStepMax.class
 core/ConstraintChecker.class
-attack/C2Server$NetworkIntrusionDetection.class
 attack/Computer$DataSizedTransfer.class
 attack/C2Server.class
 core/Defense.class
@@ -11,7 +10,9 @@ core/Asset.class
 attack/Computer.class
 core/Component.class
 core/AttackStep.class
+attack/InternalNetwork.class
 core/AnySet.class
 core/Attacker.class
-attack/C2Server$NetworkIntrusionDetection$Disable.class
+attack/InternalNetwork$NetworkIntrusionDetection$Disable.class
 attack/C2Server$DataExfiltrated.class
+attack/InternalNetwork$NetworkIntrusionDetection.class

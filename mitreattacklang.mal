@@ -266,6 +266,8 @@ category Network {
         # networkIntrusionDetection
             -> dataExfiltration,
                c2Server.dataExfiltrated
+
+        | bypassNetworkDetection
     }
 
     asset Firewall {
@@ -377,9 +379,9 @@ category Hardware {
 
         | infectedWindowsComputer
 
-        E Microphone
+        E microphoneExists
             <- microphone
-            -> collectAudio
+            -> microphone.collectAudio
 
         & collectAudio
             -> dataCollected
@@ -391,7 +393,8 @@ category Hardware {
             -> obfuscatedData
 
         & obfuscatedData
-            -> externalNetwork.bypassNetworkDetection
+            -> externalNetwork.bypassNetworkDetection,
+               internalNetwork.bypassNetworkDetection
 
         & dataExfiltrated
 
@@ -408,7 +411,8 @@ category Hardware {
 
     }
     asset Microphone {
-
+        | collectAudio
+            -> computer.collectAudio
     }
 }
 

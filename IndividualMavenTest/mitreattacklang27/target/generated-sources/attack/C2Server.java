@@ -12,19 +12,14 @@ import core.AttackStepMax;
 import core.AttackStepMin;
 import core.Defense;
 public class C2Server extends Asset {
+   public InternalNetwork internalNetwork;
    public Computer computer;
 
    public DataExfiltrated dataExfiltrated;
-   public NetworkIntrusionDetection networkIntrusionDetection;
    public NetworkDataTransferThresholdAlerts networkDataTransferThresholdAlerts;
 
-   public C2Server(Boolean networkIntrusionDetectionState, Boolean networkDataTransferThresholdAlertsState) {
+   public C2Server(Boolean networkDataTransferThresholdAlertsState) {
       super();
-      if (networkIntrusionDetection != null) {
-         AttackStep.allAttackSteps.remove(networkIntrusionDetection.disable);
-      }
-      Defense.allDefenses.remove(networkIntrusionDetection);
-      networkIntrusionDetection = new NetworkIntrusionDetection(this.name, networkIntrusionDetectionState);
       if (networkDataTransferThresholdAlerts != null) {
          AttackStep.allAttackSteps.remove(networkDataTransferThresholdAlerts.disable);
       }
@@ -35,13 +30,8 @@ public class C2Server extends Asset {
       assetClassName = "C2Server";
    }
 
-   public C2Server(String name, Boolean networkIntrusionDetectionState, Boolean networkDataTransferThresholdAlertsState) {
+   public C2Server(String name, Boolean networkDataTransferThresholdAlertsState) {
       super(name);
-      if (networkIntrusionDetection != null) {
-         AttackStep.allAttackSteps.remove(networkIntrusionDetection.disable);
-      }
-      Defense.allDefenses.remove(networkIntrusionDetection);
-      networkIntrusionDetection = new NetworkIntrusionDetection(this.name, networkIntrusionDetectionState);
       if (networkDataTransferThresholdAlerts != null) {
          AttackStep.allAttackSteps.remove(networkDataTransferThresholdAlerts.disable);
       }
@@ -53,12 +43,12 @@ public class C2Server extends Asset {
    }
 
    public C2Server() {
-      this(false, false);
+      this(false);
       assetClassName = "C2Server";
    }
 
    public C2Server(String name) {
-      this(name, false, false);
+      this(name, false);
       assetClassName = "C2Server";
    }
 
@@ -73,7 +63,9 @@ public void setExpectedParents() {
 if (computer != null) {
 addExpectedParent(computer.exfiltrationOverC2);
 }
-addExpectedParent(networkIntrusionDetection.disable);
+if (internalNetwork != null) {
+addExpectedParent(internalNetwork.networkIntrusionDetection.disable);
+}
 addExpectedParent(networkDataTransferThresholdAlerts.disable);
 }
       @Override
@@ -82,29 +74,6 @@ addExpectedParent(networkDataTransferThresholdAlerts.disable);
       }
 
    }
-
-   public class NetworkIntrusionDetection extends Defense {
-   public NetworkIntrusionDetection(String name, Boolean enabled) {
-      super(name);
-      defaultValue = enabled;
-      disable = new Disable(name);
-   }
-
-   public class Disable extends AttackStepMin {
-         public Disable(String name) {
-            super(name);
-         }
-
-         @Override
-         public String fullName() {
-            return "c2Server.networkIntrusionDetection";
-         }
-@Override
-public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-dataExfiltrated.updateTtc(this, ttc, activeAttackSteps);
-}
-   }
-}
 
    public class NetworkDataTransferThresholdAlerts extends Defense {
    public NetworkDataTransferThresholdAlerts(String name, Boolean enabled) {
@@ -129,6 +98,11 @@ dataExfiltrated.updateTtc(this, ttc, activeAttackSteps);
    }
 }
 
+      public void addInternalNetwork(InternalNetwork internalNetwork) {
+         this.internalNetwork = internalNetwork;
+         internalNetwork.c2Server = this;
+      }
+
       public void addComputer(Computer computer) {
          this.computer = computer;
          computer.c2Server = this;
@@ -136,6 +110,9 @@ dataExfiltrated.updateTtc(this, ttc, activeAttackSteps);
 
    @Override
    public String getAssociatedAssetClassName(String roleName) {
+      if (roleName.equals("internalNetwork")) {
+         return internalNetwork.getClass().getName();
+      }
       if (roleName.equals("computer")) {
          return computer.getClass().getName();
       }
@@ -144,6 +121,10 @@ dataExfiltrated.updateTtc(this, ttc, activeAttackSteps);
    @Override
    public java.util.Set<Asset> getAssociatedAssets(String roleName) {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
+      if (roleName.equals("internalNetwork")  && internalNetwork != null) {
+         assets.add(internalNetwork);
+         return assets;
+      }
       if (roleName.equals("computer")  && computer != null) {
          assets.add(computer);
          return assets;
@@ -154,6 +135,9 @@ dataExfiltrated.updateTtc(this, ttc, activeAttackSteps);
    @Override
    public java.util.Set<Asset> getAllAssociatedAssets() {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
+      if (internalNetwork != null) {
+         assets.add(internalNetwork);
+      }
       if (computer != null) {
          assets.add(computer);
       }

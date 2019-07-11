@@ -72,7 +72,7 @@ if(t==e.dx){for((r||f>e.dy)&&(f=e.dy);++u<o;)i=n[u],i.x=a,i.y=c,i.dy=f,a+=i.dx=M
       .append("svg:path")
       .attr("d", "M0,-5L10,0L0,5");
 
-    root = {"children":[{"name":"ExternalNetwork","children":[{"name":"intrusionDetection","type":"defense","targets":[{"name":"obfuscatedData","entity_name":"C2Server","size":4000}]},{"name":"signatureIdentification","type":"defense","targets":[{"name":"obfuscatedData","entity_name":"C2Server","size":4000}]},{"name":"bypassNetworkDetection","type":"or"}]},{"name":"C2Server","children":[{"name":"c2Connexion","type":"or","targets":[{"name":"obfuscatedData","entity_name":"C2Server","size":4000}]},{"name":"obfuscatedData","type":"and","targets":[{"name":"bypassNetworkDetection","entity_name":"ExternalNetwork","size":4000}]}]}]};
+    root = {"children":[{"name":"ExternalNetwork","children":[{"name":"intrusionDetection","type":"defense","targets":[{"name":"obfuscatedData","entity_name":"C2Server","size":4000}]},{"name":"signatureIdentification","type":"defense","targets":[{"name":"obfuscatedData","entity_name":"C2Server","size":4000}]},{"name":"bypassNetworkDetection","type":"or"}]},{"name":"InternalNetwork","children":[{"name":"bypassNetworkDetection","type":"or"}]},{"name":"C2Server","children":[{"name":"c2Connexion","type":"or","targets":[{"name":"obfuscatedData","entity_name":"C2Server","size":4000}]},{"name":"obfuscatedData","type":"and","targets":[{"name":"bypassNetworkDetection","entity_name":"ExternalNetwork","size":4000},{"name":"bypassNetworkDetection","entity_name":"InternalNetwork","size":4000}]}]}]};
     initialize(root);
     set_id(root);
     update();

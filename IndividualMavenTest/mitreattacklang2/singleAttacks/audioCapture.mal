@@ -6,9 +6,9 @@ category Person{
 }
 category Hardware {
     asset Computer {
-        E Microphone
+        E microphoneExists
             <- microphone
-            -> collectAudio
+            -> microphone.collectAudio
 
         & collectAudio
             -> dataCollected
@@ -18,7 +18,8 @@ category Hardware {
         | dataCollected
     }
     asset Microphone {
-
+        | collectAudio
+            -> computer.collectAudio
     }
 }
 

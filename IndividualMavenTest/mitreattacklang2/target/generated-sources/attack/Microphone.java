@@ -14,17 +14,46 @@ import core.Defense;
 public class Microphone extends Asset {
    public Computer computer;
 
+   public CollectAudio collectAudio;
 
    public Microphone() {
       super();
+      AttackStep.allAttackSteps.remove(collectAudio);
+      collectAudio = new CollectAudio(this.name);
       assetClassName = "Microphone";
    }
 
    public Microphone(String name) {
       super(name);
+      AttackStep.allAttackSteps.remove(collectAudio);
+      collectAudio = new CollectAudio(this.name);
       assetClassName = "Microphone";
    }
 
+
+   public class CollectAudio extends AttackStepMin {
+   public CollectAudio(String name) {
+      super(name);
+      assetClassName = "Microphone";
+   }
+@Override
+public void setExpectedParents() {
+if (computer != null) {
+addExpectedParent(computer.microphoneExists.disable);
+}
+}
+@Override
+public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
+if (computer != null) {
+computer.collectAudio.updateTtc(this, ttc, activeAttackSteps);
+}
+}
+      @Override
+      public double localTtc() {
+         return ttcHashMap.get("Microphone.collectAudio");
+      }
+
+   }
 
       public void addComputer(Computer computer) {
          this.computer = computer;

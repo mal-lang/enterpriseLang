@@ -9,7 +9,7 @@ public class dataTransferSizeLimitTest{
     @Test
     public void test1(){
         Computer computer = new Computer("computer");
-        C2Server c2Server = new C2Server("c2Server", true);
+        C2Server c2Server = new C2Server("c2Server");
         InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true);
 
         internalNetwork.addC2Server(c2Server);
@@ -26,7 +26,7 @@ public class dataTransferSizeLimitTest{
     }
     public void test2(){
         Computer computer = new Computer("computer");
-        C2Server c2Server = new C2Server("c2Server", false);
+        C2Server c2Server = new C2Server("c2Server");
         InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false);
 
         internalNetwork.addC2Server(c2Server);
