@@ -23,8 +23,7 @@ public class replicationThroughRemovableMediaTest{
         attacker.attack();
 
         computer.infectedWindowsComputer.assertUncompromised();
-        //user.userRights.assertUncompromised(); //reached employee.restrictSiteAndPrograms should be possible!!!!!!
-
+        user.userRights.assertUncompromised(); 
     }
     @Test
     public void test2(){

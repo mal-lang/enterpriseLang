@@ -81,8 +81,14 @@ category Person {
         # trainedEmployee 
             -> spearphishingAttachmentDownload, 
                spearphishingLinkClicked, 
-               _userExecution
-        
+               _userExecution,
+               manualManipulation
+        | bypassTrainedEmployee
+            
+        | Timestomp
+            -> bypassTrainedEmployee
+        | Masquerading
+            -> bypassTrainedEmployee
         |   userExecution
             ->  _userExecution   
 
@@ -92,7 +98,7 @@ category Person {
         | insertMedia
             -> userExecution,
                manualManipulation
-        | manualManipulation
+        & manualManipulation // why not trainedEmployee defens
             -> user.userRights
         |   socialEngineering
             -> _socialEngineering
@@ -139,14 +145,16 @@ category Software {
             info: "get a listing of opened application windows"
 
         & runningProcessDiscovery
-            info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
+            info: "Adversaries may attempt to get information about running processes on a system.
+             Information obtained could be used to gain an understanding of common software running on systems within the network."
             -> processInjection
 
         & detailedRunningProcessDiscovery
             info: "Adversaries with admin rights may get better process ownership details"
 
         & remoteSystemDiscovery
-            info: "Adversaries will likely attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system."
+            info: "Adversaries will likely attempt to get a listing of other systems by IP address, hostname,
+             or other logical identifier on a network that may be used for Lateral Movement from the current system."
 
         & detailedRemoteSystemDiscovery
             info: "Adversaries with admin rights may get better details of the hosts enumerated"
@@ -247,7 +255,8 @@ category Software {
                 appInitDLLs
         & executeService
             ->  persistance
-        //| persistance
+        | persistance
+        
         & bootkit
             ->  persistance
         # secureBootProcess
@@ -261,6 +270,9 @@ category Software {
 }
 
 category Network {
+    abstractAsset Network{
+        //-> firewall
+    }
     asset Browser {
         | maliciousWebsite
             -> checkPlugin, checkBrowser
@@ -293,7 +305,7 @@ category Network {
                spearphishingLink
         | maliciousContent // temp to make it run !!!
     }
-    asset ExternalNetwork {
+    asset ExternalNetwork extends Network{
         # intrusionDetecion
 
         # signatureIdentification
@@ -308,29 +320,42 @@ category Network {
             -> connectToVpn
         | wirelessAccessAndPassiveNetworkTapping 
     }
-    asset InternalNetwork {
+    asset InternalNetwork extends Network {
         | connectedToNetwork
-            -> connectToOtherComputer
-        | connectToOtherComputer
-            info: "problem"
+            ->  computer.infectedComputer,
+                server.infectedServer,
+                networkSharedDrive.connectToDrive
+
         | vpnInternalConnection
 
     }
     asset C2Server extends ExternalNetwork {
         # intrusionDetecion
-            +> obfuscatedData
+            +> _obfuscatedData
         # signatureIdentification
-            +> obfuscatedData
+            +> _obfuscatedData
         | c2Connexion
             -> obfuscatedData
-        & obfuscatedData
+        | obfuscatedData
+            -> _obfuscatedData
+        & _obfuscatedData
             -> bypassNetwordDetection
     }
 
     asset AdversaryHardwareTool {
     | networkTapping
      -> externalNetwork.wirelessAccessAndPassiveNetworkTapping
-  }
+    }
+
+    asset NetworkSharedDrive {
+        | data
+            -> c2Server.obfuscatedData
+        & connectToDrive
+            -> data
+        # whitelisting
+            -> connectToDrive
+    }
+
 }
 
 category Hardware {
@@ -338,15 +363,29 @@ category Hardware {
         | infectedComputer
             ->  linux.bashHistory,
                 macOS.bashHistory,
-                os.screenCapture
+                os.screenCapture,
+                internalNetwork.connectedToNetwork,
+                systemNetworkConfigurationDiscovery,
+                systemNetworkConnectionsDiscovery,
+                SystemOwnerUserDiscovery
+
+        &  systemNetworkConfigurationDiscovery 
+            info: "Examples include Arp, ipconfig/ifconfig, nbtstat, and route."
+        &  systemNetworkConnectionsDiscovery 
+            info: "Examples windows netstat, net use, and net session with Net, macOS and linux netstat and lsof."
+        &  SystemOwnerUserDiscovery
+            -> user.userRights 
         & fileDiscovery
-            info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. "
+            info: "Adversaries may enumerate files and directories or may search in specific
+             locations of a host or network share for certain information within a file system. "
 
         & directoryDiscovery
-            info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. "
+            info: "Adversaries may enumerate files and directories or may search in specific 
+            locations of a host or network share for certain information within a file system. "
 
         & fileDeletion
-            info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
+            info: "Adversaries may remove traces (files) over the course of an intrusion to keep
+             their footprint low or remove them at the end as part of the post-intrusion cleanup process"
             -> bypassHostForensicAnalysisDetection
         | bypassHostForensicAnalysisDetection
 
@@ -357,7 +396,10 @@ category Hardware {
                userDataDestruction,
                adminDataDestruction, 
                compressData, 
-               collectAudio
+               collectAudio,
+               systemNetworkConfigurationDiscovery,
+               systemNetworkConnectionsDiscovery,
+               SystemOwnerUserDiscovery
 
         | uploadRemoteFile
             -> _uploadRemoteFile
@@ -372,7 +414,9 @@ category Hardware {
         & _downloadRemoteFile
 
         # networkIntrusionDetection
-             info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
+             info : "Network intrusion detection and prevention systems that use network signatures to
+              identify traffic for specific adversary malware or unusual data transfer over known tools
+               and protocols like FTP can be used to mitigate activity at the network level"
             -> _uploadRemoteFile, _downloadRemoteFile
 
         & userDataDestruction
@@ -406,6 +450,16 @@ category Hardware {
     }
     asset Microphone {
 
+    }
+
+    asset Server {
+        | infectedServer
+            ->  webShell,
+                internalNetwork.connectedToNetwork
+        & webShell
+            ->  c2Server.obfuscatedData
+        # separateAccountForServerAndNormalUser
+            -> webShell
     }
 }
 
@@ -476,5 +530,8 @@ associations {
     Adversary [adversary] 1-* <-- attack --> 1-* [removableMedia] RemovableMedia
     User [linxUser] 1-* <-- ui --> 1-* [linux] Linux  
     User [user] 1-* <-- ui --> 1-* [browser] Browser
-
+    Server [server] 1-* <-- system --> 1-* [internalNetwork] InternalNetwork
+    Server [server] 1-* <-- system --> 1-* [c2Server] C2Server
+    NetworkSharedDrive [networkSharedDrive] 1-* <-- system --> 1-* [internalNetwork] InternalNetwork
+    NetworkSharedDrive [networkSharedDrive] 1-* <-- system --> 1-* [c2Server] C2Server
 }
