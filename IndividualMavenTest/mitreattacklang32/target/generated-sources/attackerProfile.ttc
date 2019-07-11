@@ -1,0 +1,5 @@
+Computer.dataCollected = Zero
+Computer.dataCompressed = Zero
+Computer.dataEncrypted = Zero
+Computer._dataEncrypted = Zero
+Computer.whitelisting = Zero
