@@ -11,13 +11,13 @@ public class remoteAccessToolsTest{
         User user = new User("user");
         Service service = new Service("service", true);
         C2Server c2Server = new C2Server("c2Server");
-        InternalNetwork internalNetork = new InternalNetwork("internalNetwork", true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true);
         Firewall firewall = new Firewall("firewall");
 
         user.addService(service);
         service.addInternalNetwork(internalNetwork);
-        internalNetork.addC2Server(c2Server);
-        internalNetork.addFirewall(firewall);
+        internalNetwork.addC2Server(c2Server);
+        firewall.addInternalNetwork(internalNetwork);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
@@ -31,13 +31,13 @@ public class remoteAccessToolsTest{
         User user = new User("user");
         Service service = new Service("service", false);
         C2Server c2Server = new C2Server("c2Server");
-        InternalNetwork internalNetork = new InternalNetwork("internalNetwork", false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false);
         Firewall firewall = new Firewall("firewall");
 
         user.addService(service);
         service.addInternalNetwork(internalNetwork);
-        internalNetork.addC2Server(c2Server);
-        internalNetork.addFirewall(firewall);
+        internalNetwork.addC2Server(c2Server);
+        firewall.addInternalNetwork(internalNetwork);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
@@ -51,12 +51,12 @@ public class remoteAccessToolsTest{
         User user = new User("user");
         Service service = new Service("service", false);
         C2Server c2Server = new C2Server("c2Server");
-        InternalNetwork internalNetork = new InternalNetwork("internalNetwork", false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false);
       
 
         user.addService(service);
         service.addInternalNetwork(internalNetwork);
-        internalNetork.addC2Server(c2Server);
+        internalNetwork.addC2Server(c2Server);
       
 
         Attacker attacker = new Attacker();

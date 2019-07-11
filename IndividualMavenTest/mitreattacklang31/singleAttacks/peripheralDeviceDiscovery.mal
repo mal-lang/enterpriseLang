@@ -1,12 +1,13 @@
 category Person {
     asset User {
         | userRights
-            -> windows.peripheralDeviceDiscovery,
+            -> windows.peripheralDeviceDiscovery
     }
 
 }
 category Software {
-    asset Windows extends OS {
+   
+    asset Windows {
         | peripheralDeviceDiscovery
             -> computer.peripheralDeviceDiscovery
     }

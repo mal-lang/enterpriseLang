@@ -1,5 +1,4 @@
-Computer.dataCollected = Zero
-Computer.dataCompressed = Zero
-Computer.dataEncrypted = Zero
-Computer._dataEncrypted = Zero
-Computer.whitelisting = Zero
+Administrator.adminRights = Zero
+Computer.networkServiceScan = Zero
+InternalNetwork.networkIntrusionDetection = Zero
+InternalNetwork.whitelisting = Zero

@@ -12,11 +12,9 @@ import core.AttackStepMax;
 import core.AttackStepMin;
 import core.Defense;
 public class Computer extends Asset {
+   public java.util.Set<User> user = new HashSet<>();
 
-   public DataCollected dataCollected;
-   public DataCompressed dataCompressed;
-   public DataEncrypted dataEncrypted;
-   public _dataEncrypted _dataEncrypted;
+   public PermissionGroupsDiscovery permissionGroupsDiscovery;
    public Whitelisting whitelisting;
 
    public Computer(Boolean whitelistingState) {
@@ -26,14 +24,8 @@ public class Computer extends Asset {
       }
       Defense.allDefenses.remove(whitelisting);
       whitelisting = new Whitelisting(this.name, whitelistingState);
-      AttackStep.allAttackSteps.remove(dataCollected);
-      dataCollected = new DataCollected(this.name);
-      AttackStep.allAttackSteps.remove(dataCompressed);
-      dataCompressed = new DataCompressed(this.name);
-      AttackStep.allAttackSteps.remove(dataEncrypted);
-      dataEncrypted = new DataEncrypted(this.name);
-      AttackStep.allAttackSteps.remove(_dataEncrypted);
-      _dataEncrypted = new _dataEncrypted(this.name);
+      AttackStep.allAttackSteps.remove(permissionGroupsDiscovery);
+      permissionGroupsDiscovery = new PermissionGroupsDiscovery(this.name);
       assetClassName = "Computer";
    }
 
@@ -44,14 +36,8 @@ public class Computer extends Asset {
       }
       Defense.allDefenses.remove(whitelisting);
       whitelisting = new Whitelisting(this.name, whitelistingState);
-      AttackStep.allAttackSteps.remove(dataCollected);
-      dataCollected = new DataCollected(this.name);
-      AttackStep.allAttackSteps.remove(dataCompressed);
-      dataCompressed = new DataCompressed(this.name);
-      AttackStep.allAttackSteps.remove(dataEncrypted);
-      dataEncrypted = new DataEncrypted(this.name);
-      AttackStep.allAttackSteps.remove(_dataEncrypted);
-      _dataEncrypted = new _dataEncrypted(this.name);
+      AttackStep.allAttackSteps.remove(permissionGroupsDiscovery);
+      permissionGroupsDiscovery = new PermissionGroupsDiscovery(this.name);
       assetClassName = "Computer";
    }
 
@@ -66,72 +52,21 @@ public class Computer extends Asset {
    }
 
 
-   public class DataCollected extends AttackStepMin {
-   public DataCollected(String name) {
-      super(name);
-      assetClassName = "Computer";
-   }
-@Override
-public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-dataEncrypted.updateTtc(this, ttc, activeAttackSteps);
-}
-      @Override
-      public double localTtc() {
-         return ttcHashMap.get("Computer.dataCollected");
-      }
-
-   }
-
-   public class DataCompressed extends AttackStepMin {
-   public DataCompressed(String name) {
-      super(name);
-      assetClassName = "Computer";
-   }
-@Override
-public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-dataEncrypted.updateTtc(this, ttc, activeAttackSteps);
-}
-      @Override
-      public double localTtc() {
-         return ttcHashMap.get("Computer.dataCompressed");
-      }
-
-   }
-
-   public class DataEncrypted extends AttackStepMin {
-   public DataEncrypted(String name) {
+   public class PermissionGroupsDiscovery extends AttackStepMax {
+   public PermissionGroupsDiscovery(String name) {
       super(name);
       assetClassName = "Computer";
    }
 @Override
 public void setExpectedParents() {
-addExpectedParent(dataCollected);
-addExpectedParent(dataCompressed);
+for (User user_brriA : user) {
+addExpectedParent(user_brriA.userRights);
 }
-@Override
-public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-_dataEncrypted.updateTtc(this, ttc, activeAttackSteps);
-}
-      @Override
-      public double localTtc() {
-         return ttcHashMap.get("Computer.dataEncrypted");
-      }
-
-   }
-
-   public class _dataEncrypted extends AttackStepMax {
-   public _dataEncrypted(String name) {
-      super(name);
-      assetClassName = "Computer";
-   }
-@Override
-public void setExpectedParents() {
-addExpectedParent(dataEncrypted);
 addExpectedParent(whitelisting.disable);
 }
       @Override
       public double localTtc() {
-         return ttcHashMap.get("Computer._dataEncrypted");
+         return ttcHashMap.get("Computer.permissionGroupsDiscovery");
       }
 
    }
@@ -154,24 +89,39 @@ addExpectedParent(whitelisting.disable);
          }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-_dataEncrypted.updateTtc(this, ttc, activeAttackSteps);
+permissionGroupsDiscovery.updateTtc(this, ttc, activeAttackSteps);
 }
    }
 }
 
+      public void addUser(User user) {
+         this.user.add(user);
+         user.computer = this;
+      }
+
    @Override
    public String getAssociatedAssetClassName(String roleName) {
+      if (roleName.equals("user")) {
+         for (Object o: user) {
+            return o.getClass().getName();
+         }
+      }
       return null;
    }
    @Override
    public java.util.Set<Asset> getAssociatedAssets(String roleName) {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
+      if (roleName.equals("user")  && user != null) {
+         assets.addAll(user);
+         return assets;
+      }
       assertTrue("The asset " + this.toString() + " does not feature the role name " + roleName + ".", false);
       return null;
    }
    @Override
    public java.util.Set<Asset> getAllAssociatedAssets() {
       java.util.Set<Asset> assets = new java.util.HashSet<>();
+      assets.addAll(user);
       return assets;
    }
 }

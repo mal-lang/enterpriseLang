@@ -20,7 +20,7 @@ public class transmittedDataManipulationTest{
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
-        attacker.addAttackPoint(admin.adminRights);
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
 
@@ -40,7 +40,7 @@ public class transmittedDataManipulationTest{
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
-        attacker.addAttackPoint(admin.adminRights);
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
 

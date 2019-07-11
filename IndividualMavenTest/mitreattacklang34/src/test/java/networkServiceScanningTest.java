@@ -10,7 +10,7 @@ public class networkServiceScanningTest{
     public void test1(){
         Administrator administrator = new Administrator("administrator");
         Computer computer = new Computer("computer");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true, true);
 
         administrator.addComputer(computer);
         internalNetwork.addComputer(computer);
@@ -26,7 +26,7 @@ public class networkServiceScanningTest{
     public void test2(){
         Administrator administrator = new Administrator("administrator");
         Computer computer = new Computer("computer");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false, false);
 
         administrator.addComputer(computer);
         internalNetwork.addComputer(computer);

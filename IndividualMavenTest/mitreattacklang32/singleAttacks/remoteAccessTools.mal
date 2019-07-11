@@ -28,7 +28,7 @@ category Network {
         & c2Connexion
             -> c2Server.c2Connected
 
-        E firewall
+        E firewallExists
             <- firewall
             -> firewall.bypassFirewall
 
@@ -36,7 +36,7 @@ category Network {
             -> c2Connexion
     }
     asset Firewall {
-        | bypassFirewall
+        & bypassFirewall
             -> internalNetwork.c2Connexion
     }
 }
@@ -44,6 +44,7 @@ category Network {
 associations {
     User [user] 1-* <--use--> 1-* [service] Service
     C2Server [c2Server] 1 <--use--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1 <--contains--> 1-* [service] Service
     InternalNetwork [internalNetwork] 1 <--Protect--> 1 [firewall] Firewall
     InternalNetwork [internalNetwork] 1 <--contains--> 1 [c2Server] C2Server
 }

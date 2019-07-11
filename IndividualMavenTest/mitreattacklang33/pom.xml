@@ -66,8 +66,7 @@
               <arguments>
                 <argument>-i</argument>
                 <!--argument>./mitreattacklang.mal</argument-->
-                <argument>./singleAttacks/dataEncrypted.mal</argument>
-              
+                <argument>./singleAttacks/permissionGroupsDiscovery.mal</argument>
                 <argument>-o</argument>
                 <argument>./target/generated-sources</argument>
                 <argument>-p</argument>

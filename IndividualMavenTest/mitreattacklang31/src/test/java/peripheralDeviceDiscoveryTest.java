@@ -12,8 +12,8 @@ public class peripheralDeviceDiscoveryTest{
         Windows windows = new Windows("windows");
         Computer computer = new Computer("computer", true);
 
-        user.addOS(windows);
         windows.addComputer(computer);
+        user.addWindows(windows);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
@@ -26,14 +26,13 @@ public class peripheralDeviceDiscoveryTest{
     public void test2(){
         User user = new User("user");
         Windows windows = new Windows("windows");
-        Computer computer = new Computer("computer", true);
+        Computer computer = new Computer("computer", false);
 
-        user.addOS(windows);
+        user.addWindows(windows);
         windows.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(computer.dataCollected);
-        attacker.addAttackPoint(computer.dataCompressed);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
 

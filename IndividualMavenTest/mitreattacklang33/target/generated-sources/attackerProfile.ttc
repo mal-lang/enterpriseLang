@@ -1,5 +1,3 @@
-Computer.dataCollected = Zero
-Computer.dataCompressed = Zero
-Computer.dataEncrypted = Zero
-Computer._dataEncrypted = Zero
+User.userRights = Zero
+Computer.permissionGroupsDiscovery = Zero
 Computer.whitelisting = Zero
