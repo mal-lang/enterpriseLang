@@ -132,7 +132,8 @@ category Person {
 
 category Software {
     asset Services {
-
+        | informationRepositories
+            -> computer.dataCollected
     }
     abstractAsset OS{
         & accountDiscovery
@@ -274,6 +275,8 @@ category Network {
         //-> firewall
     }
     asset Browser {
+        | manInTheBrowser
+            -> internalNetwork.connectedToNetwork
         | maliciousWebsite
             -> checkPlugin, checkBrowser
         & checkBrowser
@@ -368,8 +371,14 @@ category Hardware {
                 systemNetworkConfigurationDiscovery,
                 systemNetworkConnectionsDiscovery,
                 SystemOwnerUserDiscovery,
-                dataFromRemovableMedia
+                dataFromRemovableMedia,
+                dataFromInformationRepositories,
+                inputCapture
 
+        | dataFromInformationRepositories 
+            -> services.informationRepositories
+        | inputCapture //keylogger
+            -> user.userCredentials 
         & dataFromRemovableMedia
             -> removableMedia.data
         &  systemNetworkConfigurationDiscovery 
@@ -540,5 +549,7 @@ associations {
     NetworkSharedDrive [networkSharedDrive] 1-* <-- system --> 1-* [internalNetwork] InternalNetwork
     NetworkSharedDrive [networkSharedDrive] 1-* <-- system --> 1-* [c2Server] C2Server
     RemovableMedia [removableMedia] 1-* <-- ui --> 1-* [computer] Computer
+    Computer [computer]  1-* <-- ui --> 1-* [services] Services
+    Browser [browser] 1-* <-- system --> 1-* [internalNetwork] InternalNetwork
 
 }
