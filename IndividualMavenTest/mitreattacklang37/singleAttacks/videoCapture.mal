@@ -1,19 +1,19 @@
 category Person {
     asset User {
         | userRights
-            -> windows.webcamCollection,
-               macOS.webcamCollection
+            -> windows.videoCollection,
+               macOS.videoCollection
     }
 }
 
 category Software {
     asset Windows{
-        | webcamCollection
+        | videoCollection
             -> computer.collectVideo
 
     }
     asset MacOS {
-        | webcamCollection
+        | videoCollection
             -> computer.collectVideo
 
     }

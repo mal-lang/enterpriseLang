@@ -21,9 +21,14 @@ category Person {
                 service.usertransmittedDataManipulation,
                 windows.peripheralDeviceDiscovery,
                 computer.permissionGroupsDiscovery,
-                service.remoteAccessTool
+                service.remoteAccessTool,
+                windows.emailStorageCollection,
+                windows.videoCollection,
+                macOS.videoCollection
 
         | userCredentials
+            -> windws.outlookEmailCollection,
+               internalNetwork.exchangeServerCollection
 
         
     }
@@ -40,7 +45,9 @@ category Person {
                linux.bootkit,
                internalNetwork.admintransmittedDataManipulation,
                service.admintransmittedDataManipulation,
-               computer.networkServiceScan
+               computer.networkServiceScan,
+               windows.scheduledTask,
+               windows.systemTaskDiscovery
 
 
     }
@@ -221,13 +228,17 @@ category Software {
 
     }
     asset MacOS extends OS{
-
+        | videoCollection
+            -> computer.collectVideo
     }
     asset Windows extends OS{
         & createService
             -> executeService
         # whitelisting
-            -> createService
+            -> createService,
+               scheduledTask, 
+               systemTimeDiscovery
+
         & executeService
             -> persistance
         | persistance
@@ -239,6 +250,35 @@ category Software {
         | peripheralDeviceDiscovery
             -> computer.peripheralDeviceDiscovery
 
+        & emailStorageCollection
+            info:"Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
+            -> computer.dataCollected
+
+        & outlookEmailCollection
+            info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
+            -> computer.dataCollected
+
+        # dataEncryption
+            -> emailStorageCollection,
+               outlookEmailCollection
+
+        | videoCollection
+            -> computer.collectVideo
+
+        & scheduledTask
+            info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
+            //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
+
+        & systemTimeDiscovery
+            info:"The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
+            -> scheduledTask
+      
+    }
+
+    }
+    asset VideoCallApplication extends Service { 
+        | collectVideo
+            -> computer._collectVideo
     }
 }
 
@@ -327,6 +367,14 @@ category Network {
 
         # networkIntrusionDetection
             -> c2Connexion
+
+        & exchangeServerCollection
+            info:"Adversaries may leverage a user's credentials and interact directly with the Exchange server to acquire information from within a network."
+            -> computer.dataCollected
+        # dataEncryption
+            -> exchangeServerCollection
+        # twoFactorsAuthentication
+            -> exchangeServerCollection
     }
 
     asset Firewall {
@@ -365,7 +413,9 @@ category Hardware {
                _automatedExfiltration,
                _dataEncrypted,
                peripheralDeviceDiscovery,
-               permissionGroupsDiscovery
+               permissionGroupsDiscovery,
+               _dataStaged,
+               _collectVideo
 
 
         & uploadRemoteFile
@@ -388,6 +438,9 @@ category Hardware {
                adminDataDestruction
 
         | dataCollected
+            -> _dataCollected
+
+        & _dataCollected
             -> dataCompressed,
                exfiltrationOverPhysicalMedium,
                dataSizedTransfer,
@@ -395,7 +448,8 @@ category Hardware {
                scheduledExfiltration,
                exfiltrationOverC2,
                automatedExfiltration,
-               dataEncrypted
+               dataEncrypted, 
+               dataStaged
 
         & dataCompressed
             -> exfiltrationOverPhysicalMedium,
@@ -403,7 +457,8 @@ category Hardware {
                scheduledExfiltration,
                exfiltrationOverC2,
                automatedExfiltration,
-               dataEncrypted
+               dataEncrypted, 
+               dataStaged
 
         | dataEncrypted
             info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
@@ -414,7 +469,19 @@ category Hardware {
                exfiltrationOverAternativeProtocol,
                scheduledExfiltration,
                exfiltrationOverC2,
-               automatedExfiltration
+               automatedExfiltration,
+               dataStaged
+        
+        | dataStaged
+            -> _dataStaged
+
+        & _dataStaged
+            -> exfiltrationOverPhysicalMedium,
+               dataSizedTransfer,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration,
         
         | automatedExfiltration
             -> _automatedExfiltration
@@ -459,7 +526,26 @@ category Hardware {
         & networkServiceScan
              info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation"
 
+        E webcamExists
+            <- webcam
+            -> webcam.collectVideo
 
+        E videoCallApplicationExists
+            <- videoCallApplication
+            -> videoCallApplication.collectVideo
+
+        | collectVideo
+            -> _collectVideo
+
+        & _collectVideo
+            -> dataCollected
+
+        | dataCollected
+
+    }
+    asset Webcam {
+        | collectVideo
+            -> computer._collectVideo
     }
     asset C2Server {
 
@@ -502,6 +588,8 @@ associations {
     User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
     User [user] 1 <-- ui--> 1 [computer] Computer
     User [user] 1-* <--use--> 1-* [service] Service
+    User [macOSUser] 1-* <--use--> 1 [macOS] MacOS
+
 
     Administrator [administrator] 1 <--ui--> 1-* [user] User
     Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
@@ -525,6 +613,7 @@ associations {
     Browser [browser] 1-* <-- software --> 1 [os] OS
     OS [os] 1 <-- system --> 1-* [computer] Computer
     Windows [windows] 1 <--software--> 1 [computer] Computer
+    Computer [computer] 1-* <--software--> 1 [macOS] MacOS
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
 
@@ -534,4 +623,7 @@ associations {
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
+    
+    VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
+    Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
 }
