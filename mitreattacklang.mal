@@ -411,7 +411,7 @@ category Hardware {
                userDataDestruction,
                adminDataDestruction, 
                compressData, 
-               collectAudio,
+               _collectAudio,
                systemNetworkConfigurationDiscovery,
                systemNetworkConnectionsDiscovery,
                SystemOwnerUserDiscovery,
@@ -451,10 +451,13 @@ category Hardware {
 
         | infectedWindowsComputer
 
-        //E Microphone
-        //    <- microphone
-        //    -> collectAudio
-        & collectAudio
+        E microphoneExists  
+            <- microphone
+            -> microphone.collectAudio
+
+        |  collectAudio
+            -> _collectAudio
+        & _collectAudio
             -> dataCollected
         
 
@@ -466,7 +469,8 @@ category Hardware {
 
     }
     asset Microphone {
-
+        | collectAudio
+            -> computer._collectAudio
     }
 
     asset Server {
