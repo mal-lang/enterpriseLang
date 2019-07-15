@@ -16,7 +16,12 @@ category Person {
                 computer.fileDeletion,
                 computer.uploadRemoteFile, 
                 computer.downloadRemoteFile,
-                computer.collectAudio
+                computer.collectAudio,
+                internalNetwork.usertransmittedDataManipulation,
+                service.usertransmittedDataManipulation,
+                windows.peripheralDeviceDiscovery,
+                computer.permissionGroupsDiscovery,
+                service.remoteAccessTool
 
         | userCredentials
 
@@ -32,7 +37,10 @@ category Person {
                os.detailedRemoteSystemDiscovery,
                os.adminCommandLineInterface,
                windows.bootkit,
-               linux.bootkit
+               linux.bootkit,
+               internalNetwork.admintransmittedDataManipulation,
+               service.admintransmittedDataManipulation,
+               computer.networkServiceScan
 
 
     }
@@ -101,8 +109,26 @@ category Person {
 }
 
 category Software {
-    asset Services {
+    asset Service {
+        & usertransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
+        & admintransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        # dataEncrypted
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+        
+        # secureCommunication
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+        | remoteAccessTools
+            -> internalNetwork.c2Connexion
+
+        # whitelisting
+            -> remoteAccessTools
     }
     abstractAsset OS{
         & accountDiscovery
@@ -210,6 +236,9 @@ category Software {
         # secureBootProcess
             -> bootkit
 
+        | peripheralDeviceDiscovery
+            -> computer.peripheralDeviceDiscovery
+
     }
 }
 
@@ -268,11 +297,42 @@ category Network {
                c2Server.dataExfiltrated
 
         | bypassNetworkDetection
+
+        & usertransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        & admintransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        # dataEncrypted
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+        # secureCommunication
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+        # networkIntrusionDetection
+            -> computer.networkServiceScan
+
+        # whitelisting
+            -> computer.networkServiceScan
+
+        & c2Connexion
+            -> c2Server.c2Connected
+
+        E firewallExists
+            <- firewall
+            -> firewall.bypassFirewall
+
+        # networkIntrusionDetection
+            -> c2Connexion
     }
 
     asset Firewall {
         & bypassFirewall
-            -> internalNetwork.dataExfiltration
+            -> internalNetwork.dataExfiltration,
+               internalNetwork.c2Connexion
 
     }
 
@@ -303,7 +363,10 @@ category Hardware {
                dataCompressed, 
                collectAudio,
                _automatedExfiltration,
-               _dataEncrypted
+               _dataEncrypted,
+               peripheralDeviceDiscovery,
+               permissionGroupsDiscovery
+
 
         & uploadRemoteFile
             // leads to file execution attacks
@@ -386,10 +449,21 @@ category Hardware {
         & collectAudio
             -> dataCollected
         
+        & peripheralDeviceDiscovery
+            info: "Adversaries may attempt to gather information about attached peripheral devices and components connected to a computer system. The information may be used to enhance their awareness of the system and network environment or may be used for further actions."
+
+
+        & permissionGroupsDiscovery
+            info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
+
+        & networkServiceScan
+             info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation"
+
 
     }
     asset C2Server {
-        | c2Connexion
+
+        | c2Connected 
             -> obfuscatedData
 
         & obfuscatedData
@@ -427,12 +501,14 @@ associations {
     User [user] 1 <-- ui--> 1-* [os] OS
     User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
     User [user] 1 <-- ui--> 1 [computer] Computer
+    User [user] 1-* <--use--> 1-* [service] Service
 
     Administrator [administrator] 1 <--ui--> 1-* [user] User
     Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
     Administrator [linuxAdministrator] 1 <--ui--> 1-* [linux] Linux
     Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
     Administrator [administrator] 1 <--ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <--use--> 1-* [service] Service
 
     WindowsAdmin [windowsAdmin] 1 <--ui--> 1 [windows] Windows
 
@@ -448,11 +524,14 @@ associations {
 
     Browser [browser] 1-* <-- software --> 1 [os] OS
     OS [os] 1 <-- system --> 1-* [computer] Computer
+    Windows [windows] 1 <--software--> 1 [computer] Computer
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
 
     InternalNetwork [ internalNetwork ] 1 <-- Protect --> 1 [firewall] Firewall
     Computer [computer] 1-* <--use--> 1 [internalNetwork] InternalNetwork
     InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
-
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
 }
