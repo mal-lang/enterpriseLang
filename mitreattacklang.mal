@@ -307,6 +307,9 @@ category Network {
             -> spearphishingAttachments, 
                spearphishingLink
         | maliciousContent // temp to make it run !!!
+
+        | accessWebServer
+            -> server.webServer
     }
     asset ExternalNetwork extends Network{
         # intrusionDetecion
@@ -469,11 +472,19 @@ category Hardware {
     asset Server {
         | infectedServer
             ->  webShell,
-                internalNetwork.connectedToNetwork
+                internalNetwork.connectedToNetwork,
+                webServer
         & webShell
             ->  c2Server.obfuscatedData
         # separateAccountForServerAndNormalUser
-            -> webShell
+            ->  webShell
+        & webServer
+            -> sharedWebroot
+        & sharedWebroot 
+            ->  internalNetwork.connectedToNetwork
+        # sharedWebrootDefens
+            info: "Limit privileged account use, unauthenticated network share access, and network/system isolation."
+            -> sharedWebroot
     }
 }
 
@@ -551,5 +562,6 @@ associations {
     RemovableMedia [removableMedia] 1-* <-- ui --> 1-* [computer] Computer
     Computer [computer]  1-* <-- ui --> 1-* [services] Services
     Browser [browser] 1-* <-- system --> 1-* [internalNetwork] InternalNetwork
+    Server [server] 1-* <-- system --> 1-* [browser] Browser
 
 }
