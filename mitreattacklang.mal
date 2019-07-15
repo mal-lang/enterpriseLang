@@ -17,7 +17,8 @@ category Person {
                 computer.uploadRemoteFile, 
                 computer.downloadRemoteFile,
                 computer.collectAudio,
-                adminLogin
+                adminLogin,
+                macOS.appleScript
 
         | userCredentials
             ->  userRights
@@ -246,6 +247,10 @@ category Software {
                 macUser.userCredentials
         # turnOfBashHistory
             -> bashHistory 
+        & appleScript
+            -> runCode
+        # trustedDeveloperID 
+            -> appleScript
 
     }
     asset Windows extends OS{
