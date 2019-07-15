@@ -1,0 +1,4 @@
+Administrator.adminRights = Zero
+Computer.networkServiceScan = Zero
+InternalNetwork.networkIntrusionDetection = Zero
+InternalNetwork.whitelisting = Zero
