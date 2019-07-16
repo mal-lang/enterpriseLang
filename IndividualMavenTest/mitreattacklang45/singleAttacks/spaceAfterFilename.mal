@@ -5,19 +5,20 @@ category Person {
                linux.spaceAfterFileName
             
     }
+
 }
 
 category Software {
     asset MacOS {
         & spaceAfterFileName
-            -> employee.userExecution
+            //-> employee.userExecution
         
         # fileMonitoring
             -> spaceAfterFileName
     }
     asset Linux {
         & spaceAfterFileName
-            -> employee.userExecution
+            //-> employee.userExecution
         
         # fileMonitoring
             -> spaceAfterFileName

@@ -1,0 +1,5 @@
+User.userRights = Zero
+MacOS.spaceAfterFileName = Zero
+MacOS.fileMonitoring = Zero
+Linux.spaceAfterFileName = Zero
+Linux.fileMonitoring = Zero

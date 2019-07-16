@@ -12,10 +12,9 @@ public class scriptingTest{
         Employee employee = new Employee("employee");
         OS os = new OS("os", true, true);
 
-        user.addOS(os);
-        employee.addOS(os);
-
-
+        os.addUser(user);
+        os.addEmployee(employee);
+    
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.addAttackPoint(employee.userExecution);
@@ -31,8 +30,9 @@ public class scriptingTest{
         Employee employee = new Employee("employee");
         OS os = new OS("os", false, false);
 
-        user.addOS(os);
-        employee.addOS(os);
+        os.addUser(user);
+        os.addEmployee(employee);
+    
 
 
         Attacker attacker = new Attacker();

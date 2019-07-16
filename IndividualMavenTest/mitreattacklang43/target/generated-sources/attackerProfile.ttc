@@ -1,0 +1,11 @@
+User.userRights = Zero
+Administrator.adminRights = Zero
+Computer.scripting = Zero
+Computer.fileDiscovery = Zero
+Computer.directoryDiscovery = Zero
+Computer.uploadRemoteFile = Zero
+Computer.automatedCollection = Zero
+Computer._automatedCollection = Zero
+Computer.dataCollected = Zero
+Computer.sensitiveDataCollected = Zero
+Computer.whitelisting = Zero

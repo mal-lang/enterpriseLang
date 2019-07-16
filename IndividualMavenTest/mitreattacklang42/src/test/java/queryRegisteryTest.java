@@ -18,24 +18,23 @@ public class queryRegisteryTest{
         attacker.attack();
 
 
-        computer.networkServiceScan.assertUncompromised();
+        windows.queryRegistery.assertUncompromised();
 
     }
     @Test
     public void test2(){
-        Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false, false);
+        WindowsAdministrator windowsAdministrator = new WindowsAdministrator("windowsAdministrator");
+        Windows windows = new Windows("windows", false);
 
-        administrator.addComputer(computer);
-        internalNetwork.addComputer(computer);
+        windowsAdministrator.addWindows(windows);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(administrator.adminRights);
+        attacker.addAttackPoint(windowsAdministrator.systemRights);
         attacker.attack();
 
 
-        computer.networkServiceScan.assertCompromisedInstantaneously();
+
+        windows.queryRegistery.assertCompromisedInstantaneously();
 
     }
 }

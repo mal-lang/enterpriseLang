@@ -4,14 +4,14 @@ import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class systemInfomationDiscoveryTest{
+public class systemInformationDiscoveryTest{
 
     @Test
     public void test1(){
         User user = new User("user");
         OS os = new OS("os", true);
 
-        user.addOS(os);
+        os.addUser(user);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
@@ -26,14 +26,14 @@ public class systemInfomationDiscoveryTest{
         User user = new User("user");
         OS os = new OS("os", false);
 
-        user.addOS(os);
+        os.addUser(user);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
 
-        os.systemInformationDiscovery..assertCompromisedInstantaneously();
+        os.systemInformationDiscovery.assertCompromisedInstantaneously();
 
     }
 }

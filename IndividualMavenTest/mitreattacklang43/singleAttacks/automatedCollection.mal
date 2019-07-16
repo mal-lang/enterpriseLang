@@ -30,7 +30,7 @@ category Hardware {
             -> _automatedCollection
 
 
-        | _automatedCollection
+        & _automatedCollection
             -> dataCollected, 
                sensitiveDataCollected
 

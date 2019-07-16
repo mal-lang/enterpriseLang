@@ -13,8 +13,8 @@ public class spaceAfterFilenameTest{
 
         user.addLinux(linux);
         
-        administrator.addComputer(computer);
-        internalNetwork.addComputer(computer);
+    
+
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);

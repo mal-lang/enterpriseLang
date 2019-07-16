@@ -1,5 +1,5 @@
 category Person {
-    asset WindowsAdminitrator{
+    asset WindowsAdministrator{
         | systemRights
             -> windows.queryRegistery
     }
@@ -15,5 +15,6 @@ category Software {
 }
 
 associations {
-    WindowsAdminitrator [windowsAdministrator] 1-* <--system--> 1 [windows] Windows
+    
+    WindowsAdministrator [windowsAdministrator] 1-* <--system--> 1 [windows] Windows
 }
