@@ -38,8 +38,8 @@ public class User extends Asset {
    }
 @Override
 public void updateChildren(java.util.Set<AttackStep> activeAttackSteps) {
-for (Service service_dNmGV : service) {
-service_dNmGV._exploitationForDefenseEvasion.updateTtc(this, ttc, activeAttackSteps);
+for (Service service_KelUZ : service) {
+service_KelUZ._exploitationForDefenseEvasion.updateTtc(this, ttc, activeAttackSteps);
 }
 }
       @Override

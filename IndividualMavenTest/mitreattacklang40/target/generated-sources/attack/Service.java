@@ -106,8 +106,8 @@ _exploitationForDefenseEvasion.updateTtc(this, ttc, activeAttackSteps);
    }
 @Override
 public void setExpectedParents() {
-for (User user_zGxjx : user) {
-addExpectedParent(user_zGxjx.userRights);
+for (User user_tWpLA : user) {
+addExpectedParent(user_tWpLA.userRights);
 }
 addExpectedParent(exploitationForDefenseEvasion);
 }
