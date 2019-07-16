@@ -9,7 +9,7 @@ public class dataEncryptedForImpactTest{
     @Test
     public void test1(){
         User user = new User("user");
-        Administrator administrator = new Administrator("administrator")
+        Administrator administrator = new Administrator("administrator");
         Computer computer = new Computer("computer", true);
 
         user.addComputer(computer);
@@ -28,7 +28,7 @@ public class dataEncryptedForImpactTest{
     @Test
     public void test2(){
         User user = new User("user");
-        Administrator administrator = new Administrator("administrator")
+        Administrator administrator = new Administrator("administrator");
         Computer computer = new Computer("computer", false);
 
         user.addComputer(computer);

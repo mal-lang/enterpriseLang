@@ -1,7 +1,7 @@
 category Person {
     asset User {
         | userRights
-            -> macOS.userSecuritySoftwareDiscovery
+            -> macOS.userSecuritySoftwareDiscovery,
                windows.userSecuritySoftwareDiscovery
     }
     asset WindowsAdministrator {

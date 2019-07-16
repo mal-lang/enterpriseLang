@@ -25,7 +25,7 @@ public class uncommonlyUsedPortsTest{
 
         c2Server.c2Connexion.assertUncompromised();
         firewall.bypassFirewall.assertUncompromised();
-        internalNetwrok.bypassProxies.assertUncompromised();
+        internalNetwork.bypassProxies.assertUncompromised();
 
     }
     @Test
@@ -47,7 +47,7 @@ public class uncommonlyUsedPortsTest{
 
         c2Server.c2Connexion.assertCompromisedInstantaneously();
         firewall.bypassFirewall.assertCompromisedInstantaneously();
-        internalNetwrok.bypassProxies.assertCompromisedInstantaneously();
+        internalNetwork.bypassProxies.assertCompromisedInstantaneously();
 
     }
 }

@@ -11,7 +11,7 @@ public class dataFromLocalSystemTest{
         Computer computer = new Computer("computer");
         OS os = new OS("os");
 
-        computer.addOS(os);
+        os.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(os.userCommandLineInterface);
@@ -26,7 +26,7 @@ public class dataFromLocalSystemTest{
         Computer computer = new Computer("computer");
         OS os = new OS("os");
 
-        computer.addOS(os);
+        os.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(os.adminCommandLineInterface);

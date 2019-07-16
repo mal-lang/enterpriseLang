@@ -10,7 +10,7 @@ public class networkShareDiscoveryTest{
     public void test1(){
         User user = new User("user");
         MacOS macOS = new MacOS("macOS", true);
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true, true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork");
 
         user.addMacOS(macOS);
         internalNetwork.addMacOS(macOS);
@@ -28,9 +28,9 @@ public class networkShareDiscoveryTest{
     public void test2(){
         Windows windows = new Windows("windows", true);
         User user = new User("user");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true, true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork");
 
-        user.adsWindows(windows);
+        user.addWindows(windows);
         internalNetwork.addWindows(windows);
 
 
@@ -47,9 +47,9 @@ public class networkShareDiscoveryTest{
     public void test(){
         Windows windows = new Windows("windows", false);
         User user = new User("user");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true, true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork");
 
-        user.adsWindows(windows);
+        user.addWindows(windows);
         internalNetwork.addWindows(windows);
 
 

@@ -2,7 +2,7 @@ category Network {
     asset InternalNetwork {
         & applicationLayerConnexion
             -> c2Server.c2Connexion,
-               bypassNetworkDetection
+               bypassNetworkDetection,
                externalNetwork.bypassNetworkDetection
 
         | bypassNetworkDetection
@@ -26,7 +26,7 @@ category Hardware {
     }
 }
 
-assocations {
+associations {
     InternalNetwork [internalNetwork] 1 <--contains--> 1-* [computer] Computer
     InternalNetwork [internalNetwork] 1 <--contains--> 1-* [c2Server] C2Server
     InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork

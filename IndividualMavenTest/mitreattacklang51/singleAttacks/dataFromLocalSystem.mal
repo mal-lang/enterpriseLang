@@ -17,5 +17,5 @@ category Software {
 }
 
 associations {
-    Compter [computer] 1 <--software--> 1 [os] OS
+    Computer [computer] 1 <--software--> 1 [os] OS
 }

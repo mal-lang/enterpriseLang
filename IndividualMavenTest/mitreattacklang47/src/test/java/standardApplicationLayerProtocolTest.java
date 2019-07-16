@@ -18,8 +18,6 @@ public class standardApplicationLayerProtocolTest{
         internalNetwork.addExternalNetwork(externalNetwork);
 
 
-        administrator.addComputer(computer);
-        internalNetwork.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(computer.infectedComputer);
@@ -40,11 +38,8 @@ public class standardApplicationLayerProtocolTest{
 
         internalNetwork.addComputer(computer);
         internalNetwork.addC2Server(c2Server);
+
         internalNetwork.addExternalNetwork(externalNetwork);
-
-
-        administrator.addComputer(computer);
-        internalNetwork.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(computer.infectedComputer);

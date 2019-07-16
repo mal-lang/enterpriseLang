@@ -4,7 +4,7 @@ category Hardware {
             -> commonlyUsedPortsConnection
 
         & commonlyUsedPortsConnection
-            -> c2server.c2Connexion,
+            -> c2Server.c2Connexion,
                 externalNetwork.bypassFirewall,
                 internalNetwork.bypassFirewall,
                 externalNetwork.bypassNetworkDetection,
@@ -35,7 +35,7 @@ category Network {
     }
 }
 
-assocations {
+associations {
     Computer [computer] 1-* <--contains--> 1-* [externalNetwork] ExternalNetwork
     Computer [computer] 1-* <--contains--> 1-* [internalNetwork] InternalNetwork
     Computer [computer] 1-* <--connected--> 1-* [c2Server] C2Server
