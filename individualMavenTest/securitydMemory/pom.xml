@@ -65,8 +65,7 @@
               <classpathPrefix>templates/</classpathPrefix>
               <arguments>
                 <argument>-i</argument>
-                <!--argument>./mitreattacklang.mal</argument-->
-                <argument>./singleAttacks/accountDiscovery.mal</argument>
+                <argument>./mitreattacklang.mal</argument>
                 <argument>-o</argument>
                 <argument>./target/generated-sources</argument>
                 <argument>-p</argument>

@@ -1,0 +1,20 @@
+// Securityd Memory  https://attack.mitre.org/techniques/T1167/
+
+category Person{
+    asset User {
+        | userCredentials
+    }
+}
+
+category Software {
+    asset MacOS {
+        |   runAsRoot
+            -> securitydMemory
+        |   securitydMemory
+            -> user.userCredentials
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [macOS] MacOS
+}
