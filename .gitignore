@@ -6,3 +6,12 @@
 /lib/*.ttc
 /lib/*.json
 .project
+
+individualMavenTest/*/target/
+individualMavenTest/*/.settings
+individualMavenTest/*/.classpath
+individualMavenTest/*/*.malinc
+individualMavenTest/*/*.swp
+individualMavenTest/*/lib/*.ttc
+individualMavenTest/*/lib/*.json
+individualMavenTest/*/.project

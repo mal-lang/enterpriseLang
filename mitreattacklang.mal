@@ -54,13 +54,13 @@ category Person {
         | systemRights
             ->  windows.executeService
         | adminRights
-            +>  accountManipulation
+            +>  accountManipulation,
+                computer.windowsAdminShares
         & accountManipulation
             ->  user.adminLogin,
                 user.userCredentials
         # multiFactorAuthentication
             +> accountManipulation
-
     }
     asset Root extends Administrator{
 
@@ -254,6 +254,8 @@ category Software {
 
     }
     asset Windows extends OS{
+        | windowsManagementInstrumentation 
+            ->  windowsUser.userRights
         & createService
             -> executeService
         # whitelisting
@@ -382,7 +384,9 @@ category Hardware {
                 dataFromRemovableMedia,
                 dataFromInformationRepositories,
                 inputCapture
-
+        
+        &  windowsAdminShares 
+            -> windows.windowsManagementInstrumentation
         | dataFromInformationRepositories 
             -> services.informationRepositories
         | inputCapture //keylogger
@@ -420,7 +424,8 @@ category Hardware {
                systemNetworkConfigurationDiscovery,
                systemNetworkConnectionsDiscovery,
                SystemOwnerUserDiscovery,
-               dataFromRemovableMedia
+               dataFromRemovableMedia,
+               windowsAdminShares
 
         | uploadRemoteFile
             -> _uploadRemoteFile
@@ -461,7 +466,7 @@ category Hardware {
             -> microphone.collectAudio
 
         |  collectAudio
-            -> _collectAudio
+            //-> _collectAudio
         & _collectAudio
             -> dataCollected
         
@@ -563,6 +568,7 @@ associations {
     Adversary [adversary] 1-* <-- attack --> 1-* [supplyChain] SupplyChain
     Adversary [adversary] 1-* <-- attack --> 1-* [removableMedia] RemovableMedia
     User [linxUser] 1-* <-- ui --> 1-* [linux] Linux  
+    User [windowsUser] 1-* <-- ui --> 1-* [windows] Windows  
     User [user] 1-* <-- ui --> 1-* [browser] Browser
     Server [server] 1-* <-- system --> 1-* [internalNetwork] InternalNetwork
     Server [server] 1-* <-- system --> 1-* [c2Server] C2Server
