@@ -3,7 +3,7 @@ import org.junit.Test;
 import core.*;
 import attack.*;
 
-public class accountDiscoveryTest{
+public class fileTest{
 
     @Test
     public void test1(){
@@ -23,6 +23,7 @@ public class accountDiscoveryTest{
         os.domainDiscovery.assertUncompromised();
 
     }
+    @Test
     public void test2(){
         // Section 1: Asset instantiation
         User user = new User("user");
