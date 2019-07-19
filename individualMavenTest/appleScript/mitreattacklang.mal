@@ -1,0 +1,24 @@
+category Person{
+    asset User {
+        | userRights
+            -> macOS.appleScript
+    }
+}
+category Software {
+    asset OS {
+        | runCode
+    }
+
+    asset MacOS extends OS{
+        & appleScript
+            -> runCode
+        # trustedDeveloperID 
+            -> appleScript
+    }
+}
+
+
+associations {
+    User [user] 1-*<-- ui--> 1-* [macOS] MacOS
+}
+
