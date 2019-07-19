@@ -1,0 +1,26 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            -> windows.appInitDLLs
+    }
+}
+category Software {
+    asset OS {
+        | persistence
+    }
+
+    asset Windows extends OS {
+         # whitelisting
+            +>  appInitDLLs
+        & appInitDLLs 
+            ->  persistence 
+        # secureBoot
+            +>  appInitDLLs
+    }
+}
+
+
+associations {
+    Administrator [administrator] 1-*<-- ui--> 1-* [windows] Windows
+}
+
