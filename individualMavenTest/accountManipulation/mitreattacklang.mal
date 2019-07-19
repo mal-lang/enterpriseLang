@@ -1,0 +1,35 @@
+category Person{
+    asset User {
+        | userRights
+            -> adminLogin
+        | userCredentials
+            ->  userRights
+        | adminLogin
+            ->  adminCheck
+        & adminCheck
+            ->  administrator.adminRights
+        # adminAccess
+            ->  adminCheck
+
+    }
+    asset Administrator {
+        | adminRights
+        
+        
+    }
+    asset WindowsAdmin extends Administrator{
+        | adminRights
+            +>  accountManipulation
+        & accountManipulation
+            ->  user.adminLogin,
+                user.userCredentials
+        # multiFactorAuthentication
+            +> accountManipulation
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [windowsAdmin] WindowsAdmin
+    User [user] 1-* <-- ui--> 1-* [administrator] Administrator
+
+}

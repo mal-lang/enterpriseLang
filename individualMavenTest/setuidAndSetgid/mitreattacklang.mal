@@ -22,6 +22,20 @@ category Software {
 
     }
    
+    asset MacOS extends OS {
+        | runFile
+            -> setuidAndSetgidManipulation
+        
+        & setuidAndSetgidManipulation 
+            ->  runUnderAdmin,
+                runUnderUser 
+       
+        # setuidAndSetgidManipulationDefense
+            info: "Applications with known vulnerabilities or known shell escapes should not have the setuid or 
+                setgid bits set to reduce potential damage if an application is compromised. 
+                Additionally, the number of programs with setuid or setgid bits set should be minimized across a system."
+            ->  setuidAndSetgidManipulation
+    }
 
     asset Linux extends OS {
         | runFile
