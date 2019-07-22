@@ -1,0 +1,19 @@
+category Network {
+    asset Browser {
+        | installExtensions
+            -> runExtensions
+        & runExtensions
+            -> os.persistence
+        #   trustedSources 
+            -> runExtensions
+    }
+}
+category Software {
+    asset OS {
+        | persistence
+    }
+}
+
+associations {
+    Browser [browser] 1 <-- ui--> 1-* [os] OS
+}
