@@ -1,0 +1,26 @@
+category Person{
+     asset User {
+        | userRights
+            -> adminLogin
+        | userCredentials
+            ->  userRights
+        | adminLogin
+    }
+}
+
+category Software {
+    abstractAsset OS{
+        | infectedOS
+            -> clipboardData
+        # whitelisting
+            ->  clipboardData
+        
+        & clipboardData
+            ->  user.adminLogin,
+                user.userCredentials
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [os] OS
+}
