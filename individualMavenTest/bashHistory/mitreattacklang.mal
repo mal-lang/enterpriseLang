@@ -1,0 +1,45 @@
+category Person{
+    asset User {
+        | userRights
+            -> adminLogin
+        | userCredentials
+            ->  userRights
+        | adminLogin
+    }
+}
+category ardware {
+    asset Computer {
+        | infectedComputer
+            ->  linux.bashHistory,
+                macOS.bashHistory
+    }
+}
+
+category Software {
+    asset OS {
+    
+    }
+    asset Linux extends OS {
+        &  bashHistory 
+            ->  linxUser.adminLogin,
+                linxUser.userCredentials
+        # turnOfBashHistory
+            ->  bashHistory
+    }
+    asset MacOS extends OS{
+        &  bashHistory 
+            ->  macUser.adminLogin,
+                macUser.userCredentials
+        # turnOfBashHistory
+            -> bashHistory 
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [os] OS
+    Computer [computer] 1 <-- ui--> 1-* [os] OS
+    Computer [computer] 1 <-- ui--> 1-* [linux] Linux
+    Computer [computer] 1 <-- ui--> 1-* [macOS] MacOS
+    User [linxUser] 1 <-- ui--> 1-* [linux] Linux
+    User [macUser] 1 <-- ui--> 1-* [macOS] MacOS
+}
