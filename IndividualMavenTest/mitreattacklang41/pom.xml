@@ -66,7 +66,7 @@
               <arguments>
                 <argument>-i</argument>
                 <!--argument>./mitreattacklang.mal</argument-->
-                <argument>./singleAttacks/networkServiceScanning.mal</argument>
+                <argument>./singleAttacks/systemInformationDiscovery.mal</argument>
               
                 <argument>-o</argument>
                 <argument>./target/generated-sources</argument>

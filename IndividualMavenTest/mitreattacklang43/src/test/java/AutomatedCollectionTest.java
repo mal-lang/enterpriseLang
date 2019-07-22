@@ -1,54 +1,65 @@
+import java.beans.Transient;
+
 import org.junit.Test;
 
 import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class audioCaptureTest{
+public class automatedCollectionTest{
 
     @Test
     public void test1(){
-        User user = new User("user");
+        Administrator administrator = new Administrator("administrator");
         Computer computer = new Computer("computer", true);
-        Microphone microphone = new Microphone("microphone");
+        User user = new User("user");
 
+        administrator.addComputer(computer);
         user.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
+
         computer.dataCollected.assertUncompromised();
+        computer.sensitiveDataCollected.assetUncompromised();
+
 
     }
     @Test
     public void test2(){
-        User user = new User("user");
+        Administrator administrator = new Administrator("administrator");
         Computer computer = new Computer("computer", false);
-        Microphone microphone = new Microphone("microphone");
+        User user = new User("user");
 
+        administrator.addComputer(computer);
         user.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
+
 
         computer.dataCollected.assertCompromisedInstantaneously();
+        computer.sensitiveDataCollected.assetUncompromised();
 
     }
-    @Test
+    @Test 
     public void test3(){
-        User user = new User("user");
+        Administrator administrator = new Administrator("administrator");
         Computer computer = new Computer("computer", false);
-   
+        User user = new User("user");
 
+        administrator.addComputer(computer);
         user.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
+        attacker.addAttackPoint(admin.adminRights);
         attacker.attack();
 
-        computer.dataCollected.assertUncompromised();
 
+        computer.dataCollected.assertCompromisedInstantaneously();
+        computer.sensitiveDataCollected.assertCompromisedInstantaneously();
     }
 }

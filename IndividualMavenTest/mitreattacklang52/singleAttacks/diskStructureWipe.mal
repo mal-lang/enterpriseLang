@@ -1,0 +1,24 @@
+category Person {
+    asset Administrator{
+        | adminRights
+            -> computer.diskStructureWipe
+    }
+}
+
+category Hardware {
+    asset Computer {
+        & diskStructureWipe
+            info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
+ 
+        # backup
+            -> diskStructureWipe
+
+        # whitelisting
+            -> diskStructureWipe
+
+    }   
+}
+
+associations {
+    Administrator [administrator] 1-* <--use--> 1 [computer] Computer
+}

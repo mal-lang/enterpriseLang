@@ -4,39 +4,36 @@ import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class networkServiceScanningTest{
+public class diskStructureWipe{
 
     @Test
     public void test1(){
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", true, true);
+        Computer computer = new Computer("computer", true, true);
 
         administrator.addComputer(computer);
-        internalNetwork.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
 
-        computer.networkServiceScan.assertUncompromised();
+        computer.diskStructureWipe.assertUncompromised();
 
     }
+    @Test
     public void test2(){
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork", false, false);
+        Computer computer = new Computer("computer", false, false);
 
         administrator.addComputer(computer);
-        internalNetwork.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
 
-        computer.networkServiceScan.assertCompromisedInstantaneously();
+        computer.diskStructureWipe.assertCompromisedInstantaneously();
 
     }
 }

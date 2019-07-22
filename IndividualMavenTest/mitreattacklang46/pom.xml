@@ -66,7 +66,7 @@
               <arguments>
                 <argument>-i</argument>
                 <!--argument>./mitreattacklang.mal</argument-->
-                <argument>./singleAttacks/exploitationForDefenseEvasion.mal</argument>
+                <argument>./singleAttacks/commonlyUsedPorts.mal</argument>
               
                 <argument>-o</argument>
                 <argument>./target/generated-sources</argument>

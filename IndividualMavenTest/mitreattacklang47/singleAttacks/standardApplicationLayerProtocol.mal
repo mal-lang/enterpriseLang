@@ -1,0 +1,33 @@
+category Network {
+    asset InternalNetwork {
+        & applicationLayerConnexion
+            -> c2Server.c2Connexion,
+               bypassNetworkDetection
+               externalNetwork.bypassNetworkDetection
+
+        | bypassNetworkDetection
+
+        # networkIntrusionDetection
+            -> applicationLayerConnexion
+    }
+
+    asset C2Server {
+        | c2Connexion
+    }
+
+    asset ExternalNetwork {
+        | bypassNetworkDetection
+    }
+}
+category Hardware {
+    asset Computer {
+        | infectedComputer
+            -> internalNetwork.applicationLayerConnexion
+    }
+}
+
+assocations {
+    InternalNetwork [internalNetwork] 1 <--contains--> 1-* [computer] Computer
+    InternalNetwork [internalNetwork] 1 <--contains--> 1-* [c2Server] C2Server
+    InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
+}

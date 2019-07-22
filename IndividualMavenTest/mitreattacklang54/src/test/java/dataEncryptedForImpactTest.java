@@ -4,51 +4,45 @@ import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class audioCaptureTest{
+public class dataEncryptedForImpactTest{
 
     @Test
     public void test1(){
         User user = new User("user");
+        Administrator administrator = new Administrator("administrator")
         Computer computer = new Computer("computer", true);
-        Microphone microphone = new Microphone("microphone");
 
         user.addComputer(computer);
+        administrator.addComputer(computer);
 
         Attacker attacker = new Attacker();
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-        computer.dataCollected.assertUncompromised();
+
+        computer.userDataEncryptedForImpact.assertUncompromised();
+        computer.adminDataEncryptedForImpact.assertUncompromised();
 
     }
     @Test
     public void test2(){
         User user = new User("user");
+        Administrator administrator = new Administrator("administrator")
         Computer computer = new Computer("computer", false);
-        Microphone microphone = new Microphone("microphone");
 
         user.addComputer(computer);
+        administrator.addComputer(computer);
 
         Attacker attacker = new Attacker();
+        attacker.addAttackPoint(administrator.adminRights);
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-        computer.dataCollected.assertCompromisedInstantaneously();
 
-    }
-    @Test
-    public void test3(){
-        User user = new User("user");
-        Computer computer = new Computer("computer", false);
-   
+        computer.userDataEncryptedForImpact.assertCompromisedInstantaneously();
+        computer.adminDataEncryptedForImpact.assertCompromisedInstantaneously();
 
-        user.addComputer(computer);
-
-        Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
-        attacker.attack();
-
-        computer.dataCollected.assertUncompromised();
 
     }
 }
