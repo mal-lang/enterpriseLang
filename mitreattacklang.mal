@@ -356,8 +356,8 @@ category Network {
     }
 
     asset AdversaryHardwareTool {
-    | networkTapping
-     -> externalNetwork.wirelessAccessAndPassiveNetworkTapping
+        | networkTapping
+            -> externalNetwork.wirelessAccessAndPassiveNetworkTapping
     }
 
     asset NetworkSharedDrive {
