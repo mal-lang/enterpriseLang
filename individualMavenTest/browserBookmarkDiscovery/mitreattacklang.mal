@@ -1,0 +1,23 @@
+category Person{
+    asset User {
+        | userInformation
+        
+    }
+}
+category Network {
+    asset Browser {
+        | browserBookmark
+            -> browserBookmarkDiscovery
+        | browserBookmarkDiscovery 
+            ->  user.userInformation,
+                internalNetwork.internalNetworkResourcesInformation
+    }
+
+    asset InternalNetwork {
+        | internalNetworkResourcesInformation
+    }
+}
+associations {
+    Browser [browser] 1 <-- ui--> 1-* [user] User
+    Browser [browser] 1-* <-- ui --> 1-* [internalNetwork] InternalNetwork
+}
