@@ -1,0 +1,20 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            ->  createUserAccount
+        & createUserAccount 
+            ->  os.persistance
+        # multiFactorAuthentication
+            ->  createUserAccount
+    }
+}
+
+category Software {
+    asset OS {
+        | persistance
+    }
+}
+
+associations {
+    Administrator [administrator] 1 <-- ui--> 1-* [os] OS
+}
