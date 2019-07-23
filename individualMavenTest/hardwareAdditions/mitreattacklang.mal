@@ -1,0 +1,25 @@
+category Person{
+    asset Adversary {
+        | useHardwareTool
+            -> adversaryHardwareTool.networkTapping 
+        
+    }
+}
+
+category Network {
+    abstractAsset Network{
+        //-> firewall
+    }
+    asset ExternalNetwork extends Network{
+        | wirelessAccessAndPassiveNetworkTapping 
+    }
+    asset AdversaryHardwareTool {
+        | networkTapping
+            -> externalNetwork.wirelessAccessAndPassiveNetworkTapping
+    }
+}
+
+associations {
+    Adversary [adversary] 1 <-- ui--> 1-* [adversaryHardwareTool] AdversaryHardwareTool
+    ExternalNetwork [externalNetwork] 1 <-- ui--> 1-* [adversaryHardwareTool] AdversaryHardwareTool
+}
