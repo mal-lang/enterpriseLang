@@ -1,0 +1,10 @@
+Computer.dataCollected = Zero
+Computer.dataCompressed = Zero
+Computer.dataEncrypted = Zero
+Computer._automatedExfiltration = Zero
+Computer.exfiltrationOverAternativeProtocol = Zero
+Firewall.bypassFirewall = Zero
+InternalNetwork.dataExfiltration = Zero
+InternalNetwork.firewallExists = Zero
+InternalNetwork.networkIntrusionDetection = Zero
+ExternalNetwork.dataExfiltrated = Zero

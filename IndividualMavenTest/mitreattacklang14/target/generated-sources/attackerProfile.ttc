@@ -1,0 +1,5 @@
+User.userRights = Zero
+Administrator.adminRights = Zero
+OS.runningProcessDiscovery = Zero
+OS.detailedRunningProcessDiscovery = Zero
+OS.whitelisting = Zero

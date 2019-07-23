@@ -1,0 +1,35 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.processInjection
+    }
+
+    asset Administrator {
+        | adminRights
+           
+    }
+}
+
+category Software {
+    asset OS {
+        & runningProcessDiscovery
+            -> processInjection 
+
+
+        & processInjection
+            -> administrator.adminRights, 
+               bypassAntivirus,
+               bypassWhitelisting
+        | bypassAntivirus
+        
+        | bypassWhitelisting
+
+        # whitelisting
+            -> processInjection
+    }
+}
+
+associations{
+    User [user] 1 <-- ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--ui--> 1-* [os] OS
+}

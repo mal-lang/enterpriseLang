@@ -1,0 +1,20 @@
+category Person{
+    asset User {
+        | userRights
+            -> computer.fileDeletion
+    }
+}
+
+category Software {
+    asset Computer {
+        & fileDeletion 
+            -> bypassHostForensicAnalysisDetection
+        # whitelisting 
+            -> fileDeletion
+        | bypassHostForensicAnalysisDetection
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1 [computer] Computer
+}

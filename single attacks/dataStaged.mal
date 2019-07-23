@@ -1,0 +1,21 @@
+category Hardware {
+    asset Computer {
+        | dataCollected
+            -> dataStaged
+
+        | dataCompressed
+            -> dataStaged
+
+        | dataEncrypted
+            -> dataStaged
+
+        | dataStaged    
+            -> _dataStaged
+
+        & _dataStaged 
+            //-> all exfiltration attacks
+
+        # whitelisting
+            -> _dataStaged
+    }
+}

@@ -1,0 +1,10 @@
+User.userRights = Zero
+Administrator.adminRights = Zero
+Service.usertransmittedDataManipulation = Zero
+Service.admintransmittedDataManipulation = Zero
+Service.dataEncrypted = Zero
+Service.secureCommunication = Zero
+InternalNetwork.usertransmittedDataManipulation = Zero
+InternalNetwork.admintransmittedDataManipulation = Zero
+InternalNetwork.dataEncrypted = Zero
+InternalNetwork.secureCommunication = Zero

@@ -1,0 +1,30 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.peripheralDeviceDiscovery
+    }
+
+}
+category Software {
+   
+    asset Windows {
+        | peripheralDeviceDiscovery
+            -> computer.peripheralDeviceDiscovery
+    }
+}
+
+category Hardware {
+
+    asset Computer {
+        & peripheralDeviceDiscovery
+            info: "Adversaries may attempt to gather information about attached peripheral devices and components connected to a computer system. The information may be used to enhance their awareness of the system and network environment or may be used for further actions."
+
+        # whitelisting
+            -> peripheralDeviceDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [windows] Windows
+    Windows [windows] 1 <--software--> 1 [computer] Computer
+}

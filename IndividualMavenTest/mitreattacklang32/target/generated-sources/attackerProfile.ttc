@@ -1,0 +1,8 @@
+User.userRights = Zero
+Service.remoteAccessTools = Zero
+Service.whitelisting = Zero
+C2Server.c2Connected = Zero
+InternalNetwork.c2Connexion = Zero
+InternalNetwork.firewallExists = Zero
+InternalNetwork.networkIntrusionDetection = Zero
+Firewall.bypassFirewall = Zero

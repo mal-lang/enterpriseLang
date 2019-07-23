@@ -1,0 +1,4 @@
+Computer.dataCollected = Zero
+Computer.dataCompressed = Zero
+Computer.dataEncrypted = Zero
+Computer.scheduledExfiltration = Zero

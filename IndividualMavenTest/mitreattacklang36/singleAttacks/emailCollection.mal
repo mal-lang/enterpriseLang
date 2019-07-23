@@ -1,0 +1,53 @@
+category Person {
+    asset User {
+        | userRights 
+            -> windows.emailStorageCollection
+
+        | userCredentials
+            -> windows.outlookEmailCollection,
+               internalNetwork.exchangeServerCollection
+    }
+}
+
+category Software {
+    asset Windows {
+        & emailStorageCollection
+            info:"Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
+            -> computer.dataCollected
+        & outlookEmailCollection
+            info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
+            -> computer.dataCollected
+
+        # dataEncryption
+            -> emailStorageCollection,
+               outlookEmailCollection
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | dataCollected
+
+        # whitelisting 
+            -> dataCollected
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        & exchangeServerCollection
+            info:"Adversaries may leverage a user's credentials and interact directly with the Exchange server to acquire information from within a network."
+            -> computer.dataCollected
+        # dataEncryption
+            -> exchangeServerCollection
+        # twoFactorsAuthentication
+            -> exchangeServerCollection
+    }
+}
+
+associations {
+    InternalNetwork [internalNetwork] 1 <--contains--> 1-* [computer] Computer
+    Computer [computer] 1 <--software--> 1 [windows] Windows
+    User [user] 1-* <--use--> 1 [windows] Windows
+    User [user] 1-* <--use--> 1 [internalNetwork] InternalNetwork
+}

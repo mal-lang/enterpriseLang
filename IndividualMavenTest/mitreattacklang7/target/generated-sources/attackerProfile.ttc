@@ -1,0 +1,6 @@
+User.userRights = Zero
+Administrator.adminRights = Zero
+Computer.userDataDestruction = Zero
+Computer.adminDataDestruction = Zero
+Computer.whitelisting = Zero
+Computer.backup = Zero

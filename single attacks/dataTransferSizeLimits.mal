@@ -1,0 +1,20 @@
+category Hardware{
+    asset Computer{
+        | dataCollected
+            -> dataSizedTransfer
+        | dataSizedTransfer
+            info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
+            -> c2Server.dataExfiltrated
+    }
+}
+
+category Hardware{
+    asset C2Server{
+        & dataExfiltrated
+
+        # networkIntrusionDetection
+            -> dataExfiltrated
+    }
+}
+
+Computer [computer] 1 <--Control--> 1 [c2Server] C2Server

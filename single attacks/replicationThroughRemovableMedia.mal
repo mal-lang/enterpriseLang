@@ -1,0 +1,37 @@
+category Hardware {
+    asset RemovableMedia{
+        | infectedMedia
+            -> employee.insertMedia
+    }
+    
+    asset Computer {
+    | infectedWindowsComputer
+}
+
+}
+category Person {
+    asset Employee {
+        | insertMedia
+            -> userExecution,
+               manualManipulation
+        & userExecution
+            -> computer.infectedWindowsComputer
+        # trainedUser
+            ->  userExecution,
+                manualManipulation
+        & manualManipulation
+            -> user.userRights
+    }
+    asset User {
+
+        | userRights
+    }
+}
+
+
+associations{
+    RemovableMedia [removableMedia] 1-* <-- ui --> 1 [employee] Employee
+    Employee [employee] 1 <--use--> 1-* [user] User
+    Employee [employee] 1 <--use--> 1-* [computer] Computer
+
+}

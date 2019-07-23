@@ -1,0 +1,22 @@
+category Network{
+    asset ExternalNetwork {
+        # intrusionDetection
+            -> c2Server.obfuscatedData
+        # signatureIdentification
+            -> c2Server.obfuscatedData
+        | bypassNetworkDetection
+    }
+
+    asset C2Server {
+        | c2Connexion
+            -> obfuscatedData
+        & obfuscatedData
+            -> externalNetwork.bypassNetworkDetection
+        
+    }
+}
+associations {
+
+    ExternalNetwork [externalNetwork] 1 <--system--> 1 [c2Server] C2Server
+
+}

@@ -1,0 +1,62 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.videoCollection,
+               macOS.videoCollection
+    }
+}
+
+category Software {
+    asset Windows{
+        | videoCollection
+            -> computer.collectVideo
+
+    }
+    asset MacOS {
+        | videoCollection
+            -> computer.collectVideo
+
+    }
+    
+  
+    asset VideoCallApplication  { //asset extends Service
+        | collectVideo
+            -> computer._collectVideo
+    }
+}
+
+category Hardware {
+    asset Computer {
+        E webcamExists
+            <- webcam
+            -> webcam.collectVideo
+
+        E videoCallApplicationExists
+            <- videoCallApplication
+            -> videoCallApplication.collectVideo
+
+        | collectVideo
+            -> _collectVideo
+
+        & _collectVideo
+            -> dataCollected
+
+        # whitelisting
+            -> _collectVideo
+
+        | dataCollected
+    }
+    asset Webcam {
+        | collectVideo
+            -> computer._collectVideo
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [windows] Windows
+    User [user] 1-* <--use--> 1 [macOS] MacOS
+    Computer [computer] 1-* <--software--> 1 [windows] Windows
+    Computer [computer] 1-* <--software--> 1 [macOS] MacOS
+    VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
+    Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
+}

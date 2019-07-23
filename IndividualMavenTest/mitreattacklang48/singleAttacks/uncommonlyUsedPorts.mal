@@ -1,0 +1,34 @@
+category Hardware {
+    asset Computer {
+        | infectedComputer 
+            -> uncommonlyUsedPortsConnection
+
+        & uncommonlyUsedPortsConnection
+            -> c2Server.c2Connexion,
+               firewall.bypassFirewall,
+               internalNetwork.bypassProxies
+    }
+}
+
+category Network {
+    asset Firewall {
+        # uncommonlyUsedPortsLimitation
+            -> computer.uncommonlyUsedPortsConnection
+        
+        | bypassFirewall
+    }
+
+    asset C2Server {
+        | c2Connexion
+    }
+
+    asset InternalNetwork {
+        | bypassProxies
+    }
+}
+
+associations {
+    Computer [computer] 1-* <--protects--> 1 [firewall] Firewall
+    InternalNetwork [internalNetwork] 1 <--contains--> 1-* [computer] Computer
+    Computer [computer] 1-* <--connects--> 1-* [c2Server] C2Server
+}

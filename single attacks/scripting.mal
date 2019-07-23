@@ -1,0 +1,29 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.scripting
+    }
+    asset Employee {
+        | userExecution
+            -> os.scripting
+    }
+}
+
+category Software {
+    asset OS {
+        | scripting
+            -> _scripting
+
+        & _scripting
+
+        # restricedScripting
+            -> _scripting
+        # sandboxing
+            -> _scripting
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [os] OS
+    Employee [employee] 1-* <--use--> 1-* [os] OS
+}

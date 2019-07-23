@@ -1,0 +1,19 @@
+category Person {
+    asset User {
+        | userRights 
+            -> computer.permissionGroupsDiscovery
+    }
+}
+
+category Hardware {
+    asset Computer {
+        & permissionGroupsDiscovery
+            info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
+        # whitelisting
+            -> permissionGroupsDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [computer] Computer
+}
