@@ -24,7 +24,19 @@ category Person {
                 service.remoteAccessTool,
                 windows.emailStorageCollection,
                 windows.videoCollection,
-                macOS.videoCollection
+                macOS.videoCollection,
+                service._exploitationForDefenseEvasion,
+                os.systemInformationDiscovery,
+                computer.automatedCollection,
+                os.scripting,
+                macOS.spaceAfterFileName,
+                linux.spaceAfterFileName,
+                macOS.networkShareDiscovery,
+                windows.networkShareDiscovery,
+                macOS.userSecuritySoftwareDiscovery,
+                windows.userSecuritySoftwareDiscovery,
+                computer.userDiskWiped,
+                computer.userDataEncryptedForImpact
 
         | userCredentials
             -> windws.outlookEmailCollection,
@@ -47,17 +59,26 @@ category Person {
                service.admintransmittedDataManipulation,
                computer.networkServiceScan,
                windows.scheduledTask,
-               windows.systemTaskDiscovery
+               windows.systemTaskDiscovery,
+               computer.automatedCollection,
+               computer.sensitiveDataCollected,
+               computer.diskStructureWipe,
+               computer.adminDiskWiped,
+               computer.adminDataEncryptedForImpact
 
 
     }
     asset WindowsAdmin extends Administrator{
         | systemRights
-            -> windows.executeService
-               administrator.adminRights
+            -> windows.executeService,
+               administrator.adminRights,
+               windows.queryRegistery,
+               windows.adminSecuritySoftwareDiscovery
 
     }
     asset Root extends Administrator{
+        | rootRights
+            -> macOS.adminSecuritySoftwareDiscovery
 
     }
     asset Employee {
@@ -81,7 +102,9 @@ category Person {
         
         & userExecution
             -> computer.infectedComputer,
-               computer.infectedWindowsComputer
+               computer.infectedWindowsComputer,
+               os.scripting
+
         | insertMedia
             -> userExecution,
                manualManipulation
@@ -136,6 +159,22 @@ category Software {
 
         # whitelisting
             -> remoteAccessTools
+
+        | exploitationForDefenseEvasion //end step of securoty software discovery
+            -> _exploitationForDefenseEvasion
+
+        & _exploitationForDefenseEvasion
+            -> bypassAntivirus,
+               bypassSystemAccessControls
+        # softwareUpdated
+            -> exploitationForDefenseEvasion
+
+        # sandboxing
+            -> exploitationForDefenseEvasion
+
+        | bypassAntivirus
+
+        | bypassSystemAccessControls
     }
     abstractAsset OS{
         & accountDiscovery
@@ -161,11 +200,14 @@ category Software {
             info: "Adversaries with admin rights may get better details of the hosts enumerated"
         
         & adminCommandLineInterface
-            //-> // entrypoints of attacks that can be done with command line interface under admin rights
+            -> computer.dataCollected// entrypoints of attacks that can be done with command line interface under admin rights
         
         & userCommandLineInterface
-            //-> // entrypoints of attacks that can be done with command line interface under user rights
-    
+            -> computer.dataCollected// entrypoints of attacks that can be done with command line interface under user rights
+
+        & systemInformationDiscovery
+            info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+        
 
         # whitelisting
             -> accountDiscovery,
@@ -177,7 +219,8 @@ category Software {
                 detailedRemoteSystemDiscovery,
                 adminCommandLineInterface, 
                 userCommandLineInterface,
-                processInjection
+                processInjection,
+                systemInformationDiscovery
 
         & processInjection
             -> administrator.dminRights,
@@ -218,6 +261,17 @@ category Software {
         & spearphishingLinkDownload
             -> employee.userExecution
 
+        | scripting
+            -> _scripting
+
+        & _scripting
+            -> computer.automatedCollection
+
+        # restricedScripting
+            -> _scripting
+        # sandboxing
+            -> _scripting
+
     }
     asset Linux extends OS {
         & bootkit
@@ -226,24 +280,76 @@ category Software {
             -> bootkit
         | persistance
 
+        & spaceAfterFileName
+            -> employee.userExecution
+        
+        # fileMonitoring
+            -> spaceAfterFileName
+
     }
     asset MacOS extends OS{
         | videoCollection
             -> computer.collectVideo
+
+        & spaceAfterFileName
+            -> employee.userExecution
+        
+        # fileMonitoring
+            -> spaceAfterFileName
+
+        & networkShareDiscovery
+            -> internalNetwork.networkShareDiscovery
+
+        & userSecuritySoftwareDiscovery
+            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            // -> leads to exploitation for defense evasion attack
+        & adminSecuritySoftwareDiscovery
+            // -> leads to exploitation for defense evasion attack
+        
+
+        # whitelisting
+            -> networkShareDiscovery,
+               userSecuritySoftwareDiscovery,
+               adminSecuritySoftwareDiscovery
     }
     asset Windows extends OS{
         & createService
             -> executeService
+
+        & queryRegistery
+            info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
+            //-> os.systemInformationDiscovery,
+               computer.configuration,
+               software.installSoftware
+
+        & networkShareDiscovery
+            -> internalNetwork.networkShareDiscovery
+
+        & userSecuritySoftwareDiscovery
+            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            // -> leads to exploitation for defense evasion attack
+        
+        & adminSecuritySoftwareDiscovery
+            //-> leads to exploitation for defense evasion attack
+        
+
         # whitelisting
             -> createService,
                scheduledTask, 
-               systemTimeDiscovery
+               systemTimeDiscovery,
+               queryRegistery,
+               networkShareDiscovery,
+               userSecuritySoftwareDiscovery,
+               adminSecuritySoftwareDiscovery
 
         & executeService
             -> persistance
+
         | persistance
+
         & bootkit
             -> persistance
+
         # secureBootProcess
             -> bootkit
 
@@ -322,8 +428,15 @@ category Network {
         | bypassNetworkDetection
 
         | dataExfiltrated
+
+        | bypassFirewall
     }
     asset InternalNetwork {
+        & applicationLayerConnexion
+            -> c2Connexion,
+               bypassNetworkDetection,
+               externalNetwork.bypassNetworkDetection
+
         & dataExfiltration
             -> externalNetwork.dataExfiltrated
         
@@ -334,9 +447,14 @@ category Network {
             
         # networkIntrusionDetection
             -> dataExfiltration,
-               c2Server.dataExfiltrated
+               c2Server.dataExfiltrated,
+               applicationLayerConnexion
 
         | bypassNetworkDetection
+
+        | bypassFirewall
+
+        | bypassProxies
 
         & usertransmittedDataManipulation
             info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
@@ -375,12 +493,21 @@ category Network {
             -> exchangeServerCollection
         # twoFactorsAuthentication
             -> exchangeServerCollection
+
+        | networkShareDiscovery
+            info:"Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. "
+        
     }
 
     asset Firewall {
         & bypassFirewall
             -> internalNetwork.dataExfiltration,
                internalNetwork.c2Connexion
+
+        # uncommonlyUsedPortsLimitation
+            -> computer.uncommonlyUsedPortsConnection
+        
+        | bypassFirewall
 
     }
 
@@ -389,18 +516,55 @@ category Network {
 category Hardware {
     asset Computer {
         | infectedComputer
-            -> removableMedia.infectedMedia
+            -> removableMedia.infectedMedia,
+               commonlyUsedPortsConnection,
+               internalNetwork.applicationLayerConnexion,
+               uncommonlyUsedPortsConnection
+
+        & commonlyUsedPortsConnection
+            -> internalNetwork.c2Connexion,
+               externalNetwork.bypassFirewall,
+               internalNetwork.bypassFirewall,
+               externalNetwork.bypassNetworkDetection,
+               internalNetwork.bypassNetworkDetection
+
+        & uncommonlyUsedPortsConnection
+            -> internalNetwork.c2Connexion,
+               firewall.bypassFirewall,
+               internalNetwork.bypassProxies
 
         & fileDiscovery
             info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. "
+            -> automatedCollection
 
         & directoryDiscovery
             info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. "
+            -> automatedCollection
 
         & fileDeletion
             info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
             -> bypassHostForensicAnalysisDetection
+
         | bypassHostForensicAnalysisDetection
+
+         & diskStructureWipe
+            info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
+ 
+        # backup
+            info:"Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
+            -> diskStructureWipe,
+               userDiskWiped,
+               adminDiskWiped
+
+        & userDiskWiped
+            info:"Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
+
+        & adminDiskWiped
+
+        & userDataEncryptedForImpact
+            info: "Attackers can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted"
+        
+        & adminDataEncryptedForImpact
 
         # whitelisting
             -> fileDiscovery, 
@@ -415,19 +579,36 @@ category Hardware {
                peripheralDeviceDiscovery,
                permissionGroupsDiscovery,
                _dataStaged,
-               _collectVideo
+               _collectVideo,
+               _automatedCollection,
+               diskStructureWipe,
+               userDiskWiped,
+               adminDiskWiped,
+               userDataEncryptedForImpact, 
+               adminDataEncryptedForImpact
 
 
         & uploadRemoteFile
             // leads to file execution attacks
-            -> employee.userExecution
+            -> employee.userExecution,
+               automatedCollection
+
+        | automatedCollection
+            -> _automatedCollection
+
+
+        & _automatedCollection
+            -> dataCollected, 
+               sensitiveDataCollected
 
         & downloadRemoteFile
             info: "data collection from the user"
 
         # networkIntrusionDetection
              info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
-            -> uploadRemoteFile, downloadRemoteFile
+            -> uploadRemoteFile, 
+               downloadRemoteFile,
+               commonlyUsedPortsConnection
 
         & userDataDestruction
 
@@ -436,6 +617,17 @@ category Hardware {
         # backup
             -> userDataDestruction,
                adminDataDestruction
+        
+        & sensitiveDataCollected
+            -> dataCompressed,
+               exfiltrationOverPhysicalMedium,
+               dataSizedTransfer,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration,
+               dataEncrypted, 
+               dataStaged
 
         | dataCollected
             -> _dataCollected
@@ -589,6 +781,7 @@ associations {
     User [user] 1 <-- ui--> 1 [computer] Computer
     User [user] 1-* <--use--> 1-* [service] Service
     User [macOSUser] 1-* <--use--> 1 [macOS] MacOS
+    User [linuxUser] 1-* <--use--> 1 [linux] Linux
 
 
     Administrator [administrator] 1 <--ui--> 1-* [user] User
@@ -604,6 +797,8 @@ associations {
     Employee [employee] 1 <--use--> 1-* [computer] Computer
     Employee [employee] 1 <--use--> 1-* [user] User
     Employee [employee] 1 <--use--> 1-* [os] OS
+    Employee [employee] 1 <--use--> 1-* [macOS] MacOS
+    Employee [employee] 1 <--use--> 1-* [linux] Linux
     Employee [employee] 1 <--use--> 1-* [removableMedia] RemovableMedia
 
     Computer [computer] 1 <--use--> 1-* [removableMedia] RemovableMedia
@@ -623,7 +818,13 @@ associations {
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
-    
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
+    Computer [computer] 1-* <--protects--> 1 [firewall] Firewall
+
+    Root [root] 1-* <--use--> 1 [macOS] MacOS
+    WindowsAdministrator [windowsAdministrator] 1-* <--use--> 1 [windows] Windows
+
     VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
     Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
 }
