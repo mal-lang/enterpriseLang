@@ -1,0 +1,41 @@
+category Person{
+    asset User {
+        | userRights
+            ->  adminLogin,
+                macOS.launchAgent
+        | userCredentials
+            ->  userRights
+        | adminLogin
+            ->  adminCheck
+        & adminCheck
+            ->  administrator.adminRights
+        # adminAccess
+            ->  adminCheck
+    }
+    asset Administrator {
+        | adminRights 
+            -> macOS.launchAgentAllUsersOnTheMac
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+    asset MacOS extends OS{
+        & launchAgent
+            ->  persistence
+        & launchAgentAllUsersOnTheMac
+            ->  persistence
+        # launchAgentDefens
+            ->  launchAgent,
+                launchAgentAllUsersOnTheMac
+    }
+
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [administrator] Administrator
+    MacOS [macOS] 1 <-- ui--> 1-* [administrator] Administrator
+    User [user] 1 <-- ui--> 1-* [macOS] MacOS
+}
