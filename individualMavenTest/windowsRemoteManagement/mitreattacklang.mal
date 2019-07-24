@@ -1,0 +1,38 @@
+category Person{
+    asset User {
+        | userRights
+            -> windows.executeCodeUser
+    }
+    asset Administrator {
+        | adminRights
+            ->  windows.executeCodeAdmin
+    }
+}
+
+category Software {
+    asset OS {
+       | lateralMovement
+        
+       & executeCodeUser
+
+       & executeCodeAdmin
+    }
+
+    asset Windows extends OS{
+        |  startAttack // for testin 
+            -> windowsRemoteManagement
+        & windowsRemoteManagement
+            ->  lateralMovement,
+                executeCodeAdmin,
+                executeCodeUser
+        #   firewalls
+            -> windowsRemoteManagement
+        #   disableWinRM
+            -> windowsRemoteManagement
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [windows] Windows
+    Administrator [administrator] 1 <-- ui--> 1-* [windows] Windows
+}
