@@ -1,0 +1,17 @@
+category Software {
+    asset OS {
+        | persistence
+    }
+    asset Windows extends OS {
+        | eventHapens
+            -> windowsManagementInstrumentationEventSubscription
+        & windowsManagementInstrumentationEventSubscription 
+            -> persistence
+        # windowsManagementInstrumentationDefense
+            info: "https://attack.mitre.org/techniques/T1084/"
+            -> windowsManagementInstrumentationEventSubscription 
+    }
+}
+
+associations {
+}
