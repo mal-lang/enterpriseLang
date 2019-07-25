@@ -1,0 +1,26 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            ->  windows.timeProviders
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+
+        # whitelisting
+    }
+    asset Windows extends OS{
+         & timeProviders
+            ->  persistence
+         # whitelisting
+            +>  timeProviders
+
+    }
+}
+
+associations {
+    Windows [windows] 1 <-- ui--> 1-* [administrator] Administrator
+}
+
