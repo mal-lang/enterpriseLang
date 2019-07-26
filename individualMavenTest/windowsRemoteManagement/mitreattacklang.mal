@@ -1,11 +1,11 @@
 category Person{
     asset User {
         | userRights
-            -> windows.executeCodeUser
+            -> os.executeCodeUser
     }
     asset Administrator {
         | adminRights
-            ->  windows.executeCodeAdmin
+            ->  os.executeCodeAdmin
     }
 }
 
@@ -33,6 +33,6 @@ category Software {
 }
 
 associations {
-    User [user] 1 <-- ui--> 1-* [windows] Windows
-    Administrator [administrator] 1 <-- ui--> 1-* [windows] Windows
+    User [user] 1-* <-- ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <-- ui--> 1-* [os] OS
 }

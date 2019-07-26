@@ -1,0 +1,45 @@
+category Person{
+    asset User {
+        | userRights
+            -> windows.taintSharedContent
+    }
+}
+
+category Software {
+    asset OS {
+        # whitelisting
+    }
+    asset Windows extends OS{
+        & taintSharedContent
+            -> internalNetwork.connectedToNetwork
+        # whitelisting
+            +>  taintSharedContent
+
+    }
+}
+
+category Network {
+    abstractAsset Network{
+        //-> firewall
+    }
+
+    asset InternalNetwork extends Network {
+        | connectedToNetwork
+            ->  networkSharedDrive.connectToDrive
+    }
+
+    asset NetworkSharedDrive {
+        | data
+           
+        & connectToDrive
+            -> data
+        # whitelisting
+            -> connectToDrive
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1-* <-- ui--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1-* <-- ui--> 1-* [networkSharedDrive] NetworkSharedDrive
+}

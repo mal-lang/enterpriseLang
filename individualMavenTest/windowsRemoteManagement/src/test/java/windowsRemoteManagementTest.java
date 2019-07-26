@@ -13,8 +13,8 @@ public class windowsRemoteManagementTest{
         Windows windows = new Windows("windows", true,true);
 
         // Section 2: Asset connections and attacker creation
-        user.addWindows(windows);
-        admin.addWindows(windows);
+        user.addOs(windows);
+        admin.addOs(windows);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
@@ -34,8 +34,8 @@ public class windowsRemoteManagementTest{
         Windows windows = new Windows("windows");
 
         // Section 2: Asset connections and attacker creation
-        user.addWindows(windows);
-        admin.addWindows(windows);
+        user.addOs(windows);
+        admin.addOs(windows);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
@@ -55,8 +55,8 @@ public class windowsRemoteManagementTest{
         Windows windows = new Windows("windows");
 
         // Section 2: Asset connections and attacker creation
-        user.addWindows(windows);
-        admin.addWindows(windows);
+        user.addOs(windows);
+        admin.addOs(windows);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(admin.adminRights);
