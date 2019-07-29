@@ -2,26 +2,26 @@ category Person{
     asset User {
         
         | userRights
-            -> os.systemNetworkConnectionsDiscovery
+            -> os.systemOwnerUserDiscovery
 
     }
      asset Administrator {
         
         | adminRights
-            -> os.systemNetworkConnectionsDiscovery
+            -> os.systemOwnerUserDiscovery
 
     }
 }
 
 category Software {
     asset OS {
-        | systemNetworkConnectionsDiscovery
-        & _systemNetworkConnectionsDiscovery
-            info: "https://attack.mitre.org/techniques/T1049/"
+        | systemOwnerUserDiscovery
+        & _systemOwnerUserDiscovery
+            info: "https://attack.mitre.org/techniques/T1033/"
             -> discovery
         | discovery
         # whitelisting
-            -> _systemNetworkConnectionsDiscovery
+            -> _systemOwnerUserDiscovery
     }
 }
 
