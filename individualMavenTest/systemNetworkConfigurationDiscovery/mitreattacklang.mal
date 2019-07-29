@@ -1,0 +1,23 @@
+category Person{
+    asset User {
+        
+        | userRights
+            -> os.systemNetworkConfigurationDiscovery
+
+    }
+}
+
+category Software {
+    asset OS {
+        & systemNetworkConfigurationDiscovery
+            info: "Examples include Arp, ipconfig/ifconfig, nbtstat, and route."
+            -> discovery
+        | discovery
+        # whitelisting
+            -> systemNetworkConfigurationDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [os] OS
+}
