@@ -1,0 +1,40 @@
+category Person {
+    asset User{
+        | userCredential //it is the end point of a credential access attack
+            -> service.userRemoteServicesLogin,
+               internalNetwork.bypassAccessControl
+        
+        | userRights
+    }
+
+    asset Administrator{
+        | adminCredential
+            -> service.adminRemoteServicesLogin,
+               internalNetwork.bypassAccessControl
+
+        | adminRights
+    }
+}
+category Software {
+    asset Service {
+        & userRemoteServicesLogin
+
+        & adminRemoteServicesLogin
+
+        # whitelisting
+            -> userRemoteServicesLogin,
+               adminRemoteServicesLogin
+    }
+}
+category Network {
+    asset InternalNetwork {
+        | bypassAccessControl
+
+    }
+}
+associations {
+    User [user] 1-* <--use--> 1-* [service] Service
+    Administrator [administrator] 1-* <--use--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
+}
