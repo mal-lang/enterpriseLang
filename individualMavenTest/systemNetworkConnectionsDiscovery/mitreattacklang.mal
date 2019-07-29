@@ -1,0 +1,23 @@
+category Person{
+    asset User {
+        
+        | userRights
+            -> os.systemNetworkConnectionsDiscovery
+
+    }
+}
+
+category Software {
+    asset OS {
+        & systemNetworkConnectionsDiscovery
+            info: "https://attack.mitre.org/techniques/T1049/"
+            -> discovery
+        | discovery
+        # whitelisting
+            -> systemNetworkConnectionsDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [os] OS
+}

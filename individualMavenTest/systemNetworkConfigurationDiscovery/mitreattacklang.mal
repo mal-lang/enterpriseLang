@@ -10,7 +10,7 @@ category Person{
 category Software {
     asset OS {
         & systemNetworkConfigurationDiscovery
-            info: "Examples include Arp, ipconfig/ifconfig, nbtstat, and route."
+            info: "Examples include Arp, ipconfig/ifconfig, nbtstat, and route. https://attack.mitre.org/techniques/T1016/"
             -> discovery
         | discovery
         # whitelisting
