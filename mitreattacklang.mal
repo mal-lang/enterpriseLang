@@ -18,6 +18,7 @@ category Person {
                 computer.downloadRemoteFile,
                 computer.collectAudio,
                 internalNetwork.usertransmittedDataManipulation,
+                service.userRemoteServicesLogin,
                 service.usertransmittedDataManipulation,
                 windows.peripheralDeviceDiscovery,
                 computer.permissionGroupsDiscovery,
@@ -40,8 +41,9 @@ category Person {
 
         | userCredentials
             -> windows.outlookEmailCollection,
-               internalNetwork.exchangeServerCollection
-
+               internalNetwork.bypassAccessControl
+               internalNetwork.exchangeServerCollection,
+               service.userRemoteServicesLogin
         
     }
 
@@ -56,7 +58,9 @@ category Person {
                windows.bootkit,
                linux.bootkit,
                internalNetwork.admintransmittedDataManipulation,
+               internalNetwork.bypassAccessControl,
                service.admintransmittedDataManipulation,
+               service.adminRemoteServicesLogin,
                computer.networkServiceScan,
                windows.scheduledTask,
                computer.automatedCollection,
@@ -64,7 +68,8 @@ category Person {
                computer.diskStructureWipe,
                computer.adminDiskWiped,
                computer.adminDataEncryptedForImpact
-
+               
+        | adminCredential
 
     }
     asset WindowsAdmin {
@@ -139,6 +144,10 @@ category Person {
 
 category Software {
     asset Service {
+        & userRemoteServicesLogin
+
+        & adminRemoteServicesLogin
+        
         & usertransmittedDataManipulation
             info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
@@ -157,7 +166,9 @@ category Software {
             -> internalNetwork.c2Connexion
 
         # whitelisting
-            -> remoteAccessTools
+            -> remoteAccessTools,
+               userRemoteServicesLogin,
+               adminRemoteServicesLogin
 
         | exploitationForDefenseEvasion //end step of securoty software discovery
             -> _exploitationForDefenseEvasion
@@ -449,7 +460,9 @@ category Network {
                applicationLayerConnexion,
                computer.networkServiceScan,
                c2Connexion
-
+               
+        | bypassAccessControl
+        
         | bypassNetworkDetection
 
         | bypassProxies
