@@ -129,12 +129,12 @@ category Person {
             -> browser.maliciousAds, 
                employee.adLinkClicked
         | spearphishingAttachmentAttack
-        -> employee.spearphishingAttachmentDownload,
-           browser.spearphishingAttachment
+            -> employee.spearphishingAttachmentDownload,
+               browser.spearphishingAttachment
 
         | spearphishingLinkAttack
-        -> employee.spearphishingLinkClicked,
-           browser.spearphishingLink
+            -> employee.spearphishingLinkClicked,
+               browser.spearphishingLink
 
 
         
@@ -322,7 +322,7 @@ category Software {
                userSecuritySoftwareDiscovery,
                adminSecuritySoftwareDiscovery
     }
-    asset Windows{
+    asset Windows extends OS{
         & createService
             -> executeService
 
