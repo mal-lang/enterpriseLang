@@ -1,0 +1,37 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.dynamicDataExchange            
+    }
+}
+
+category Software {   
+    abstractAsset OS{
+    }
+                           
+    asset Windows extends OS {  
+        & registryKeysEnabled
+            -> dynamicDataExchange
+
+        | dynamicDataExchange
+      info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
+            -> userCommandLineInterface 
+
+        & userCommandLineInterface
+        
+        # disableDDEFeature
+            -> registryKeysEnabled
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedWindowsComputer
+            -> windows.dynamicDataExchange
+    }
+}
+
+associations {
+    User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
+    Windows [windows] 1 <--software--> 1 [computer] Computer
+}
