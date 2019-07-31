@@ -43,7 +43,7 @@ category Person {
 
         | userCredentials
             -> windows.outlookEmailCollection,
-               internalNetwork.bypassAccessControl
+               internalNetwork.bypassAccessControl,
                internalNetwork.exchangeServerCollection,
                service.userRemoteServicesLogin
         
@@ -85,11 +85,17 @@ category Person {
                windows.adminSecuritySoftwareDiscovery
 
     }
+    
     asset Root extends Administrator{
         | rootRights
             -> macOS.adminSecuritySoftwareDiscovery
 
     }
+    
+    asset System {
+        | systemRights
+    }
+    
     asset Employee {
         & spearphishingLinkClicked [UniformDistribution(20,1)]
             rationale: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
@@ -124,8 +130,8 @@ category Person {
         & _mediaInserted
             -> removableMedia.dataExfiltrated
         
-
     }
+    
     asset Adversary {
         | maliciousWebsite
             -> browser.maliciousWebsite, 
@@ -139,11 +145,7 @@ category Person {
 
         | spearphishingLinkAttack
             -> employee.spearphishingLinkClicked,
-               browser.spearphishingLink
-
-
-        
-   
+               browser.spearphishingLink  
     }
 }
 
