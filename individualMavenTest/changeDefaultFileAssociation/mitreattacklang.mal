@@ -1,0 +1,30 @@
+category Person{
+    asset User {
+        | userRights
+            -> windows.changeDefaultFileAssociation
+    }
+    asset Administrator {
+        | adminRights
+            ->  windows.changeDefaultFileAssociation
+    }
+    asset SYSTEM {
+        | systemRights
+            ->  windows.changeDefaultFileAssociation
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+    asset Windows extends OS{
+        | changeDefaultFileAssociation
+            ->  persistence
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [windows] Windows
+    Administrator [administrator] 1-* <-- ui--> 1-* [windows] Windows
+    SYSTEM [system] 1-* <-- ui--> 1-* [windows] Windows
+}
