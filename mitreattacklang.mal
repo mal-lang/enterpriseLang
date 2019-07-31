@@ -8,8 +8,11 @@ category Person {
                 os.passwordPolicyDiscovery,
                 os.runningProcessDiscovery,
                 os.remoteSystemDiscovery,
+                os.scripting,
+                os.systemInformationDiscovery,
                 os.userCommandLineInterface,
                 os.processInjection,
+                computer.automatedCollection,
                 computer.userDataDestruction,
                 computer.fileDiscovery,
                 computer.directoryDiscovery,
@@ -17,27 +20,26 @@ category Person {
                 computer.uploadRemoteFile, 
                 computer.downloadRemoteFile,
                 computer.collectAudio,
-                internalNetwork.usertransmittedDataManipulation,
-                service.userRemoteServicesLogin,
-                service.usertransmittedDataManipulation,
-                windows.peripheralDeviceDiscovery,
                 computer.permissionGroupsDiscovery,
-                service.remoteAccessTools,
-                windows.emailStorageCollection,
-                windows.videoCollection,
-                macOS.videoCollection,
-                service._exploitationForDefenseEvasion,
-                os.systemInformationDiscovery,
-                computer.automatedCollection,
-                os.scripting,
-                macOS.spaceAfterFileName,
-                linux.spaceAfterFileName,
-                macOS.networkShareDiscovery,
-                windows.networkShareDiscovery,
-                macOS.userSecuritySoftwareDiscovery,
-                windows.userSecuritySoftwareDiscovery,
                 computer.userDiskWiped,
-                computer.userDataEncryptedForImpact
+                computer.userDataEncryptedForImpact,
+                service.usertransmittedDataManipulation,
+                service.remoteAccessTools,
+                service._exploitationForDefenseEvasion,
+                windows.dynamicDataExchange,  
+                windows.emailStorageCollection,
+                windows.executeMshta,
+                windows.networkShareDiscovery,
+                windows.peripheralDeviceDiscovery,
+                windows.userSecuritySoftwareDiscovery,
+                windows.videoCollection,
+                linux.spaceAfterFileName,
+                macOS.spaceAfterFileName,
+                macOS.networkShareDiscovery,
+                macOS.userSecuritySoftwareDiscovery,
+                macOS.videoCollection,
+                internalNetwork.usertransmittedDataManipulation
+
 
         | userCredentials
             -> windows.outlookEmailCollection,
@@ -70,11 +72,14 @@ category Person {
                computer.adminDataEncryptedForImpact
                
         | adminCredential
-
+            -> service.adminRemoteServicesLogin,
+               internalNetwork.bypassAccessControl
     }
-    asset WindowsAdmin {
+    
+    asset WindowsAdmin extends Administrator{
         | systemRights
             -> administrator.adminRights,
+               windows.accessibilityFeatures,
                windows.executeService,
                windows.queryRegistery,
                windows.adminSecuritySoftwareDiscovery
@@ -186,12 +191,18 @@ category Software {
 
         | bypassSystemAccessControls
     }
+    
     abstractAsset OS{
+    
         & accountDiscovery
             info: "get account names and information"
 
         & domainDiscovery
             info: "get domain names and information"
+            
+        & binaryPadding
+            -> bypassSignatureBasedDetection,
+               bypassAntivirus
 
         & applicationWindowDiscovery
             info: "get a listing of opened application windows"
@@ -202,7 +213,15 @@ category Software {
 
         & detailedRunningProcessDiscovery
             info: "Adversaries with admin rights may get better process ownership details"
-
+            
+        | disablingSecurityTools
+           info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
+            -> bypassFileMonitoring,
+               computer.bypassHostIntrusionPrevention,
+               bypassSignatureBasedDetection,
+               bypassLogAnalysis,
+               bypassAntivirus
+               
         & remoteSystemDiscovery
             info: "Adversaries will likely attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system."
 
@@ -238,9 +257,14 @@ category Software {
                bypassWhitelisting
 
         | bypassAntivirus
-
+        
+        | bypassFileMonitoring
+        
+        | bypassLogAnalysis
+        
         | bypassWhitelisting
         
+        | bypassSignatureBasedDetection
         
         | passwordPolicyDiscovery
             -> bruteForceWithPasswordPolicy
@@ -250,17 +274,12 @@ category Software {
         & bruteForce
             info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             -> user.userCredentials
-        # lockoutPolicies
-            -> bruteForce
+           
 
         | codeDelivered
             -> antivirusCheck
         & antivirusCheck
             -> runCode
-        # antivirus
-            -> antivirusCheck,
-                spearphishingAttachmentDownload,
-                spearphishingLinkDownload
 
         | runCode
             -> computer.infectedComputer
@@ -276,13 +295,127 @@ category Software {
 
         & _scripting
             -> computer.automatedCollection
-
+            
+        # antivirus
+            -> antivirusCheck,
+                spearphishingAttachmentDownload,
+                spearphishingLinkDownload   
+        # lockoutPolicies
+            -> bruteForce
+        # whitelisting
+            -> binaryPadding
         # restricedScripting
             -> _scripting
         # sandboxing
             -> _scripting
 
     }
+    
+    asset Windows extends OS{
+        & accessibilityFeatures
+            info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system"
+            -> executeCode,
+               system.systemRights,
+               remoteDesktopProtocol 
+               
+        & executeMshta
+            info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
+            -> executeCode,
+               computer.bypassDigitalCertificateValidation,
+               computer.bypassApplicationWhitelisting    
+               
+        | executeCode 
+            -> computer.infectedWindowsComputer
+            
+        | bypassDigitalCertificateValidation 
+        
+        | remoteDesktopProtocol  // Remote Desktop Protocol attack
+            -> system.systemRights
+
+        | commandExecution
+            -> computer.infectedWindowsComputer
+        & createService
+            -> executeService
+            
+        & registryKeysEnabled
+            -> dynamicDataExchange
+
+        | dynamicDataExchange
+            info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
+            -> userCommandLineInterface 
+            
+        & queryRegistery
+            info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
+            //-> os.systemInformationDiscovery,
+               //computer.configuration,
+              // software.installSoftware
+
+        & networkShareDiscovery
+            -> internalNetwork.networkShareDiscovery
+
+        & userCommandLineInterface
+        
+        & userSecuritySoftwareDiscovery
+            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            // -> leads to exploitation for defense evasion attack
+        
+        & adminSecuritySoftwareDiscovery
+            //-> leads to exploitation for defense evasion attack
+        
+
+        # whitelisting
+            -> accessibilityFeatures,
+               executeMshta,
+               createService,
+               scheduledTask, 
+               systemTimeDiscovery,
+               queryRegistery,
+               networkShareDiscovery,
+               userSecuritySoftwareDiscovery,
+               adminSecuritySoftwareDiscovery
+
+        & executeService
+            -> persistance
+
+        | persistance
+
+        & bootkit
+            -> persistance
+
+        # secureBootProcess
+            -> bootkit
+
+        | peripheralDeviceDiscovery
+            -> computer.peripheralDeviceDiscovery
+
+        & emailStorageCollection
+            info:"Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
+            -> computer.dataCollected
+
+        & outlookEmailCollection
+            info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
+            -> computer.dataCollected
+
+        # dataEncryption
+            -> emailStorageCollection,
+               outlookEmailCollection
+
+        # disableDDEFeature
+            -> registryKeysEnabled
+            
+        | videoCollection
+            -> computer.collectVideo
+
+        & scheduledTask
+            info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
+            //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
+
+        & systemTimeDiscovery
+            info:"The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
+            -> scheduledTask
+      
+    }
+
     asset Linux extends OS {
         & bootkit
             -> persistance
@@ -322,76 +455,8 @@ category Software {
                userSecuritySoftwareDiscovery,
                adminSecuritySoftwareDiscovery
     }
-    asset Windows extends OS{
-        & createService
-            -> executeService
-
-        & queryRegistery
-            info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
-            //-> os.systemInformationDiscovery,
-               //computer.configuration,
-              // software.installSoftware
-
-        & networkShareDiscovery
-            -> internalNetwork.networkShareDiscovery
-
-        & userSecuritySoftwareDiscovery
-            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            // -> leads to exploitation for defense evasion attack
-        
-        & adminSecuritySoftwareDiscovery
-            //-> leads to exploitation for defense evasion attack
-        
-
-        # whitelisting
-            -> createService,
-               scheduledTask, 
-               systemTimeDiscovery,
-               queryRegistery,
-               networkShareDiscovery,
-               userSecuritySoftwareDiscovery,
-               adminSecuritySoftwareDiscovery
-
-        & executeService
-            -> persistance
-
-        | persistance
-
-        & bootkit
-            -> persistance
-
-        # secureBootProcess
-            -> bootkit
-
-        | peripheralDeviceDiscovery
-            -> computer.peripheralDeviceDiscovery
-
-        & emailStorageCollection
-            info:"Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
-            -> computer.dataCollected
-
-        & outlookEmailCollection
-            info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
-            -> computer.dataCollected
-
-        # dataEncryption
-            -> emailStorageCollection,
-               outlookEmailCollection
-
-        | videoCollection
-            -> computer.collectVideo
-
-        & scheduledTask
-            info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
-            //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
-
-        & systemTimeDiscovery
-            info:"The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
-            -> scheduledTask
-      
-    }
-
     
+
     asset VideoCallApplication extends Service { 
         | collectVideo
             -> computer._collectVideo
@@ -524,6 +589,9 @@ category Hardware {
                internalNetwork.applicationLayerConnexion,
                uncommonlyUsedPortsConnection
 
+        | infectedWindowsComputer
+            -> windows.dynamicDataExchange
+        
         & commonlyUsedPortsConnection
             -> internalNetwork.c2Connexion,
                firewall.bypassFirewall,
@@ -548,8 +616,14 @@ category Hardware {
             -> bypassHostForensicAnalysisDetection
 
         | bypassHostForensicAnalysisDetection
+        
+        | bypassHostIntrusionPrevention
+        
+        | bypassApplicationWhitelisting
 
-         & diskStructureWipe
+        | bypassDigitalCertificateValidation   
+        
+        & diskStructureWipe
             info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
  
         # backup
@@ -700,8 +774,6 @@ category Hardware {
         | exfiltrationOverPhysicalMedium
             -> removableMedia.dataExfiltrated
 
-        | infectedWindowsComputer
-
         E microphoneExists
             <- microphone
             -> microphone.collectAudio
@@ -769,8 +841,7 @@ category Hardware {
     }
 }
 
-associations {
-    
+associations {    
     
     Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
     Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser 
@@ -778,22 +849,23 @@ associations {
 
     User [user] 1 <-- ui--> 1-* [os] OS
     User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
+    User [linuxUser] 1-* <--use--> 1 [linux] Linux   
+    User [macOSUser] 1-* <--use--> 1 [macOS] MacOS
     User [user] 1-* <-- ui--> 1 [computer] Computer
     User [user] 1-* <--use--> 1-* [service] Service
-    User [macOSUser] 1-* <--use--> 1 [macOS] MacOS
-    User [linuxUser] 1-* <--use--> 1 [linux] Linux
-
-    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [administrator] Administrator
-
-
+  
     Administrator [administrator] 1 <--ui--> 1-* [user] User
     Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
     Administrator [linuxAdministrator] 1 <--ui--> 1-* [linux] Linux
     Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
     Administrator [administrator] 1 <--ui--> 1-* [os] OS
     Administrator [administrator] 1-* <--use--> 1-* [service] Service
-
-    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1 [windows] Windows
+    
+    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [os] OS
+    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [administrator] Administrator
+    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1 [windows] Windows    
+    
+    Root [root] 1-* <--use--> 1 [macOS] MacOS
 
     Employee [employee] 1 <--use--> 1-* [browser] Browser
     Employee [employee] 1 <--use--> 1-* [computer] Computer
@@ -806,16 +878,18 @@ associations {
     Computer [computer] 1 <--use--> 1-* [removableMedia] RemovableMedia
     Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
 
-
     Browser [browser] 1-* <-- software --> 1 [os] OS
     OS [os] 1 <-- system --> 1-* [computer] Computer
-    Windows [windows] 1 <--software--> 1 [computer] Computer
-    Computer [computer] 1-* <--software--> 1 [macOS] MacOS
+    OS [os] 1 <--ui--> 1 [system] System 
+    
+    Computer [computer] 1 <--software--> 1 [macOS] MacOS
+    Computer [computer] 1 <--software--> 1 [windows] Windows
+    
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [computer] Computer
 
-    InternalNetwork [ internalNetwork ] 1 <-- Protect --> 1 [firewall] Firewall
+    InternalNetwork [internalNetwork] 1 <-- Protect --> 1 [firewall] Firewall
     InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
@@ -823,11 +897,10 @@ associations {
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [windows] Windows
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [service] Service
+
     Computer [computer] 1-* <--protects--> 1 [firewall] Firewall
-
-    Root [root] 1-* <--use--> 1 [macOS] MacOS
-
+    Computer [computer] 1 <--use--> 1 [microphone] Microphone
     VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
     Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
-    Computer [computer] 1 <--use--> 1 [microphone] Microphone
+
 }
