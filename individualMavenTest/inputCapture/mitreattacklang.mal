@@ -1,0 +1,42 @@
+category Person{
+   asset User {
+        | userCredentials
+    }
+    asset Administrator {
+        | adminRights
+            ->  os.inputCapture
+        | adminCredentials
+            -> adminRights
+    }
+    asset SYSTEM {
+        | systemRights
+            ->  os.inputCapture
+        | systemCredentials
+            -> systemRights
+    }
+}
+
+
+category Software {
+    asset OS {
+        | dataCollection
+
+        | persistence
+            ->  _inputCapture
+        | inputCapture
+            ->  _inputCapture
+        & _inputCapture
+            ->  dataCollection,
+                user.userCredentials,
+                administrator.adminCredentials,
+                system.systemCredentials
+    
+    }
+
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <-- ui--> 1-* [os] OS
+    SYSTEM [system] 1-* <-- ui--> 1-* [os] OS
+}
