@@ -1,6 +1,0 @@
-InternalNetwork.applicationLayerConnexion = Zero
-InternalNetwork.bypassNetworkDetection = Zero
-InternalNetwork.networkIntrusionDetection = Zero
-C2Server.c2Connexion = Zero
-ExternalNetwork.bypassNetworkDetection = Zero
-Computer.infectedComputer = Zero

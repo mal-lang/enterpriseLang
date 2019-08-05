@@ -1,7 +1,0 @@
-User.userRights = Zero
-Service.exploitationForDefenseEvasion = Zero
-Service._exploitationForDefenseEvasion = Zero
-Service.softwareUpdated = Zero
-Service.sandboxing = Zero
-Service.bypassAntivirus = Zero
-Service.bypassSystemAccessControls = Zero

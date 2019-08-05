@@ -1,4 +1,0 @@
-Computer.dataCollected = Zero
-Computer.dataSizedTransfer = Zero
-C2Server.dataExfiltrated = Zero
-InternalNetwork.networkIntrusionDetection = Zero

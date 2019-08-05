@@ -1,8 +1,0 @@
-Computer.dataCollected = Zero
-Computer.dataCompressed = Zero
-Computer.dataEncrypted = Zero
-Computer._automatedExfiltration = Zero
-Computer.exfiltrationOverC2 = Zero
-InternalNetwork.networkIntrusionDetection = Zero
-C2Server.dataExfiltrated = Zero
-C2Server.networkDataTransferThresholdAlerts = Zero

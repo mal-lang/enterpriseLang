@@ -1,6 +1,0 @@
-Computer.infectedComputer = Zero
-Computer.uncommonlyUsedPortsConnection = Zero
-Firewall.uncommonlyUsedPortsLimitation = Zero
-Firewall.bypassFirewall = Zero
-C2Server.c2Connexion = Zero
-InternalNetwork.bypassProxies = Zero

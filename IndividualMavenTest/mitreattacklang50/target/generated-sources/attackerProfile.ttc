@@ -1,9 +1,0 @@
-User.userRights = Zero
-WindowsAdministrator.systemRights = Zero
-Root.rootRights = Zero
-Windows.userSecuritySoftwareDiscovery = Zero
-Windows.adminSecuritySoftwareDiscovery = Zero
-Windows.whitelisting = Zero
-MacOS.userSecuritySoftwareDiscovery = Zero
-MacOS.adminSecuritySoftwareDiscovery = Zero
-MacOS.whitelisting = Zero

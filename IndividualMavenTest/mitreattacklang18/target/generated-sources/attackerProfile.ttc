@@ -1,7 +1,0 @@
-RemovableMedia.infectedMedia = Zero
-Computer.infectedWindowsComputer = Zero
-Employee.insertMedia = Zero
-Employee.userExecution = Zero
-Employee.trainedUser = Zero
-Employee.manualManipulation = Zero
-User.userRights = Zero

@@ -1,5 +1,0 @@
-User.userRights = Zero
-Administrator.adminRights = Zero
-Computer.userDataEncryptedForImpact = Zero
-Computer.adminDataEncryptedForImpact = Zero
-Computer.whitelisting = Zero

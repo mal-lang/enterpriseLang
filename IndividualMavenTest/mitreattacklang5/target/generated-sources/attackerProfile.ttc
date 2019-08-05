@@ -1,5 +1,0 @@
-User.userRights = Zero
-Administrator.adminRights = Zero
-OS.userCommandLineInterface = Zero
-OS.adminCommandLineInterface = Zero
-OS.whitelisting = Zero

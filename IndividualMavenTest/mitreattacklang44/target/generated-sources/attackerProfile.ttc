@@ -1,6 +1,0 @@
-User.userRights = Zero
-Employee.userExecution = Zero
-OS.scripting = Zero
-OS._scripting = Zero
-OS.restricedScripting = Zero
-OS.sandboxing = Zero

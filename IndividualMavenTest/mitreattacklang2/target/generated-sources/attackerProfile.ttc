@@ -1,6 +1,0 @@
-User.userRights = Zero
-Computer.microphoneExists = Zero
-Computer.collectAudio = Zero
-Computer.whitelisting = Zero
-Computer.dataCollected = Zero
-Microphone.collectAudio = Zero

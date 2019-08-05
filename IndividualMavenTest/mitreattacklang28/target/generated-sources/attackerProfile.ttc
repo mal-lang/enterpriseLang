@@ -1,6 +1,0 @@
-Computer.dataCollected = Zero
-Computer.dataCompressed = Zero
-Computer.dataEncrypted = Zero
-Computer.automatedExfiltration = Zero
-Computer._automatedExfiltration = Zero
-Computer.whitelisting = Zero

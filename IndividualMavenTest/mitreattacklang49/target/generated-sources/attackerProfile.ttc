@@ -1,6 +1,0 @@
-User.userRights = Zero
-MacOS.networkShareDiscovery = Zero
-MacOS.whitelisting = Zero
-Windows.networkShareDiscovery = Zero
-Windows.whitelisting = Zero
-InternalNetwork.networkShareDiscovery = Zero
