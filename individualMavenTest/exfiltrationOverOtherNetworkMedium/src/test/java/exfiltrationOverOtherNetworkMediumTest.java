@@ -3,42 +3,38 @@ import org.junit.Test;
 import core.*;
 import attack.*;
 
-public class fileTest{
+public class exfiltrationOverOtherNetworkMediumTest{
 
     @Test
     public void test1(){
         // Section 1: Asset instantiation
-        User user = new User("user");
+        OtherNetworkMedium otherNetworkMedium = new OtherNetworkMedium("otherNetworkMedium");
         OS os = new OS("os", true);
 
         // Section 2: Asset connections and attacker creation
-        user.addOs(os);
+        otherNetworkMedium.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
+        attacker.addAttackPoint(os.dataCollected);
         attacker.attack();
 
         // Section 3: Assertions
-        os.accountDiscovery.assertUncompromised();
-        os.domainDiscovery.assertUncompromised();
-
+        otherNetworkMedium.send.assertUncompromised();
     }
     @Test
     public void test2(){
         // Section 1: Asset instantiation
-        User user = new User("user");
+        OtherNetworkMedium otherNetworkMedium = new OtherNetworkMedium("otherNetworkMedium");
         OS os = new OS("os");
 
         // Section 2: Asset connections and attacker creation
-        user.addOs(os);
+        otherNetworkMedium.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
+        attacker.addAttackPoint(os.dataCollected);
         attacker.attack();
 
         // Section 3: Assertions
-        os.accountDiscovery.assertCompromisedInstantaneously();
-        os.domainDiscovery.assertCompromisedInstantaneously();
-        
+        otherNetworkMedium.send.assertCompromisedInstantaneously();        
     }
 }

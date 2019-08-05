@@ -1,0 +1,27 @@
+category Software {
+    asset OS {
+        & exfiltrationOverOtherNetworkMedium  
+            -> otherNetworkMedium.send
+        | dataCollected
+            ->  exfiltrationOverOtherNetworkMedium 
+
+        #  operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  exfiltrationOverOtherNetworkMedium
+    }
+}
+
+category Network {
+    abstractAsset Network{
+        //-> firewall
+    }
+
+    asset OtherNetworkMedium extends Network{
+        | send
+            info: "Example, over a WiFi connection, modem, cellular data connection, Bluetooth, or another radio frequency (RF) channel."
+    }
+}
+
+associations {
+    OtherNetworkMedium [otherNetworkMedium] 1 <-- ui--> 1-* [os] OS
+}

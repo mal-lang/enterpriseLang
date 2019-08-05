@@ -19,5 +19,5 @@ category Software {
 }
 
 associations {
-    User [user] 1 <-- ui--> 1-* [os] OS
+    User [user] 1-* <-- ui--> 1-* [os] OS
 }
