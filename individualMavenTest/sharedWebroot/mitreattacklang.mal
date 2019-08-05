@@ -1,0 +1,34 @@
+category Hardware{
+    asset Server {
+        | infectedServer
+            ->  internalNetwork.connectedToNetwork,
+                webServer
+        & webServer
+            -> sharedWebroot
+        & sharedWebroot 
+            ->  internalNetwork.connectedToNetwork
+        # sharedWebrootDefens
+            info: "Limit privileged account use, unauthenticated network share access, and network/system isolation."
+            -> sharedWebroot
+    }
+}
+
+category Network {
+    abstractAsset Network{
+        //-> firewall
+    }
+    asset Browser {
+        | accessWebServer
+            -> server.webServer
+    }
+
+    asset InternalNetwork extends Network {
+        | connectedToNetwork
+    }
+    
+}
+
+associations {
+    Server [server] 1-* <-- ui--> 1-* [browser] Browser
+    Server [server] 1-* <-- ui--> 1-* [internalNetwork] InternalNetwork
+}
