@@ -1,0 +1,20 @@
+category Person {
+    asset WindowsAdministrator{
+        | systemRights
+            -> windows.queryRegistery
+    }
+}
+
+category Software {
+    asset Windows {
+        & queryRegistery
+            info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
+        # whitelisting
+            -> queryRegistery
+    }
+}
+
+associations {
+    
+    WindowsAdministrator [windowsAdministrator] 1-* <--system--> 1 [windows] Windows
+}

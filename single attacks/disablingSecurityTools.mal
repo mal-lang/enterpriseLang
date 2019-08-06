@@ -1,0 +1,28 @@
+category Software {
+    abstractAsset OS{
+        | disablingSecurityTools
+           info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
+            -> bypassFileMonitoring,
+               computer.bypassHostIntrusionPrevention,
+               bypassSignatureBasedDetection,
+               bypassLogAnalysis,
+               bypassAntivirus
+
+        | bypassFileMonitoring
+
+        | bypassSignatureBasedDetection
+
+        | bypassLogAnalysis
+
+        | bypassAntivirus
+
+    }
+}
+category Hardware {
+    asset Computer {
+        | bypassHostIntrusionPrevention
+    }
+}
+associations {
+   Computer [computer] 1 <-- Contain --> 1-* [os] OS
+}

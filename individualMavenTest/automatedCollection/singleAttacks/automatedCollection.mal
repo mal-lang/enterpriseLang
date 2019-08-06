@@ -1,0 +1,50 @@
+category Person {
+    asset User {
+        | userRights
+            -> computer.automatedCollection
+                
+    }
+    asset Administrator {
+        | adminRights
+            -> computer.automatedCollection,
+               computer.sensitiveDataCollected 
+    }
+}
+
+category Hardware {
+    asset Computer {
+        & scripting // from scripting attack
+            -> automatedCollection
+            
+        & fileDiscovery
+            -> automatedCollection
+
+        & directoryDiscovery
+            -> automatedCollection
+
+        & uploadRemoteFile
+            -> automatedCollection
+
+        
+        | automatedCollection
+            -> _automatedCollection
+
+
+        & _automatedCollection
+            -> dataCollected, 
+               sensitiveDataCollected
+
+        | dataCollected
+
+        & sensitiveDataCollected
+        
+        # whitelisting
+            -> _automatedCollection
+         
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [computer] Computer
+    Administrator [administrator] 1-* <--use--> 1 [computer] Computer
+}

@@ -1,6 +1,7 @@
 import org.junit.Test;
 
 import core.*;
+import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class audioCaptureTest{
@@ -8,12 +9,10 @@ public class audioCaptureTest{
     @Test
     public void test1(){
         User user = new User("user");
-        Computer computer = new Computer("computer", true,false,false);
+        Computer computer = new Computer("computer", true);
         Microphone microphone = new Microphone("microphone");
 
         user.addComputer(computer);
-        microphone.addComputer(computer);
-
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
@@ -22,14 +21,13 @@ public class audioCaptureTest{
         computer.dataCollected.assertUncompromised();
 
     }
-    @Test
+
     public void test2(){
         User user = new User("user");
-        Computer computer = new Computer("computer");
+        Computer computer = new Computer("computer", false);
         Microphone microphone = new Microphone("microphone");
 
         user.addComputer(computer);
-        microphone.addComputer(computer);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
@@ -38,11 +36,9 @@ public class audioCaptureTest{
         computer.dataCollected.assertCompromisedInstantaneously();
 
     }
-    
-    //@Test
     public void test3(){
         User user = new User("user");
-        Computer computer = new Computer("computer");
+        Computer computer = new Computer("computer", false);
    
 
         user.addComputer(computer);
@@ -52,27 +48,6 @@ public class audioCaptureTest{
         attacker.attack();
 
         computer.dataCollected.assertUncompromised();
-
-    }
-    //@Test // test on how E works
-    public void test4(){
-        User user = new User("user");
-        Computer computer = new Computer("computer");
-        Computer computer2 = new Computer("computer2");
-        Microphone microphone = new Microphone("microphone");
-
-   
-
-        user.addComputer(computer);
-        user.addComputer(computer2);
-        microphone.addComputer(computer);
-
-        Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
-        attacker.attack();
-
-        computer.dataCollected.assertCompromisedInstantaneously();
-        computer2.dataCollected.assertUncompromised();
 
     }
 }

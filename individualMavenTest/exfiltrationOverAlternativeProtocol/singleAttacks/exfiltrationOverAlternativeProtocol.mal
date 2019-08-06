@@ -1,0 +1,51 @@
+category Hardware {
+    asset Computer{
+        | dataCollected
+            -> exfiltrationOverAternativeProtocol
+
+        | dataCompressed
+            -> exfiltrationOverAternativeProtocol
+
+        | dataEncrypted
+            -> exfiltrationOverAternativeProtocol
+
+        & _automatedExfiltration
+            -> exfiltrationOverAternativeProtocol
+
+        | exfiltrationOverAternativeProtocol
+            -> internalNetwork.dataExfiltration
+
+    }
+}
+category Network{
+    asset Firewall {
+        & bypassFirewall
+            -> internalNetwork.dataExfiltration
+
+    }
+
+    asset InternalNetwork{
+        & dataExfiltration
+            -> externalNetwork.dataExfiltrated
+        
+        E firewallExists
+            <- firewall
+            -> firewall.bypassFirewall
+
+            
+        # networkIntrusionDetection
+            -> dataExfiltration
+
+    }
+    asset ExternalNetwork{
+        | dataExfiltrated
+
+    }
+}
+
+associations {
+
+    InternalNetwork [ internalNetwork ] 1 <-- Protect --> 1 [firewall] Firewall
+    Computer [computer] 1-* <--use--> 1 [internalNetwork] InternalNetwork
+    InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
+}

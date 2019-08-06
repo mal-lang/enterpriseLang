@@ -1,0 +1,32 @@
+category Person {
+    asset User {
+        | userRights
+            -> computer.userDataDestruction
+    }
+    asset Administrator {
+        | adminRights
+            -> computer.adminDataDestruction
+    }
+
+}
+
+category Hardware {
+    asset Computer {
+        & userDataDestruction
+
+        & adminDataDestruction
+
+        # whitelisting
+            -> userDataDestruction,
+                adminDataDestruction
+        # backup 
+            -> userDataDestruction,
+                adminDataDestruction
+        
+    }
+}
+
+associations{
+    User [user] 1 <-- ui--> 1-* [computer] Computer
+    Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
+}

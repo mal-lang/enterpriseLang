@@ -1,0 +1,42 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.executeMshta
+    }
+}
+
+category Software {   
+    abstractAsset OS{
+    }
+                           
+    asset Windows extends OS {
+        & executeMshta
+      info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
+            -> executeCode,
+               computer.bypassDigitalCertificateValidation,
+               computer.bypassApplicationWhitelisting
+
+        | executeCode 
+            -> computer.infectedWindowsComputer
+
+        | bypassDigitalCertificateValidation        
+
+        # whitelisting
+            -> executeMshta
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | bypassApplicationWhitelisting
+
+        | bypassDigitalCertificateValidation   
+
+        | infectedWindowsComputer
+    }
+}
+
+associations {
+    User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
+    OS [os] 1 <-- system --> 1-* [computer] Computer
+}

@@ -1,0 +1,43 @@
+category Hardware {
+    asset Computer {
+        | infectedComputer 
+            -> commonlyUsedPortsConnection
+
+        & commonlyUsedPortsConnection
+            -> c2Server.c2Connexion,
+                externalNetwork.bypassFirewall,
+                internalNetwork.bypassFirewall,
+                externalNetwork.bypassNetworkDetection,
+                internalNetwork.bypassNetworkDetection
+
+        # networkIntrusionDetection
+            -> commonlyUsedPortsConnection
+    }
+}
+
+category Network {
+    asset C2Server extends ExternalNetwork {
+
+        | c2Connexion
+            
+    }
+
+    asset ExternalNetwork {
+        | bypassFirewall
+
+        | bypassNetworkDetection
+    }
+
+    asset InternalNetwork {
+        | bypassFirewall
+
+        | bypassNetworkDetection
+    }
+}
+
+associations {
+    Computer [computer] 1-* <--contains--> 1-* [externalNetwork] ExternalNetwork
+    Computer [computer] 1-* <--contains--> 1-* [internalNetwork] InternalNetwork
+    Computer [computer] 1-* <--connected--> 1-* [c2Server] C2Server
+
+}

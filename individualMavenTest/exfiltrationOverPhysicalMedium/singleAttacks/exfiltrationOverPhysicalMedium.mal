@@ -1,0 +1,34 @@
+category Hardware {
+    asset Computer{
+        | dataCollected
+            -> exfiltrationOverPhysicalMedium
+
+        | dataCompressed
+            -> exfiltrationOverPhysicalMedium
+
+        | dataEncrypted
+            -> exfiltrationOverPhysicalMedium
+
+        | exfiltrationOverPhysicalMedium
+            -> removableMedia.dataExfiltrated
+    }
+    asset RemovableMedia{
+        & dataExfiltrated
+    }
+}
+category Person{
+    asset Employee {
+        | mediaInserted 
+
+        & _mediaInserted
+            -> removableMedia.dataExfiltrated
+        # trainedUser
+            -> _mediaInserted
+    }
+}
+
+associations {
+
+    Employee [employee] 1 <-- Use --> 1-* [removableMedia] RemovableMedia
+    Computer [computer] 1 <-- Use --> 1-* [removableMedia] RemovableMedia
+}

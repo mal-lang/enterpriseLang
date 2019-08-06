@@ -1,0 +1,20 @@
+category Person {
+    asset User {
+        | userRights
+            -> computer.fileDiscovery, computer.directoryDiscovery
+   }
+}
+
+category Hardware {
+    asset Computer {
+        & fileDiscovery
+
+        & directoryDiscovery
+
+        # whitelisting
+            -> fileDiscovery, directoryDiscovery
+    }
+}
+associations{
+    User [user] 1 <-- ui--> 1 [computer] Computer
+}
