@@ -1,0 +1,40 @@
+category Person{
+    asset Employee{
+        & spearphishingLinkClicked
+            -> browser.spearphishingLink
+        # trainedEmployee
+            -> spearphishingLinkClicked
+    }
+
+    asset Adversary {
+        | spearphishingLinkAttack
+            -> employee.spearphishingLinkClicked,
+                browser.spearphishingLink
+    }
+
+}
+category Network {
+    asset Browser {
+        & spearphishingLink
+            -> os.spearphishingLinkDownload
+        # phishingDetection
+            -> spearphishingLink
+    }
+}
+
+category Software {
+    asset OS {
+        & spearphishingLinkDownload
+           // -> employee.userExecution
+        # antivirus
+            -> spearphishingLinkDownload
+    }
+}
+
+associations{
+    Employee [employee] 1 <--use--> 1-* [browser] Browser
+    Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
+    Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser 
+    Browser [browser] 1-* <-- software --> 1 [os] OS
+
+}

@@ -1,0 +1,53 @@
+category Person {
+    asset WindowsAdmin {
+        | systemRights
+            -> windows.accessibilityFeatures
+    }
+
+    asset System {
+        | systemRights
+  }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedWindowsComputer
+  }
+}
+
+category Software {
+    abstractAsset OS{
+    }
+                           
+    asset Windows extends OS {
+        & accessibilityFeatures
+      info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system"
+            -> executeCode,
+               system.systemRights,
+               remoteDesktopProtocol 
+        | executeCode 
+
+        | remoteDesktopProtocol  // Remote Desktop Protocol attack
+            -> system.systemRights
+
+        | commandExecution
+            -> computer.infectedWindowsComputer
+
+        # whitelisting
+            -> accessibilityFeatures
+  }
+}
+
+associations {
+    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [os] OS
+    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1 [windows] Windows
+    OS [os] 1 <-- system --> 1-* [computer] Computer
+    OS [os] 1 <--ui--> 1 [system] System  
+
+}
+
+
+
+
+
+

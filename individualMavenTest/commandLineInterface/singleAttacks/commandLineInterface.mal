@@ -1,0 +1,31 @@
+category Person{
+  asset User {
+    | userRights 
+      -> os.userCommandLineInterface
+  }
+  asset Administrator {
+    | adminRights 
+      -> os.adminCommandLineInterface
+  }
+}
+
+category Software {
+  asset OS {
+    & userCommandLineInterface
+      // -> entrypoints of attacks that can be done with command line interface under user rights
+
+
+    & adminCommandLineInterface
+      // -> entrypoints of attacks that can be done with command line interface under admin rights
+
+
+    # whitelisting
+      -> userCommandLineInterface,
+        adminCommandLineInterface
+  }
+}
+associations{
+  User [user] 1 <-- ui--> 1-* [os] OS
+  Administrator [administrator] 1 <--ui--> 1-* [os] OS
+
+}

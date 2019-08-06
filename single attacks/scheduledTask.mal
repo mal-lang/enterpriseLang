@@ -1,0 +1,21 @@
+category Person {
+    asset Administrator {
+        | adminRights 
+            -> windows.scheduledTask
+    }
+}
+
+category Software {
+    asset Windows {
+        & scheduledTask
+            info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
+            //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
+
+        # whitelisting  
+            -> scheduledTask
+    }
+}
+
+associations {
+    Administrator [administrator] 1-* <--use--> 1 [windows] Windows
+}

@@ -1,0 +1,25 @@
+category Person {
+    asset User {
+        | userRights
+            -> computer.uploadRemoteFile, 
+               computer.downloadRemoteFile
+    }
+}
+
+category Hardware{
+    asset Computer {
+        & uploadRemoteFile
+            // leads to file execution attacks
+           // -> employee.userExecution
+        & downloadRemoteFile
+            info: "data collection from the user" 
+        # networkIntrusionDetection
+            info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
+            -> uploadRemoteFile, 
+               downloadRemoteFile
+    }
+}
+
+associations{
+    User [user] 1 <-- ui--> 1 [computer] Computer
+}

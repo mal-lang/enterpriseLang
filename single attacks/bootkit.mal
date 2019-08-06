@@ -1,0 +1,30 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            -> windows.bootkit,
+                linux.bootkit
+    }
+}
+
+category Hardware {
+    asset Windows {
+        & bootkit 
+            -> persistance
+        # secureBootProcess
+            -> bootkit
+        | persistance
+    }
+    asset Linux {
+        & bootkit 
+            -> persistance
+        # secureBootProcess
+            -> bootkit
+        | persistance
+    }
+
+}
+
+associations {
+    Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
+    Administrator [linuxAdministrator] 1 <--ui--> 1-* [linux] Linux
+}

@@ -1,0 +1,19 @@
+category Software {
+    abstractAsset OS{
+        & binaryPadding
+            -> bypassSignatureBasedDetection,
+               bypassAntivirus
+
+    
+        | bypassSignatureBasedDetection
+
+        | bypassAntivirus
+        
+        # whitelisting
+            -> binaryPadding
+    }
+}
+
+associations {
+
+}

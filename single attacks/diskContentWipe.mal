@@ -1,0 +1,35 @@
+category Hardware {
+    asset Computer {
+        & userDiskWiped
+            info:"Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
+
+        & adminDiskWiped
+        
+        # whitelisting
+            -> userDiskWiped,
+               adminDiskWiped
+
+        # backup
+            info:"Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
+            -> userDiskWiped,
+               adminDiskWiped
+
+    }
+}
+
+category Person {
+    asset User {
+        | userRights
+            -> computer.userDiskWiped
+    }
+
+    asset Administrator {
+        | adminRights
+            -> computer.adminDiskWiped
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [computer] Computer
+    Administrator [administrator] 1-* <--use--> 1 [computer] Computer
+}

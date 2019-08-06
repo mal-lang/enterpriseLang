@@ -1,0 +1,73 @@
+category Person {
+    asset Employee {
+        | pageVisited
+            -> browser.maliciousWebsite
+        | adLinkClicked
+            -> browser.maliciousAds
+
+    }
+
+    asset Adversary {
+        | maliciousWebsite
+            -> browser.maliciousWebsite, employee.pageVisited
+        | maliciousAds
+            -> browser.maliciousAds, employee.adLinkClicked
+
+    }
+}
+
+category Hardware{
+    asset Computer{
+        | infectedComputer
+           // -> //all that is already on the attacklang.mal file
+    }
+
+}
+
+category Software{
+    asset Browser{
+
+        | maliciousWebsite
+            -> checkPlugin, checkBrowser
+        & checkBrowser
+            -> os.codeDelivered
+        # nonVulnerableBrowser
+            -> checkBrowser
+        & checkPlugin
+            -> os.codeDelivered
+        # nonVulnerablePlugin
+            -> checkPlugin
+
+        | maliciousAds
+            -> compromisedBrowser
+        & compromisedBrowser
+            -> os.codeDelivered
+        # adblocker
+            -> compromisedBrowser
+
+        | maliciousContent
+
+    
+            
+    }
+
+    abstractAsset OS{
+        | codeDelivered
+            -> antivirusCheck
+        & antivirusCheck
+            -> runCode
+        # antivirus
+            -> antivirusCheck
+        | runCode
+            -> computer.infectedComputer
+        
+    }
+}
+
+associations {
+    Employee [employee] 1 <--use--> 1-* [browser] Browser
+    Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
+    Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser
+    Browser [browser] 1-* <-- software --> 1 [os] OS 
+    OS [os] 1 <-- system --> 1-* [computer] Computer
+}

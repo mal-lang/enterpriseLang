@@ -1,0 +1,27 @@
+category Network{
+    asset ExternalNetwork {
+        # intrusionDetection
+            -> c2Server.obfuscatedData
+        # signatureIdentification
+            -> c2Server.obfuscatedData
+        | bypassNetworkDetection
+    }
+    asset InternalNetwork {
+        | bypassNetworkDetection
+    }
+}
+category Hardware {
+    asset C2Server {
+        | c2Connexion
+            -> obfuscatedData
+        & obfuscatedData
+            -> externalNetwork.bypassNetworkDetection,
+               internalNetwork.bypassNetworkDetection
+        
+    }
+}
+associations {
+    InternalNetwork [internalNetwork] 1 <--system--> 1 [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1 <--system--> 1 [c2Server] C2Server
+
+}

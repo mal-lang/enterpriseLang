@@ -1,0 +1,12 @@
+
+category Hardware {
+    asset Computer {
+        | dataCollected
+            -> compressData
+            
+        & compressData
+            //-> // exfiltration attack entry points
+        # whitelisting
+            -> compressData 
+    }
+}

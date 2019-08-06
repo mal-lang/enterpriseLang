@@ -1,0 +1,21 @@
+category Hardware {
+    asset Computer {
+
+        | dataCollected 
+ 
+    }
+}
+
+category Software {
+    asset OS {
+        & userCommandLineInterface
+            -> computer.dataCollected
+
+        & adminCommandLineInterface 
+            -> computer.dataCollected
+    }
+}
+
+associations {
+    Compter [computer] 1 <--software--> 1 [os] OS
+}
