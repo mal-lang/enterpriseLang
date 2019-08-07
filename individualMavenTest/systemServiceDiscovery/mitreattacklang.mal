@@ -1,0 +1,21 @@
+category Person{
+    asset User { 
+        | userRights
+            -> windows.systemServiceDiscovery
+    }
+}
+
+category Software {
+    asset OS {
+    }
+    asset Windows extends OS{
+        | servicesDiscovery
+           
+        |  systemServiceDiscovery 
+            ->  servicesDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [windows] Windows
+}
