@@ -26,9 +26,9 @@ public class spearphishingLinkTest{
     }
 
     public void test2(){
-        Employee employee = new Employee("employee", false);
+        Employee employee = new Employee("employee");
         Adversary adversary = new Adversary("adversary");
-        Browser browser = new Browser("browser", false);
+        Browser browser = new Browser("browser");
         OS os = new OS("os", true);
 
         employee.addBrowser(browser);
@@ -43,10 +43,10 @@ public class spearphishingLinkTest{
         os.spearphishingLinkDownload.assertUncompromised();
     }
     public void test3(){
-        Employee employee = new Employee("employee", false);
+        Employee employee = new Employee("employee");
         Adversary adversary = new Adversary("adversary");
-        Browser browser = new Browser("browser", false);
-        OS os = new OS("os", false);
+        Browser browser = new Browser("browser");
+        OS os = new OS("os");
 
         employee.addBrowser(browser);
         adversary.addEmployee(employee);

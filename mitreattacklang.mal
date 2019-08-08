@@ -45,7 +45,8 @@ category Person {
             -> windows.outlookEmailCollection,
                internalNetwork.bypassAccessControl,
                internalNetwork.exchangeServerCollection,
-               service.userRemoteServicesLogin
+               service.userRemoteServicesLogin,
+               userRights
         
     }
 
@@ -73,11 +74,12 @@ category Person {
                
         | adminCredential
             -> service.adminRemoteServicesLogin,
-               internalNetwork.bypassAccessControl
+               internalNetwork.bypassAccessControl,
+               adminRights
     }
     
     asset WindowsAdmin extends Administrator{
-        | systemRights
+        | WindowsAdminRights
             -> administrator.adminRights,
                windows.accessibilityFeatures,
                windows.executeService,
@@ -251,7 +253,8 @@ category Software {
                 adminCommandLineInterface, 
                 userCommandLineInterface,
                 processInjection,
-                systemInformationDiscovery
+                systemInformationDiscovery,
+                binaryPadding
 
         & processInjection
             -> administrator.adminRights,
@@ -304,8 +307,6 @@ category Software {
                 spearphishingLinkDownload   
         # lockoutPolicies
             -> bruteForce
-        # whitelisting
-            -> binaryPadding
         # restricedScripting
             -> _scripting
         # sandboxing
@@ -366,7 +367,7 @@ category Software {
         
 
         # whitelisting
-            -> accessibilityFeatures,
+            +> accessibilityFeatures,
                executeMshta,
                createService,
                scheduledTask, 
@@ -453,7 +454,7 @@ category Software {
         
 
         # whitelisting
-            -> networkShareDiscovery,
+            +> networkShareDiscovery,
                userSecuritySoftwareDiscovery,
                adminSecuritySoftwareDiscovery
     }
@@ -850,24 +851,23 @@ associations {
     Adversary [adversary] 1 <-- attack --> 1-* [os] OS 
 
     User [user] 1 <-- ui--> 1-* [os] OS
-    User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
+    User [windowsUser] 1-* <-- ui--> 1-* [windows] Windows
     User [linuxUser] 1-* <--use--> 1 [linux] Linux   
-    User [macOSUser] 1-* <--use--> 1 [macOS] MacOS
+    User [macOSUser] 1-* <--use--> 1-* [macOS] MacOS
     User [user] 1-* <-- ui--> 1 [computer] Computer
     User [user] 1-* <--use--> 1-* [service] Service
   
     Administrator [administrator] 1 <--ui--> 1-* [user] User
-    Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1-* <--ui--> 1-* [windows] Windows
     Administrator [linuxAdministrator] 1 <--ui--> 1-* [linux] Linux
     Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
     Administrator [administrator] 1 <--ui--> 1-* [os] OS
     Administrator [administrator] 1-* <--use--> 1-* [service] Service
     
-    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [os] OS
-    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [administrator] Administrator
-    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1 [windows] Windows    
+    WindowsAdmin [windowsAdmin] 1-* <--use--> 1-* [administrator] Administrator
+    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1-* [windows] Windows    
     
-    Root [root] 1-* <--use--> 1 [macOS] MacOS
+    Root [root] 1-* <--use--> 1-* [macOS] MacOS
 
     Employee [employee] 1 <--use--> 1-* [browser] Browser
     Employee [employee] 1 <--use--> 1-* [computer] Computer
@@ -881,11 +881,11 @@ associations {
     Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
 
     Browser [browser] 1-* <-- software --> 1 [os] OS
-    OS [os] 1 <-- system --> 1-* [computer] Computer
-    OS [os] 1 <--ui--> 1 [system] System 
+    OS [os] 1-* <-- system --> 1-* [computer] Computer
+    OS [os] 1-* <--ui--> 1 [system] System 
     
-    Computer [computer] 1 <--software--> 1 [macOS] MacOS
-    Computer [computer] 1 <--software--> 1 [windows] Windows
+    Computer [computer] 1-* <--software--> 1-* [macOS] MacOS
+    Computer [computer] 1-* <--software--> 1-* [windows] Windows
     
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server

@@ -28,7 +28,7 @@ public class replicationThroughRemovableMediaTest{
     }
     public void test2(){
         RemovableMedia removableMedia = new RemovableMedia("removableMedia");
-        Employee employee = new Employee("employee", false);
+        Employee employee = new Employee("employee");
         Computer computer = new Computer("computer");
         User user = new User("user");
 

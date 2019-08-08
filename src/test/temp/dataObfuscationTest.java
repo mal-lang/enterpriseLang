@@ -20,7 +20,7 @@ public class dataObfuscationTest{
         externalNetwork.bypassNetworkDetection.assertUncompromised();
     }
     public void test2(){
-        ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork", false, false);
+        ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
         C2Server c2Server = new C2Server("c2Server");
 
         externalNetwork.addC2Server(c2Server);
