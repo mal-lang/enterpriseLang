@@ -38,7 +38,8 @@ category Person {
                 macOS.networkShareDiscovery,
                 macOS.userSecuritySoftwareDiscovery,
                 macOS.videoCollection,
-                internalNetwork.usertransmittedDataManipulation
+                internalNetwork.usertransmittedDataManipulation,
+                windows.appCertDLLs
 
 
         | userCredentials
@@ -70,7 +71,9 @@ category Person {
                computer.sensitiveDataCollected,
                computer.diskStructureWipe,
                computer.adminDiskWiped,
-               computer.adminDataEncryptedForImpact
+               computer.adminDataEncryptedForImpact,
+               windows.appCertDLLs
+
                
         | adminCredential
             -> service.adminRemoteServicesLogin,
@@ -99,8 +102,9 @@ category Person {
 
     }
     
-    asset System {
+    asset SYSTEM {
         | systemRights
+            ->  windows.appCertDLLs
     }
     
     asset Employee {
@@ -246,11 +250,13 @@ category Software {
         & systemInformationDiscovery
             info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
         
+        #  operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  accountDiscovery, 
+                domainDiscovery
 
         # whitelisting
-            -> accountDiscovery,
-                domainDiscovery,
-                applicationWindowDiscovery,
+            ->  applicationWindowDiscovery,
                 runningProcessDiscovery,
                 detailedRunningProcessDiscovery,
                 remoteSystemDiscovery,
@@ -316,12 +322,13 @@ category Software {
             -> _scripting
         # sandboxing
             -> _scripting
+        | persistence
 
     }
     
     asset Windows extends OS{
         & accessibilityFeatures
-            info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system"
+            info: "This helps attackers to open a SYSTEM-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system"
             -> executeCode,
                system.systemRights,
                remoteDesktopProtocol 
@@ -422,6 +429,16 @@ category Software {
             info:"The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
             -> scheduledTask
       
+        | appCertDLLs
+            -> _appCertDLLs 
+        & _appCertDLLs
+            ->  persistence,
+                systemWindows.systemRights,
+                windowsUser.userRights,
+                windowsAdministrator.adminRights
+        # executionPrevention 
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            -> _appCertDLLs
     }
 
     asset Linux extends OS {
@@ -887,7 +904,7 @@ associations {
 
     Browser [browser] 1-* <-- software --> 1 [os] OS
     OS [os] 1-* <-- system --> 1-* [computer] Computer
-    OS [os] 1-* <--ui--> 1 [system] System 
+    OS [os] 1-* <--ui--> 1 [system] SYSTEM 
     
     Computer [computer] 1-* <--software--> 1-* [macOS] MacOS
     Computer [computer] 1-* <--software--> 1-* [windows] Windows
@@ -909,5 +926,6 @@ associations {
     Computer [computer] 1 <--use--> 1 [microphone] Microphone
     VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
     Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
+    SYSTEM [systemWindows] 1-* <-- ui--> 1-* [windows] Windows
 
 }
