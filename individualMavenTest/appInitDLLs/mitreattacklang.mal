@@ -10,12 +10,16 @@ category Software {
     }
 
     asset Windows extends OS {
-         # whitelisting
+         # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/" 
             +>  appInitDLLs
         & appInitDLLs 
             ->  persistence 
-        # secureBoot
+        #  updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs
+
+    
     }
 }
 

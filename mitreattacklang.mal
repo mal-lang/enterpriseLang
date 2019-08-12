@@ -72,8 +72,8 @@ category Person {
                computer.diskStructureWipe,
                computer.adminDiskWiped,
                computer.adminDataEncryptedForImpact,
-               windows.appCertDLLs
-
+               windows.appCertDLLs,
+               windows.appInitDLLs
                
         | adminCredential
             -> service.adminRemoteServicesLogin,
@@ -183,7 +183,8 @@ category Software {
         | remoteAccessTools
             -> internalNetwork.c2Connexion
 
-        # whitelisting
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             -> remoteAccessTools,
                userRemoteServicesLogin,
                adminRemoteServicesLogin
@@ -255,7 +256,8 @@ category Software {
             ->  accountDiscovery, 
                 domainDiscovery
 
-        # whitelisting
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             ->  applicationWindowDiscovery,
                 runningProcessDiscovery,
                 detailedRunningProcessDiscovery,
@@ -378,7 +380,8 @@ category Software {
             //-> leads to exploitation for defense evasion attack
         
 
-        # whitelisting
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             +> accessibilityFeatures,
                executeMshta,
                createService,
@@ -387,7 +390,9 @@ category Software {
                queryRegistery,
                networkShareDiscovery,
                userSecuritySoftwareDiscovery,
-               adminSecuritySoftwareDiscovery
+               adminSecuritySoftwareDiscovery,
+               _appCertDLLs,
+               appInitDLLs
 
         & executeService
             -> persistance
@@ -436,9 +441,14 @@ category Software {
                 systemWindows.systemRights,
                 windowsUser.userRights,
                 windowsAdministrator.adminRights
-        # executionPrevention 
-            info: "https://attack.mitre.org/mitigations/M1038/"
-            -> _appCertDLLs
+
+        & appInitDLLs 
+            ->  persistence 
+        #  updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/" 
+            ->  appInitDLLs
+    
+            
     }
 
     asset Linux extends OS {
@@ -475,7 +485,8 @@ category Software {
             // -> leads to exploitation for defense evasion attack
         
 
-        # whitelisting
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             +> networkShareDiscovery,
                userSecuritySoftwareDiscovery,
                adminSecuritySoftwareDiscovery
@@ -573,7 +584,8 @@ category Network {
 
     
 
-        # whitelisting
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             -> computer.networkServiceScan
 
         & c2Connexion
@@ -669,7 +681,8 @@ category Hardware {
         
         & adminDataEncryptedForImpact
 
-        # whitelisting
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             -> fileDiscovery, 
                directoryDiscovery,
                fileDeletion,

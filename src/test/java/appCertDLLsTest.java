@@ -21,7 +21,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertCompromisedInstantaneously();
+        windows.persistence.assertCompromisedInstantaneouslyFrom(windows.appCertDLLs);
         user2.userRights.assertCompromisedInstantaneously();
 
     }
@@ -41,7 +41,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertCompromisedInstantaneously();
+        windows.persistence.assertCompromisedInstantaneouslyFrom(windows.appCertDLLs);
         administrator2.adminRights.assertCompromisedInstantaneously();
         
     }
@@ -61,7 +61,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertCompromisedInstantaneously();
+        windows.persistence.assertCompromisedInstantaneouslyFrom(windows.appCertDLLs);
         system2.systemRights.assertCompromisedInstantaneously();
         
     }
@@ -70,7 +70,7 @@ public class appCertDLLsTest{
         // Section 1: Asset instantiation
         User user = new User("user");
         User user2 = new User("user2");
-        Windows windows = new Windows("windows",false,false,false,false,true,false,false,false,false,false);
+        Windows windows = new Windows("windows",true,false,false,false,true,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addWindows(windows);
@@ -81,7 +81,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertUncompromised();
+        windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
         user2.userRights.assertUncompromised();
 
     }
@@ -90,7 +90,7 @@ public class appCertDLLsTest{
         // Section 1: Asset instantiation
         Administrator administrator = new Administrator("administrator");
         Administrator administrator2 = new Administrator("administrator2");
-        Windows windows = new Windows("windows",false,false,false,false,true,false,false,false,false,false);
+        Windows windows = new Windows("windows",true,false,false,false,true,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         administrator.addWindows(windows);
@@ -101,7 +101,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertUncompromised();
+        windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
         administrator2.adminRights.assertUncompromised();
         
     }
@@ -110,7 +110,7 @@ public class appCertDLLsTest{
         // Section 1: Asset instantiation
         SYSTEM system = new SYSTEM("system");
         SYSTEM system2 = new SYSTEM("system2");
-        Windows windows = new Windows("windows",false,false,false,false,true,false,false,false,false,false);
+        Windows windows = new Windows("windows",true,false,false,false,true,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         system.addWindows(windows);
@@ -121,7 +121,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertUncompromised();
+        windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
         system2.systemRights.assertUncompromised();
         
     }
