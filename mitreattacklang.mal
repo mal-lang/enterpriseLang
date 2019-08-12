@@ -79,12 +79,17 @@ category Person {
     }
     
     asset WindowsAdmin extends Administrator{
-        | WindowsAdminRights
-            -> administrator.adminRights,
+        | adminRights
+            +> administrator.adminRights,
                windows.accessibilityFeatures,
                windows.executeService,
                windows.queryRegistery,
-               windows.adminSecuritySoftwareDiscovery
+               windows.adminSecuritySoftwareDiscovery,
+               accountManipulation
+        & accountManipulation
+            ->  user.userCredentials
+        # multiFactorAuthentication
+            +> accountManipulation
 
     }
     
@@ -865,7 +870,7 @@ associations {
     Administrator [administrator] 1-* <--use--> 1-* [service] Service
     
     WindowsAdmin [windowsAdmin] 1-* <--use--> 1-* [administrator] Administrator
-    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1-* [windows] Windows    
+    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1-* [windows] Windows   
     
     Root [root] 1-* <--use--> 1-* [macOS] MacOS
 
