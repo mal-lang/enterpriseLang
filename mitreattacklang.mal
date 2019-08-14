@@ -40,7 +40,9 @@ category Person {
                 macOS.videoCollection,
                 internalNetwork.usertransmittedDataManipulation,
                 windows.appCertDLLs,
-                macOS.appleScript
+                macOS.appleScript,
+                linux.bash_profileAndBashrc,
+                macOS.bash_profileAndBashrc
 
 
         | userCredentials
@@ -76,7 +78,9 @@ category Person {
                windows.appCertDLLs,
                windows.appInitDLLs,
                windows.applicationShimming,
-               windows.authenticationPackage
+               windows.authenticationPackage,
+               linux.bash_profileAndBashrc,
+                macOS.bash_profileAndBashrc
                
         | adminCredential
             -> service.adminRemoteServicesLogin,
@@ -478,6 +482,8 @@ category Software {
     }
 
     asset Linux extends OS {
+        | infectedOS
+            +>  bashHistory
         & bootkit
             -> persistance
         # secureBootProcess
@@ -489,9 +495,24 @@ category Software {
         
         # fileMonitoring
             -> spaceAfterFileName
+        |  bash_profileAndBashrc
+            -> _bash_profileAndBashrc
+        &  _bash_profileAndBashrc 
+            ->  persistence
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  _bash_profileAndBashrc
+        &  bashHistory 
+            ->  linuxAdministrator.adminCredential,
+                linuxUser.userCredentials
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            ->  bashHistory
 
     }
     asset MacOS extends OS{
+        | infectedOS
+            +>  bashHistory
         | videoCollection
             -> computer.collectVideo
 
@@ -521,6 +542,19 @@ category Software {
         #  codeSigning
             info: "https://attack.mitre.org/mitigations/M1045/"  
             -> appleScript
+        |  bash_profileAndBashrc
+            -> _bash_profileAndBashrc
+        &  _bash_profileAndBashrc 
+            ->  persistence
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  _bash_profileAndBashrc
+        &  bashHistory 
+            ->  macosAdministrator.adminCredential,
+                macOSUser.userCredentials
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            ->  bashHistory
     }
     
 
@@ -918,14 +952,15 @@ associations {
 
     User [user] 1 <-- ui--> 1-* [os] OS
     User [windowsUser] 1-* <-- ui--> 1-* [windows] Windows
-    User [linuxUser] 1-* <--use--> 1 [linux] Linux   
+    User [linuxUser] 1-* <--use--> 1-* [linux] Linux   
     User [macOSUser] 1-* <--use--> 1-* [macOS] MacOS
     User [user] 1-* <-- ui--> 1 [computer] Computer
     User [user] 1-* <--use--> 1-* [service] Service
   
     Administrator [administrator] 1 <--ui--> 1-* [user] User
     Administrator [windowsAdministrator] 1-* <--ui--> 1-* [windows] Windows
-    Administrator [linuxAdministrator] 1 <--ui--> 1-* [linux] Linux
+    Administrator [linuxAdministrator] 1-* <--ui--> 1-* [linux] Linux
+    Administrator [macosAdministrator] 1-* <--ui--> 1-* [macOS] MacOS
     Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
     Administrator [administrator] 1 <--ui--> 1-* [os] OS
     Administrator [administrator] 1-* <--use--> 1-* [service] Service

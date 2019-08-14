@@ -1,45 +1,43 @@
 category Person{
     asset User {
-        | userRights
-            -> adminLogin
         | userCredentials
-            ->  userRights
-        | adminLogin
     }
-}
-category ardware {
-    asset Computer {
-        | infectedComputer
-            ->  linux.bashHistory,
-                macOS.bashHistory
+    asset Administrator {
+        | adminCredential
     }
 }
 
 category Software {
     asset OS {
+        | infectedOS
     
     }
     asset Linux extends OS {
+        | infectedOS
+            +>  bashHistory
         &  bashHistory 
-            ->  linxUser.adminLogin,
+            ->  linuxAdministrator.adminCredential,
                 linxUser.userCredentials
-        # turnOfBashHistory
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
             ->  bashHistory
     }
     asset MacOS extends OS{
+        | infectedOS
+            +>  bashHistory
         &  bashHistory 
-            ->  macUser.adminLogin,
+            ->  macosAdministrator.adminCredential,
                 macUser.userCredentials
-        # turnOfBashHistory
+        #  operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
             -> bashHistory 
     }
 }
 
 associations {
     User [user] 1 <-- ui--> 1-* [os] OS
-    Computer [computer] 1 <-- ui--> 1-* [os] OS
-    Computer [computer] 1 <-- ui--> 1-* [linux] Linux
-    Computer [computer] 1 <-- ui--> 1-* [macOS] MacOS
     User [linxUser] 1 <-- ui--> 1-* [linux] Linux
     User [macUser] 1 <-- ui--> 1-* [macOS] MacOS
+    Administrator [linuxAdministrator] 1-* <--ui--> 1-* [linux] Linux
+    Administrator [macosAdministrator] 1-* <--ui--> 1-* [macOS] MacOS
 }
