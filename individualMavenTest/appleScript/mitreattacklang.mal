@@ -12,7 +12,8 @@ category Software {
     asset MacOS extends OS{
         & appleScript
             -> runCode
-        # trustedDeveloperID 
+        #  codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
             -> appleScript
     }
 }

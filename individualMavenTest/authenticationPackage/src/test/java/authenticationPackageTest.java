@@ -3,7 +3,7 @@ import org.junit.Test;
 import core.*;
 import attack.*;
 
-public class accountManipulationTest{
+public class authenticationPackageTest{
 
     @Test
     public void test1(){
