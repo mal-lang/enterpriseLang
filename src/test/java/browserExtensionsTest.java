@@ -3,42 +3,40 @@ import org.junit.Test;
 import core.*;
 import attack.*;
 
-public class accountDiscoveryTest{
+public class  browserExtensionsTest{
 
     @Test
     public void test1(){
         // Section 1: Asset instantiation
-        User user = new User("user");
-        OS os = new OS("os",true,false,false,false,false,false,false,false);
+        Browser browser = new Browser("browser",false,false,false,false,false,true,true,true,true);
+        OS os = new OS("os");
 
         // Section 2: Asset connections and attacker creation
-        user.addOs(os);
+        browser.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
+        attacker.addAttackPoint(browser.installExtensions);
         attacker.attack();
 
         // Section 3: Assertions
-        os.accountDiscovery.assertUncompromised();
-        os.domainDiscovery.assertUncompromised();
+        os.persistence.assertUncompromised();
 
     }
     @Test
     public void test2(){
         // Section 1: Asset instantiation
-        User user = new User("user");
+        Browser browser = new Browser("browser");
         OS os = new OS("os");
 
         // Section 2: Asset connections and attacker creation
-        user.addOs(os);
+        browser.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
+        attacker.addAttackPoint(browser.installExtensions);
         attacker.attack();
 
         // Section 3: Assertions
-        os.accountDiscovery.assertCompromisedInstantaneously();
-        os.domainDiscovery.assertCompromisedInstantaneously();
+        os.persistence.assertCompromisedInstantaneously();
         
     }
 }

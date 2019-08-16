@@ -18,6 +18,6 @@ category Network {
     }
 }
 associations {
-    Browser [browser] 1 <-- ui--> 1-* [user] User
+    Browser [browser] 1-* <-- ui--> 1-* [user] User
     Browser [browser] 1-* <-- ui --> 1-* [internalNetwork] InternalNetwork
 }

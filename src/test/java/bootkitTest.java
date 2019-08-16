@@ -1,7 +1,6 @@
 import org.junit.Test;
 
 import core.*;
-import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class bootkitTest{
@@ -9,7 +8,7 @@ public class bootkitTest{
     @Test
     public void test1(){
         Administrator administrator = new Administrator("administrator");
-        Windows windows = new Windows("windows", true,true);
+        Windows windows = new Windows("windows",false,false,false,false,false,false,true,true,false,false,false,false,false,false,false);
         
         administrator.addWindows(windows);
 
@@ -17,7 +16,7 @@ public class bootkitTest{
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
-        windows.persistance.assertUncompromised();
+        windows.persistance.assertUncompromisedFrom(windows.bootkit);
     }
     @Test
     public void test2(){
@@ -48,7 +47,7 @@ public class bootkitTest{
     @Test
     public void test4(){
         Administrator administrator = new Administrator("administrator");
-        Linux linux = new Linux("linux", true,true);
+        Linux linux = new Linux("linux",false,false,false,true,true,false,false,false,false,false,false,false);
         
         administrator.addLinux(linux);
 
@@ -56,6 +55,6 @@ public class bootkitTest{
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
-        linux.persistance.assertUncompromised();
+        linux.persistance.assertUncompromisedFrom(linux.bootkit);
     }
 }

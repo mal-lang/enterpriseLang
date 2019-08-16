@@ -4,8 +4,18 @@ category Network {
             -> runExtensions
         & runExtensions
             -> os.persistence
-        #   trustedSources 
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
             -> runExtensions
+        # executionPrevention 
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            -> runExtensions
+        # limitSoftwareInstallation
+            info: "https://attack.mitre.org/mitigations/M1033/"
+            -> runExtensions 
+        #  userTraining
+            info: "https://attack.mitre.org/mitigations/M1017/"    
+            -> runExtensions 
     }
 }
 category Software {

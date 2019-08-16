@@ -51,41 +51,41 @@ category Person {
                internalNetwork.exchangeServerCollection,
                service.userRemoteServicesLogin,
                userRights
-        
+        | userInformation
     }
 
     asset Administrator {
         | adminRights
-            -> user.userRights,
-               windows.createService,
-               computer.adminDataDestruction,
-               os.detailedRunningProcessDiscovery,
-               os.detailedRemoteSystemDiscovery,
-               os.adminCommandLineInterface,
-               windows.bootkit,
-               linux.bootkit,
-               internalNetwork.admintransmittedDataManipulation,
-               internalNetwork.bypassAccessControl,
-               service.admintransmittedDataManipulation,
-               service.adminRemoteServicesLogin,
-               computer.networkServiceScan,
-               windows.scheduledTask,
-               computer.automatedCollection,
-               computer.sensitiveDataCollected,
-               computer.diskStructureWipe,
-               computer.adminDiskWiped,
-               computer.adminDataEncryptedForImpact,
-               windows.appCertDLLs,
-               windows.appInitDLLs,
-               windows.applicationShimming,
-               windows.authenticationPackage,
-               linux.bash_profileAndBashrc,
+            ->  user.userRights,
+                windows.createService,
+                computer.adminDataDestruction,
+                os.detailedRunningProcessDiscovery,
+                os.detailedRemoteSystemDiscovery,
+                os.adminCommandLineInterface,
+                windows.bootkit,
+                linux.bootkit,
+                internalNetwork.admintransmittedDataManipulation,
+                internalNetwork.bypassAccessControl,
+                service.admintransmittedDataManipulation,
+                service.adminRemoteServicesLogin,
+                computer.networkServiceScan,
+                windows.scheduledTask,
+                computer.automatedCollection,
+                computer.sensitiveDataCollected,
+                computer.diskStructureWipe,
+                computer.adminDiskWiped,
+                computer.adminDataEncryptedForImpact,
+                windows.appCertDLLs,
+                windows.appInitDLLs,
+                windows.applicationShimming,
+                windows.authenticationPackage,
+                linux.bash_profileAndBashrc,
                 macOS.bash_profileAndBashrc
                
         | adminCredential
-            -> service.adminRemoteServicesLogin,
-               internalNetwork.bypassAccessControl,
-               adminRights
+            ->  service.adminRemoteServicesLogin,
+                internalNetwork.bypassAccessControl,
+                adminRights
     }
     
     asset WindowsAdmin extends Administrator{
@@ -327,7 +327,14 @@ category Software {
             -> antivirusCheck,
                 spearphishingAttachmentDownload,
                 spearphishingLinkDownload   
-        # lockoutPolicies
+        #  accountUsePolicies
+            info: "https://attack.mitre.org/mitigations/M1036/" 
+            -> bruteForce
+        #  multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/" 
+            -> bruteForce
+        #  passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
             -> bruteForce
         # restricedScripting
             -> _scripting
@@ -408,12 +415,6 @@ category Software {
 
         | persistance
 
-        & bootkit
-            -> persistance
-
-        # secureBootProcess
-            -> bootkit
-
         | peripheralDeviceDiscovery
             -> computer.peripheralDeviceDiscovery
 
@@ -477,17 +478,20 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1025/"
             ->  authenticationPackage 
 
-    
+        & bootkit 
+            -> persistance
+        # bootIntegrity 
+            info: "https://attack.mitre.org/mitigations/M1046/"
+            -> bootkit
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            -> bootkit 
             
     }
 
     asset Linux extends OS {
         | infectedOS
             +>  bashHistory
-        & bootkit
-            -> persistance
-        # secureBootProcess
-            -> bootkit
         | persistance
 
         & spaceAfterFileName
@@ -508,6 +512,14 @@ category Software {
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
             ->  bashHistory
+        & bootkit 
+            -> persistance
+        # bootIntegrity 
+            info: "https://attack.mitre.org/mitigations/M1046/"
+            -> bootkit
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            -> bootkit 
 
     }
     asset MacOS extends OS{
@@ -595,6 +607,27 @@ category Network {
         # phishingdetection
             -> spearphishingAttachment, 
                spearphishingLink
+        | browserBookmark
+            -> browserBookmarkDiscovery
+        | browserBookmarkDiscovery 
+            ->  user.userInformation,
+                internalNetwork.internalNetworkResourcesInformation
+        | installExtensions
+            -> runExtensions
+        & runExtensions
+            -> os.persistence
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            -> runExtensions
+        # executionPrevention 
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            -> runExtensions
+        # limitSoftwareInstallation
+            info: "https://attack.mitre.org/mitigations/M1033/"
+            -> runExtensions 
+        #  userTraining
+            info: "https://attack.mitre.org/mitigations/M1017/"    
+            -> runExtensions 
     }
     asset ExternalNetwork {
         # intrusionDetecion
@@ -666,7 +699,7 @@ category Network {
 
         | networkShareDiscovery
             info:"Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. "
-        
+        | internalNetworkResourcesInformation
     }
 
     asset Firewall {
@@ -981,7 +1014,9 @@ associations {
     Computer [computer] 1 <--use--> 1-* [removableMedia] RemovableMedia
     Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
 
-    Browser [browser] 1-* <-- software --> 1 [os] OS
+    Browser [browser] 1-* <-- software --> 1-* [os] OS
+    Browser [browser] 1-* <-- ui--> 1-* [user] User
+    Browser [browser] 1-* <-- ui --> 1-* [internalNetwork] InternalNetwork
     OS [os] 1-* <-- system --> 1-* [computer] Computer
     OS [os] 1-* <--ui--> 1 [system] SYSTEM 
     

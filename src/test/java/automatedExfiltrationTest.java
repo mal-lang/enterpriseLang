@@ -21,6 +21,7 @@ public class automatedExfiltrationTest{
         computer._automatedExfiltration.assertUncompromised();
 
     }
+    @Test
     public void test2(){
         Computer computer = new Computer("computer");
 
