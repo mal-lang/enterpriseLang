@@ -9,7 +9,7 @@ public class commonlyUsedPortsTest{
     @Test
     public void test1(){
         OS os = new OS("os");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",true,true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,false,false,true,true);
         C2Server c2Server = new C2Server("c2Server");
         ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
 
@@ -23,10 +23,10 @@ public class commonlyUsedPortsTest{
         attacker.attack();
 
 
-        internalNetwork.bypassFirewall.assertUncompromised();
-        internalNetwork.bypassNetworkDetection.assertUncompromised();
-        externalNetwork.bypassFirewall.assertUncompromised();
-        externalNetwork.bypassNetworkDetection.assertUncompromised();
+        internalNetwork.bypassFirewall.assertUncompromisedFrom(os.commonlyUsedPortsConnection);
+        internalNetwork.bypassNetworkDetection.assertUncompromisedFrom(os.commonlyUsedPortsConnection);
+        externalNetwork.bypassFirewall.assertUncompromisedFrom(os.commonlyUsedPortsConnection);
+        externalNetwork.bypassNetworkDetection.assertUncompromisedFrom(os.commonlyUsedPortsConnection);
 
 
     }
@@ -47,10 +47,10 @@ public class commonlyUsedPortsTest{
         attacker.attack();
 
 
-        internalNetwork.bypassFirewall.assertCompromisedInstantaneously();
-        internalNetwork.bypassNetworkDetection.assertCompromisedInstantaneously();
-        externalNetwork.bypassFirewall.assertCompromisedInstantaneously();
-        externalNetwork.bypassNetworkDetection.assertCompromisedInstantaneously();
+        internalNetwork.bypassFirewall.assertCompromisedInstantaneouslyFrom(os.commonlyUsedPortsConnection);
+        internalNetwork.bypassNetworkDetection.assertCompromisedInstantaneouslyFrom(os.commonlyUsedPortsConnection);
+        externalNetwork.bypassFirewall.assertCompromisedInstantaneouslyFrom(os.commonlyUsedPortsConnection);
+        externalNetwork.bypassNetworkDetection.assertCompromisedInstantaneouslyFrom(os.commonlyUsedPortsConnection);
 
 
     }

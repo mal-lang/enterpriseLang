@@ -12,9 +12,6 @@ category Software {
     abstractAsset OS{
         | infectedOS
             -> clipboardData
-        # whitelisting
-            ->  clipboardData
-        
         & clipboardData
             ->  user.adminLogin,
                 user.userCredentials

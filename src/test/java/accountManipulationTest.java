@@ -74,7 +74,7 @@ public class accountManipulationTest {
     User user2 = new User("user2");
     User user3 = new User("user3");
     User user4 = new User("user4");
-    WindowsAdmin windowsAdmin = new WindowsAdmin("windowsAdmin",true);
+    WindowsAdmin windowsAdmin = new WindowsAdmin("windowsAdmin",true,false);
 
 
     windowsAdmin.addUser(user1); 

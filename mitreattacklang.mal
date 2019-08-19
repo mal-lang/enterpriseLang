@@ -42,7 +42,8 @@ category Person {
                 windows.appCertDLLs,
                 macOS.appleScript,
                 linux.bash_profileAndBashrc,
-                macOS.bash_profileAndBashrc
+                macOS.bash_profileAndBashrc,
+                windows.changeDefaultFileAssociation
 
 
         | userCredentials
@@ -80,12 +81,24 @@ category Person {
                 windows.applicationShimming,
                 windows.authenticationPackage,
                 linux.bash_profileAndBashrc,
-                macOS.bash_profileAndBashrc
+                macOS.bash_profileAndBashrc,
+                windows.changeDefaultFileAssociation,
+                createUserAccount
                
         | adminCredential
             ->  service.adminRemoteServicesLogin,
                 internalNetwork.bypassAccessControl,
                 adminRights
+            
+        & createUserAccount 
+            ->  os.persistence
+        
+        # multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/"
+            ->  createUserAccount
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  createUserAccount 
     }
     
     asset WindowsAdmin extends Administrator{
@@ -111,7 +124,8 @@ category Person {
     
     asset SYSTEM {
         | systemRights
-            ->  windows.appCertDLLs
+            ->  windows.appCertDLLs,
+                windows.changeDefaultFileAssociation
     }
     
     asset Employee {
@@ -215,6 +229,10 @@ category Software {
     
     abstractAsset OS{
         | infectedOS
+            -> clipboardData
+        & clipboardData
+            ->  administrator.adminCredential,
+                user.userCredentials
 
         & accountDiscovery
             info: "get account names and information"
@@ -262,7 +280,8 @@ category Software {
         #  operatingSystemConfiguration 
             info: "https://attack.mitre.org/mitigations/M1028/"
             ->  accountDiscovery, 
-                domainDiscovery
+                domainDiscovery,
+                administrator.createUserAccount
 
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
@@ -341,6 +360,13 @@ category Software {
         # sandboxing
             -> _scripting
         | persistence
+
+        & commonlyUsedPortsConnection
+            ->  c2Server.c2Connected,
+                externalNetwork.bypassFirewall,
+                internalNetwork.bypassFirewall,
+                externalNetwork.bypassNetworkDetection,
+                internalNetwork.bypassNetworkDetection
 
     }
     
@@ -486,6 +512,8 @@ category Software {
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
             -> bootkit 
+        | changeDefaultFileAssociation
+            ->  persistence
             
     }
 
@@ -638,6 +666,8 @@ category Network {
 
         | dataExfiltrated
 
+        | bypassFirewall
+
     }
     asset InternalNetwork {
         & applicationLayerConnexion
@@ -680,8 +710,6 @@ category Network {
             -> usertransmittedDataManipulation,
                admintransmittedDataManipulation
 
-    
-
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
             -> computer.networkServiceScan
@@ -700,8 +728,18 @@ category Network {
         | networkShareDiscovery
             info:"Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. "
         | internalNetworkResourcesInformation
-    }
 
+        | bypassFirewall
+
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            -> os.commonlyUsedPortsConnection
+
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.commonlyUsedPortsConnection,
+                administrator.createUserAccount
+    }
     asset Firewall {
         & _bypassFirewall
             -> internalNetwork.dataExfiltration,
@@ -720,18 +758,11 @@ category Hardware {
     asset Computer {
         | infectedComputer
             -> removableMedia.infectedMedia,
-               commonlyUsedPortsConnection,
                internalNetwork.applicationLayerConnexion,
                uncommonlyUsedPortsConnection
 
         | infectedWindowsComputer
             -> windows.dynamicDataExchange
-        
-        & commonlyUsedPortsConnection
-            -> internalNetwork.c2Connexion,
-               firewall.bypassFirewall,
-               externalNetwork.bypassNetworkDetection,
-               internalNetwork.bypassNetworkDetection
 
         & uncommonlyUsedPortsConnection
             -> internalNetwork.c2Connexion,
@@ -821,8 +852,7 @@ category Hardware {
         # networkIntrusionDetection
              info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
             -> uploadRemoteFile, 
-               downloadRemoteFile,
-               commonlyUsedPortsConnection
+               downloadRemoteFile
 
         & userDataDestruction
 
@@ -949,7 +979,6 @@ category Hardware {
             -> computer._collectVideo
     }
     asset C2Server {
-
         | c2Connected 
             -> obfuscatedData
 
@@ -1019,6 +1048,7 @@ associations {
     Browser [browser] 1-* <-- ui --> 1-* [internalNetwork] InternalNetwork
     OS [os] 1-* <-- system --> 1-* [computer] Computer
     OS [os] 1-* <--ui--> 1 [system] SYSTEM 
+    OS [os] 1-* <--ui--> 1-* [c2Server] C2Server
     
     Computer [computer] 1-* <--software--> 1-* [macOS] MacOS
     Computer [computer] 1-* <--software--> 1-* [windows] Windows
@@ -1026,14 +1056,16 @@ associations {
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [computer] Computer
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <-- Contain --> 1-* [os] OS
 
     InternalNetwork [internalNetwork] 1 <-- Protect --> 1 [firewall] Firewall
     InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [windows] Windows
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
+    //InternalNetwork [internalNetwork] 1 <--contain--> 1-* [windows] Windows
+    //InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [service] Service
 
     Computer [computer] 1-* <--protects--> 1 [firewall] Firewall

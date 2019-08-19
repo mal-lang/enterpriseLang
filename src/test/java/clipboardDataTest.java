@@ -9,15 +9,17 @@ public class clipboardDataTest {
   @Test
   public void clipboardTestNoDefens() {
     User user = new User("user");
+    Administrator administrator = new Administrator("administrator");
     OS os = new OS("os");
 
     user.addOs(os);
+    administrator.addOs(os);
 
     Attacker attacker = new Attacker();
     attacker.addAttackPoint(os.infectedOS);
     attacker.attack();
 
     user.userCredentials.assertCompromisedInstantaneously();
-    user.adminLogin.assertCompromisedInstantaneously();
+    administrator.adminCredential.assertCompromisedInstantaneously();
   }
 }

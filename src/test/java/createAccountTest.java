@@ -18,7 +18,7 @@ public class createAccountTest {
     attacker.addAttackPoint(admin.adminRights);
     attacker.attack();
 
-    os.persistance.assertCompromisedInstantaneously();
+    os.persistence.assertCompromisedInstantaneously();
   }
   @Test
   public void test2() {
@@ -32,12 +32,12 @@ public class createAccountTest {
     attacker.addAttackPoint(admin.adminRights);
     attacker.attack();
 
-    os.persistance.assertUncompromised();
+    os.persistence.assertUncompromised();
   }
   @Test 
   public void test3() {
     Administrator admin = new Administrator("admin");
-    OS os = new OS("os",true);
+    OS os = new OS("os",true,false,false,false,false,false,false,false);
 
     admin.addOs(os);
     
@@ -46,13 +46,13 @@ public class createAccountTest {
     attacker.addAttackPoint(admin.adminRights);
     attacker.attack();
 
-    os.persistance.assertUncompromised();
+    os.persistence.assertUncompromised();
   }
   @Test 
   public void test4() {
     Administrator admin = new Administrator("admin");
     OS os = new OS("os");
-    InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",true);
+    InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,false,false,false,true);
 
 
     admin.addOs(os);
@@ -63,6 +63,6 @@ public class createAccountTest {
     attacker.addAttackPoint(admin.adminRights);
     attacker.attack();
 
-    os.persistance.assertUncompromised();
+    os.persistence.assertUncompromised();
   }
 }

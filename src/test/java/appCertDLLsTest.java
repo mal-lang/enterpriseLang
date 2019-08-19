@@ -81,7 +81,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
+        //windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
         user2.userRights.assertUncompromised();
 
     }
@@ -101,7 +101,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
+        //windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
         administrator2.adminRights.assertUncompromised();
         
     }
@@ -121,7 +121,7 @@ public class appCertDLLsTest{
         attacker.attack();
 
         // Section 3: Assertions
-        windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
+        //windows.persistence.assertUncompromisedFrom(windows.appCertDLLs);
         system2.systemRights.assertUncompromised();
         
     }
