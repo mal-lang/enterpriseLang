@@ -109,7 +109,9 @@ category Person {
 
         & spearphishingAttachmentDownload
             -> browser.spearphishingAttachment
-        # trainedEmployee 
+
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
             -> spearphishingAttachmentDownload, 
                spearphishingLinkClicked, 
                userExecution,
@@ -161,18 +163,15 @@ category Software {
         & admintransmittedDataManipulation
             info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
-        # dataEncrypted
-            -> usertransmittedDataManipulation,
-               admintransmittedDataManipulation
-        
-        # secureCommunication
+        # encryptSensitiveInformation
+            info:"https://attack.mitre.org/mitigations/M1041/"
             -> usertransmittedDataManipulation,
                admintransmittedDataManipulation
 
         | remoteAccessTools
             -> internalNetwork.c2Connexion
 
-        # whitelisting
+        # executionPrevention
             -> remoteAccessTools,
                userRemoteServicesLogin,
                adminRemoteServicesLogin
@@ -183,10 +182,10 @@ category Software {
         & _exploitationForDefenseEvasion
             -> bypassAntivirus,
                bypassSystemAccessControls
-        # softwareUpdated
+        # updateSoftware //https://attack.mitre.org/mitigations/M1051/
             -> exploitationForDefenseEvasion
 
-        # sandboxing
+        # applicationIsolationAndSandboxing
             -> exploitationForDefenseEvasion
 
         | bypassAntivirus
@@ -240,7 +239,7 @@ category Software {
             info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
         
 
-        # whitelisting
+        # executionPrevention
             -> accountDiscovery,
                 domainDiscovery,
                 applicationWindowDiscovery,
@@ -256,7 +255,7 @@ category Software {
         & processInjection
             -> administrator.adminRights,
                bypassAntivirus,
-               bypassWhitelisting
+               bypassExecutionPrevention
 
         | bypassAntivirus
         
@@ -264,7 +263,7 @@ category Software {
         
         | bypassLogAnalysis
         
-        | bypassWhitelisting
+        | bypassExecutionPrevention
         
         | bypassSignatureBasedDetection
         
@@ -302,13 +301,13 @@ category Software {
             -> antivirusCheck,
                 spearphishingAttachmentDownload,
                 spearphishingLinkDownload   
-        # lockoutPolicies
+        # accountUsePolicies //Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             -> bruteForce
-        # whitelisting
+        # executionPrevention //Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.
             -> binaryPadding
-        # restricedScripting
+        # restrictFileAndDirectoryPermissions
             -> _scripting
-        # sandboxing
+        # applicationIsolationAndSandboxing //Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             -> _scripting
 
     }
@@ -324,7 +323,7 @@ category Software {
             info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
             -> executeCode,
                computer.bypassDigitalCertificateValidation,
-               computer.bypassApplicationWhitelisting    
+               computer.bypassApplicationExecutionPrevention    
                
         | executeCode 
             -> computer.infectedWindowsComputer
@@ -365,7 +364,7 @@ category Software {
             //-> leads to exploitation for defense evasion attack
         
 
-        # whitelisting
+        # executionPrevention
             -> accessibilityFeatures,
                executeMshta,
                createService,
@@ -384,7 +383,7 @@ category Software {
         & bootkit
             -> persistance
 
-        # secureBootProcess
+        # bootIntegrity
             -> bootkit
 
         | peripheralDeviceDiscovery
@@ -398,11 +397,11 @@ category Software {
             info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
             -> computer.dataCollected
 
-        # dataEncryption
+        # encryptSensitiveInformation
             -> emailStorageCollection,
                outlookEmailCollection
 
-        # disableDDEFeature
+        # disableOrRemoveFeatureOrProgram //https://attack.mitre.org/mitigations/M1042/
             -> registryKeysEnabled
             
         | videoCollection
@@ -421,26 +420,26 @@ category Software {
     asset Linux extends OS {
         & bootkit
             -> persistance
-        # secureBootProcess
+        # bootIntegrity //https://attack.mitre.org/mitigations/M1046/
             -> bootkit
         | persistance
 
-        & spaceAfterFileName
+        | spaceAfterFileName
             -> employee.userExecution
         
-        # fileMonitoring
-            -> spaceAfterFileName
+        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
+           // -> spaceAfterFileName
 
     }
     asset MacOS extends OS{
         | videoCollection
             -> computer.collectVideo
 
-        & spaceAfterFileName
+        | spaceAfterFileName
             -> employee.userExecution
         
-        # fileMonitoring
-            -> spaceAfterFileName
+        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
+           // -> spaceAfterFileName
 
         & networkShareDiscovery
             -> internalNetwork.networkShareDiscovery
@@ -452,7 +451,7 @@ category Software {
             // -> leads to exploitation for defense evasion attack
         
 
-        # whitelisting
+        # executionPrevention
             -> networkShareDiscovery,
                userSecuritySoftwareDiscovery,
                adminSecuritySoftwareDiscovery
@@ -482,7 +481,7 @@ category Network {
             -> compromisedBrowser
         & compromisedBrowser
             -> os.codeDelivered
-        # adblocker
+        # limitSoftwareInstallation
             -> compromisedBrowser
         
         & spearphishingLink
@@ -490,18 +489,15 @@ category Network {
 
         & spearphishingAttachment
             -> os.spearphishingAttachmentDownload
-        # blockAttachmentsCheck 
+        # restrictWebBasedContent//https://attack.mitre.org/mitigations/M1021/
             info: "Block unknown or unused attachments by default that should not be transmitted over email "
-            -> spearphishingAttachment
-        # phishingdetection
             -> spearphishingAttachment, 
                spearphishingLink
     }
     asset ExternalNetwork {
-        # intrusionDetecion
+        # networkIntrusionPrevention
             -> c2Server.obfuscatedData
-        # signatureIdentification
-            -> c2Server.obfuscatedData
+
         | bypassNetworkDetection
 
         | dataExfiltrated
@@ -521,7 +517,7 @@ category Network {
             -> firewall._bypassFirewall
 
             
-        # networkIntrusionDetection
+        # networkIntrusionPrevention
             -> dataExfiltration,
                c2Server.dataExfiltrated,
                applicationLayerConnexion,
@@ -540,17 +536,12 @@ category Network {
         & admintransmittedDataManipulation
             info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
-        # dataEncrypted
+        # encryptSensitiveInformation
             -> usertransmittedDataManipulation,
-               admintransmittedDataManipulation
+               admintransmittedDataManipulation,
+               exchangeServerCollection
 
-        # secureCommunication
-            -> usertransmittedDataManipulation,
-               admintransmittedDataManipulation
-
-    
-
-        # whitelisting
+        # executionPrevention
             -> computer.networkServiceScan
 
         & c2Connexion
@@ -559,9 +550,8 @@ category Network {
         & exchangeServerCollection
             info:"Adversaries may leverage a user's credentials and interact directly with the Exchange server to acquire information from within a network."
             -> computer.dataCollected
-        # dataEncryption
-            -> exchangeServerCollection
-        # twoFactorsAuthentication
+
+        # multiFactorAuthentication
             -> exchangeServerCollection
 
         | networkShareDiscovery
@@ -574,7 +564,7 @@ category Network {
             -> internalNetwork.dataExfiltration,
                internalNetwork.c2Connexion
 
-        # uncommonlyUsedPortsLimitation
+        # networkSegmentation //Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.. https://attack.mitre.org/mitigations/M1030/
             -> computer.uncommonlyUsedPortsConnection
         
         | bypassFirewall
@@ -621,14 +611,14 @@ category Hardware {
         
         | bypassHostIntrusionPrevention
         
-        | bypassApplicationWhitelisting
+        | bypassApplicationExecutionPrevention
 
         | bypassDigitalCertificateValidation   
         
         & diskStructureWipe
             info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
  
-        # backup
+        # dataBackup
             info:"Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
             -> diskStructureWipe,
                userDiskWiped,
@@ -646,7 +636,7 @@ category Hardware {
         
         & adminDataEncryptedForImpact
 
-        # whitelisting
+        # executionPrevention
             -> fileDiscovery, 
                directoryDiscovery,
                fileDeletion,
@@ -684,7 +674,7 @@ category Hardware {
         & downloadRemoteFile
             info: "data collection from the user"
 
-        # networkIntrusionDetection
+        # networkIntrusionPrevention
              info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
             -> uploadRemoteFile, 
                downloadRemoteFile,
@@ -824,10 +814,6 @@ category Hardware {
                internalNetwork.bypassNetworkDetection
 
         & dataExfiltrated
-
-        # thresholdAlert
-            info:" if the data transfered is to big, the attacker may use data transfer size limit attack to bypass the alert"
-            -> dataExfiltrated
     }
 
     asset RemovableMedia {
@@ -845,64 +831,64 @@ category Hardware {
 
 associations {    
     
-    Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
-    Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser 
-    Adversary [adversary] 1 <-- attack --> 1-* [os] OS 
+    Adversary [adversary] 1 <-- Attack --> 1-* [employee] Employee 
+    Adversary [adversary] 1 <-- Attack --> 1-* [browser] Browser 
+    Adversary [adversary] 1 <-- Attack --> 1-* [os] OS 
 
-    User [user] 1 <-- ui--> 1-* [os] OS
-    User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
-    User [linuxUser] 1-* <--use--> 1 [linux] Linux   
-    User [macOSUser] 1-* <--use--> 1 [macOS] MacOS
-    User [user] 1-* <-- ui--> 1 [computer] Computer
-    User [user] 1-* <--use--> 1-* [service] Service
+    User [user] 1 <-- Ui--> 1-* [os] OS
+    User [windowsUser] 1 <-- Ui--> 1-* [windows] Windows
+    User [linuxUser] 1-* <--Use--> 1 [linux] Linux   
+    User [macOSUser] 1-* <--Use--> 1 [macOS] MacOS
+    User [user] 1-* <-- Ui--> 1 [computer] Computer
+    User [user] 1-* <--Use--> 1-* [service] Service
   
-    Administrator [administrator] 1 <--ui--> 1-* [user] User
-    Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
-    Administrator [linuxAdministrator] 1 <--ui--> 1-* [linux] Linux
-    Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
-    Administrator [administrator] 1 <--ui--> 1-* [os] OS
-    Administrator [administrator] 1-* <--use--> 1-* [service] Service
+    Administrator [administrator] 1 <--Ui--> 1-* [user] User
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
+    Administrator [administrator] 1 <--Ui--> 1-* [computer] Computer
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <--Use--> 1-* [service] Service
     
-    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [os] OS
-    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [administrator] Administrator
-    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1 [windows] Windows    
+    WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [os] OS
+    WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [administrator] Administrator
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows    
     
-    Root [root] 1-* <--use--> 1 [macOS] MacOS
+    Root [root] 1-* <--Use--> 1 [macOS] MacOS
 
-    Employee [employee] 1 <--use--> 1-* [browser] Browser
-    Employee [employee] 1 <--use--> 1-* [computer] Computer
-    Employee [employee] 1 <--use--> 1-* [user] User
-    Employee [employee] 1 <--use--> 1-* [os] OS
-    Employee [employee] 1 <--use--> 1-* [macOS] MacOS
-    Employee [employee] 1 <--use--> 1-* [linux] Linux
-    Employee [employee] 1 <--use--> 1-* [removableMedia] RemovableMedia
+    Employee [employee] 1 <--Use--> 1-* [browser] Browser
+    Employee [employee] 1 <--Use--> 1-* [computer] Computer
+    Employee [employee] 1 <--Use--> 1-* [user] User
+    Employee [employee] 1 <--Use--> 1-* [os] OS
+    Employee [employee] 1 <--Use--> 1-* [macOS] MacOS
+    Employee [employee] 1 <--Use--> 1-* [linux] Linux
+    Employee [employee] 1 <--Use--> 1-* [removableMedia] RemovableMedia
 
-    Computer [computer] 1 <--use--> 1-* [removableMedia] RemovableMedia
+    Computer [computer] 1 <--Use--> 1-* [removableMedia] RemovableMedia
     Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
 
-    Browser [browser] 1-* <-- software --> 1 [os] OS
-    OS [os] 1 <-- system --> 1-* [computer] Computer
-    OS [os] 1 <--ui--> 1 [system] System 
+    Browser [browser] 1-* <-- Software --> 1 [os] OS
+    OS [os] 1 <-- System --> 1-* [computer] Computer
+    OS [os] 1 <--Ui--> 1 [system] System 
     
-    Computer [computer] 1 <--software--> 1 [macOS] MacOS
-    Computer [computer] 1 <--software--> 1 [windows] Windows
+    Computer [computer] 1 <--Software--> 1 [macOS] MacOS
+    Computer [computer] 1 <--Software--> 1 [windows] Windows
     
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [computer] Computer
 
     InternalNetwork [internalNetwork] 1 <-- Protect --> 1 [firewall] Firewall
-    InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [windows] Windows
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1 <--Connects--> 1-* [externalNetwork] ExternalNetwork
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [user] User
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [administrator] Administrator
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [computer] Computer
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
 
-    Computer [computer] 1-* <--protects--> 1 [firewall] Firewall
-    Computer [computer] 1 <--use--> 1 [microphone] Microphone
-    VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
-    Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
+    Computer [computer] 1-* <--Protects--> 1 [firewall] Firewall
+    Computer [computer] 1 <--Use--> 1 [microphone] Microphone
+    VideoCallApplication [videoCallApplication] 1-* <--Software--> 1 [computer] Computer
+    Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
 
 }
