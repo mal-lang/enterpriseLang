@@ -8,18 +8,18 @@ public class commonlyUsedPortsTest{
 
     @Test
     public void test1(){
-        Computer computer = new Computer("computer", true);
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork");
+        OS os = new OS("os");
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",true,true);
         C2Server c2Server = new C2Server("c2Server");
         ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
 
 
-        externalNetwork.addComputer(computer);
-        internalNetwork.addComputer(computer);
-        c2Server.addComputer(computer);
+        externalNetwork.addOs(os);
+        internalNetwork.addOs(os);
+        c2Server.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(computer.infectedComputer);
+        attacker.addAttackPoint(os.infectedOS);
         attacker.attack();
 
 
@@ -32,18 +32,18 @@ public class commonlyUsedPortsTest{
     }
     @Test
     public void test2(){
-        Computer computer = new Computer("computer", false);
+        OS os = new OS("os");
         InternalNetwork internalNetwork = new InternalNetwork("internalNetwork");
         C2Server c2Server = new C2Server("c2Server");
         ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
 
 
-        externalNetwork.addComputer(computer);
-        internalNetwork.addComputer(computer);
-        c2Server.addComputer(computer);
+        externalNetwork.addOs(os);
+        internalNetwork.addOs(os);
+        c2Server.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(computer.infectedComputer);
+        attacker.addAttackPoint(os.infectedOS);
         attacker.attack();
 
 

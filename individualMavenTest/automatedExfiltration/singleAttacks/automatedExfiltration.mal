@@ -15,7 +15,8 @@ category Hardware {
         & _automatedExfiltration
             // -> exfiltration over c2server, exfiltration over alternative protocol
 
-        # whitelisting
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
             -> _automatedExfiltration
 
     }

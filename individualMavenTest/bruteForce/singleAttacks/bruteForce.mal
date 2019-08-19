@@ -11,8 +11,16 @@ category Software {
         & bruteForce   
             -> user.userCredentials
 
-        # lockoutPolicies
+        #  accountUsePolicies
+            info: "https://attack.mitre.org/mitigations/M1036/" 
             -> bruteForce
+        #  multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/" 
+            -> bruteForce
+        #   PasswordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            -> bruteForce
+        
     }
 }
 associations {

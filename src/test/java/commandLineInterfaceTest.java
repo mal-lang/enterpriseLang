@@ -10,7 +10,7 @@ public class commandLineInterfaceTest{
     public void test1(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os", true);
+        OS os = new OS("os",false,true,false,false,false,false,false,false);
 
 
         user.addOs(os);
@@ -22,10 +22,11 @@ public class commandLineInterfaceTest{
 
         os.userCommandLineInterface.assertUncompromised();
     }
+    @Test
     public void test2(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os", false);
+        OS os = new OS("os");
 
 
         user.addOs(os);
@@ -37,10 +38,11 @@ public class commandLineInterfaceTest{
 
         os.userCommandLineInterface.assertCompromisedInstantaneously();
     }
+    @Test
     public void test3(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os", false);
+        OS os = new OS("os");
 
 
         user.addOs(os);

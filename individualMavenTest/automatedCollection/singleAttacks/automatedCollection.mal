@@ -38,7 +38,8 @@ category Hardware {
 
         & sensitiveDataCollected
         
-        # whitelisting
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
             -> _automatedCollection
          
     }

@@ -1,0 +1,37 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            ->  createUserAccount
+        & createUserAccount 
+            ->  os.persistance
+        # multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/"
+            ->  createUserAccount
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  createUserAccount 
+    }
+}
+
+category Software {
+    asset OS {
+        | persistance
+        
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            ->  administrator.createUserAccount
+    }
+}
+
+category Network {
+    asset InternalNetwork { 
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            -> administrator.createUserAccount
+    }
+}
+
+associations {
+    Administrator [administrator] 1-* <-- ui --> 1-* [os] OS
+    Administrator [administrator] 1-* <-- ui --> 1-* [internalNetwork] InternalNetwork
+}

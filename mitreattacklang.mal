@@ -38,51 +38,81 @@ category Person {
                 macOS.networkShareDiscovery,
                 macOS.userSecuritySoftwareDiscovery,
                 macOS.videoCollection,
-                internalNetwork.usertransmittedDataManipulation
+                internalNetwork.usertransmittedDataManipulation,
+                windows.appCertDLLs,
+                macOS.appleScript,
+                linux.bash_profileAndBashrc,
+                macOS.bash_profileAndBashrc,
+                windows.changeDefaultFileAssociation
 
 
         | userCredentials
             -> windows.outlookEmailCollection,
                internalNetwork.bypassAccessControl,
                internalNetwork.exchangeServerCollection,
-               service.userRemoteServicesLogin
-        
+               service.userRemoteServicesLogin,
+               userRights
+        | userInformation
     }
 
     asset Administrator {
         | adminRights
-            -> user.userRights,
-               windows.createService,
-               computer.adminDataDestruction,
-               os.detailedRunningProcessDiscovery,
-               os.detailedRemoteSystemDiscovery,
-               os.adminCommandLineInterface,
-               windows.bootkit,
-               linux.bootkit,
-               internalNetwork.admintransmittedDataManipulation,
-               internalNetwork.bypassAccessControl,
-               service.admintransmittedDataManipulation,
-               service.adminRemoteServicesLogin,
-               computer.networkServiceScan,
-               windows.scheduledTask,
-               computer.automatedCollection,
-               computer.sensitiveDataCollected,
-               computer.diskStructureWipe,
-               computer.adminDiskWiped,
-               computer.adminDataEncryptedForImpact
+            ->  user.userRights,
+                windows.createService,
+                computer.adminDataDestruction,
+                os.detailedRunningProcessDiscovery,
+                os.detailedRemoteSystemDiscovery,
+                os.adminCommandLineInterface,
+                windows.bootkit,
+                linux.bootkit,
+                internalNetwork.admintransmittedDataManipulation,
+                internalNetwork.bypassAccessControl,
+                service.admintransmittedDataManipulation,
+                service.adminRemoteServicesLogin,
+                computer.networkServiceScan,
+                windows.scheduledTask,
+                computer.automatedCollection,
+                computer.sensitiveDataCollected,
+                computer.diskStructureWipe,
+                computer.adminDiskWiped,
+                computer.adminDataEncryptedForImpact,
+                windows.appCertDLLs,
+                windows.appInitDLLs,
+                windows.applicationShimming,
+                windows.authenticationPackage,
+                linux.bash_profileAndBashrc,
+                macOS.bash_profileAndBashrc,
+                windows.changeDefaultFileAssociation,
+                createUserAccount
                
         | adminCredential
-            -> service.adminRemoteServicesLogin,
-               internalNetwork.bypassAccessControl
+            ->  service.adminRemoteServicesLogin,
+                internalNetwork.bypassAccessControl,
+                adminRights
+            
+        & createUserAccount 
+            ->  os.persistence
+        
+        # multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/"
+            ->  createUserAccount
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  createUserAccount 
     }
     
     asset WindowsAdmin extends Administrator{
-        | systemRights
-            -> administrator.adminRights,
+        | adminRights
+            +> administrator.adminRights,
                windows.accessibilityFeatures,
                windows.executeService,
                windows.queryRegistery,
-               windows.adminSecuritySoftwareDiscovery
+               windows.adminSecuritySoftwareDiscovery,
+               accountManipulation
+        & accountManipulation
+            ->  user.userCredentials
+        # multiFactorAuthentication
+            +> accountManipulation
 
     }
     
@@ -92,8 +122,10 @@ category Person {
 
     }
     
-    asset System {
+    asset SYSTEM {
         | systemRights
+            ->  windows.appCertDLLs,
+                windows.changeDefaultFileAssociation
     }
     
     asset Employee {
@@ -171,7 +203,8 @@ category Software {
         | remoteAccessTools
             -> internalNetwork.c2Connexion
 
-        # executionPrevention
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             -> remoteAccessTools,
                userRemoteServicesLogin,
                adminRemoteServicesLogin
@@ -194,7 +227,12 @@ category Software {
     }
     
     abstractAsset OS{
-    
+        | infectedOS
+            -> clipboardData
+        & clipboardData
+            ->  administrator.adminCredential,
+                user.userCredentials
+
         & accountDiscovery
             info: "get account names and information"
 
@@ -238,11 +276,15 @@ category Software {
         & systemInformationDiscovery
             info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
         
-
-        # executionPrevention
-            -> accountDiscovery,
+        #  operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  accountDiscovery, 
                 domainDiscovery,
-                applicationWindowDiscovery,
+                administrator.createUserAccount
+
+        # executionPrevention //Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  applicationWindowDiscovery,
                 runningProcessDiscovery,
                 detailedRunningProcessDiscovery,
                 remoteSystemDiscovery,
@@ -250,7 +292,8 @@ category Software {
                 adminCommandLineInterface, 
                 userCommandLineInterface,
                 processInjection,
-                systemInformationDiscovery
+                systemInformationDiscovery,
+                binaryPadding
 
         & processInjection
             -> administrator.adminRights,
@@ -283,7 +326,8 @@ category Software {
             -> runCode
 
         | runCode
-            -> computer.infectedComputer
+            ->  computer.infectedComputer,
+                infectedOS
 
         & spearphishingAttachmentDownload
             -> employee.userExecution
@@ -301,20 +345,36 @@ category Software {
             -> antivirusCheck,
                 spearphishingAttachmentDownload,
                 spearphishingLinkDownload   
-        # accountUsePolicies //Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
-            -> bruteForce
-        # executionPrevention //Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.
-            -> binaryPadding
+        
         # restrictFileAndDirectoryPermissions
+        
+        #  accountUsePolicies //Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
+            info: "https://attack.mitre.org/mitigations/M1036/" 
+            -> bruteForce
+        #  multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/" 
+            -> bruteForce
+        #  passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            -> bruteForce
+        # restricedScripting
             -> _scripting
         # applicationIsolationAndSandboxing //Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             -> _scripting
+        | persistence
+
+        & commonlyUsedPortsConnection
+            ->  c2Server.c2Connected,
+                externalNetwork.bypassFirewall,
+                internalNetwork.bypassFirewall,
+                externalNetwork.bypassNetworkDetection,
+                internalNetwork.bypassNetworkDetection
 
     }
     
     asset Windows extends OS{
         & accessibilityFeatures
-            info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system"
+            info: "This helps attackers to open a SYSTEM-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system"
             -> executeCode,
                system.systemRights,
                remoteDesktopProtocol 
@@ -364,8 +424,9 @@ category Software {
             //-> leads to exploitation for defense evasion attack
         
 
-        # executionPrevention
-            -> accessibilityFeatures,
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +> accessibilityFeatures,
                executeMshta,
                createService,
                scheduledTask, 
@@ -373,7 +434,9 @@ category Software {
                queryRegistery,
                networkShareDiscovery,
                userSecuritySoftwareDiscovery,
-               adminSecuritySoftwareDiscovery
+               adminSecuritySoftwareDiscovery,
+               _appCertDLLs,
+               appInitDLLs
 
         & executeService
             -> persistance
@@ -415,6 +478,51 @@ category Software {
             info:"The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
             -> scheduledTask
       
+        | appCertDLLs
+            -> _appCertDLLs 
+        & _appCertDLLs
+            ->  persistence,
+                systemWindows.systemRights,
+                windowsUser.userRights,
+                windowsAdministrator.adminRights
+
+        & appInitDLLs 
+            ->  persistence 
+        
+        #  updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/" 
+            ->  appInitDLLs,
+                _applicationShimming
+        
+        # userAccountControl
+            info: "https://attack.mitre.org/mitigations/M1052/"
+            ->  _applicationShimming  
+        
+        | applicationShimming
+            -> _applicationShimming
+        
+        & _applicationShimming
+            ->  persistence,
+                user.userRights,
+                administrator.adminRights
+        & authenticationPackage
+            //info: "HKLM\SYSTEM\CurrentControlSet\Control\Lsa\ with the key value of 'Authentication Packages='"
+            ->  persistence   
+        #  PrivilegedProcessIntegrity  
+            info: "https://attack.mitre.org/mitigations/M1025/"
+            ->  authenticationPackage 
+
+        & bootkit 
+            -> persistance
+        # bootIntegrity 
+            info: "https://attack.mitre.org/mitigations/M1046/"
+            -> bootkit
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            -> bootkit 
+        | changeDefaultFileAssociation
+            ->  persistence
+            
     }
 
     asset Linux extends OS {
@@ -422,6 +530,8 @@ category Software {
             -> persistance
         # bootIntegrity //https://attack.mitre.org/mitigations/M1046/
             -> bootkit
+        | infectedOS
+            +>  bashHistory
         | persistance
 
         | spaceAfterFileName
@@ -429,9 +539,29 @@ category Software {
         
         //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
            // -> spaceAfterFileName
+        # fileMonitoring
+            -> spaceAfterFileName
+        |  bash_profileAndBashrc
+            -> _bash_profileAndBashrc
+        &  _bash_profileAndBashrc 
+            ->  persistence
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  _bash_profileAndBashrc
+        &  bashHistory 
+            ->  linuxAdministrator.adminCredential,
+                linuxUser.userCredentials
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            ->  bashHistory
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            -> bootkit 
 
     }
     asset MacOS extends OS{
+        | infectedOS
+            +>  bashHistory
         | videoCollection
             -> computer.collectVideo
 
@@ -451,10 +581,29 @@ category Software {
             // -> leads to exploitation for defense evasion attack
         
 
-        # executionPrevention
-            -> networkShareDiscovery,
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +> networkShareDiscovery,
                userSecuritySoftwareDiscovery,
                adminSecuritySoftwareDiscovery
+        & appleScript
+            -> runCode
+        #  codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            -> appleScript
+        |  bash_profileAndBashrc
+            -> _bash_profileAndBashrc
+        &  _bash_profileAndBashrc 
+            ->  persistence
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  _bash_profileAndBashrc
+        &  bashHistory 
+            ->  macosAdministrator.adminCredential,
+                macOSUser.userCredentials
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            ->  bashHistory
     }
     
 
@@ -493,6 +642,27 @@ category Network {
             info: "Block unknown or unused attachments by default that should not be transmitted over email "
             -> spearphishingAttachment, 
                spearphishingLink
+        | browserBookmark
+            -> browserBookmarkDiscovery
+        | browserBookmarkDiscovery 
+            ->  user.userInformation,
+                internalNetwork.internalNetworkResourcesInformation
+        | installExtensions
+            -> runExtensions
+        & runExtensions
+            -> os.persistence
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            -> runExtensions
+        # executionPrevention 
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            -> runExtensions
+        # limitSoftwareInstallation
+            info: "https://attack.mitre.org/mitigations/M1033/"
+            -> runExtensions 
+        #  userTraining
+            info: "https://attack.mitre.org/mitigations/M1017/"    
+            -> runExtensions 
     }
     asset ExternalNetwork {
         # networkIntrusionPrevention
@@ -501,6 +671,8 @@ category Network {
         | bypassNetworkDetection
 
         | dataExfiltrated
+
+        | bypassFirewall
 
     }
     asset InternalNetwork {
@@ -541,7 +713,12 @@ category Network {
                admintransmittedDataManipulation,
                exchangeServerCollection
 
-        # executionPrevention
+        # secureCommunication
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             -> computer.networkServiceScan
 
         & c2Connexion
@@ -556,9 +733,19 @@ category Network {
 
         | networkShareDiscovery
             info:"Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. "
-        
-    }
+        | internalNetworkResourcesInformation
 
+        | bypassFirewall
+
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            -> os.commonlyUsedPortsConnection
+
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.commonlyUsedPortsConnection,
+                administrator.createUserAccount
+    }
     asset Firewall {
         & _bypassFirewall
             -> internalNetwork.dataExfiltration,
@@ -577,18 +764,11 @@ category Hardware {
     asset Computer {
         | infectedComputer
             -> removableMedia.infectedMedia,
-               commonlyUsedPortsConnection,
                internalNetwork.applicationLayerConnexion,
                uncommonlyUsedPortsConnection
 
         | infectedWindowsComputer
             -> windows.dynamicDataExchange
-        
-        & commonlyUsedPortsConnection
-            -> internalNetwork.c2Connexion,
-               firewall.bypassFirewall,
-               externalNetwork.bypassNetworkDetection,
-               internalNetwork.bypassNetworkDetection
 
         & uncommonlyUsedPortsConnection
             -> internalNetwork.c2Connexion,
@@ -636,7 +816,8 @@ category Hardware {
         
         & adminDataEncryptedForImpact
 
-        # executionPrevention
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
             -> fileDiscovery, 
                directoryDiscovery,
                fileDeletion,
@@ -677,8 +858,7 @@ category Hardware {
         # networkIntrusionPrevention
              info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
             -> uploadRemoteFile, 
-               downloadRemoteFile,
-               commonlyUsedPortsConnection
+               downloadRemoteFile
 
         & userDataDestruction
 
@@ -805,7 +985,6 @@ category Hardware {
             -> computer._collectVideo
     }
     asset C2Server {
-
         | c2Connected 
             -> obfuscatedData
 
@@ -831,29 +1010,29 @@ category Hardware {
 
 associations {    
     
-    Adversary [adversary] 1 <-- Attack --> 1-* [employee] Employee 
-    Adversary [adversary] 1 <-- Attack --> 1-* [browser] Browser 
-    Adversary [adversary] 1 <-- Attack --> 1-* [os] OS 
+    Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
+    Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser 
+    Adversary [adversary] 1 <-- attack --> 1-* [os] OS 
 
-    User [user] 1 <-- Ui--> 1-* [os] OS
-    User [windowsUser] 1 <-- Ui--> 1-* [windows] Windows
-    User [linuxUser] 1-* <--Use--> 1 [linux] Linux   
-    User [macOSUser] 1-* <--Use--> 1 [macOS] MacOS
-    User [user] 1-* <-- Ui--> 1 [computer] Computer
-    User [user] 1-* <--Use--> 1-* [service] Service
+    User [user] 1 <-- ui--> 1-* [os] OS
+    User [windowsUser] 1-* <-- ui--> 1-* [windows] Windows
+    User [linuxUser] 1-* <--use--> 1-* [linux] Linux   
+    User [macOSUser] 1-* <--use--> 1-* [macOS] MacOS
+    User [user] 1-* <-- ui--> 1 [computer] Computer
+    User [user] 1-* <--use--> 1-* [service] Service
   
-    Administrator [administrator] 1 <--Ui--> 1-* [user] User
-    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
-    Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
-    Administrator [administrator] 1 <--Ui--> 1-* [computer] Computer
-    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
-    Administrator [administrator] 1-* <--Use--> 1-* [service] Service
+    Administrator [administrator] 1 <--ui--> 1-* [user] User
+    Administrator [windowsAdministrator] 1-* <--ui--> 1-* [windows] Windows
+    Administrator [linuxAdministrator] 1-* <--ui--> 1-* [linux] Linux
+    Administrator [macosAdministrator] 1-* <--ui--> 1-* [macOS] MacOS
+    Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
+    Administrator [administrator] 1 <--ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <--use--> 1-* [service] Service
     
-    WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [os] OS
-    WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [administrator] Administrator
-    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows    
+    WindowsAdmin [windowsAdmin] 1-* <--use--> 1-* [administrator] Administrator
+    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1-* [windows] Windows   
     
-    Root [root] 1-* <--Use--> 1 [macOS] MacOS
+    Root [root] 1-* <--use--> 1-* [macOS] MacOS
 
     Employee [employee] 1 <--Use--> 1-* [browser] Browser
     Employee [employee] 1 <--Use--> 1-* [computer] Computer
@@ -866,29 +1045,35 @@ associations {
     Computer [computer] 1 <--Use--> 1-* [removableMedia] RemovableMedia
     Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
 
-    Browser [browser] 1-* <-- Software --> 1 [os] OS
-    OS [os] 1 <-- System --> 1-* [computer] Computer
-    OS [os] 1 <--Ui--> 1 [system] System 
+    Browser [browser] 1-* <-- software --> 1-* [os] OS
+    Browser [browser] 1-* <-- ui--> 1-* [user] User
+    Browser [browser] 1-* <-- ui --> 1-* [internalNetwork] InternalNetwork
+    OS [os] 1-* <-- system --> 1-* [computer] Computer
+    OS [os] 1-* <--ui--> 1 [system] SYSTEM 
+    OS [os] 1-* <--ui--> 1-* [c2Server] C2Server
     
-    Computer [computer] 1 <--Software--> 1 [macOS] MacOS
-    Computer [computer] 1 <--Software--> 1 [windows] Windows
+    Computer [computer] 1-* <--software--> 1-* [macOS] MacOS
+    Computer [computer] 1-* <--software--> 1-* [windows] Windows
     
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [computer] Computer
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <-- Contain --> 1-* [os] OS
 
     InternalNetwork [internalNetwork] 1 <-- Protect --> 1 [firewall] Firewall
-    InternalNetwork [internalNetwork] 1 <--Connects--> 1-* [externalNetwork] ExternalNetwork
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [user] User
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [administrator] Administrator
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [computer] Computer
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [windows] Windows
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
+    //InternalNetwork [internalNetwork] 1 <--contain--> 1-* [windows] Windows
+    //InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [service] Service
 
-    Computer [computer] 1-* <--Protects--> 1 [firewall] Firewall
-    Computer [computer] 1 <--Use--> 1 [microphone] Microphone
-    VideoCallApplication [videoCallApplication] 1-* <--Software--> 1 [computer] Computer
-    Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
+    Computer [computer] 1-* <--protects--> 1 [firewall] Firewall
+    Computer [computer] 1 <--use--> 1 [microphone] Microphone
+    VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
+    Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
+    SYSTEM [systemWindows] 1-* <-- ui--> 1-* [windows] Windows
 
 }

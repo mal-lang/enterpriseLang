@@ -1,0 +1,29 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            ->  windows.winlogonHelperDLL
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+
+        | runOnLogsOn
+
+        # whitelisting
+    }
+    asset Windows extends OS{
+         & winlogonHelperDLL
+            ->  persistence,
+                runOnLogsOn
+
+         # whitelisting
+            +>  winlogonHelperDLL
+
+    }
+}
+
+associations {
+    Windows [windows] 1 <-- ui--> 1-* [administrator] Administrator
+}

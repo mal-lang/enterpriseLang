@@ -1,0 +1,43 @@
+category Hardware{
+    asset Server {
+        | infectedServer
+            ->  webShell
+        & webShell
+            ->  c2Server.obfuscatedData
+        # separateAccountForServerAndNormalUser
+            ->  webShell
+        
+    }
+}
+
+category Network {
+    abstractAsset Network{
+        //-> firewall
+    }
+    asset InternalNetwork extends Network {
+        | connectedToNetwork
+            ->  server.infectedServer
+
+    }
+    asset ExternalNetwork extends Network{
+        # intrusionDetecion
+
+        # signatureIdentification
+    }
+    asset C2Server extends ExternalNetwork {
+        # intrusionDetecion
+            +> _obfuscatedData
+        # signatureIdentification
+            +> _obfuscatedData
+        | c2Connexion
+            -> obfuscatedData
+        | obfuscatedData
+            -> _obfuscatedData
+        & _obfuscatedData
+    }
+}
+
+associations {
+    InternalNetwork [internalNetwork] 1-* <-- ui--> 1-* [server] Server
+    C2Server [c2Server] 1-* <-- ui--> 1-* [server] Server
+}

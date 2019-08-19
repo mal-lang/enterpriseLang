@@ -1,0 +1,26 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            -> windows.authenticationPackage
+    }
+}
+category Software {
+    asset OS {
+        | persistence
+    }
+
+    asset Windows extends OS {
+        & authenticationPackage
+            //info: "HKLM\SYSTEM\CurrentControlSet\Control\Lsa\ with the key value of 'Authentication Packages='"
+            ->  persistence   
+        #  PrivilegedProcessIntegrity  
+            info: "https://attack.mitre.org/mitigations/M1025/"
+            ->  authenticationPackage 
+    }
+}
+
+
+associations {
+    Administrator [administrator] 1-*<-- ui--> 1-* [windows] Windows
+}
+

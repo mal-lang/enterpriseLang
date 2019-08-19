@@ -1,0 +1,34 @@
+category Person{
+    asset User {
+        | userCredentials
+    }
+
+    asset Adversary {
+        | spearphishingViaService
+            -> employee.socialEngineering 
+
+    }
+
+    asset Employee {
+        |   socialEngineering
+            -> _socialEngineering
+        &   _socialEngineering 
+            ->  computer.infectedComputer,
+                user.userCredentials
+        # restrictSiteAndPrograms
+            -> _socialEngineering
+
+    }
+}
+
+category Hardware {
+     asset Computer {
+        | infectedComputer
+    }
+}
+
+associations {
+    Adversary [adversary] 1-* <-- ui--> 1-* [employee] Employee
+    Computer [computer] 1-* <-- ui--> 1-* [employee] Employee
+    User [user] 1-* <-- ui--> 1-* [employee] Employee
+}

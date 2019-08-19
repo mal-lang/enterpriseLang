@@ -1,0 +1,38 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            ->  windows.serviceRegistryPermissionsWeakness
+    }
+    asset SYSTEM {
+        | systemRights
+            ->  windows.serviceRegistryPermissionsWeakness
+    }
+}
+
+category Software {
+    asset OS {
+        # whitelisting
+        | persistence
+        | privilegeEscalation
+            ->  administrator.adminRights,
+                system.systemRights
+
+    }
+    asset Windows extends OS{
+        | serviceRegistryPermissionsWeakness
+            ->  _serviceRegistryPermissionsWeakness
+        & _serviceRegistryPermissionsWeakness
+            ->  persistence,
+                privilegeEscalation
+        # whitelisting
+            +> serviceRegistryPermissionsWeakness
+
+    }
+}
+
+associations {
+    Administrator [administrator] 1-* <-- ui--> 1-* [windows] Windows
+    SYSTEM [system] 1-* <-- ui--> 1-* [windows] Windows
+    Administrator [administrator] 1-* <-- ui--> 1-* [os] OS
+    SYSTEM [system] 1-* <-- ui--> 1-* [os] OS
+}

@@ -19,7 +19,7 @@ category Software {
       // -> entrypoints of attacks that can be done with command line interface under admin rights
 
 
-    # whitelisting
+    # executionPrevention
       -> userCommandLineInterface,
         adminCommandLineInterface
   }

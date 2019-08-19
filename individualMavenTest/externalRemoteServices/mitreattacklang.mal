@@ -1,0 +1,29 @@
+category Person{
+    asset User {
+        | connectToVpn
+            ->  externalNetwork.connectToVpn 
+    }
+}
+
+category Network {
+     abstractAsset Network{
+        //-> firewall
+    }
+    asset ExternalNetwork extends Network{
+        | vpnExternalConnection
+            -> internalNetwork.vpnInternalConnection
+        & connectToVpn
+            -> vpnExternalConnection
+        # multiFactorAuthentication
+            -> connectToVpn
+    }
+    asset InternalNetwork extends Network {
+        | vpnInternalConnection
+
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [externalNetwork] ExternalNetwork
+    InternalNetwork [internalNetwork] 1 <-- ui--> 1-* [externalNetwork] ExternalNetwork
+}

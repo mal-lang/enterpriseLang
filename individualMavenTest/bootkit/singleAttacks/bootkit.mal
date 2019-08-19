@@ -1,7 +1,7 @@
 category Person{
     asset Administrator {
         | adminRights
-            -> windows.bootkit,
+            ->  windows.bootkit,
                 linux.bootkit
     }
 }
@@ -10,15 +10,23 @@ category Hardware {
     asset Windows {
         & bootkit 
             -> persistance
-        # secureBootProcess
+        # bootIntegrity 
+            info: "https://attack.mitre.org/mitigations/M1046/"
             -> bootkit
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            -> bootkit 
         | persistance
     }
     asset Linux {
         & bootkit 
             -> persistance
-        # secureBootProcess
+        # bootIntegrity 
+            info: "https://attack.mitre.org/mitigations/M1046/"
             -> bootkit
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            -> bootkit 
         | persistance
     }
 

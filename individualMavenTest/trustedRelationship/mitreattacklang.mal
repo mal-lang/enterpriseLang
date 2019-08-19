@@ -1,0 +1,56 @@
+category Person{
+     asset Adversary {
+        | thirdPartySystemAccess
+            -> networkUnitThirdParty.connectedToLocalNetwork
+    }
+    asset Employee {
+        # trainedEmployee 
+            -> _userExecution
+
+        |   userExecution
+            ->  _userExecution   
+
+        &   _userExecution
+            -> computer.infectedComputer
+        | insertMedia
+            -> userExecution
+    }
+}
+
+category Network {
+    abstractAsset Network{
+        //-> firewall
+    }
+     asset InternalNetwork extends Network {
+        | connectedToNetwork
+    }
+}
+category ThirdParty {
+    asset NetworkUnitThirdParty{
+        | connectedToLocalNetwork
+            -> internalNetwork.connectedToNetwork 
+    }
+    asset EmployeeThirdParty {
+        | infectedMedia
+            -> removableMedia.infectedMedia
+    }
+}
+category Hardware {
+    asset Computer {
+        | infectedComputer
+    }
+    asset RemovableMedia {
+        | infectedMedia
+            -> employee.insertMedia
+        | data
+
+    }
+}
+associations {
+    Adversary [adversary] 1-* <-- ui--> 1-* [networkUnitThirdParty] NetworkUnitThirdParty
+    InternalNetwork [internalNetwork] 1-* <-- ui--> 1-* [networkUnitThirdParty] NetworkUnitThirdParty
+    Employee [employee] 1-* <-- ui--> 1-* [computer] Computer
+    RemovableMedia [removableMedia] 1-* <-- ui--> 1-* [employeeThirdParty] EmployeeThirdParty
+    RemovableMedia [removableMedia] 1-* <-- ui--> 1-* [employee] Employee
+    
+}

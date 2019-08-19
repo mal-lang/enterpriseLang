@@ -1,0 +1,31 @@
+category Person{
+    asset User {
+       | userRights
+           
+    }
+}
+
+category Software {
+    asset OS {
+    }
+    asset Windows extends OS{
+        | windowsManagementInstrumentation 
+            ->  user.userRights
+    }
+}
+
+category Hardware {
+     asset Computer {
+        | infectedComputer
+            ->  windowsAdminShares
+        &  windowsAdminShares 
+            -> windows.windowsManagementInstrumentation
+        # whitelisting
+            -> windowsAdminShares
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [windows] Windows
+    Computer [computer] 1-* <-- ui--> 1-* [windows] Windows
+}

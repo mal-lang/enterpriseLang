@@ -1,0 +1,49 @@
+category Person{
+    asset User {
+        
+        | userRights
+            ->  linux.interruptSignals,
+                linux.trap,
+                macOS.interruptSignals,
+                macOS.trap
+
+    }
+    asset Administrator {
+        | adminRights
+            ->  linux.interruptSignals,
+                linux.trap,
+                macOS.interruptSignals,
+                macOS.trap
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+    asset Linux extends OS {
+        | interruptSignals
+            info: "example ctrl+c and ctrl+d"
+            -> trapTriggered
+        & trapTriggered
+            -> persistence
+        | trap  
+            -> trapTriggered
+    }
+    asset MacOS extends OS {
+        | interruptSignals
+            info: "example ctrl+c and ctrl+d"
+            -> trapTriggered
+        & trapTriggered
+            -> persistence
+        | trap  
+            -> trapTriggered
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [linux] Linux
+    Administrator [administrator] 1-* <-- ui--> 1-* [linux] Linux
+    User [user] 1-* <-- ui--> 1-* [macOS] MacOS
+    Administrator [administrator] 1-* <-- ui--> 1-* [macOS] MacOS
+}

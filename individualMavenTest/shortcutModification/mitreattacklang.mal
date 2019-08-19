@@ -1,0 +1,32 @@
+category Person{
+    asset User {
+        | userRights
+            ->  windows.shortcutModification
+    }
+    asset Administrator {
+        | adminRights
+            ->  windows.shortcutModification
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+    asset Windows extends OS{
+        | shortcutModification
+            -> _shortcutModification
+        & _shortcutModification
+            ->  persistence
+        # userAccountManagement 
+            info: "https://attack.mitre.org/mitigations/M1018/"
+            +>  _shortcutModification
+
+    }
+}
+
+associations {
+    Windows [windows] 1-* <-- ui--> 1-* [administrator] Administrator
+    Windows [windows] 1-* <-- ui--> 1-* [user] User
+}
+

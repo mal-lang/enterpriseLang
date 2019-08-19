@@ -9,7 +9,7 @@ public class bootkitTest{
     @Test
     public void test1(){
         Administrator administrator = new Administrator("administrator");
-        Windows windows = new Windows("windows", true);
+        Windows windows = new Windows("windows", true,true);
         
         administrator.addWindows(windows);
 
@@ -19,9 +19,10 @@ public class bootkitTest{
 
         windows.persistance.assertUncompromised();
     }
+    @Test
     public void test2(){
         Administrator administrator = new Administrator("administrator");
-        Windows windows = new Windows("windows", false);
+        Windows windows = new Windows("windows");
         
         administrator.addWindows(windows);
 
@@ -31,9 +32,10 @@ public class bootkitTest{
 
         windows.persistance.assertCompromisedInstantaneously();
     }
+    @Test
     public void test3(){
         Administrator administrator = new Administrator("administrator");
-        Linux linux = new Linux("linux", false);
+        Linux linux = new Linux("linux");
         
         administrator.addLinux(linux);
 
@@ -43,9 +45,10 @@ public class bootkitTest{
 
         linux.persistance.assertCompromisedInstantaneously();
     }
+    @Test
     public void test4(){
         Administrator administrator = new Administrator("administrator");
-        Linux linux = new Linux("linux", true);
+        Linux linux = new Linux("linux", true,true);
         
         administrator.addLinux(linux);
 

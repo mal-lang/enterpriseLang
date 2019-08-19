@@ -13,7 +13,8 @@ category Software {
         
         & domainDiscovery 
 
-        # whitelisting
+        #  operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
             -> accountDiscovery, domainDiscovery
     }
 }

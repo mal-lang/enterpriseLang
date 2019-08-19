@@ -10,7 +10,7 @@ public class bruteForceTest{
     public void test1(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        OS os = new OS("os", true);
+        OS os = new OS("os",false,false,false,true,true,true,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addOs(os);
@@ -20,14 +20,15 @@ public class bruteForceTest{
         attacker.attack();
 
         // Section 3: Assertions
-        user.userCredentials.assertUncompromised();
+        user.userCredentials.assertUncompromisedFrom(os.bruteForce);
      
 
     }
+    @Test
     public void test2(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        OS os = new OS("os", false);
+        OS os = new OS("os");
 
         // Section 2: Asset connections and attacker creation
         user.addOs(os);

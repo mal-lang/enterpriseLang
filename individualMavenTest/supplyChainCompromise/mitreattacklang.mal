@@ -1,0 +1,27 @@
+category Person{
+    asset Adversary {
+        | supplyChainCompromiseAttack
+            -> supplyChain.supplyChainCompromise
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedComputer        
+    }
+}
+
+category ThirdParty {
+    
+    asset SupplyChain {
+        &  supplyChainCompromise
+            -> computer.infectedComputer
+        # supplyChainRiskManagementSCRM
+            -> supplyChainCompromise
+    }
+}
+
+associations {
+    Adversary [adversary] 1-* <-- ui--> 1-* [supplyChain] SupplyChain
+    Computer [computer] 1-* <-- ui--> 1-* [supplyChain] SupplyChain
+}
