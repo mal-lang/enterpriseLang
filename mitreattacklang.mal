@@ -405,6 +405,13 @@ category Software {
         & _credentialsInRegistry
             ->  user.userCredentials,
                 administrator.adminCredentials 
+
+        | dataCollected
+            -> compressData
+            
+        & compressData
+            //-> // exfiltration attack entry points
+        
     }
     
     asset Windows extends OS{
@@ -763,7 +770,8 @@ category Network {
                 c2Server.dataExfiltrated,
                 applicationLayerConnexion,
                 computer.networkServiceScan,
-                c2Connexion
+                c2Connexion,
+                os.compressData 
 
         # networkSegmentation
             info: "https://attack.mitre.org/mitigations/M1030/"
