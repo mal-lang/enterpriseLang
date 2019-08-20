@@ -85,7 +85,8 @@ category Person {
                 macOS.bash_profileAndBashrc,
                 windows.changeDefaultFileAssociation,
                 createUserAccount,
-                os.credentialsInFiles
+                os.credentialsInFiles,
+                os.credentialsInRegistry
                
         | adminCredentials
             ->  service.adminRemoteServicesLogin,
@@ -110,7 +111,8 @@ category Person {
                windows.executeService,
                windows.queryRegistery,
                windows.adminSecuritySoftwareDiscovery,
-               accountManipulation
+               accountManipulation,
+               os.credentialsInRegistry
         & accountManipulation
             ->  user.userCredentials
         # multiFactorAuthentication
@@ -364,7 +366,8 @@ category Software {
         #  passwordPolicies 
             info: "https://attack.mitre.org/mitigations/M1027/" 
             ->  bruteForce,
-                _credentialsInFiles
+                _credentialsInFiles,
+                _credentialsInRegistry
         # restricedScripting
             -> _scripting
         # applicationIsolationAndSandboxing //Restrict execution of code to a virtual environment on or in transit to an endpoint system.
@@ -383,7 +386,8 @@ category Software {
             -> _credentialsInFiles
         # audit 
             info: "https://attack.mitre.org/mitigations/M1047/"
-            -> _credentialsInFiles
+            ->  _credentialsInFiles,
+                _credentialsInRegistry
         #  userTraining 
             info: "https://attack.mitre.org/mitigations/M1017/"
             -> _credentialsInFiles
@@ -392,7 +396,15 @@ category Software {
         & _credentialsInFiles
             ->  user.userCredentials,
                 administrator.adminCredentials,
-                system.systemCredentials     
+                system.systemCredentials  
+        #   privilegedAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            -> _credentialsInRegistry  
+        | credentialsInRegistry
+            ->  _credentialsInRegistry
+        & _credentialsInRegistry
+            ->  user.userCredentials,
+                administrator.adminCredentials 
     }
     
     asset Windows extends OS{
@@ -536,7 +548,7 @@ category Software {
             -> bootkit
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
-            -> bootkit 
+            +>  bootkit 
         | changeDefaultFileAssociation
             ->  persistence
             

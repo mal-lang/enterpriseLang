@@ -52,7 +52,7 @@ public class bash_profileAndBashrcTest {
   @Test
   public void macOSTestwithDefense() {
     User user = new User("user");
-    MacOS macOS= new MacOS("macOS",false,false,true,false,false,false,false,false,false,false,false,false,false);
+    MacOS macOS= new MacOS("macOS",false,false,true,false,false,false,false,false,false,false,false,false,false,false);
 
     user.addMacOS(macOS);
 

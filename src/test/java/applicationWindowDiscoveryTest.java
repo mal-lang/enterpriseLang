@@ -8,7 +8,7 @@ public class applicationWindowDiscoveryTest{
     public void test1(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        OS os = new OS("os",false,true,false,false,false,false,false,false,false,false,false,false);
+        OS os = new OS("os",false,true,false,false,false,false,false,false,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addOs(os);

@@ -64,7 +64,7 @@ public class bashHistoryTest {
   @Test
   public void macOSTestwithDefense() {
     User user = new User("user");
-    MacOS macOS= new MacOS("macOS",false,false,false,true,false,false,false,false,false,false,false,false,false);
+    MacOS macOS= new MacOS("macOS",false,false,false,true,false,false,false,false,false,false,false,false,false,false);
     Administrator admin = new Administrator("admin");
 
     user.addMacOS(macOS);
