@@ -9,7 +9,7 @@ public class authenticationPackageTest{
     public void test1(){
         // Section 1: Asset instantiation
         Administrator admin = new Administrator("admin");
-        Windows windows = new Windows("windows",false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows",false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         admin.addWindows(windows);

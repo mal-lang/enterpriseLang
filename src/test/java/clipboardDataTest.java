@@ -20,6 +20,6 @@ public class clipboardDataTest {
     attacker.attack();
 
     user.userCredentials.assertCompromisedInstantaneously();
-    administrator.adminCredential.assertCompromisedInstantaneously();
+    administrator.adminCredentials.assertCompromisedInstantaneously();
   }
 }
