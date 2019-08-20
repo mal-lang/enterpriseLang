@@ -8,7 +8,7 @@ public class  browserExtensionsTest{
     @Test
     public void test1(){
         // Section 1: Asset instantiation
-        Browser browser = new Browser("browser",false,false,false,false,false,true,true,true,true);
+        Browser browser = new Browser("browser",false,false,false,true,true,true,true);
         OS os = new OS("os");
 
         // Section 2: Asset connections and attacker creation

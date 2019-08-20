@@ -443,12 +443,6 @@ category Software {
 
         | persistance
 
-        & bootkit
-            -> persistance
-
-        # bootIntegrity
-            -> bootkit
-
         | peripheralDeviceDiscovery
             -> computer.peripheralDeviceDiscovery
 
@@ -630,9 +624,6 @@ category Network {
             -> compromisedBrowser
         & compromisedBrowser
             -> os.codeDelivered
-        # limitSoftwareInstallation
-            -> compromisedBrowser
-        
         & spearphishingLink
             -> os.spearphishingLinkDownload
 
@@ -659,7 +650,8 @@ category Network {
             -> runExtensions
         # limitSoftwareInstallation
             info: "https://attack.mitre.org/mitigations/M1033/"
-            -> runExtensions 
+            ->  runExtensions,
+                compromisedBrowser 
         #  userTraining
             info: "https://attack.mitre.org/mitigations/M1017/"    
             -> runExtensions 
@@ -688,14 +680,6 @@ category Network {
             <- firewall
             -> firewall._bypassFirewall
 
-            
-        # networkIntrusionPrevention
-            -> dataExfiltration,
-               c2Server.dataExfiltrated,
-               applicationLayerConnexion,
-               computer.networkServiceScan,
-               c2Connexion
-               
         | bypassAccessControl
         
         | bypassNetworkDetection
@@ -739,7 +723,12 @@ category Network {
 
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
-            -> os.commonlyUsedPortsConnection
+            ->  os.commonlyUsedPortsConnection,
+                dataExfiltration,
+                c2Server.dataExfiltrated,
+                applicationLayerConnexion,
+                computer.networkServiceScan,
+                c2Connexion
 
         # networkSegmentation
             info: "https://attack.mitre.org/mitigations/M1030/"
@@ -1061,7 +1050,7 @@ associations {
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [os] OS
     InternalNetwork [internalNetwork] 1-* <-- Contain --> 1-* [os] OS
 
-    InternalNetwork [internalNetwork] 1 <-- Protect --> 1 [firewall] Firewall
+    InternalNetwork [internalNetwork] 1 <-- Protect --> 0-1 [firewall] Firewall
     InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
@@ -1070,7 +1059,7 @@ associations {
     //InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
     InternalNetwork [internalNetwork] 1 <--contain--> 1-* [service] Service
 
-    Computer [computer] 1-* <--protects--> 1 [firewall] Firewall
+    Computer [computer] 1-* <--protects--> 0-1 [firewall] Firewall
     Computer [computer] 1 <--use--> 1 [microphone] Microphone
     VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
     Webcam [webcam] 1 <--hardware--> 1 [computer] Computer

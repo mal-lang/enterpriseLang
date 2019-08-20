@@ -37,7 +37,7 @@ public class bash_profileAndBashrcTest {
   @Test
   public void linuxTestWithDefense() {
     User user = new User("user");
-    Linux linux= new Linux("linux",false,true,false,false,false,false,false,false,false,false,false,false);
+    Linux linux= new Linux("linux",false,false,true,false,false,false,false,false,false,false,false,false);
 
     user.addLinux(linux);
 
@@ -52,7 +52,7 @@ public class bash_profileAndBashrcTest {
   @Test
   public void macOSTestwithDefense() {
     User user = new User("user");
-    MacOS macOS= new MacOS("macOS",false,false,false,true,false,false,false,false,false,false,false);
+    MacOS macOS= new MacOS("macOS",false,false,true,false,false,false,false,false,false,false);
 
     user.addMacOS(macOS);
 

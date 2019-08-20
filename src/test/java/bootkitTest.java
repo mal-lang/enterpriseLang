@@ -8,7 +8,7 @@ public class bootkitTest{
     @Test
     public void test1(){
         Administrator administrator = new Administrator("administrator");
-        Windows windows = new Windows("windows",false,false,false,false,false,false,true,true,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows",false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false);
         
         administrator.addWindows(windows);
 

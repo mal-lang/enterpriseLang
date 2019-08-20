@@ -16,12 +16,12 @@ public class appleScriptTest {
     attacker.addAttackPoint(user.userRights);
     attacker.attack();
     
-    mac.runCode.assertCompromisedInstantaneously();
+    mac.runCode.assertCompromisedInstantaneouslyFrom(mac.appleScript);
   }
 
   @Test
   public void appleScriptTestTestWithDefens() {
-    MacOS mac = new MacOS("mac",false,false,true,false,false,false,false,false,false,false,false);
+    MacOS mac = new MacOS("mac",false,true,false,false,false,false,false,false,false,false);
     User user = new User("user");
 
     user.addMacOS(mac);
@@ -30,6 +30,6 @@ public class appleScriptTest {
     attacker.addAttackPoint(user.userRights);
     attacker.attack();
     
-    mac.runCode.assertUncompromised();
+    mac.runCode.assertUncompromisedFrom(mac.appleScript);
   }
 }

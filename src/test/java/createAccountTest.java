@@ -37,7 +37,7 @@ public class createAccountTest {
   @Test 
   public void test3() {
     Administrator admin = new Administrator("admin");
-    OS os = new OS("os",true,false,false,false,false,false,false,false);
+    OS os = new OS("os",true,false,false,false,false,false,false,false,false);
 
     admin.addOs(os);
     
@@ -52,7 +52,7 @@ public class createAccountTest {
   public void test4() {
     Administrator admin = new Administrator("admin");
     OS os = new OS("os");
-    InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,false,false,false,true);
+    InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,false,true);
 
 
     admin.addOs(os);
