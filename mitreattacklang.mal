@@ -43,7 +43,8 @@ category Person {
                 macOS.appleScript,
                 linux.bash_profileAndBashrc,
                 macOS.bash_profileAndBashrc,
-                windows.changeDefaultFileAssociation
+                windows.changeDefaultFileAssociation,
+                os.credentialsInFiles
 
 
         | userCredentials
@@ -83,9 +84,10 @@ category Person {
                 linux.bash_profileAndBashrc,
                 macOS.bash_profileAndBashrc,
                 windows.changeDefaultFileAssociation,
-                createUserAccount
+                createUserAccount,
+                os.credentialsInFiles
                
-        | adminCredential
+        | adminCredentials
             ->  service.adminRemoteServicesLogin,
                 internalNetwork.bypassAccessControl,
                 adminRights
@@ -125,7 +127,10 @@ category Person {
     asset SYSTEM {
         | systemRights
             ->  windows.appCertDLLs,
-                windows.changeDefaultFileAssociation
+                windows.changeDefaultFileAssociation,
+                os.credentialsInFiles
+        | systemCredentials
+            ->  systemRights
     }
     
     asset Employee {
@@ -230,7 +235,7 @@ category Software {
         | infectedOS
             -> clipboardData
         & clipboardData
-            ->  administrator.adminCredential,
+            ->  administrator.adminCredentials,
                 user.userCredentials
 
         & accountDiscovery
@@ -346,7 +351,9 @@ category Software {
                 spearphishingAttachmentDownload,
                 spearphishingLinkDownload   
         
-        # restrictFileAndDirectoryPermissions
+        #  restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            -> _credentialsInFiles
         
         #  accountUsePolicies //Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             info: "https://attack.mitre.org/mitigations/M1036/" 
@@ -356,7 +363,8 @@ category Software {
             -> bruteForce
         #  passwordPolicies 
             info: "https://attack.mitre.org/mitigations/M1027/" 
-            -> bruteForce
+            ->  bruteForce,
+                _credentialsInFiles
         # restricedScripting
             -> _scripting
         # applicationIsolationAndSandboxing //Restrict execution of code to a virtual environment on or in transit to an endpoint system.
@@ -370,6 +378,21 @@ category Software {
                 externalNetwork.bypassNetworkDetection,
                 internalNetwork.bypassNetworkDetection
 
+        # activeDirectoryConfiguration
+            info: "https://attack.mitre.org/mitigations/M1015/"
+            -> _credentialsInFiles
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            -> _credentialsInFiles
+        #  userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"
+            -> _credentialsInFiles
+        | credentialsInFiles
+            ->  _credentialsInFiles
+        & _credentialsInFiles
+            ->  user.userCredentials,
+                administrator.adminCredentials,
+                system.systemCredentials     
     }
     
     asset Windows extends OS{
@@ -543,7 +566,7 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1022/"
             ->  _bash_profileAndBashrc
         &  bashHistory 
-            ->  linuxAdministrator.adminCredential,
+            ->  linuxAdministrator.adminCredentials,
                 linuxUser.userCredentials
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
@@ -593,7 +616,7 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1022/"
             ->  _bash_profileAndBashrc
         &  bashHistory 
-            ->  macosAdministrator.adminCredential,
+            ->  macosAdministrator.adminCredentials,
                 macOSUser.userCredentials
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 

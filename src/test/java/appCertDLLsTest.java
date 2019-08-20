@@ -70,7 +70,7 @@ public class appCertDLLsTest{
         // Section 1: Asset instantiation
         User user = new User("user");
         User user2 = new User("user2");
-        Windows windows = new Windows("windows",true,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows",true,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addWindows(windows);
@@ -90,7 +90,7 @@ public class appCertDLLsTest{
         // Section 1: Asset instantiation
         Administrator administrator = new Administrator("administrator");
         Administrator administrator2 = new Administrator("administrator2");
-        Windows windows = new Windows("windows",true,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows",true,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         administrator.addWindows(windows);
@@ -110,7 +110,7 @@ public class appCertDLLsTest{
         // Section 1: Asset instantiation
         SYSTEM system = new SYSTEM("system");
         SYSTEM system2 = new SYSTEM("system2");
-        Windows windows = new Windows("windows",true,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows",true,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         system.addWindows(windows);
