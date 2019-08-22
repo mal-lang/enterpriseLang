@@ -9,27 +9,34 @@ category Person {
                 os.passwordPolicyDiscovery,
                 os.runningProcessDiscovery,
                 os.remoteSystemDiscovery,
+                os.rootkit,
                 os.scripting,
                 os.systemInformationDiscovery,
                 os.userCommandLineInterface,
                 os.processInjection,
                 windows.appCertDLLs,
+                windows.bypassUserAccountControl,
                 windows.changeDefaultFileAssociation,
+                windows.cmstp,
                 windows.dynamicDataExchange,  
                 windows.emailStorageCollection,
                 windows.executeMshta,
+                windows.logonScripts,
                 windows.networkShareDiscovery,
                 windows.peripheralDeviceDiscovery,
                 windows.userSecuritySoftwareDiscovery,
                 windows.videoCollection,
                 linux.bash_profileAndBashrc,
                 linux.spaceAfterFileName,
+                linux.source,
                 macOS.appleScript,
                 macOS.bash_profileAndBashrc,
+                macOS.logonScripts,
                 macOS.spaceAfterFileName,
                 macOS.networkShareDiscovery,
                 macOS.userSecuritySoftwareDiscovery,
                 macOS.videoCollection,
+                macOS.source,
                 computer.automatedCollection,
                 computer.userDataDestruction,
                 computer.fileDiscovery,
@@ -53,8 +60,7 @@ category Person {
                 internalNetwork.exchangeServerCollection,
                 service.userRemoteServicesLogin
 
-        | userInformation  
-   
+        | userInformation     
     }
 
     asset Administrator {
@@ -76,6 +82,7 @@ category Person {
                 linux.bash_profileAndBashrc,
                 linux.bootkit,
                 macOS.bash_profileAndBashrc,
+                macOS.keychainCollection,
                 computer.adminDataDestruction,
                 computer.automatedCollection,
                 computer.sensitiveDataCollected,
@@ -103,7 +110,6 @@ category Person {
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
             ->  createUserAccount 
-
     }
 
     
@@ -112,22 +118,24 @@ category Person {
             ->  administrator.adminRights,
                 accountManipulation,
                 windows.accessibilityFeatures,
+                windows.bypassUserAccountControl,
                 windows.executeService,
                 windows.queryRegistery,
-                windows.adminSecuritySoftwareDiscovery
+                windows.adminSecuritySoftwareDiscovery,
+                windows.hooking
 
         & accountManipulation
             ->  user.userCredentials
 
         # multiFactorAuthentication
             +>  accountManipulation
-
     }
 
     
     asset Root extends Administrator {
         | rootRights
-            ->  macOS.adminSecuritySoftwareDiscovery
+            ->  macOS.adminSecuritySoftwareDiscovery,
+                os.rootkit
 
     }
     
@@ -135,7 +143,9 @@ category Person {
         | systemRights
             ->  windows.appCertDLLs,
                 windows.changeDefaultFileAssociation,
-                os.credentialsInFiles
+                windows.hooking,
+                os.credentialsInFiles,
+                os.rootkit
 
         | systemCredentials
             ->  systemRights
@@ -172,13 +182,15 @@ category Person {
         | insertMedia
             ->  userExecution,
                 manualManipulation
+
         | manualManipulation
             ->  user.userRights
+
         | mediaInserted
             ->  _mediaInserted
+
         & _mediaInserted
-            ->  removableMedia.dataExfiltrated
-        
+            ->  removableMedia.dataExfiltrated      
     }
     
     asset Adversary {
@@ -230,8 +242,8 @@ category Software {
             ->  _exploitationForDefenseEvasion
 
         & _exploitationForDefenseEvasion
-            ->  bypassAntivirus,
-                bypassSystemAccessControls
+            ->  os.bypassAntivirus,
+                os.bypassSystemAccessControls
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/"
@@ -240,10 +252,6 @@ category Software {
         # applicationIsolationAndSandboxing
             info: "https://attack.mitre.org/mitigations/M1048/"
             ->  exploitationForDefenseEvasion
-
-        | bypassAntivirus
-
-        | bypassSystemAccessControls
     }
     
     abstractAsset OS {    
@@ -338,7 +346,20 @@ category Software {
                 bypassAntivirus,
                 bypassProcessWhitelisting
 
+        | rootkit
+        info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
+            -> bypassAntivirus,
+               bypassFileMonitoring,
+               bypassProcessWhitelisting,
+               bypassSignatureBasedDetection, 
+               bypassHostIntrusionPrevention,
+               bypassSystemAccessControls
+
+        | modifyAPICalls                
+
         | bypassAntivirus
+
+        | bypassSystemAccessControls
         
         | bypassFileMonitoring
         
@@ -398,7 +419,7 @@ category Software {
 
         # restrictFileAndDirectoryPermissions 
             info: "https://attack.mitre.org/mitigations/M1022/"
-            ->  _credentialsInFiles    
+            ->  _credentialsInFiles 
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             info: "https://attack.mitre.org/mitigations/M1036/" 
@@ -435,7 +456,8 @@ category Software {
         # audit 
             info: "https://attack.mitre.org/mitigations/M1047/"
             ->  _credentialsInFiles,
-                browser.runExtensions    
+                windows.bypassUserAccountControl,
+                browser.runExtensions   
 
         # limitSoftwareInstallation
             info: "https://attack.mitre.org/mitigations/M1033/"
@@ -473,6 +495,12 @@ category Software {
             ->  executeCode,
                 system.systemRights,
                 remoteDesktopProtocol 
+
+        & cmstp
+            info:"Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
+            -> bypassUserAccountControl, // leads to Bypass User Account Control attack
+               os.bypassApplicationWhitelisting,
+               os.bypassAntivirus            
                
         & executeMshta
             info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
@@ -483,8 +511,14 @@ category Software {
         | executeCode 
             +>  computer.infectedWindowsComputer          
         
-        | remoteDesktopProtocol // Remote Desktop Protocol attack
+        | remoteDesktopProtocol // leads to Remote Desktop Protocol attack
             ->  system.systemRights
+
+        | rootkit
+        info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
+            +> hooking, // leads to hooking attack
+               hypervisor, // leads to hypervisor attack
+               systemFirmware // leads to system firmware attack
 
         | commandExecution
             ->  computer.infectedWindowsComputer
@@ -499,6 +533,20 @@ category Software {
             info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
             ->  userCommandLineInterface 
             
+        | hooking             
+            info:"Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
+            -> executeCode,
+               captureAPICalls
+
+        | captureAPICalls
+
+        & logonScripts
+            ->  windowsAdmin.systemRights   
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  logonScripts                  
+
         & queryRegistery
             info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
             //-> os.systemInformationDiscovery,
@@ -516,7 +564,12 @@ category Software {
         
         & adminSecuritySoftwareDiscovery
             //-> leads to exploitation for defense evasion attack
-        
+
+        & bypassUserAccountControl
+            -> executeCode
+
+        | executeCode 
+            +> computer.infectedWindowsComputer     
 
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
@@ -530,10 +583,15 @@ category Software {
                 userSecuritySoftwareDiscovery,
                 adminSecuritySoftwareDiscovery,
                 _appCertDLLs,
-                appInitDLLs
+                appInitDLLs,
+                cmstp
 
         & executeService
             ->  persistance
+
+        | hypervisor
+
+        | systemFirmware   
 
         | persistance
       
@@ -544,7 +602,8 @@ category Software {
         
         # userAccountControl
             info: "https://attack.mitre.org/mitigations/M1052/"
-            ->  _applicationShimming  
+            ->  _applicationShimming, 
+                bypassUserAccountControl 
         
         | applicationShimming
             ->  _applicationShimming
@@ -555,7 +614,7 @@ category Software {
                 administrator.adminRights
 
         & authenticationPackage
-            //info: "HKLM\SYSTEM\CurrentControlSet\Control\Lsa\ with the key value of 'Authentication Packages'"
+            info: "Adversaries can use Windows Authentication Packages for persistence for persistence."
             ->  persistence   
 
         # privilegedProcessIntegrity  
@@ -564,7 +623,8 @@ category Software {
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  bootkit 
+            ->  bootkit,
+                bypassUserAccountControl
 
         | changeDefaultFileAssociation
             ->  persistence
@@ -588,13 +648,14 @@ category Software {
             ->  computer.dataCollected
 
         # encryptSensitiveInformation
-          info: "https://attack.mitre.org/mitigations/M1041/"
-            -> emailStorageCollection,
-               outlookEmailCollection
+            info: "https://attack.mitre.org/mitigations/M1041/"
+            ->  emailStorageCollection,
+                outlookEmailCollection
 
         # disableOrRemoveFeatureOrProgram
-          info: "https://attack.mitre.org/mitigations/M1042/"
-            -> registryKeysEnabled
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            ->  cmstp,
+                registryKeysEnabled
             
         | videoCollection
             -> computer.collectVideo
@@ -614,7 +675,7 @@ category Software {
             ->  persistance
 
         # bootIntegrity 
-          info: "https://attack.mitre.org/mitigations/M1046/"
+            info: "https://attack.mitre.org/mitigations/M1046/"
             ->  bootkit
 
         | persistance
@@ -637,6 +698,15 @@ category Software {
         & bashHistory 
             ->  linuxAdministrator.adminCredentials,
                 linuxUser.userCredentials
+
+        | source
+            info:"The source command loads functions into the current shell or executes files in the current context."
+            -> executeCode
+
+        | executeCode 
+            +> computer.infectedLinuxComputer
+        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
+           // -> source            
             
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
@@ -680,6 +750,14 @@ category Software {
                 userSecuritySoftwareDiscovery,
                 adminSecuritySoftwareDiscovery
 
+        & keychainCollection
+            info: "If an adversary knows the credentials for the login keychain, then they can get access to all the other credentials stored in this vault."
+            -> user.userCredentials
+
+        # passwordPolicies // Set and enforce secure password policies for accounts 
+            info: "https://attack.mitre.org/mitigations/M1027/"
+            -> keychainCollection
+
         & appleScript
             -> runCode
 
@@ -696,9 +774,21 @@ category Software {
         & _bash_profileAndBashrc 
             ->  persistence
 
+        & logonScripts
+            ->  root.rootRights  
+
+        | source
+
+        | executeCode 
+            +> computer.infectedMacOSComputer
+
+        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
+           // -> source     
+
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
-            ->  _bash_profileAndBashrc
+            +>  _bash_profileAndBashrc,
+                logonScripts
 
         & bashHistory 
             ->  macosAdministrator.adminCredentials,
@@ -865,6 +955,8 @@ category Hardware {
 
         | infectedWindowsComputer
             ->  windows.dynamicDataExchange
+
+        | infectedLinuxComputer
 
         | infectedMacOSComputer
 
@@ -1054,7 +1146,7 @@ category Hardware {
             info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
 
         & networkServiceScan
-             info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation"
+            info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation"
 
         E webcamExists
             <-  webcam
@@ -1145,7 +1237,9 @@ associations {
 
     OS [os] 1 <-- System --> 1-* [computer] Computer
     OS [os] 1-* <--Ui--> 1 [system] SYSTEM 
+    OS [os] 1  <-- Contain --> 1-* [service] Service
     OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+    OS [os] 1 <--Contain--> 1 [windows] Windows
     SYSTEM [systemWindows] 1-* <-- Ui--> 1-* [windows] Windows
     
     Computer [computer] 1 <--Software--> 1 [macOS] MacOS
