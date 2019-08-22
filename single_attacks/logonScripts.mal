@@ -1,0 +1,54 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.logonScripts,
+               macOS.logonScripts   
+    }    
+
+    asset Administrator {
+    }     
+    
+    asset WindowsAdmin extends Administrator {
+        | systemRights
+
+    }
+
+    asset Root extends Administrator{
+        | rootRights
+
+    }
+
+}
+
+category Software {
+    abstractAsset OS{
+
+    } 
+    asset Windows extends OS {
+        & logonScripts
+            ->  windowsAdmin.systemRights  
+ 
+        # writeAccessRestricted
+            ->  logonScripts         
+    } 
+
+    asset MacOS extends OS{
+        & logonScripts
+            ->  root.rootRights  
+ 
+        # writeAccessRestricted
+            ->  logonScripts     
+    } 
+}   
+
+associations {
+    User [user] 1 <-- ui--> 1-* [os] OS
+    User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
+    User [macOSUser] 1-* <--use--> 1 [macOS] MacOS
+    Root [root] 1-* <--use--> 1 [macOS] MacOS
+    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1 [windows] Windows
+}
+
+
+
+

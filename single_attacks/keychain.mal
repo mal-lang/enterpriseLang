@@ -1,0 +1,28 @@
+category Person {
+    asset Administrator {
+        | adminRights
+            -> macOS.keychainCollection
+
+    }
+
+    asset User {
+        | userCredentials
+    }
+}
+
+category Software {
+    abstractAsset OS{
+    }
+    asset MacOS extends OS {
+        & keychainCollection
+            info: "If an adversary knows the credentials for the login keychain, then they can get access to all the other credentials stored in this vault."
+            -> user.userCredentials
+        # passwordPolicies //Set and enforce secure password policies for accounts https://attack.mitre.org/mitigations/M1027/.
+            -> keychainCollection
+    }
+}
+
+associations {
+    Administrator [administrator] 1 <--ui--> 1-* [macOS] MacOS
+    User [user] 1 <-- ui--> 1-* [macOS] MacOS
+}
