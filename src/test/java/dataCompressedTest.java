@@ -1,7 +1,6 @@
 import org.junit.Test;
 
 import core.*;
-import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class dataCompressedTest{
@@ -9,7 +8,7 @@ public class dataCompressedTest{
     @Test
     public void test1(){
         OS os = new OS("os");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,true,false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,true,false,false);
 
         internalNetwork.addOs(os);
 

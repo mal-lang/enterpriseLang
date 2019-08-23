@@ -10,10 +10,10 @@ public class dataEncryptedForImpactTest{
     public void test1(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer", true);
+        OS os = new OS("os", true);
 
-        user.addComputer(computer);
-        administrator.addComputer(computer);
+        user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
@@ -21,18 +21,18 @@ public class dataEncryptedForImpactTest{
         attacker.attack();
 
 
-        computer.userDataEncryptedForImpact.assertUncompromised();
-        computer.adminDataEncryptedForImpact.assertUncompromised();
+        os.userDataEncryptedForImpact.assertUncompromised();
+        os.adminDataEncryptedForImpact.assertUncompromised();
 
     }
     @Test
     public void test2(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer", false);
+        OS os = new OS("os");
 
-        user.addComputer(computer);
-        administrator.addComputer(computer);
+        user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
@@ -40,8 +40,8 @@ public class dataEncryptedForImpactTest{
         attacker.attack();
 
 
-        computer.userDataEncryptedForImpact.assertCompromisedInstantaneously();
-        computer.adminDataEncryptedForImpact.assertCompromisedInstantaneously();
+        os.userDataEncryptedForImpact.assertCompromisedInstantaneously();
+        os.adminDataEncryptedForImpact.assertCompromisedInstantaneously();
 
 
     }

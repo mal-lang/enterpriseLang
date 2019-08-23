@@ -1,5 +1,5 @@
-category Hardware{
-    asset Computer{
+category Software{
+    asset OS{
         | dataCollected
             -> dataSizedTransfer
         | dataSizedTransfer
@@ -25,5 +25,5 @@ category Network {
 
 associations {
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
-    Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
+    OS [os] 1 <--Control--> 1 [c2Server] C2Server
 }

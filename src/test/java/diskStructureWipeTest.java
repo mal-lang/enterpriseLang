@@ -4,45 +4,36 @@ import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class diskContentWipeTest{
+public class diskStructureWipeTest{
 
     @Test
     public void test1(){
-        Computer computer = new Computer("computer", true);
-        User user = new User("user");
         Administrator administrator = new Administrator("administrator");
+        Computer computer = new Computer("computer",true,false,false);
 
-        user.addComputer(computer);
         administrator.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
 
-        computer.userDiskWiped.assertUncompromised();
-        computer.adminDiskWiped.assertUncompromised();
-
+        computer.diskStructureWipe.assertUncompromised();
 
     }
     @Test
     public void test2(){
-        Computer computer = new Computer("computer");
-        User user = new User("user");
         Administrator administrator = new Administrator("administrator");
+        Computer computer = new Computer("computer");
 
-        user.addComputer(computer);
         administrator.addComputer(computer);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
 
-        computer.userDiskWiped.assertCompromisedInstantaneously();
-        computer.adminDiskWiped.assertCompromisedInstantaneously();
+        computer.diskStructureWipe.assertCompromisedInstantaneously();
 
     }
 }

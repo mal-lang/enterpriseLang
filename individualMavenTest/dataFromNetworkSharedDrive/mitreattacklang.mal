@@ -16,8 +16,6 @@ category Network {
             -> c2Server.obfuscatedData
         & connectToDrive
             -> data
-        # whitelisting
-            -> connectToDrive
     }
 }
 

@@ -10,14 +10,9 @@ category Hardware {
             -> automatedExfiltration
 
         | automatedExfiltration
-            -> _automatedExfiltration
-
-        & _automatedExfiltration
             // -> exfiltration over c2server, exfiltration over alternative protocol
 
-        # executionPrevention
-            info: "https://attack.mitre.org/mitigations/M1038/"
-            -> _automatedExfiltration
+    
 
     }
 }

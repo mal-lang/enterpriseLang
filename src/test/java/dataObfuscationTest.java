@@ -1,7 +1,6 @@
 import org.junit.Test;
 
 import core.*;
-import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class dataObfuscationTest{
@@ -9,7 +8,7 @@ public class dataObfuscationTest{
     @Test
     public void test1(){
         ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",true);
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",true);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,true,false,false);
         C2Server c2Server = new C2Server("c2Server");
 
         externalNetwork.addC2Server(c2Server);
@@ -19,8 +18,8 @@ public class dataObfuscationTest{
         attacker.addAttackPoint(c2Server.c2Connected);
         attacker.attack();
 
-        externalNetwork.bypassNetworkDetection.assertUncompromised();
-        internalNetwork.bypassNetworkDetection.assertUncompromised();
+        externalNetwork.bypassNetworkDetection.assertUncompromisedFrom(c2Server.obfuscatedData);
+        internalNetwork.bypassNetworkDetection.assertUncompromisedFrom(c2Server.obfuscatedData);
     }
     public void test2(){
         ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
@@ -35,7 +34,7 @@ public class dataObfuscationTest{
         attacker.addAttackPoint(c2Server.c2Connected);
         attacker.attack();
 
-        internalNetwork.bypassNetworkDetection.assertCompromisedInstantaneously();
-        externalNetwork.bypassNetworkDetection.assertCompromisedInstantaneously();
+        internalNetwork.bypassNetworkDetection.assertCompromisedInstantaneouslyFrom(c2Server.obfuscatedData);
+        externalNetwork.bypassNetworkDetection.assertCompromisedInstantaneouslyFrom(c2Server.obfuscatedData);
     }
 }

@@ -10,45 +10,45 @@ public class dataDestructionTest{
     public void test1(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer", true, true);
+        OS os = new OS("os",true);
 
-        user.addComputer(computer);
-        administrator.addComputer(computer);
+        user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-        computer.userDataDestruction.assertUncompromised();
+        os.userDataDestruction.assertUncompromised();
     }
     
     public void test2(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer", false, false);
+        OS os = new OS("os");
 
-        user.addComputer(computer);
-        administrator.addComputer(computer);
+        user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-        computer.userDataDestruction.assertCompromisedInstantaneously();
+        os.userDataDestruction.assertCompromisedInstantaneously();
     }
     public void test3(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer", false, false);
+        OS os = new OS("os");
 
-        user.addComputer(computer);
-        administrator.addComputer(computer);
+        user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
-        computer.adminDataDestruction.assertCompromisedInstantaneously();
+        os.adminDataDestruction.assertCompromisedInstantaneously();
     }
 
 }

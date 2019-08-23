@@ -9,7 +9,7 @@ public class diskStructureWipeTest{
     @Test
     public void test1(){
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer", true, true);
+        Computer computer = new Computer("computer",true);
 
         administrator.addComputer(computer);
 
@@ -24,7 +24,7 @@ public class diskStructureWipeTest{
     @Test
     public void test2(){
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer", false, false);
+        Computer computer = new Computer("computer",false);
 
         administrator.addComputer(computer);
 

@@ -5,11 +5,8 @@ category Hardware {
 
         & adminDiskWiped
         
-        # whitelisting
-            -> userDiskWiped,
-               adminDiskWiped
-
         # backup
+            info: "https://attack.mitre.org/mitigations/M1053/"
             info:"Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
             -> userDiskWiped,
                adminDiskWiped

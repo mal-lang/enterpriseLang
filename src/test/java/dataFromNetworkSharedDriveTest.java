@@ -17,7 +17,7 @@ public class dataFromNetworkSharedDriveTest {
     attacker.addAttackPoint(internalNetwork.connectedToNetwork);
     attacker.attack();
 
-    c2Server.bypassNetwordDetection.assertCompromisedInstantaneously();
+    c2Server.obfuscatedData.assertCompromisedInstantaneously();
   }
   
 }

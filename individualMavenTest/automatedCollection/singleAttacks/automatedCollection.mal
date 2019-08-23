@@ -1,18 +1,18 @@
 category Person {
     asset User {
         | userRights
-            -> computer.automatedCollection
+            -> os.automatedCollection
                 
     }
     asset Administrator {
         | adminRights
-            -> computer.automatedCollection,
-               computer.sensitiveDataCollected 
+            -> os.automatedCollection,
+               os.sensitiveDataCollected 
     }
 }
 
-category Hardware {
-    asset Computer {
+category Software {
+    asset OS {
         & scripting // from scripting attack
             -> automatedCollection
             
@@ -38,14 +38,18 @@ category Hardware {
 
         & sensitiveDataCollected
         
-        # executionPrevention
-            info: "https://attack.mitre.org/mitigations/M1038/"
+        #  encryptSensitiveInformation 
+            info: "https://attack.mitre.org/mitigations/M1041/"
+            -> _automatedCollection
+
+        #  remoteDataStorage 
+            info: "https://attack.mitre.org/mitigations/M1029/"
             -> _automatedCollection
          
     }
 }
 
 associations {
-    User [user] 1-* <--use--> 1 [computer] Computer
-    Administrator [administrator] 1-* <--use--> 1 [computer] Computer
+    User [user] 1-* <--use--> 1 [os] OS
+    Administrator [administrator] 1-* <--use--> 1 [os] OS
 }

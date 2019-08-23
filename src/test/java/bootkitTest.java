@@ -8,7 +8,7 @@ public class bootkitTest{
     @Test
     public void test1(){
         Administrator administrator = new Administrator("administrator");
-        Windows windows = new Windows("windows",false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows",false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false);
         
         administrator.addWindows(windows);
 
@@ -47,7 +47,7 @@ public class bootkitTest{
     @Test
     public void test4(){
         Administrator administrator = new Administrator("administrator");
-        Linux linux = new Linux("linux",false,false,false,true,true,false,false,false,false,false,false,false,false,false,false);
+        Linux linux = new Linux("linux",false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false);
         
         administrator.addLinux(linux);
 

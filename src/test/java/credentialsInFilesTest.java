@@ -33,7 +33,7 @@ public class credentialsInFilesTest{
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
         SYSTEM system = new SYSTEM("system");
-        OS os = new OS("os",false,false,false,true,false,false,true,false,false,true,true,true,false);
+        OS os = new OS("os",false,false,false,true,false,false,true,false,false,true,true,true,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addOs(os);

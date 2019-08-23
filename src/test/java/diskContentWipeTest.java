@@ -8,7 +8,7 @@ public class diskContentWipeTest{
 
     @Test
     public void test1(){
-        Computer computer = new Computer("computer", true);
+        Computer computer = new Computer("computer",true,false,false);
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
 

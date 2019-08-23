@@ -13,8 +13,7 @@ category Hardware {
         # backup
             -> diskStructureWipe
 
-        # whitelisting
-            -> diskStructureWipe
+       
 
     }   
 }

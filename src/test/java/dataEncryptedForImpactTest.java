@@ -4,45 +4,45 @@ import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class diskContentWipeTest{
+public class dataEncryptedForImpactTest{
 
     @Test
     public void test1(){
-        Computer computer = new Computer("computer", true);
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
+        OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false);
 
-        user.addComputer(computer);
-        administrator.addComputer(computer);
+        user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
         attacker.addAttackPoint(administrator.adminRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
 
-        computer.userDiskWiped.assertUncompromised();
-        computer.adminDiskWiped.assertUncompromised();
-
+        os.userDataEncryptedForImpact.assertUncompromised();
+        os.adminDataEncryptedForImpact.assertUncompromised();
 
     }
     @Test
     public void test2(){
-        Computer computer = new Computer("computer");
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
+        OS os = new OS("os");
 
-        user.addComputer(computer);
-        administrator.addComputer(computer);
+        user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
-        attacker.addAttackPoint(user.userRights);
         attacker.addAttackPoint(administrator.adminRights);
+        attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
 
-        computer.userDiskWiped.assertCompromisedInstantaneously();
-        computer.adminDiskWiped.assertCompromisedInstantaneously();
+        os.userDataEncryptedForImpact.assertCompromisedInstantaneously();
+        os.adminDataEncryptedForImpact.assertCompromisedInstantaneously();
+
 
     }
 }

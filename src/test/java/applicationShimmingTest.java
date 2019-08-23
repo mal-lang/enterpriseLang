@@ -11,7 +11,7 @@ public class applicationShimmingTest{
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
         Administrator administrator2 = new Administrator("administrator2");
-        Windows windows = new Windows("windows",false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows",false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addWindows(windows);

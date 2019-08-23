@@ -1,65 +1,54 @@
-import java.beans.Transient;
-
 import org.junit.Test;
 
 import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class automatedCollectionTest{
+public class dataDestructionTest{
 
     @Test
     public void test1(){
-        Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os", true,true);
         User user = new User("user");
+        Administrator administrator = new Administrator("administrator");
+        OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false);
 
-        administrator.addOs(os);
         user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-
-        os.dataCollected.assertUncompromised();
-        os.sensitiveDataCollected.assertUncompromised();
-
-
+        os.userDataDestruction.assertUncompromised();
     }
-    @Test
+    
     public void test2(){
+        User user = new User("user");
         Administrator administrator = new Administrator("administrator");
         OS os = new OS("os");
-        User user = new User("user");
 
-        administrator.addOs(os);
         user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-
-        os.dataCollected.assertCompromisedInstantaneously();
-        os.sensitiveDataCollected.assertUncompromised();
-
+        os.userDataDestruction.assertCompromisedInstantaneously();
     }
-    @Test 
     public void test3(){
+        User user = new User("user");
         Administrator administrator = new Administrator("administrator");
         OS os = new OS("os");
-        User user = new User("user");
 
-        administrator.addOs(os);
         user.addOs(os);
+        administrator.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
-
-        os.dataCollected.assertCompromisedInstantaneously();
-        os.sensitiveDataCollected.assertCompromisedInstantaneously();
+        os.adminDataDestruction.assertCompromisedInstantaneously();
     }
+
 }

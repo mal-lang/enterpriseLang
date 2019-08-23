@@ -3,7 +3,6 @@ import java.beans.Transient;
 import org.junit.Test;
 
 import core.*;
-import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
 public class automatedCollectionTest{
@@ -11,55 +10,56 @@ public class automatedCollectionTest{
     @Test
     public void test1(){
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer",false,true,false);
+        OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true);
         User user = new User("user");
+         
 
-        administrator.addComputer(computer);
-        user.addComputer(computer);
+        administrator.addOs(os);
+        user.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
 
-        computer.dataCollected.assertUncompromised();
-        computer.sensitiveDataCollected.assertUncompromised();
+        os.dataCollected.assertUncompromisedFrom(os._automatedCollection);
+        os.sensitiveDataCollected.assertUncompromisedFrom(os._automatedCollection);
 
 
     }
     @Test
     public void test2(){
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer");
+        OS os = new OS("os",true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false);
         User user = new User("user");
 
-        administrator.addComputer(computer);
-        user.addComputer(computer);
+        administrator.addOs(os);
+        user.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
 
-        computer.dataCollected.assertCompromisedInstantaneously();
-        computer.sensitiveDataCollected.assertUncompromised();
+        os.dataCollected.assertCompromisedInstantaneouslyFrom(os._automatedCollection);
+        os.sensitiveDataCollected.assertUncompromised();
 
     }
     @Test 
     public void test3(){
         Administrator administrator = new Administrator("administrator");
-        Computer computer = new Computer("computer");
+        OS os = new OS("os");
         User user = new User("user");
 
-        administrator.addComputer(computer);
-        user.addComputer(computer);
+        administrator.addOs(os);
+        user.addOs(os);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
 
-        computer.dataCollected.assertCompromisedInstantaneously();
-        computer.sensitiveDataCollected.assertCompromisedInstantaneously();
+        os.dataCollected.assertCompromisedInstantaneously();
+        os.sensitiveDataCollected.assertCompromisedInstantaneously();
     }
 }

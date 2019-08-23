@@ -1,32 +1,43 @@
 category Person {
     asset User {
         | userRights
-            -> computer.userDataDestruction
+            -> os.userDataDestruction
     }
     asset Administrator {
         | adminRights
-            -> computer.adminDataDestruction
+            -> os.adminDataDestruction
     }
-
+    asset Root extends Administrator{
+        | rootRights
+            -> os.rootDataDestruction
+    }
+    asset SYSTEM {
+        | systemRights
+            ->  os.systemDataDestruction    
+    }
 }
 
-category Hardware {
-    asset Computer {
+category Software {
+    asset OS {
         & userDataDestruction
 
         & adminDataDestruction
 
-        # whitelisting
-            -> userDataDestruction,
-                adminDataDestruction
-        # backup 
-            -> userDataDestruction,
-                adminDataDestruction
-        
+        & rootDataDestruction
+
+        & systemDataDestruction
+
+        #  dataBackup  
+            info: "https://attack.mitre.org/mitigations/M1053/"
+            ->  userDataDestruction,
+                adminDataDestruction,
+                rootDataDestruction,
+                systemDataDestruction
     }
 }
 
 associations{
-    User [user] 1 <-- ui--> 1-* [computer] Computer
-    Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
+    User [user] 1-* <-- ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <--ui--> 1-* [os] OS
+    SYSTEM [system] 1-* <-- ui--> 1-* [os] OS
 }

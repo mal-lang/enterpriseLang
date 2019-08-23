@@ -1,18 +1,18 @@
 category Network{
     asset ExternalNetwork {
-        # intrusionDetection
-            -> c2Server.obfuscatedData
-        # signatureIdentification
+        # networkIntrusionPrevention
             -> c2Server.obfuscatedData
         | bypassNetworkDetection
     }
     asset InternalNetwork {
+        # networkIntrusionPrevention
+            -> c2Server.obfuscatedData
         | bypassNetworkDetection
     }
 }
 category Hardware {
     asset C2Server {
-        | c2Connexion
+        | c2Connected
             -> obfuscatedData
         & obfuscatedData
             -> externalNetwork.bypassNetworkDetection,

@@ -3,11 +3,9 @@ category Hardware {
         | infectedComputer
             ->  dataFromRemovableMedia
        
-        & dataFromRemovableMedia
+        | dataFromRemovableMedia
             -> removableMedia.data
-       
-        # whitelisting
-            -> dataFromRemovableMedia
+
     }
     asset RemovableMedia {
         | data

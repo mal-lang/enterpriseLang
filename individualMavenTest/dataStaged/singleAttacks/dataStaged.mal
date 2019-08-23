@@ -1,5 +1,5 @@
-category Hardware {
-    asset Computer {
+category Software {
+    asset OS {
         | dataCollected
             -> dataStaged
 
@@ -10,12 +10,6 @@ category Hardware {
             -> dataStaged
 
         | dataStaged    
-            -> _dataStaged
-
-        & _dataStaged 
             //-> all exfiltration attacks
-
-        # whitelisting
-            -> _dataStaged
     }
 }
