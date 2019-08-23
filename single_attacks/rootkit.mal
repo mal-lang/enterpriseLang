@@ -1,0 +1,69 @@
+category Person {
+    asset Administrator {
+        | adminRights
+            -> os.rootkit
+           
+    }
+
+    asset System {
+        | systemRights
+            -> os.rootkit
+    }
+
+    asset Root extends Administrator{
+        | rootRights
+            -> os.rootkit
+
+    }
+    
+    
+}
+
+category Software {
+    abstractAsset OS{
+        | rootkit
+        info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
+            -> hooking,
+               windows.hypervisor, //Hypervisor attack
+               windows.systemFirmware, // System Firmware attack
+               bypassAntivirus,
+               bypassFileMonitoring,
+               bypassProcessWhitelisting,
+               bypassSignatureBasedDetection, 
+               bypassHostIntrusionPrevention,
+               service.bypassSystemAccessControls
+
+        | hooking  
+
+        | modifyAPICalls  
+
+        | bypassAntivirus
+        | bypassFileMonitoring
+        | bypassSystemAccessControls
+        | bypassHostIntrusionPrevention
+        | bypassProcessWhitelisting 
+        | bypassSignatureBasedDetection  
+
+    }
+
+    asset Windows extends OS{
+        | hypervisor
+
+        | systemFirmware       
+    }
+
+    asset Service {
+        | bypassSystemAccessControls        
+    }
+
+}
+
+
+associations{
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    OS [os] 1 <--Ui--> 1 [system] System  
+    OS [os] 1 <--Ui--> 1 [windows] Windows
+    OS [os] 1 <-- Contain --> 1-* [service] Service
+}
+
+

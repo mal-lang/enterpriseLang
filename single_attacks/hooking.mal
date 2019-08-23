@@ -1,0 +1,46 @@
+category Person {
+    asset Administrator {       
+    }
+
+    asset WindowsAdmin extends Administrator{
+        | systemRights
+            -> windows.hooking        
+    }
+
+    asset System {
+        | systemRights
+            -> windows.hooking 
+    }
+
+}
+
+category Software {
+    asset OS {
+        | executeCode 
+    }
+
+    asset Windows extends OS{
+        | hooking             
+        info:"Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
+            -> executeCode,
+               aptureAPICalls
+
+        | executeCode 
+            +> computer.infectedWindowsComputer
+
+        | aptureAPICalls
+    }
+
+}
+
+category Hardware {
+    asset Computer {
+        | infectedWindowsComputer
+
+    }
+}   
+associations {
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows
+    Windows [windows] 1 <--Ui--> 1 [system] System  
+    Computer [computer] 1 <--Software--> 1 [windows] Windows
+}

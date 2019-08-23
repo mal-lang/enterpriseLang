@@ -1,0 +1,58 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.bypassUserAccountControl   
+
+    }
+
+    asset Administrator {
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | systemRights
+            -> windows.bypassUserAccountControl           
+    }
+
+}
+
+category Software {
+
+    abstractAsset OS {
+
+        # audit  //Perform audits or scans of systems, permissions, insecure software, insecure configurations, etc. to identify potential weaknesses. https://attack.mitre.org/mitigations/M1047/   
+            -> windows.bypassUserAccountControl   
+
+        # privilegedAccountManagement  //Manage the creation, modification, use, and permissions associated to privileged accounts, including SYSTEM and root. https://attack.mitre.org/mitigations/M1026/
+            -> windows.bypassUserAccountControl 
+
+        | executeCode            
+    }
+                           
+    asset Windows extends OS {  
+
+        & bypassUserAccountControl
+            -> executeCode
+
+        | executeCode 
+            +> computer.infectedWindowsComputer
+
+        # userAccountControl //https://attack.mitre.org/mitigations/M1052/    
+            -> bypassUserAccountControl
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedWindowsComputer
+
+    }
+}            
+
+associations {
+    User [windowsUser] 1 <-- Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows   
+    Computer [computer] 1 <--Software--> 1 [windows] Windows
+    OS [os] 1 <-- System --> 1 [windows] Windows  
+}
+
+

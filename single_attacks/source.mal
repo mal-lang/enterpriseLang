@@ -1,0 +1,50 @@
+category Person {
+    asset User {
+        | userRights
+            -> linux.source,
+               macOS.source
+    }
+
+}
+
+category Software {
+    abstractAsset OS{
+        | executeCode 
+    }
+
+    asset Linux extends OS {
+        | source
+            info:"The source command loads functions into the current shell or executes files in the current context."
+            -> executeCode
+
+        | executeCode 
+            +> computer.infectedLinuxComputer
+        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
+           // -> source
+    }
+
+    asset MacOS extends OS{
+        | source
+
+        | executeCode 
+            +> computer.infectedMacOSComputer
+    }
+        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
+           // -> source
+}
+
+category Hardware {
+    asset Computer {
+
+        | infectedLinuxComputer
+
+        | infectedMacOSComputer
+    }
+}
+
+associations {
+    User [user] 1-* <--Use--> 1 [macOS] MacOS
+    User [user] 1-* <--Use--> 1 [linux] Linux    
+    Computer [computer] 1 <--Software--> 1 [macOS] MacOS
+    Computer [computer] 1 <--Software--> 1 [linux] Linux
+}
