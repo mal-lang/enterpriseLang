@@ -21,7 +21,11 @@ public class appleScriptTest {
 
   @Test
   public void appleScriptTestTestWithDefens() {
-    MacOS mac = new MacOS("mac",false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
+    MacOS mac = new MacOS("mac" ,false,false,true,false,false
+                                ,false,false,false,false,false
+                                ,false,false,false,false,false
+                                ,false,false,false,false,false
+                                ,false);
     User user = new User("user");
 
     user.addMacOS(mac);

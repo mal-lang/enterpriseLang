@@ -10,7 +10,10 @@ public class dataEncryptedForImpactTest{
     public void test1(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false);
+        OS os = new OS("os" ,false,false,false,false,false  
+                            ,false,false,false,false,false
+                            ,false,false,false,false,true
+                            ,false,false,false,false,false);
 
         user.addOs(os);
         administrator.addOs(os);

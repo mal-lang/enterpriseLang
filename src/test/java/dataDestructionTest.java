@@ -4,14 +4,16 @@ import core.*;
 import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class commandLineInterfaceTest{
+public class dataDestructionTest{
 
     @Test
     public void test1(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os",false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
-
+        OS os = new OS("os" ,false,false,false,false,false
+                            ,false,false,false,false,false
+                            ,false,false,false,false,true
+                            ,false,false,false,false,false);
 
         user.addOs(os);
         administrator.addOs(os);
@@ -20,15 +22,14 @@ public class commandLineInterfaceTest{
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-        os.userCommandLineInterface.assertUncompromised();
+        os.userDataDestruction.assertUncompromised();
     }
-    @Test
+    
     public void test2(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
         OS os = new OS("os");
 
-
         user.addOs(os);
         administrator.addOs(os);
 
@@ -36,14 +37,12 @@ public class commandLineInterfaceTest{
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
-        os.userCommandLineInterface.assertCompromisedInstantaneously();
+        os.userDataDestruction.assertCompromisedInstantaneously();
     }
-    @Test
     public void test3(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
         OS os = new OS("os");
-
 
         user.addOs(os);
         administrator.addOs(os);
@@ -52,6 +51,7 @@ public class commandLineInterfaceTest{
         attacker.addAttackPoint(administrator.adminRights);
         attacker.attack();
 
-        os.adminCommandLineInterface.assertCompromisedInstantaneously();
-    }   
+        os.adminDataDestruction.assertCompromisedInstantaneously();
+    }
+
 }

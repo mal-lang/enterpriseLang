@@ -1,15 +1,19 @@
 import org.junit.Test;
 
 import core.*;
+import jdk.internal.jline.internal.TestAccessible;
 import attack.*;
 
-public class accountDiscoveryTest{
+public class bruteForceTest{
 
     @Test
     public void test1(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        OS os = new OS("os",true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
+        OS os = new OS("os" ,false,false,false,true,true
+                            ,true,false,false,false,false
+                            ,false,false,false,false,false
+                            ,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addOs(os);
@@ -19,8 +23,8 @@ public class accountDiscoveryTest{
         attacker.attack();
 
         // Section 3: Assertions
-        os.accountDiscovery.assertUncompromised();
-        os.domainDiscovery.assertUncompromised();
+        user.userCredentials.assertUncompromisedFrom(os.bruteForce);
+     
 
     }
     @Test
@@ -37,8 +41,8 @@ public class accountDiscoveryTest{
         attacker.attack();
 
         // Section 3: Assertions
-        os.accountDiscovery.assertCompromisedInstantaneously();
-        os.domainDiscovery.assertCompromisedInstantaneously();
+        user.userCredentials.assertCompromisedInstantaneously();
+        
         
     }
 }

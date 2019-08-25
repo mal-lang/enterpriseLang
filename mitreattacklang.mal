@@ -380,7 +380,7 @@ category Software {
                 bypassProcessWhitelisting
 
         | rootkit
-        info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
+            info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
             -> bypassAntivirus,
                bypassFileMonitoring,
                bypassProcessWhitelisting,
@@ -707,7 +707,7 @@ category Software {
 
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
-            ->  accessibilityFeatures,
+            +>  accessibilityFeatures,
                 executeMshta,
                 createService,
                 scheduledTask, 
@@ -746,12 +746,12 @@ category Software {
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/" 
-            ->  appInitDLLs,
+            +>  appInitDLLs,
                 _applicationShimming
         
         # userAccountControl
             info: "https://attack.mitre.org/mitigations/M1052/"
-            ->  _applicationShimming, 
+            +>  _applicationShimming, 
                 bypassUserAccountControl 
         
         | applicationShimming
@@ -768,7 +768,7 @@ category Software {
 
         # privilegedProcessIntegrity  
             info: "https://attack.mitre.org/mitigations/M1025/"
-            ->  authenticationPackage 
+            +>  authenticationPackage 
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
@@ -790,18 +790,18 @@ category Software {
 
         # bootIntegrity 
             info: "https://attack.mitre.org/mitigations/M1046/"
-            ->  bootkit
+            +>  bootkit
 
        
 
         # encryptSensitiveInformation
             info: "https://attack.mitre.org/mitigations/M1041/"
-            ->  emailStorageCollection,
+            +>  emailStorageCollection,
                 outlookEmailCollection
 
         # disableOrRemoveFeatureOrProgram
             info: "https://attack.mitre.org/mitigations/M1042/"
-            ->  cmstp,
+            +>  cmstp,
                 registryKeysEnabled
             
         | videoCollection
@@ -891,7 +891,7 @@ category Software {
         
 
         # executionPrevention
-            ->  networkShareDiscovery,
+            +>  networkShareDiscovery,
                 userSecuritySoftwareDiscovery,
                 adminSecuritySoftwareDiscovery
 
@@ -901,7 +901,7 @@ category Software {
 
         # passwordPolicies // Set and enforce secure password policies for accounts 
             info: "https://attack.mitre.org/mitigations/M1027/"
-            -> keychainCollection
+            +> keychainCollection
 
         & appleScript
             -> runCode
@@ -911,7 +911,7 @@ category Software {
 
         # codeSigning
             info: "https://attack.mitre.org/mitigations/M1045/"  
-            ->  appleScript
+            +>  appleScript
 
         | bash_profileAndBashrc
             ->  _bash_profileAndBashrc
@@ -941,7 +941,7 @@ category Software {
 
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
-            ->  bashHistory
+            +>  bashHistory
     }
     
 

@@ -13,7 +13,7 @@ category Software {
         & authenticationPackage
             //info: "HKLM\SYSTEM\CurrentControlSet\Control\Lsa\ with the key value of 'Authentication Packages='"
             ->  persistence   
-        #  PrivilegedProcessIntegrity  
+        #  privilegedProcessIntegrity  
             info: "https://attack.mitre.org/mitigations/M1025/"
             ->  authenticationPackage 
     }

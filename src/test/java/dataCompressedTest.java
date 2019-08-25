@@ -8,7 +8,7 @@ public class dataCompressedTest{
     @Test
     public void test1(){
         OS os = new OS("os");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,true,false,false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,true,false,false);
 
         internalNetwork.addOs(os);
 

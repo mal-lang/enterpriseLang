@@ -9,7 +9,7 @@ public class commonlyUsedPortsTest{
     @Test
     public void test1(){
         OS os = new OS("os");
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,true,true,false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,true,true);
         C2Server c2Server = new C2Server("c2Server");
         ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork");
 

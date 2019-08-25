@@ -10,7 +10,10 @@ public class automatedCollectionTest{
     @Test
     public void test1(){
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true);
+        OS os = new OS("os" ,false,false,false,false,false  
+                            ,false,false,false,false,false
+                            ,false,false,false,false,true
+                            ,true,false,false,false,false);
         User user = new User("user");
          
 
@@ -30,7 +33,10 @@ public class automatedCollectionTest{
     @Test
     public void test2(){
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os",true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false);
+        OS os = new OS("os" ,true,true,true,true,true
+                            ,true,true,true,true,true
+                            ,true,true,true,true,false
+                            ,false,false,false,false,false);
         User user = new User("user");
 
         administrator.addOs(os);

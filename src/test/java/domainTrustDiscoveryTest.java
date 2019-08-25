@@ -3,39 +3,42 @@ import org.junit.Test;
 import core.*;
 import attack.*;
 
-public class applicationWindowDiscoveryTest{
+public class domainTrustDiscoveryTest{
+
     @Test
     public void test1(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        OS os = new OS("os",false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows" ,false,false,false,false,false
+                                                ,false,true,false,false,false
+                                                ,false,false,false,false,false
+                                                ,false,false,false,false,false
+                                                ,false,false,false);
 
         // Section 2: Asset connections and attacker creation
-        user.addOs(os);
+        user.addWindows(windows);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         // Section 3: Assertions
-        os.applicationWindowDiscovery.assertUncompromised();
+        windows.trustedDomainInfo.assertUncompromised();
     }
     @Test
     public void test2(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        OS os = new OS("os");
+        Windows windows = new Windows("windows");
 
         // Section 2: Asset connections and attacker creation
-        user.addOs(os);
+        user.addWindows(windows);
 
         Attacker attacker = new Attacker();
         attacker.addAttackPoint(user.userRights);
         attacker.attack();
 
         // Section 3: Assertions
-        os.applicationWindowDiscovery.assertCompromisedInstantaneously();
-     
-        
+        windows.trustedDomainInfo.assertCompromisedInstantaneously();
     }
 }
