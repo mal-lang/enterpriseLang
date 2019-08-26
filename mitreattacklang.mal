@@ -3,23 +3,32 @@ category Person {
         | userRights
             ->  os.accountDiscovery,
                 os.applicationWindowDiscovery,
+                os.automatedCollection,
                 os.bruteForce,
+                os.credentialsInFiles,
                 os.domainDiscovery,
+                os.downloadRemoteFile,
+                os.directoryDiscovery,
+                os.fileDiscovery,
+                os.fileDeletion,
                 os.passwordPolicyDiscovery,
+                os.permissionGroupsDiscovery,
+                os.processInjection,
                 os.runningProcessDiscovery,
                 os.remoteSystemDiscovery,
                 os.rootkit,
                 os.scripting,
                 os.systemInformationDiscovery,
+                os.uploadRemoteFile, 
                 os.userCommandLineInterface,
-                os.processInjection,
-                os.automatedCollection,
-                os.fileDiscovery,
-                os.directoryDiscovery,
+                os.userDataDestruction, 
+                os.userDataEncryptedForImpact,
+                os.userDiskWiped,
                 windows.appCertDLLs,
                 windows.bypassUserAccountControl,
                 windows.changeDefaultFileAssociation,
                 windows.cmstp,
+                windows.domainTrustDiscovery,
                 windows.dynamicDataExchange,  
                 windows.emailStorageCollection,
                 windows.executeMshta,
@@ -39,38 +48,11 @@ category Person {
                 macOS.userSecuritySoftwareDiscovery,
                 macOS.videoCollection,
                 macOS.source,
-                os.userDataDestruction,                
-                computer.fileDeletion,
-                computer.uploadRemoteFile, 
-                computer.downloadRemoteFile,
                 computer.collectAudio,
-                computer.permissionGroupsDiscovery,
-                computer.userDiskWiped,
                 service.usertransmittedDataManipulation,
                 service.remoteAccessTools,
                 service._exploitationForDefenseEvasion,
-                windows.dynamicDataExchange,  
-                windows.emailStorageCollection,
-                windows.executeMshta,
-                windows.networkShareDiscovery,
-                windows.userSecuritySoftwareDiscovery,
-                windows.videoCollection,
-                linux.spaceAfterFileName,
-                macOS.spaceAfterFileName,
-                macOS.networkShareDiscovery,
-                macOS.userSecuritySoftwareDiscovery,
-                macOS.videoCollection,
-                internalNetwork.usertransmittedDataManipulation,
-                windows.appCertDLLs,
-                macOS.appleScript,
-                linux.bash_profileAndBashrc,
-                macOS.bash_profileAndBashrc,
-                windows.changeDefaultFileAssociation,
-                os.credentialsInFiles,
-                os.userDataDestruction,
-                os.userDataEncryptedForImpact,
-                windows.domainTrustDiscovery
-
+                internalNetwork.usertransmittedDataManipulation
 
         | userCredentials
             ->  userRights,
@@ -85,11 +67,19 @@ category Person {
     asset Administrator {
         | adminRights
             ->  user.userRights,
-                createUserAccount,           
+                createUserAccount,    
+                os.automatedCollection,
+                os.adminCommandLineInterface,
+                os.adminDataDestruction,
+                os.adminDataEncryptedForImpact,
+                os.adminDiskWiped,
+                os.credentialsInFiles,
+                os.credentialsInRegistry,
                 os.detailedRunningProcessDiscovery,
                 os.detailedRemoteSystemDiscovery,
-                os.adminCommandLineInterface,
-                os.credentialsInFiles,
+                os.diskStructureWipe,
+                os.networkServiceScan,
+                os.sensitiveDataCollected,
                 windows.appCertDLLs,
                 windows.appInitDLLs,
                 windows.applicationShimming,
@@ -98,22 +88,10 @@ category Person {
                 windows.changeDefaultFileAssociation,
                 windows.createService,
                 windows.scheduledTask,
-                os.automatedCollection,
-                os.sensitiveDataCollected,
-                computer.diskStructureWipe,
-                computer.adminDiskWiped,
-                windows.appCertDLLs,
-                windows.appInitDLLs,
-                windows.applicationShimming,
-                windows.authenticationPackage,
                 linux.bash_profileAndBashrc,
+                linux.bootkit,
                 macOS.bash_profileAndBashrc,
-                windows.changeDefaultFileAssociation,
-                createUserAccount,
-                os.credentialsInRegistry,
-                os.adminDataDestruction,
-                os.adminDataEncryptedForImpact,
-                computer.networkServiceScan,
+                macOS.keychainCollection,
                 service.admintransmittedDataManipulation,
                 service.adminRemoteServicesLogin,
                 internalNetwork.admintransmittedDataManipulation,
@@ -139,13 +117,13 @@ category Person {
     
     asset WindowsAdmin extends Administrator{
         | adminRights
-            +>  windowsWindowsAdmin.accessibilityFeatures,
-                windowsWindowsAdmin.executeService,
-                windowsWindowsAdmin.queryRegistery,
+            +>  accountManipulation,
+                windowsWindowsAdmin.accessibilityFeatures,
                 windowsWindowsAdmin.adminSecuritySoftwareDiscovery,
-                accountManipulation,
                 windowsWindowsAdmin.bypassUserAccountControl,
-                windowsWindowsAdmin.hooking
+                windowsWindowsAdmin.executeService,
+                windowsWindowsAdmin.hooking,
+                windowsWindowsAdmin.queryRegistery
 
         & accountManipulation
             ->  user.userCredentials
@@ -167,9 +145,9 @@ category Person {
         | systemRights
             ->  windows.appCertDLLs,
                 windows.changeDefaultFileAssociation,
+                windows.hooking,
                 os.credentialsInFiles,
                 os.systemDataDestruction,
-                windows.hooking,
                 os.rootkit
 
         | systemCredentials
@@ -183,9 +161,9 @@ category Person {
 
         | pageVisited
             ->  browser.maliciousWebsite
+
         | adLinkClicked
             ->  browser.maliciousAds
-
 
         & spearphishingAttachmentDownload
             -> browser.spearphishingAttachment
@@ -274,10 +252,9 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1051/"
             ->  exploitationForDefenseEvasion
 
-        | bypassSystemAccessControls
-
         | informationRepositories
             -> os.dataCollected
+
         # applicationIsolationAndSandboxing
             info: "https://attack.mitre.org/mitigations/M1048/"
             ->  exploitationForDefenseEvasion
@@ -288,6 +265,7 @@ category Software {
             ->  clipboardData,
                 dataFromInformationRepositories,
                 computer.infectedComputer
+
         & clipboardData
             ->  administrator.adminCredentials,
                 user.userCredentials
@@ -333,8 +311,7 @@ category Software {
         & _credentialsInFiles
             ->  user.userCredentials,
                 administrator.adminCredentials,
-                system.systemCredentials 
-         
+                system.systemCredentials         
                
         & remoteSystemDiscovery
             info: "Adversaries will likely attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system."
@@ -343,36 +320,13 @@ category Software {
             info: "Adversaries with admin rights may get better details of the hosts enumerated"
         
         & adminCommandLineInterface
-            -> dataCollected// entrypoints of attacks that can be done with command line interface under admin rights
+            ->  dataCollected // entrypoints of attacks that can be done with command line interface under admin rights
         
         & userCommandLineInterface
-            -> dataCollected// entrypoints of attacks that can be done with command line interface under user rights
+            ->  dataCollected // entrypoints of attacks that can be done with command line interface under user rights
 
         & systemInformationDiscovery
             info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
-
-        # operatingSystemConfiguration 
-            info: "https://attack.mitre.org/mitigations/M1028/"
-            ->  accountDiscovery, 
-                domainDiscovery,
-                administrator.createUserAccount
-
-        # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
-            info: "https://attack.mitre.org/mitigations/M1038/"
-            ->  accountDiscovery,
-                domainDiscovery,
-                applicationWindowDiscovery,
-                runningProcessDiscovery,
-                detailedRunningProcessDiscovery,
-                remoteSystemDiscovery,
-                detailedRemoteSystemDiscovery,
-                adminCommandLineInterface, 
-                userCommandLineInterface,
-                processInjection,
-                systemInformationDiscovery,
-                binaryPadding,
-                browser.runExtensions
-
 
         & processInjection
             ->  administrator.adminRights,
@@ -381,12 +335,12 @@ category Software {
 
         | rootkit
             info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
-            -> bypassAntivirus,
-               bypassFileMonitoring,
-               bypassProcessWhitelisting,
-               bypassSignatureBasedDetection, 
-               bypassHostIntrusionPrevention,
-               bypassSystemAccessControls
+            ->  bypassAntivirus,
+                bypassFileMonitoring,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection, 
+                bypassHostIntrusionPrevention,
+                bypassSystemAccessControls
 
         | modifyAPICalls                
 
@@ -440,6 +394,8 @@ category Software {
         | scripting
             ->  _scripting
 
+        | persistence
+
         & _scripting
             -> automatedCollection
             
@@ -465,9 +421,6 @@ category Software {
             ->  bruteForce,
                 _credentialsInFiles,
                 _credentialsInRegistry
-        # restricedScripting
-            -> _scripting
-        | persistence
 
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             info: "https://attack.mitre.org/mitigations/M1048/"
@@ -488,29 +441,126 @@ category Software {
             ->  _credentialsInFiles,
                 _credentialsInRegistry,
                 browser.runExtensions  
-        #  userTraining 
-            info: "https://attack.mitre.org/mitigations/M1017/"
-            -> _credentialsInFiles
-        
-        
-        #   privilegedAccountManagement  
+
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  accountDiscovery, 
+                domainDiscovery,
+                administrator.createUserAccount
+
+        # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  accountDiscovery,
+                binaryPadding,
+                browser.runExtensions,
+                domainDiscovery,
+                applicationWindowDiscovery,
+                runningProcessDiscovery,
+                detailedRunningProcessDiscovery,
+                remoteSystemDiscovery,
+                detailedRemoteSystemDiscovery,
+                adminCommandLineInterface, 
+                userCommandLineInterface,
+                processInjection,
+                systemInformationDiscovery,
+                fileDeletion, 
+                dataCompressed, 
+                computer.collectAudio,
+                _dataEncrypted,
+                permissionGroupsDiscovery,
+                _dataStaged,
+                computer._collectVideo,
+                adminDiskWiped
+             
+        # privilegedAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1026/"
             -> _credentialsInRegistry  
+
         | credentialsInRegistry
             ->  _credentialsInRegistry
+
         & _credentialsInRegistry
             ->  user.userCredentials,
                 administrator.adminCredentials 
 
-        | dataCollected
-            ->  compressData,
+        & fileDeletion
+            info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
+            ->  bypassHostForensicAnalysisDetection
+
+        & fileDiscovery
+            -> automatedCollection
+        
+        & diskStructureWipe
+            info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
+ 
+        # dataBackup
+            info: "https://attack.mitre.org/mitigations/M1053/"
+            info:"Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
+            ->  userDataDestruction,
+                adminDataDestruction,
+                rootDataDestruction,
+                systemDataDestruction,
+                userDataEncryptedForImpact, 
+                adminDataEncryptedForImpact,
+                diskStructureWipe,
+                userDiskWiped,
+                adminDiskWiped
+
+        & userDiskWiped
+            info:"Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
+
+        & adminDiskWiped
+
+        & uploadRemoteFile
+            // leads to file execution attacks
+            ->  employee.userExecution,
+                automatedCollection  
+
+        & downloadRemoteFile
+            info: "data collection from the user"
+        
+        & sensitiveDataCollected
+            ->  dataCompressed,
+                computer.exfiltrationOverPhysicalMedium,
+                dataSizedTransfer,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2,
+                automatedExfiltration,
+                dataEncrypted, 
+                dataStaged    
+
+//        | dataCollected
+//            ->  _dataCollected
+
+        & dataCollected
+            ->  dataCompressed,
+                computer.exfiltrationOverPhysicalMedium,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2,
                 dataEncrypted,
                 dataStaged,
                 automatedExfiltration,
                 dataSizedTransfer
-            
-        & compressData
-            //-> // exfiltration attack entry points
+
+        | dataEncrypted
+            info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
+            -> _dataEncrypted
+
+        & _dataEncrypted
+            ->  computer.exfiltrationOverPhysicalMedium,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2,
+                automatedExfiltration,
+                dataStaged 
+
+        & _dataStaged // leads to exfiltration attacks
+            -> computer.exfiltrationOverPhysicalMedium,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2
         
         & userDataDestruction
 
@@ -519,79 +569,66 @@ category Software {
         & rootDataDestruction
 
         & systemDataDestruction
-
-        #  dataBackup  
-            info: "https://attack.mitre.org/mitigations/M1053/"
-            ->  userDataDestruction,
-                adminDataDestruction,
-                rootDataDestruction,
-                systemDataDestruction,
-                userDataEncryptedForImpact, 
-                adminDataEncryptedForImpact
         
-        | dataCompressed
+        & dataCompressed
             ->  dataEncrypted,
                 dataStaged,
-                automatedExfiltration
-        | dataEncrypted
-            info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
-            -> _dataEncrypted
-        & _dataEncrypted
-            ->  dataStaged,
-                automatedExfiltration
+                automatedExfiltration,
+                computer.exfiltrationOverPhysicalMedium,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2
+
+        | scheduledExfiltration
+            ->  exfiltrationOverC2,
+                exfiltrationOverAternativeProtocol
+        
+    
+        | exfiltrationOverAternativeProtocol
+            ->  internalNetwork.dataExfiltration
 
         & userDataEncryptedForImpact
             info: "Attackers can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted"
+
         & adminDataEncryptedForImpact
 
         | dataFromInformationRepositories 
-            -> service.informationRepositories
+            ->  service.informationRepositories
 
         | dataStaged    
-            //-> all exfiltration attacks
-            
-        & fileDiscovery
-            -> automatedCollection
 
         & directoryDiscovery
-            -> automatedCollection
-
-        & uploadRemoteFile
-            -> automatedCollection
-
-            
+            ->  automatedCollection
+          
         | automatedCollection
-            -> _automatedCollection
+            ->  _automatedCollection
 
 
         & _automatedCollection
-            -> dataCollected, 
-               sensitiveDataCollected
-
-        & sensitiveDataCollected
+            ->  dataCollected, 
+                sensitiveDataCollected
 
         | exfiltrationOverC2
-            -> c2Server.dataExfiltrated
+            ->  c2Server.dataExfiltrated
 
         | automatedExfiltration
             ->  exfiltrationOverAternativeProtocol,
                 exfiltrationOverC2
         
         | exfiltrationOverAternativeProtocol
-            -> internalNetwork.dataExfiltration
+            ->  internalNetwork.dataExfiltration
 
-        #  encryptSensitiveInformation 
+        # encryptSensitiveInformation 
             info: "https://attack.mitre.org/mitigations/M1041/"
-            -> _automatedCollection
+            ->  _automatedCollection
 
-        #  remoteDataStorage 
+        # remoteDataStorage 
             info: "https://attack.mitre.org/mitigations/M1029/"
-            -> _automatedCollection
+            ->  _automatedCollection
 
         | dataSizedTransfer
             info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
-            -> c2Server.dataExfiltrated
-                 
+            -> c2Server.dataExfiltrated                
 
         # limitSoftwareInstallation
             info: "https://attack.mitre.org/mitigations/M1033/"
@@ -608,8 +645,15 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1050/"
             ->  browser.checkBrowser,
                 browser.checkPlugin 
-    
+
+        & networkServiceScan
+            info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation"
+
+        & permissionGroupsDiscovery
+            info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
+
         | persistance
+
     }
     
     asset Windows extends OS {   
@@ -633,9 +677,9 @@ category Software {
 
         & cmstp
             info:"Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
-            -> bypassUserAccountControl, // leads to Bypass User Account Control attack
-               bypassApplicationWhitelisting,
-               bypassAntivirus            
+            ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
+                bypassApplicationWhitelisting,
+                bypassAntivirus            
                
         & executeMshta
             info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
@@ -650,10 +694,10 @@ category Software {
             ->  system.systemRights
 
         | rootkit
-        info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
-            +> hooking, // leads to hooking attack
-               hypervisor, // leads to hypervisor attack
-               systemFirmware // leads to system firmware attack
+            info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
+            +>  hooking, // leads to hooking attack
+                hypervisor, // leads to hypervisor attack
+                systemFirmware // leads to system firmware attack
 
         | commandExecution
             ->  computer.infectedWindowsComputer
@@ -670,8 +714,8 @@ category Software {
             
         | hooking             
             info:"Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
-            -> executeCode,
-               captureAPICalls
+            ->  executeCode,
+                captureAPICalls
 
         | captureAPICalls
 
@@ -703,8 +747,6 @@ category Software {
         & bypassUserAccountControl
             -> executeCode
 
-       
-
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
             +>  accessibilityFeatures,
@@ -722,8 +764,7 @@ category Software {
 
         & executeService
             -> persistance
-
-        
+       
         | peripheralDeviceDiscovery
             -> computer.peripheralDeviceDiscovery
 
@@ -731,14 +772,11 @@ category Software {
             info:"Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
             -> dataCollected
 
-        & dataCollected
+        & outlookEmailCollection
             info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
             -> dataCollected
 
-
-        & outlookEmailCollection
-            info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
-            ->  dataCollected
+        | dataCollected
 
         | hypervisor
 
@@ -774,25 +812,27 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
                 bypassUserAccountControl 
+
         | changeDefaultFileAssociation
             ->  persistence
 
-        | trustedDomainInfo
-            //connect to ???
+        | trustedDomainInfo // leads to SID-History Injection, Pass the Ticket, and Kerberoasting attacks
+            info: "The information discovered may help the adversary conduct SID-History Injection, Pass the Ticket, and Kerberoasting."
+
         & domainTrustDiscovery
             ->  trustedDomainInfo
+
         # audit 
             info: "https://attack.mitre.org/mitigations/M1047/"
             +>  domainTrustDiscovery,
                 bypassUserAccountControl
+
         & bootkit 
             ->  persistance
 
         # bootIntegrity 
             info: "https://attack.mitre.org/mitigations/M1046/"
-            +>  bootkit
-
-       
+            +>  bootkit      
 
         # encryptSensitiveInformation
             info: "https://attack.mitre.org/mitigations/M1041/"
@@ -813,7 +853,7 @@ category Software {
 
         & systemTimeDiscovery
             info:"The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
-            -> scheduledTask
+            ->  scheduledTask
       
     }
 
@@ -846,10 +886,10 @@ category Software {
 
         | source
             info:"The source command loads functions into the current shell or executes files in the current context."
-            -> executeCode
+            ->  executeCode
 
         | executeCode 
-            +> computer.infectedLinuxComputer
+            +>  computer.infectedLinuxComputer
         //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
            // -> source            
             
@@ -887,8 +927,7 @@ category Software {
             // -> leads to exploitation for defense evasion attack
 
         & adminSecuritySoftwareDiscovery
-            // -> leads to exploitation for defense evasion attack
-        
+            // -> leads to exploitation for defense evasion attack 
 
         # executionPrevention
             +>  networkShareDiscovery,
@@ -897,14 +936,14 @@ category Software {
 
         & keychainCollection
             info: "If an adversary knows the credentials for the login keychain, then they can get access to all the other credentials stored in this vault."
-            -> user.userCredentials
+            ->  user.userCredentials
 
         # passwordPolicies // Set and enforce secure password policies for accounts 
             info: "https://attack.mitre.org/mitigations/M1027/"
-            +> keychainCollection
+            +>  keychainCollection
 
         & appleScript
-            -> runCode
+            ->  runCode
 
         | runCode
             ->  computer.infectedMacOSComputer
@@ -925,7 +964,7 @@ category Software {
         | source
 
         | executeCode 
-            +> computer.infectedMacOSComputer
+            +>  computer.infectedMacOSComputer
 
         //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
            // -> source     
@@ -947,7 +986,7 @@ category Software {
 
     asset VideoCallApplication extends Service { 
         | collectVideo
-            -> computer._collectVideo
+            ->  computer._collectVideo
     }
 }
 
@@ -1041,7 +1080,7 @@ category Network {
 
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
-            ->  computer.networkServiceScan
+            ->  os.networkServiceScan
 
         & c2Connexion
             ->  c2Server.c2Connected
@@ -1064,42 +1103,46 @@ category Network {
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
             ->  os.commonlyUsedPortsConnection,
+                os.dataCompressed,
+                os.uploadRemoteFile, 
+                os.downloadRemoteFile,
                 dataExfiltration,
                 c2Server.dataExfiltrated,
                 applicationLayerConnexion,
-                computer.networkServiceScan,
+                os.networkServiceScan,
                 c2Connexion,
-                os.compressData,
-                c2Server._obfuscatedData 
+                c2Server._obfuscatedData,
+                c2Server.dataExfiltrated
 
         # networkSegmentation
             info: "https://attack.mitre.org/mitigations/M1030/"
             ->  os.commonlyUsedPortsConnection,
                 administrator.createUserAccount,
                 windows.domainTrustDiscovery
+
         | connectedToNetwork
             ->  networkSharedDrive.connectToDrive
 
-        # networkIntrusionDetection
-            -> c2Server.dataExfiltrated
     }
 
     asset Firewall {
         & _bypassFirewall
-            -> internalNetwork.dataExfiltration,
-               internalNetwork.c2Connexion
+            ->  internalNetwork.dataExfiltration,
+                internalNetwork.c2Connexion
 
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             info: "https://attack.mitre.org/mitigations/M1030/"
-            -> computer.uncommonlyUsedPortsConnection
+            ->  computer.uncommonlyUsedPortsConnection
         
         | bypassFirewall
     }
+
     asset NetworkSharedDrive {
         | data
-            -> c2Server.obfuscatedData
+            ->  c2Server.obfuscatedData
+            
         | connectToDrive
-            -> data
+            ->  data
     }
 }
 
@@ -1109,7 +1152,7 @@ category Hardware {
             -> removableMedia.infectedMedia,
                internalNetwork.applicationLayerConnexion,
                uncommonlyUsedPortsConnection,
-               dataFromRemovableMedia
+               removableMedia.dataFromRemovableMedia
 
         | infectedWindowsComputer
             ->  windows.dynamicDataExchange
@@ -1127,108 +1170,7 @@ category Hardware {
         & uncommonlyUsedPortsConnection
             ->  internalNetwork.c2Connexion,
                 firewall.bypassFirewall,
-                internalNetwork.bypassProxies
-
-        
-
-       
-        & fileDeletion
-            info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
-            ->  os.bypassHostForensicAnalysisDetection
-        
-        & diskStructureWipe
-            info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
- 
-        # dataBackup
-            info: "https://attack.mitre.org/mitigations/M1053/"
-            info:"Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
-            -> diskStructureWipe,
-               userDiskWiped,
-               adminDiskWiped
-
-        & userDiskWiped
-            info:"Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
-
-        & adminDiskWiped
-
-        # executionPrevention             
-            info: "https://attack.mitre.org/mitigations/M1038/"
-            -> fileDeletion, 
-               dataCompressed, 
-               collectAudio,
-               _dataEncrypted,
-               peripheralDeviceDiscovery,
-               permissionGroupsDiscovery,
-               _dataStaged,
-               _collectVideo,
-               adminDiskWiped
-
-
-        & uploadRemoteFile
-            // leads to file execution attacks
-            -> employee.userExecution  
-
-        & downloadRemoteFile
-            info: "data collection from the user"
-
-        # networkIntrusionPrevention
-            info: "https://attack.mitre.org/mitigations/M1031/"
-            ->  uploadRemoteFile, 
-                downloadRemoteFile,
-                commonlyUsedPortsConnection
-
-
-
-        
-        & sensitiveDataCollected
-            -> dataCompressed,
-               exfiltrationOverPhysicalMedium,
-               exfiltrationOverAternativeProtocol,
-               scheduledExfiltration,
-               exfiltrationOverC2
-
-        
-
-        & _dataCollected
-            -> dataCompressed,
-               exfiltrationOverPhysicalMedium,
-               exfiltrationOverAternativeProtocol,
-               scheduledExfiltration,
-               exfiltrationOverC2
-
-        & dataCompressed
-            -> exfiltrationOverPhysicalMedium,
-               exfiltrationOverAternativeProtocol,
-               scheduledExfiltration,
-               exfiltrationOverC2
-
-
-        & _dataEncrypted
-            -> exfiltrationOverPhysicalMedium,
-               exfiltrationOverAternativeProtocol,
-               scheduledExfiltration,
-               exfiltrationOverC2
-        
-       
-
-        & _dataStaged
-            -> exfiltrationOverPhysicalMedium,
-               exfiltrationOverAternativeProtocol,
-               scheduledExfiltration,
-               exfiltrationOverC2
-        
-
-        | exfiltrationOverC2
-            ->  c2Server.dataExfiltrated
-
-        | scheduledExfiltration
-            ->  exfiltrationOverC2,
-                exfiltrationOverAternativeProtocol
-        
-    
-        | exfiltrationOverAternativeProtocol
-            ->  internalNetwork.dataExfiltration
-
+                internalNetwork.bypassProxies       
 
         | exfiltrationOverPhysicalMedium
             ->  removableMedia.dataExfiltrated
@@ -1240,15 +1182,8 @@ category Hardware {
         & collectAudio
             -> os.dataCollected
         
-        & peripheralDeviceDiscovery
+        | peripheralDeviceDiscovery
             info: "Adversaries may attempt to gather information about attached peripheral devices and components connected to a computer system. The information may be used to enhance their awareness of the system and network environment or may be used for further actions."
-
-
-        & permissionGroupsDiscovery
-            info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
-
-        & networkServiceScan
-            info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation"
 
         E webcamExists
             <-  webcam
@@ -1263,12 +1198,6 @@ category Hardware {
 
         & _collectVideo
             -> os.dataCollected
-
-        | dataFromRemovableMedia
-            -> removableMedia.data
-
-       
-
     }
 
     asset Webcam {
@@ -1279,25 +1208,30 @@ category Hardware {
     asset C2Server {
         | c2Connected 
             -> obfuscatedData
+
         | obfuscatedData
             -> _obfuscatedData
+
         & _obfuscatedData
             -> externalNetwork.bypassNetworkDetection,
                internalNetwork.bypassNetworkDetection,
-               bypassNetwordDetection
+               bypassNetworkDetection
 
         & dataExfiltrated
 
-        | bypassNetwordDetection
+        | bypassNetworkDetection
     }
 
     asset RemovableMedia {
+        | dataFromRemovableMedia
+            ->  sensitiveDataCollected
+
         | infectedMedia
             ->  employee.insertMedia
 
         & dataExfiltrated
 
-        | data
+        | sensitiveDataCollected
 
     }
     
@@ -1330,9 +1264,11 @@ associations {
     
     //WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [os] OS
     WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows    
-    
+
+    //WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [administrator] Administrator
+    //WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows  
+
     Root [rootMac] 1-* <--Use--> 1-* [macOS] MacOS
-    //Root [root]  1-* <--Use--> 1-* [os] OS
 
     Employee [employee] 1 <--Use--> 1-* [browser] Browser
     Employee [employee] 1 <--Use--> 1-* [computer] Computer
@@ -1348,12 +1284,12 @@ associations {
     Browser [browser] 1-* <-- software --> 1-* [os] OS
     Browser [browser] 1-* <-- ui--> 1-* [user] User
     Browser [browser] 1-* <-- ui --> 1-* [internalNetwork] InternalNetwork
-    OS [os] 1-* <-- system --> 1-* [computer] Computer
-    OS [os] 1-* <--ui--> 1 [system] SYSTEM 
-    OS [os] 1-* <--ui--> 1-* [c2Server] C2Server
-    OS [os] 1-* <--ui--> 1-* [service] Service
 
-    //OS [os] 1 <--Contain--> 1 [windows] Windows
+    OS [os] 1 <-- System --> 1-* [computer] Computer
+    OS [os] 1-* <--Ui--> 1 [system] SYSTEM 
+    OS [os] 1  <-- Contain --> 1-* [service] Service
+    OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+    OS [os] 1 <--Contain--> 1 [windows] Windows
     SYSTEM [systemWindows] 1-* <-- Ui--> 1-* [windows] Windows
     
     //Computer [computer] 1 <--Software--> 1 [macOS] MacOS
@@ -1368,17 +1304,16 @@ associations {
     InternalNetwork [internalNetwork] 1-* <-- Contain --> 1-* [os] OS
     InternalNetwork [internalNetworkWindows] 1-* <-- Contain --> 1-* [windows] Windows
 
-    InternalNetwork [internalNetwork] 1 <-- Protect --> 0-1 [firewall] Firewall
-    InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
-    //InternalNetwork [internalNetwork] 1 <--contain--> 1-* [windows] Windows
-    //InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [service] Service
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [networkSharedDrive] NetworkSharedDrive  
-    NetworkSharedDrive [networkSharedDrive] 1-* <-- ui--> 1-* [c2Server] C2Server
-
+    InternalNetwork [internalNetwork] 1 <-- Protect --> 1 [firewall] Firewall
+    InternalNetwork [internalNetwork] 1 <--Connects--> 1-* [externalNetwork] ExternalNetwork
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [user] User
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [administrator] Administrator
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [computer] Computer
+//  InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [windows] Windows
+//  InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [networkSharedDrive] NetworkSharedDrive  
+    NetworkSharedDrive [networkSharedDrive] 1-* <-- Ui--> 1-* [c2Server] C2Server
 
     Computer [computer] 1-* <--protects--> 0-1 [firewall] Firewall
     Computer [computer] 1 <--use--> 1 [microphone] Microphone
