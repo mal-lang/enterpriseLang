@@ -1,0 +1,27 @@
+category Software{
+    abstractAsset OS{
+
+        | bypassFileMonitoring
+        | bypassHostIntrusionPrevention
+        | bypassAntivirus
+
+    }
+
+    asset Windows extends OS {
+        | executeCode 
+            info:"Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."
+            -> componentFirmware 
+
+        | componentFirmware
+            -> os.bypassFileMonitoring,
+               os.bypassHostIntrusionPrevention, 
+               os.bypassAntivirus     
+
+    }
+}
+
+
+associations{
+  
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}

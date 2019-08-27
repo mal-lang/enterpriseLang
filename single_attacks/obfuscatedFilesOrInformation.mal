@@ -1,0 +1,39 @@
+category Software{
+    abstractAsset OS{
+        & obfuscatedFilesOrInformation
+            info:" Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
+            -> windows.deobfuscateOrDecodeFilesOrInformation, // leads to Deobfuscate/Decode Files or Information attack
+               bypassHostForensicAnalysisDetection,
+               bypassSignatureBasedDetection,
+               bypassHostIntrusionPrevention,
+               bypassApplicationWhitelisting,
+               bypassProcessWhitelisting,
+               bypassLogAnalysis,
+               bypassFileOrPathWhitelisting
+
+        & adminCommandLineInterface
+            ->  obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface. 
+   
+        & userCommandLineInterface
+            ->  obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface. 
+
+        | bypassHostForensicAnalysisDetection
+        | bypassSignatureBasedDetection
+        | bypassHostIntrusionPrevention
+        | bypassApplicationWhitelisting
+        | bypassProcessWhitelisting
+        | bypassLogAnalysis
+        | bypassFileOrPathWhitelisting
+        
+        # antivirus
+            -> obfuscatedFilesOrInformation
+    }
+
+    asset Windows extends OS {   
+        | deobfuscateOrDecodeFilesOrInformation 
+    }   
+}
+
+associations{
+    OS [os] 1 <--Contain--> 1 [windows] Windows 
+}

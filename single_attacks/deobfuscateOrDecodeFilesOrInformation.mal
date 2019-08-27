@@ -1,0 +1,48 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.deobfuscateOrDecodeFilesOrInformation
+    }
+}
+    
+category Software{
+    abstractAsset OS{
+        & obfuscatedFilesOrInformation
+            info:" Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
+            ->  windows.deobfuscateOrDecodeFilesOrInformation
+
+        | bypassAntivirus
+        | bypassHostIntrusionPrevention
+        | bypassSignatureBasedDetection
+
+    }
+
+    asset Windows extends OS {   
+        | deobfuscateOrDecodeFilesOrInformation 
+            ->  os.bypassAntivirus,
+                os.bypassHostIntrusionPrevention,
+                os.bypassSignatureBasedDetection,
+                externalNetwork.bypassNetworkDetection,
+                internalNetwork.bypassNetworkDetection
+    }   
+}
+
+category Network {
+    asset ExternalNetwork {
+        | bypassNetworkDetection
+
+    }
+
+    asset InternalNetwork {
+        | bypassNetworkDetection 
+    }
+}
+
+associations{
+    User [windowsUser] 1 <-- Use--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows 
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [windows] Windows
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [windows] Windows
+}
+
+

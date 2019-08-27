@@ -1,0 +1,55 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.compiledHTMLFile 
+    }
+
+    asset Employee {
+        & userExecution
+
+    }
+}  
+
+category Software{
+    abstractAsset OS{
+
+        | bypassDigitalCertificateValidation 
+        | bypassApplicationWhitelisting
+
+        # executionPrevention
+            -> windows.compiledHTMLFile
+
+    }
+
+    asset Windows extends OS {
+        & compiledHTMLFile 
+            info:"Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
+            -> employee.userExecution, // leads to User Execution attack
+               os.bypassApplicationWhitelisting,
+               os.bypassDigitalCertificateValidation
+    }
+}       
+
+category Network {
+    asset Browser {
+        # restrictWebBasedContent//https://attack.mitre.org/mitigations/M1021/
+            info: "Block unknown or unused attachments by default that should not be transmitted over email "
+            -> windows.compiledHTMLFile
+    }
+}
+
+category Hardware {
+    asset Computer {
+
+        | infectedWindowsComputer
+
+    }
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+    Employee [employee] 1 <--Use--> 1-* [windows] Windows
+    Browser [browser] 1-* <--Software --> 1 [windows] Windows
+
+}

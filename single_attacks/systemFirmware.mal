@@ -1,0 +1,43 @@
+category Person {    
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.systemFirmware 
+    }              
+
+    asset WindowsAdmin extends Administrator {
+        | systemRights
+            ->  windowsWindowsAdmin.systemFirmware     
+    }
+    
+}
+
+category Software {
+    asset Service {
+        # updateSoftware //https://attack.mitre.org/mitigations/M1051/
+            ->  windows.systemFirmware
+    }
+
+    abstractAsset OS{
+
+    }
+
+    asset Windows extends OS {
+        & systemFirmware
+            info:"System firmware may be modified by an adversary to perform or assist in malicious activity."
+            ->  installMaliciousFirmwareUpdates
+
+        | installMaliciousFirmwareUpdates
+
+        # bootIntegrity
+            ->  systemFirmware        
+
+    }
+}    
+
+associations{
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
+    Windows [windows] 1 <--Use--> 1-* [service] Service 
+
+}

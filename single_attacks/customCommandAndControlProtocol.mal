@@ -1,0 +1,35 @@
+category Software {
+    asset OS {
+        & customCommandAndControlProtocol
+            info:"Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
+            ->  c2Server.c2Connected   
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        # filterNetworkTraffic
+            info:"https://attack.mitre.org/mitigations/M1037/"   
+            ->  os.customCommandAndControlProtocol
+
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.customCommandAndControlProtocol
+
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.customCommandAndControlProtocol
+    }
+}
+
+category Hardware {
+    asset C2Server {
+        | c2Connected 
+    }
+}
+
+
+associations {
+    InternalNetwork [internalNetwork] 1-* <-- Contain --> 1-* [os] OS
+    OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+} 
