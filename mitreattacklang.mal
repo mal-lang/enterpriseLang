@@ -5,12 +5,14 @@ category Person {
                 os.applicationWindowDiscovery,
                 os.automatedCollection,
                 os.bruteForce,
+                os.compileAfterDelivery,
                 os.credentialsInFiles,
                 os.domainDiscovery,
                 os.downloadRemoteFile,
                 os.directoryDiscovery,
                 os.fileDiscovery,
                 os.fileDeletion,
+                os.filePermissionsModification,
                 os.passwordPolicyDiscovery,
                 os.permissionGroupsDiscovery,
                 os.processInjection,
@@ -28,6 +30,10 @@ category Person {
                 windows.bypassUserAccountControl,
                 windows.changeDefaultFileAssociation,
                 windows.cmstp,
+                windows.compiledHTMLFile,
+                windows.componentObjectModelHijacking,
+                windows.controlPanelItems,
+                windows.deobfuscateOrDecodeFilesOrInformation,
                 windows.domainTrustDiscovery,
                 windows.dynamicDataExchange,  
                 windows.emailStorageCollection,
@@ -78,6 +84,7 @@ category Person {
                 os.detailedRunningProcessDiscovery,
                 os.detailedRemoteSystemDiscovery,
                 os.diskStructureWipe,
+                os.filePermissionsModification,                
                 os.networkServiceScan,
                 os.sensitiveDataCollected,
                 windows.appCertDLLs,
@@ -94,6 +101,7 @@ category Person {
                 macOS.keychainCollection,
                 service.admintransmittedDataManipulation,
                 service.adminRemoteServicesLogin,
+                service.applicationDeploymentSystems,
                 internalNetwork.admintransmittedDataManipulation,
                 internalNetwork.bypassAccessControl
              
@@ -103,7 +111,7 @@ category Person {
                 internalNetwork.bypassAccessControl
             
         & createUserAccount 
-            ->  os.persistence
+            ->  os.persistence          
         
         # multiFactorAuthentication
             info: "https://attack.mitre.org/mitigations/M1032/"
@@ -111,19 +119,25 @@ category Person {
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  createUserAccount 
+            ->  createUserAccount,
+                windows.modifyRegistrySettings,
+                windows.systemFirmware, 
+                service.applicationDeploymentSystems
     }
 
     
-    asset WindowsAdmin extends Administrator{
+    asset WindowsAdmin extends Administrator {
         | adminRights
             +>  accountManipulation,
                 windowsWindowsAdmin.accessibilityFeatures,
                 windowsWindowsAdmin.adminSecuritySoftwareDiscovery,
                 windowsWindowsAdmin.bypassUserAccountControl,
+                windowsWindowsAdmin.distributedComponentObjectModel,
                 windowsWindowsAdmin.executeService,
                 windowsWindowsAdmin.hooking,
-                windowsWindowsAdmin.queryRegistery
+                windowsWindowsAdmin.hypervisor,
+                windowsWindowsAdmin.queryRegistery,
+                windowsWindowsAdmin.systemFirmware
 
         & accountManipulation
             ->  user.userCredentials
@@ -138,15 +152,17 @@ category Person {
             ->  macOS.adminSecuritySoftwareDiscovery,
                 os.rootDataDestruction,
                 os.rootkit
-
     }
     
     asset SYSTEM {
         | systemRights
             ->  windows.appCertDLLs,
                 windows.changeDefaultFileAssociation,
+                windows.distributedComponentObjectModel,
                 windows.hooking,
+                windows.hypervisor,
                 os.credentialsInFiles,
+                os.filePermissionsModification,
                 os.systemDataDestruction,
                 os.rootkit
 
@@ -205,6 +221,9 @@ category Person {
             ->  browser.maliciousAds, 
                 employee.adLinkClicked
 
+        | maliciousCodeInserted
+            ->  windows.executeCode         
+
         | spearphishingAttachmentAttack
             ->  employee.spearphishingAttachmentDownload,
                 browser.spearphishingAttachment
@@ -217,10 +236,12 @@ category Person {
 
 category Software {
     asset Service {
+        & applicationDeploymentSystems  
+
         & userRemoteServicesLogin
 
         & adminRemoteServicesLogin
-        
+
         & usertransmittedDataManipulation
             info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
@@ -250,17 +271,29 @@ category Software {
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/"
-            ->  exploitationForDefenseEvasion
+            ->  windows.systemFirmware,
+                exploitationForDefenseEvasion,
+                internalNetwork.remoteAccess
 
         | informationRepositories
             -> os.dataCollected
 
         # applicationIsolationAndSandboxing
             info: "https://attack.mitre.org/mitigations/M1048/"
-            ->  exploitationForDefenseEvasion
+            ->  exploitationForDefenseEvasion,
+                windows.distributedComponentObjectModel
+    }
+
+    asset VideoCallApplication extends Service { 
+        | collectVideo
+            ->  computer._collectVideo
     }
     
-    abstractAsset OS {    
+    abstractAsset OS {   
+        & applicationDeploymentSoftware
+            info:"Access to a network-wide or enterprise-wide software deployment system enables an adversary to have remote code execution on all systems that are connected to such a system."
+            ->  executeCode
+
         | infectedOS
             ->  clipboardData,
                 dataFromInformationRepositories,
@@ -275,6 +308,9 @@ category Software {
 
         & domainDiscovery
             info: "get domain names and information"
+
+        | compromisedSystems //with probability
+            ->  removableMedia.infectedMedia
             
         & binaryPadding
             ->  bypassSignatureBasedDetection,
@@ -296,6 +332,27 @@ category Software {
                 internalNetwork.bypassFirewall,
                 externalNetwork.bypassNetworkDetection,
                 internalNetwork.bypassNetworkDetection
+
+        | compileAfterDelivery     
+            info:"Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
+            ->  adversary.spearphishingAttachmentAttack,
+                bypassStaticFileAnalysis,
+                bypassBinaryAnalysis,
+                bypassAntivirus,
+                bypassHostIntrusionPrevention,
+                bypassSignatureBasedDetection
+
+        & connectionProxy
+            info:"Adversaries could use trust relationships to manage command and control communications, to reduce the number of simultaneous outbound network connections, to provide resiliency in the face of connection loss, or to ride over existing trusted communications paths between victims to avoid suspicion."
+            -> c2Server.c2Connected           
+
+        & customCryptographicProtocol
+            info:"AAdversaries may use a custom cryptographic protocol or algorithm to hide command and control traffic."
+            ->  c2Server.c2Connected        
+
+        & customCommandAndControlProtocol
+            info:"Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
+            ->  c2Server.c2Connected          
            
         | disablingSecurityTools
             info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
@@ -313,6 +370,28 @@ category Software {
                 administrator.adminCredentials,
                 system.systemCredentials         
                
+        | executeCode 
+            ->  internalNetwork.remoteAccess
+
+        & obfuscatedFilesOrInformation
+            info:" Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
+            ->  windows.deobfuscateOrDecodeFilesOrInformation, // leads to Deobfuscate/Decode Files or Information attack
+                bypassHostForensicAnalysisDetection,
+                bypassSignatureBasedDetection,
+                bypassHostIntrusionPrevention,
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassLogAnalysis,
+                bypassFileOrPathWhitelisting          
+
+        | runCode
+            ->  computer.infectedComputer
+
+        | replicationThroughRemovableMedia
+            -> communicationThroughRemovableMedia
+
+        & communicationThroughRemovableMedia
+
         & remoteSystemDiscovery
             info: "Adversaries will likely attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system."
 
@@ -320,10 +399,18 @@ category Software {
             info: "Adversaries with admin rights may get better details of the hosts enumerated"
         
         & adminCommandLineInterface
-            ->  dataCollected // entrypoints of attacks that can be done with command line interface under admin rights
+            ->  dataCollected, // entrypoints of attacks that can be done with command line interface under admin rights
+                obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface 
         
         & userCommandLineInterface
-            ->  dataCollected // entrypoints of attacks that can be done with command line interface under user rights
+            ->  dataCollected, // entrypoints of attacks that can be done with command line interface under user rights
+                obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface
+
+        | filePermissionsModification
+            info:"Adversaries may modify file permissions/attributes to evade intended DACLs."
+            ->  windows.accessibilityFeatures, // leads to Accessibility Features attack
+                windows.logonScripts, //leads to Logon Scripts attack
+                macOS.logonScripts // leads to Logon Scripts attack
 
         & systemInformationDiscovery
             info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
@@ -340,28 +427,37 @@ category Software {
                 bypassProcessWhitelisting,
                 bypassSignatureBasedDetection, 
                 bypassHostIntrusionPrevention,
-                bypassSystemAccessControls
+                bypassSystemAccessControls,
+                windows.hypervisor
 
         | modifyAPICalls                
 
         | bypassAntivirus
 
+        | bypassBinaryAnalysis
+
+        | bypassAutorunsAnalysis
+
+        | bypassApplicationWhitelisting
+
+        | bypassFileOrPathWhitelisting
+
+        | bypassProcessWhitelisting
+
         | bypassSystemAccessControls
         
         | bypassFileMonitoring
-        
-        | bypassLogAnalysis
-        
-        | bypassProcessWhitelisting
+
+        | bypassLogAnalysis        
         
         | bypassSignatureBasedDetection
+
+        | bypassStaticFileAnalysis
 
         | bypassHostForensicAnalysisDetection
         
         | bypassHostIntrusionPrevention
         
-        | bypassApplicationWhitelisting
-
         | bypassDigitalCertificateValidation   
         
         | passwordPolicyDiscovery
@@ -380,11 +476,6 @@ category Software {
         & antivirusCheck
             ->  runCode
 
-        | executeCode 
-
-        | runCode
-            ->  computer.infectedComputer
-
         & spearphishingAttachmentDownload
             ->  employee.userExecution
 
@@ -401,12 +492,14 @@ category Software {
             
         # antivirus
             ->  antivirusCheck,
+                obfuscatedFilesOrInformation,
                 spearphishingAttachmentDownload,
                 spearphishingLinkDownload   
 
         # restrictFileAndDirectoryPermissions 
             info: "https://attack.mitre.org/mitigations/M1022/"
-            ->  _credentialsInFiles 
+            ->  _credentialsInFiles,
+                windows.controlPanelItems
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             info: "https://attack.mitre.org/mitigations/M1036/" 
@@ -414,7 +507,8 @@ category Software {
 
         # multiFactorAuthentication
             info: "https://attack.mitre.org/mitigations/M1032/" 
-            ->  bruteForce
+            ->  applicationDeploymentSoftware,
+                bruteForce
 
         # passwordPolicies 
             info: "https://attack.mitre.org/mitigations/M1027/" 
@@ -430,7 +524,8 @@ category Software {
 
         # disableOrRemoveFeatureOrProgram 
             info: "https://attack.mitre.org/techniques/T1064/"
-            ->  _scripting
+            ->  _scripting,
+                communicationThroughRemovableMedia
 
         # activeDirectoryConfiguration
             info: "https://attack.mitre.org/mitigations/M1015/"
@@ -442,9 +537,14 @@ category Software {
                 _credentialsInRegistry,
                 browser.runExtensions  
 
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/" 
+            ->  applicationDeploymentSoftware           
+
         # operatingSystemConfiguration 
             info: "https://attack.mitre.org/mitigations/M1028/"
             ->  accountDiscovery, 
+                communicationThroughRemovableMedia,
                 domainDiscovery,
                 administrator.createUserAccount
 
@@ -466,15 +566,16 @@ category Software {
                 fileDeletion, 
                 dataCompressed, 
                 computer.collectAudio,
+                computer._collectVideo,
                 _dataEncrypted,
                 permissionGroupsDiscovery,
                 _dataStaged,
-                computer._collectVideo,
-                adminDiskWiped
+                adminDiskWiped,
+                windows.compiledHTMLFile
              
         # privilegedAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1026/"
-            -> _credentialsInRegistry  
+            ->  _credentialsInRegistry  
 
         | credentialsInRegistry
             ->  _credentialsInRegistry
@@ -488,7 +589,7 @@ category Software {
             ->  bypassHostForensicAnalysisDetection
 
         & fileDiscovery
-            -> automatedCollection
+            ->  automatedCollection
         
         & diskStructureWipe
             info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
@@ -546,7 +647,7 @@ category Software {
 
         | dataEncrypted
             info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
-            -> _dataEncrypted
+            ->  _dataEncrypted
 
         & _dataEncrypted
             ->  computer.exfiltrationOverPhysicalMedium,
@@ -676,10 +777,40 @@ category Software {
                 remoteDesktopProtocol 
 
         & cmstp
-            info:"Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
+            info: "Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
             ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
                 bypassApplicationWhitelisting,
                 bypassAntivirus            
+
+        & controlPanelItems
+            info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
+            ->  executeCode,
+                os.bypassApplicationWhitelisting,
+                os.bypassProcessWhitelisting
+
+        | componentObjectModelHijacking
+            info:" Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
+            -> adversary.maliciousCodeInserted,
+               bypassAutorunsAnalysis             
+
+        | componentFirmware
+            info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."       
+            ->  os.bypassFileMonitoring,
+                os.bypassHostIntrusionPrevention, 
+                os.bypassAntivirus         
+
+        & compiledHTMLFile 
+            info:"Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
+            -> employee.userExecution, // leads to User Execution attack
+               os.bypassApplicationWhitelisting,
+               os.bypassDigitalCertificateValidation   
+
+        | deobfuscateOrDecodeFilesOrInformation 
+            ->  os.bypassAntivirus,
+                os.bypassHostIntrusionPrevention,
+                os.bypassSignatureBasedDetection,
+                externalNetwork.bypassNetworkDetection,
+                internalNetwork.bypassNetworkDetection              
                
         & executeMshta
             info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
@@ -688,7 +819,8 @@ category Software {
                 bypassApplicationWhitelisting    
                
         | executeCode 
-            +>  computer.infectedWindowsComputer          
+            +>  componentFirmware, 
+                computer.infectedWindowsComputer          
         
         | remoteDesktopProtocol // leads to Remote Desktop Protocol attack
             ->  system.systemRights
@@ -708,6 +840,10 @@ category Software {
         & registryKeysEnabled
             ->  dynamicDataExchange
 
+        & distributedComponentObjectModel          
+            info:"Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
+            ->  dynamicDataExchange
+
         | dynamicDataExchange
             info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
             ->  userCommandLineInterface 
@@ -717,14 +853,27 @@ category Software {
             ->  executeCode,
                 captureAPICalls
 
+        | hypervisor           
+            info:"A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
+            -> persistance
+
         | captureAPICalls
+
+        & modifyRegistrySettings
+            ->  distributedComponentObjectModel      
 
         & logonScripts
             ->  windowsAdmin.adminRights   
 
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
-            +>  logonScripts                  
+            +>  logonScripts   
+
+        & systemFirmware
+            info:"System firmware may be modified by an adversary to perform or assist in malicious activity."
+            -> installMaliciousFirmwareUpdates
+
+        | installMaliciousFirmwareUpdates              
 
         & queryRegistery
             info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
@@ -750,17 +899,18 @@ category Software {
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
             +>  accessibilityFeatures,
-                executeMshta,
-                createService,
-                scheduledTask, 
-                systemTimeDiscovery,
-                queryRegistery,
-                networkShareDiscovery,
-                userSecuritySoftwareDiscovery,
                 adminSecuritySoftwareDiscovery,
                 _appCertDLLs,
                 appInitDLLs,
-                cmstp
+                cmstp,
+                controlPanelItems,
+                createService,
+                executeMshta,
+                networkShareDiscovery,
+                queryRegistery,
+                scheduledTask, 
+                systemTimeDiscovery,
+                userSecuritySoftwareDiscovery
 
         & executeService
             -> persistance
@@ -832,7 +982,8 @@ category Software {
 
         # bootIntegrity 
             info: "https://attack.mitre.org/mitigations/M1046/"
-            +>  bootkit      
+            +>  bootkit,
+                systemFirmware      
 
         # encryptSensitiveInformation
             info: "https://attack.mitre.org/mitigations/M1041/"
@@ -842,6 +993,7 @@ category Software {
         # disableOrRemoveFeatureOrProgram
             info: "https://attack.mitre.org/mitigations/M1042/"
             +>  cmstp,
+                distributedComponentObjectModel,
                 registryKeysEnabled
             
         | videoCollection
@@ -983,11 +1135,6 @@ category Software {
             +>  bashHistory
     }
     
-
-    asset VideoCallApplication extends Service { 
-        | collectVideo
-            ->  computer._collectVideo
-    }
 }
 
 category Network {
@@ -1012,14 +1159,16 @@ category Network {
             ->  os.spearphishingLinkDownload
 
         & spearphishingAttachment
-            ->  os.spearphishingAttachmentDownload
+            ->  os.spearphishingAttachmentDownload,
+                windows.controlPanelItems // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
 
         # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
           info: "https://attack.mitre.org/mitigations/M1021/"
             ->  spearphishingAttachment, 
                 spearphishingLink,
                 checkBrowser,
-                checkPlugin
+                checkPlugin,
+                windows.compiledHTMLFile
 
         | browserBookmark
             ->  browserBookmarkDiscovery
@@ -1038,7 +1187,8 @@ category Network {
     asset ExternalNetwork {
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
-            ->  c2Server.obfuscatedData
+            ->  c2Server.obfuscatedData,
+                os.connectionProxy
 
         | bypassNetworkDetection
 
@@ -1048,6 +1198,8 @@ category Network {
     }
 
     asset InternalNetwork {
+        | remoteAccess
+
         & applicationLayerConnexion
             ->  c2Connexion,
                 bypassNetworkDetection,
@@ -1082,12 +1234,16 @@ category Network {
             info: "https://attack.mitre.org/mitigations/M1038/"
             ->  os.networkServiceScan
 
+        # filterNetworkTraffic
+            info:"https://attack.mitre.org/mitigations/M1037/"   
+            ->  os.customCommandAndControlProtocol 
+
         & c2Connexion
             ->  c2Server.c2Connected
 
         & exchangeServerCollection
             info:"Adversaries may leverage a user's credentials and interact directly with the Exchange server to acquire information from within a network."
-            -> os.dataCollected
+            ->  os.dataCollected
 
         # multiFactorAuthentication
             info: "https://attack.mitre.org/mitigations/M1032/"
@@ -1102,22 +1258,27 @@ category Network {
 
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
-            ->  os.commonlyUsedPortsConnection,
-                os.dataCompressed,
-                os.uploadRemoteFile, 
-                os.downloadRemoteFile,
-                dataExfiltration,
-                c2Server.dataExfiltrated,
-                applicationLayerConnexion,
-                os.networkServiceScan,
+            ->  applicationLayerConnexion,
                 c2Connexion,
+                dataExfiltration,
+                os.commonlyUsedPortsConnection,
+                os.connectionProxy,
+                os.customCommandAndControlProtocol,
+                os.customCryptographicProtocol,
+                os.dataCompressed,
+                os.downloadRemoteFile,
+                os.networkServiceScan,
+                os.uploadRemoteFile, 
+                c2Server.dataExfiltrated,
                 c2Server._obfuscatedData,
                 c2Server.dataExfiltrated
 
         # networkSegmentation
             info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  os.commonlyUsedPortsConnection,
+            ->  remoteAccess,
                 administrator.createUserAccount,
+                os.commonlyUsedPortsConnection,
+                os.customCommandAndControlProtocol,
                 windows.domainTrustDiscovery
 
         | connectedToNetwork
@@ -1132,7 +1293,8 @@ category Network {
 
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  computer.uncommonlyUsedPortsConnection
+            ->  computer.uncommonlyUsedPortsConnection,
+                windows.distributedComponentObjectModel
         
         | bypassFirewall
     }
@@ -1149,10 +1311,10 @@ category Network {
 category Hardware {
     asset Computer {
         | infectedComputer
-            -> removableMedia.infectedMedia,
-               internalNetwork.applicationLayerConnexion,
-               uncommonlyUsedPortsConnection,
-               removableMedia.dataFromRemovableMedia
+            ->  removableMedia.infectedMedia,
+                internalNetwork.applicationLayerConnexion,
+                uncommonlyUsedPortsConnection,
+                removableMedia.dataFromRemovableMedia
 
         | infectedWindowsComputer
             ->  windows.dynamicDataExchange
@@ -1180,7 +1342,7 @@ category Hardware {
             ->  microphone.collectAudio
 
         & collectAudio
-            -> os.dataCollected
+            ->  os.dataCollected
         
         | peripheralDeviceDiscovery
             info: "Adversaries may attempt to gather information about attached peripheral devices and components connected to a computer system. The information may be used to enhance their awareness of the system and network environment or may be used for further actions."
@@ -1207,19 +1369,22 @@ category Hardware {
 
     asset C2Server {
         | c2Connected 
-            -> obfuscatedData
+            ->  obfuscatedData,
+                packetCapture
 
         | obfuscatedData
-            -> _obfuscatedData
+            ->  _obfuscatedData
 
         & _obfuscatedData
-            -> externalNetwork.bypassNetworkDetection,
-               internalNetwork.bypassNetworkDetection,
-               bypassNetworkDetection
+            ->  externalNetwork.bypassNetworkDetection,
+                internalNetwork.bypassNetworkDetection,
+                bypassNetworkDetection
 
         & dataExfiltrated
 
         | bypassNetworkDetection
+
+        | packetCapture
     }
 
     asset RemovableMedia {
@@ -1227,7 +1392,8 @@ category Hardware {
             ->  sensitiveDataCollected
 
         | infectedMedia
-            ->  employee.insertMedia
+            ->  employee.insertMedia,
+                os.replicationThroughRemovableMedia
 
         & dataExfiltrated
 
@@ -1243,12 +1409,13 @@ category Hardware {
 
 associations {    
     
-    Adversary [adversary] 1 <-- Attack --> 1-* [employee] Employee 
-    Adversary [adversary] 1 <-- Attack --> 1-* [browser] Browser 
-    Adversary [adversary] 1 <-- Attack --> 1-* [os] OS 
+    Adversary [adversary] 1 <--Attack--> 1-* [employee] Employee 
+    Adversary [adversary] 1 <--Attack--> 1-* [browser] Browser 
+    Adversary [adversary] 1 <--Attack--> 1-* [os] OS 
+    Adversary [adversary] 1 <-- Attack--> 1 [windows] Windows 
 
-    User [user] 1 <-- Ui--> 1-* [os] OS
-    User [windowsUser] 1 <-- Use--> 1-* [windows] Windows
+    User [user] 1 <--Ui--> 1-* [os] OS
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
     User [linuxUser] 1-* <--Use--> 1 [linux] Linux   
     User [macOSUser] 1-* <--Use--> 1 [macOS] MacOS
     User [user] 1-* <-- Ui--> 1 [computer] Computer
@@ -1264,16 +1431,18 @@ associations {
     
     //WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [os] OS
     WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows    
-
     //WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [administrator] Administrator
     //WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows  
 
     Root [rootMac] 1-* <--Use--> 1-* [macOS] MacOS
 
+    SYSTEM [systemWindows] 1-* <--Ui--> 1-* [windows] Windows
+
     Employee [employee] 1 <--Use--> 1-* [browser] Browser
     Employee [employee] 1 <--Use--> 1-* [computer] Computer
     Employee [employee] 1 <--Use--> 1-* [user] User
     Employee [employee] 1 <--Use--> 1-* [os] OS
+    Employee [employee] 1 <--Use--> 1-* [windows] Windows
     Employee [employee] 1 <--Use--> 1-* [macOS] MacOS
     Employee [employee] 1 <--Use--> 1-* [linux] Linux
     Employee [employee] 1 <--Use--> 1-* [removableMedia] RemovableMedia
@@ -1281,43 +1450,46 @@ associations {
     Computer [computer] 1 <--Use--> 1-* [removableMedia] RemovableMedia
     Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
 
-    Browser [browser] 1-* <-- software --> 1-* [os] OS
-    Browser [browser] 1-* <-- ui--> 1-* [user] User
-    Browser [browser] 1-* <-- ui --> 1-* [internalNetwork] InternalNetwork
+    Browser [browser] 1-* <--Software--> 1 [os] OS
+    Browser [browser] 1-* <--Software--> 1 [windows] Windows
+    Browser [browser] 1-* <--Ui--> 1-* [user] User
+    Browser [browser] 1-* <--Ui--> 1-* [internalNetwork] InternalNetwork
 
     OS [os] 1 <-- System --> 1-* [computer] Computer
     OS [os] 1-* <--Ui--> 1 [system] SYSTEM 
-    OS [os] 1  <-- Contain --> 1-* [service] Service
+    OS [os] 1  <--Contain--> 1-* [service] Service
     OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
     OS [os] 1 <--Contain--> 1 [windows] Windows
-    SYSTEM [systemWindows] 1-* <-- Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [macOS] MacOS
+    OS [os] 1 <--Use--> 1-* [removableMedia] RemovableMedia
+
+    Service [service] 1-* <--Contain--> 1 [windows] Windows
     
     //Computer [computer] 1 <--Software--> 1 [macOS] MacOS
     Computer [computerWindows] 1 <--Software--> 1 [windows] Windows
     //Computer [computer] 1 <--Software--> 1 [linux] Linux //190820 added Source
     
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [computer] Computer
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1-* [os] OS
 
-    ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [os] OS
-    InternalNetwork [internalNetwork] 1-* <-- Contain --> 1-* [os] OS
-    InternalNetwork [internalNetworkWindows] 1-* <-- Contain --> 1-* [windows] Windows
-
-    InternalNetwork [internalNetwork] 1 <-- Protect --> 1 [firewall] Firewall
-    InternalNetwork [internalNetwork] 1 <--Connects--> 1-* [externalNetwork] ExternalNetwork
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetworkWindows] 1-* <--Contain--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1 <--Protect--> 1 [firewall] Firewall
+    InternalNetwork [internalNetwork] 1 <--Connect--> 1-* [externalNetwork] ExternalNetwork
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [user] User
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [administrator] Administrator
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [computer] Computer
-//  InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [windows] Windows
-//  InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
+    //InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [windows] Windows
+    //InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [networkSharedDrive] NetworkSharedDrive  
-    NetworkSharedDrive [networkSharedDrive] 1-* <-- Ui--> 1-* [c2Server] C2Server
-
-    Computer [computer] 1-* <--protects--> 0-1 [firewall] Firewall
-    Computer [computer] 1 <--use--> 1 [microphone] Microphone
-    VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
-    Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [networkSharedDrive] NetworkSharedDrive      
+    NetworkSharedDrive [networkSharedDrive] 1-* <--Ui--> 1-* [c2Server] C2Server
+    Windows [windows] 1 <--Protect--> 1 [firewall] Firewall
+    Computer [computer] 1-* <--Protects--> 0-1 [firewall] Firewall
+    Computer [computer] 1 <--Use--> 1 [microphone] Microphone
+    VideoCallApplication [videoCallApplication] 1-* <--Software--> 1 [computer] Computer
+    Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
 
 }
