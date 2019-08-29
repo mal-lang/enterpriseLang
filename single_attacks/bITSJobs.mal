@@ -1,0 +1,93 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.bITSJobs 
+
+        # userAccountManagement 
+            ->  windows.bITSJobs
+    }
+
+    asset Administrator {
+        | adminRights
+            ->  windows.bITSJobs
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.bITSJobs
+    } 
+}
+
+category Software{
+    abstractAsset OS{
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  windows._bITSJobs 
+
+        | bypassHostForensicAnalysis          
+
+    }
+    asset Windows extends OS {   
+        & bITSJobs  
+            ->  _bITSJobs
+
+        & _bITSJobs 
+            info: "Adversaries may abuse BITS to download, execute, and even clean up after running malicious code."
+            ->  executeCode,
+                os.bypassHostForensicAnalysis,
+                firewall.bypassFirewall
+
+        | executeCode  
+    } 
+}
+
+category Network {
+    asset ExternalNetwork {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  windows._bITSJobs  
+
+    }
+
+    asset InternalNetwork {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  windows._bITSJobs 
+
+    }
+
+
+    asset Firewall {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  windows._bITSJobs
+
+        | bypassFirewall
+    }   
+}
+
+associations{
+
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    SYSTEM [systemWindows] 1-* <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
+    ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
+    Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows 
+    InternalNetwork [internalNetwork] 1 <--Protect--> 0-1 [firewall] Firewall
+    ExternalNetwork [externalNetwork] 1 <--Protect--> 0-1 [firewall] Firewall
+}
+
+
+
+
+
+
+
+
+
+
+

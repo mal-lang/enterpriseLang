@@ -1,0 +1,59 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.domainGenerationAlgorithms
+    
+    }
+}
+
+category Software{
+    abstractAsset OS{
+        | domainGenerationAlgorithms 
+            info:" Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination for command and control traffic rather than relying on a list of static IP addresses or domains." 
+            ->  fallbackChannels, // leads to Fallback Channels attack
+                c2Server.communicate,
+                c2Server.generateDomainNames       
+    }
+}
+
+category Network {
+    asset Browser {
+        # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
+          info: "https://attack.mitre.org/mitigations/M1021/"
+            ->  os.domainGenerationAlgorithms  
+    }
+
+    asset ExternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  c2Server.generateDomainNames  
+
+    }
+        asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  c2Server.generateDomainNames 
+    }
+}
+
+category Hardware {
+    asset C2Server {
+        | c2Connected 
+            ->  communicate
+
+        | communicate 
+
+        | generateDomainNames     
+    }
+}
+
+
+associations{
+
+    User [user] 1 <--Ui--> 1-* [os] OS
+    OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+    Browser [browser] 1-* <--Software--> 1 [os] OS
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+    
+}

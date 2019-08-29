@@ -1,0 +1,38 @@
+category Software{
+    abstractAsset OS{
+        | domainFronting
+            info: "Domain fronting takes advantage of routing schemes in Content Delivery Networks (CDNs) and other services which host multiple domains to obfuscate the intended destination of HTTPS traffic or traffic tunneled through HTTPS."
+            ->  internalNetwork.obfuscateNetworkTraffic,
+                externalNetwork.obfuscateNetworkTraffic
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  domainFronting
+
+    }
+
+}
+
+category Network {
+    asset ExternalNetwork {
+        | obfuscateNetworkTraffic
+
+        # sSLOrTLSInspection
+            info: "https://attack.mitre.org/mitigations/M1020/"
+            ->  obfuscateNetworkTraffic
+    }
+
+    asset InternalNetwork {
+        | obfuscateNetworkTraffic
+
+        # sSLOrTLSInspection
+            info: "https://attack.mitre.org/mitigations/M1020/"
+            ->  obfuscateNetworkTraffic
+    }
+
+}
+
+associations{
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1-* [os] OS
+}

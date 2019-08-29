@@ -1,0 +1,63 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.dLLSearchOrderHijacking
+    }
+
+    asset Administrator {
+        | adminRights
+            ->  windows.dLLSearchOrderHijacking
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.dLLSearchOrderHijacking
+    } 
+}
+
+category Software{
+    abstractAsset OS{
+        | bypassProcessWhitelisting
+
+        # audit 
+
+        # executionPrevention     
+    }
+
+    asset Windows extends OS {
+        | dLLSearchOrderHijacking
+            ->  _dLLSearchOrderHijacking 
+
+        & _dLLSearchOrderHijacking
+            ->  os.bypassProcessWhitelisting,
+                systemWindows.systemRights,
+                windowsUser.userRights,
+                windowsAdministrator.adminRights
+
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  _dLLSearchOrderHijacking         
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  _dLLSearchOrderHijacking
+
+        # restrictLibraryLoading 
+            info: "https://attack.mitre.org/mitigations/M1044/"
+            ->  _dLLSearchOrderHijacking
+    }
+}
+   
+
+associations{   
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    SYSTEM [systemWindows] 1-* <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
