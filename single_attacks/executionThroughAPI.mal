@@ -1,0 +1,53 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.executionThroughAPI  
+    }
+
+    asset Administrator {
+        | adminRights
+            ->  windows.executionThroughAPI 
+    } 
+    
+    asset SYSTEM {
+        | systemRights
+            ->  windows.executionThroughAPI           
+    } 
+}
+
+
+category Software{
+    abstractAsset OS{
+        # executionPrevention        
+
+    }
+    asset Windows extends OS {   
+        & executionThroughAPI    
+            info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries."
+
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  executionThroughAPI
+    } 
+}
+
+
+
+associations{
+
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+
+}
+
+
+
+
+
+
+
+
+
+
+

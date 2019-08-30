@@ -1,0 +1,46 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.dylibHijacking
+
+        # userAccountManagement 
+            ->  macOS.dylibHijacking
+    } 
+}
+
+
+category Software{
+    abstractAsset OS{
+        # restrictFileAndDirectoryPermissions       
+    }
+    asset MacOS extends OS {  
+        | dylibHijacking   
+            ->  _dylibHijacking 
+
+        & _dylibHijacking 
+            info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
+            ->  _exploitationForPrivilegeEscalation
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  _dylibHijacking
+
+        | _exploitationForPrivilegeEscalation
+    } 
+}
+
+associations{
+
+    User [macOSUser] 1-* <--Use--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

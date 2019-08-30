@@ -1,0 +1,43 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.executionThroughModuleLoad      
+    }
+
+}
+
+category Software{
+    abstractAsset OS{
+
+        # executionPrevention       
+    }
+
+    asset Windows extends OS {   
+        & executionThroughModuleLoad 
+            info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
+            ->  executeCode 
+
+        | executeCode 
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  executionThroughModuleLoad 
+    } 
+}
+
+associations{
+
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+
+}
+
+
+
+
+
+
+
+
+
+
+

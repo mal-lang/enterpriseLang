@@ -1,0 +1,46 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.executionGuardrails
+    }
+}
+
+category Software{
+    abstractAsset OS{
+        & executionGuardrails
+            info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
+            ->  bypassAntivirus, 
+                bypassHostForensicAnalysisDetection, 
+                bypassSignatureBasedDetection,  
+                bypassStaticFileAnalysis  
+                    
+        | bypassAntivirus
+
+        | bypassHostForensicAnalysisDetection
+
+        | bypassSignatureBasedDetection
+
+        | bypassStaticFileAnalysis
+
+        # doNotMitigate // Execution Guardrails likely should not be mitigated with preventative controls because it may protect unintended targets from being compromised.
+            info: "https://attack.mitre.org/mitigations/M1055/"
+            ->  executionGuardrails     
+    }
+}
+
+
+
+associations{
+    User [user] 1 <--Ui--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+
