@@ -8,10 +8,11 @@ category Person {
                 os.compileAfterDelivery,
                 os.credentialsInFiles,
                 os.dataEncoding,
+                os.directoryDiscovery,
                 os.domainDiscovery,
                 os.domainGenerationAlgorithms,
                 os.downloadRemoteFile,
-                os.directoryDiscovery,
+                os.executionGuardrails,
                 os.fileDiscovery,
                 os.fileDeletion,
                 os.filePermissionsModification,
@@ -43,6 +44,8 @@ category Person {
                 windows.dynamicDataExchange,  
                 windows.emailStorageCollection,
                 windows.executeMshta,
+                windows.executionThroughAPI,
+                windows.executionThroughModuleLoad,
                 windows.logonScripts,
                 windows.networkShareDiscovery,
                 windows.peripheralDeviceDiscovery,
@@ -55,6 +58,7 @@ category Person {
                 macOS.appleScript,
                 macOS.bash_profileAndBashrc,
                 macOS.clearCommandHistory,
+                macOS.dylibHijacking,
                 macOS.logonScripts,
                 macOS.spaceAfterFileName,
                 macOS.networkShareDiscovery,
@@ -81,6 +85,7 @@ category Person {
         # userAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  windows.bITSJobs,
+                macOS.dylibHijacking,
                 thirdpartySoftware.useThirdpartySoftware    
     }
 
@@ -111,6 +116,7 @@ category Person {
                 windows.changeDefaultFileAssociation,
                 windows.createService,
                 windows.dLLSearchOrderHijacking,
+                windows.executionThroughAPI,
                 windows.scheduledTask,
                 linux.bash_profileAndBashrc,
                 linux.bootkit,
@@ -183,6 +189,7 @@ category Person {
                 windows.changeDefaultFileAssociation,
                 windows.distributedComponentObjectModel,
                 windows.dLLSearchOrderHijacking,
+                windows.executionThroughAPI,
                 windows.hooking,
                 windows.hypervisor,
                 os.credentialsInFiles,
@@ -265,6 +272,8 @@ category Software {
     asset Service {
         & applicationDeploymentSystems  
 
+        | blockUserAccess  
+
         & userRemoteServicesLogin
 
         & adminRemoteServicesLogin
@@ -285,6 +294,8 @@ category Software {
 
         | remoteAccessTools
             ->  internalNetwork.c2Connexion
+
+        | serviceExhaustionFlood         
 
         # executionPrevention
             info: "https://attack.mitre.org/mitigations/M1038/"
@@ -348,6 +359,9 @@ category Software {
         & applicationDeploymentSoftware
             info: "Access to a network-wide or enterprise-wide software deployment system enables an adversary to have remote code execution on all systems that are connected to such a system."
             ->  executeCode
+
+        | applicationExhaustionFlood   
+            ->  service.blockUserAccess 
 
         | infectedOS
             ->  clipboardData,
@@ -446,6 +460,19 @@ category Software {
         | executeCode 
             ->  internalNetwork.remoteAccess
 
+        & endpointDenialOfService 
+            info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
+            ->  applicationExhaustionFlood,
+                osExhaustionFlood,
+                service.serviceExhaustionFlood
+
+        & executionGuardrails
+            info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
+            ->  bypassAntivirus, 
+                bypassHostForensicAnalysisDetection, 
+                bypassSignatureBasedDetection,  
+                bypassStaticFileAnalysis       
+
         | fallbackChannels  
             info:" Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
             ->  c2Server.communicate  
@@ -495,6 +522,8 @@ category Software {
 
         & systemInformationDiscovery
             info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+
+        | osExhaustionFlood
 
         & processInjection
             ->  administrator.adminRights,
@@ -606,6 +635,10 @@ category Software {
             ->  _scripting,
                 browser.checkBrowser,
                 browser.checkPlugin 
+
+        # doNotMitigate // Execution Guardrails likely should not be mitigated with preventative controls because it may protect unintended targets from being compromised.
+            info: "https://attack.mitre.org/mitigations/M1055/"
+            ->  executionGuardrails                
 
         # disableOrRemoveFeatureOrProgram 
             info: "https://attack.mitre.org/techniques/T1064/"
@@ -940,7 +973,14 @@ category Software {
                
         | executeCode 
             +>  componentFirmware, 
-                computer.infectedWindowsComputer          
+                computer.infectedWindowsComputer         
+
+        & executionThroughAPI    
+            info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
+
+        & executionThroughModuleLoad 
+            info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
+            ->  executeCode    
         
         | remoteDesktopProtocol // leads to Remote Desktop Protocol attack
             ->  system.systemRights
@@ -1074,6 +1114,8 @@ category Software {
                 createService,
                 _dLLSearchOrderHijacking,
                 executeMshta,
+                executionThroughAPI,
+                executionThroughModuleLoad,
                 networkShareDiscovery,
                 queryRegistery,
                 scheduledTask, 
@@ -1217,8 +1259,18 @@ category Software {
             ->  os.bypassLogAnalysis, 
                 os.bypassHostForensicAnalysisDetection
 
+        | dylibHijacking   
+            ->  _dylibHijacking 
+
+        & _dylibHijacking 
+            info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
+            ->  _exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
+
         | executeCode 
             +>  computer.infectedMacOSComputer
+
+        | _exploitationForPrivilegeEscalation
+            // +>      
 
         | infectedOS
             +>  bashHistory
@@ -1286,6 +1338,7 @@ category Software {
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
             +>  _bash_profileAndBashrc,
+                _dylibHijacking,
                 logonScripts
     }
     
@@ -1383,6 +1436,7 @@ category Network {
         # filterNetworkTraffic
             info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  os.customCommandAndControlProtocol,
+                os.endpointDenialOfService,
                 windows._bITSJobs 
 
         & c2Connexion
@@ -1447,7 +1501,8 @@ category Network {
 
         # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
             info: "https://attack.mitre.org/mitigations/M1037/"   
-            ->  windows._bITSJobs  
+            ->  os.endpointDenialOfService,
+                windows._bITSJobs  
 
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
