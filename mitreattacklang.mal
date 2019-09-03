@@ -25,6 +25,7 @@ category Person {
                 os.rootkit,
                 os.scripting,
                 os.systemInformationDiscovery,
+                os.storedDataManipulation,
                 os.uploadRemoteFile, 
                 os.userCommandLineInterface,
                 os.userDataDestruction, 
@@ -46,15 +47,19 @@ category Person {
                 windows.executeMshta,
                 windows.executionThroughAPI,
                 windows.executionThroughModuleLoad,
+                windows.fileSystemPermissionsWeakness,
                 windows.logonScripts,
                 windows.networkShareDiscovery,
                 windows.peripheralDeviceDiscovery,
+                windows.powerShell,
                 windows.userSecuritySoftwareDiscovery,
                 windows.videoCollection,
                 linux.bash_profileAndBashrc,
                 linux.clearCommandHistory,
                 linux.spaceAfterFileName,
                 linux.source,
+                linux.sudo,
+                linux.sudoCaching,
                 macOS.appleScript,
                 macOS.bash_profileAndBashrc,
                 macOS.clearCommandHistory,
@@ -65,13 +70,18 @@ category Person {
                 macOS.userSecuritySoftwareDiscovery,
                 macOS.videoCollection,
                 macOS.source,
+                macOS.sudo,
+                macOS.sudoCaching,
                 computer.collectAudio,
+                service.exploitationForCredentialAccess,
                 service.exploitationForDefenseEvasion,
+                service.exploitationForPrivilegeEscalation,
                 service.exploitationOfRemoteServices,
                 service.remoteAccessTools,
                 service.usertransmittedDataManipulation,
                 thirdpartySoftware.useThirdpartySoftware,
-                internalNetwork.usertransmittedDataManipulation
+                internalNetwork.usertransmittedDataManipulation,
+                externalNetwork.webService
 
         | userCredentials
             ->  userRights,
@@ -85,7 +95,9 @@ category Person {
         # userAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  windows.bITSJobs,
+                windows._fileSystemPermissionsWeakness,
                 macOS.dylibHijacking,
+                macOS.startupItems,
                 thirdpartySoftware.useThirdpartySoftware    
     }
 
@@ -106,18 +118,8 @@ category Person {
                 os.filePermissionsModification, 
                 os.graphicalUserInterface,               
                 os.networkServiceScan,
-                os.sensitiveDataCollected,
-                windows.appCertDLLs,
-                windows.appInitDLLs,
-                windows.applicationShimming,
-                windows.authenticationPackage,  
-                windows.bITSJobs,
-                windows.bootkit,
-                windows.changeDefaultFileAssociation,
-                windows.createService,
-                windows.dLLSearchOrderHijacking,
-                windows.executionThroughAPI,
-                windows.scheduledTask,
+                os.sensitiveDataCollected, 
+                os.storedDataManipulation,
                 linux.bash_profileAndBashrc,
                 linux.bootkit,
                 macOS.bash_profileAndBashrc,
@@ -145,24 +147,42 @@ category Person {
             info: "https://attack.mitre.org/mitigations/M1026/"
             ->  createUserAccount,
                 windows.modifyRegistrySettings,
+                windows._powerShell,    
                 windows.systemFirmware, 
+                linux._sudo,
+                linux._sudoCaching,
+                macOS._sudo,
+                macOS._sudoCaching,
                 service.applicationDeploymentSystems,
                 service.exploitationOfRemoteServices,
                 thirdpartySoftware.useThirdpartySoftware // grant access to application deployment systems only to a limited number of authorized administrators
     }
-
-    
+   
     asset WindowsAdmin extends Administrator {
         | adminRights
             +>  accountManipulation,
                 windowsWindowsAdmin.accessibilityFeatures,
                 windowsWindowsAdmin.adminSecuritySoftwareDiscovery,
+                windowsWindowsAdmin.appCertDLLs,
+                windowsWindowsAdmin.appInitDLLs,
+                windowsWindowsAdmin.applicationShimming,
+                windowsWindowsAdmin.authenticationPackage,  
+                windowsWindowsAdmin.bITSJobs,  
+                windowsWindowsAdmin.bootkit,                                          
                 windowsWindowsAdmin.bypassUserAccountControl,
+                windowsWindowsAdmin.changeDefaultFileAssociation,
+                windowsWindowsAdmin.createService,
                 windowsWindowsAdmin.distributedComponentObjectModel,
+                windowsWindowsAdmin.dLLSearchOrderHijacking,
+                windowsWindowsAdmin.executionThroughAPI,
                 windowsWindowsAdmin.executeService,
+                windowsWindowsAdmin.extraWindowMemoryInjection,
+                windowsWindowsAdmin.fileSystemPermissionsWeakness,
                 windowsWindowsAdmin.hooking,
                 windowsWindowsAdmin.hypervisor,
+                windowsWindowsAdmin.powerShell,
                 windowsWindowsAdmin.queryRegistery,
+                windowsWindowsAdmin.scheduledTask,
                 windowsWindowsAdmin.systemFirmware
 
         & accountManipulation
@@ -178,6 +198,7 @@ category Person {
     asset Root extends Administrator {
         | rootRights
             ->  macOS.adminSecuritySoftwareDiscovery,
+                macOS.startupItems,
                 os.rootDataDestruction,
                 os.rootkit
     }
@@ -190,12 +211,14 @@ category Person {
                 windows.distributedComponentObjectModel,
                 windows.dLLSearchOrderHijacking,
                 windows.executionThroughAPI,
+                windows.extraWindowMemoryInjection,
                 windows.hooking,
                 windows.hypervisor,
                 os.credentialsInFiles,
                 os.filePermissionsModification,
                 os.graphicalUserInterface,
                 os.systemDataDestruction,
+                os.storedDataManipulation,
                 os.rootkit,
                 thirdpartySoftware.useThirdpartySoftware
 
@@ -303,6 +326,18 @@ category Software {
                 userRemoteServicesLogin,
                 adminRemoteServicesLogin
 
+        & exploitationForClientExecution
+            info: "Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution."
+            ->  os.runCode            
+
+        | exploitationForCredentialAccess
+            ->  _exploitationForCredentialAccess
+
+        & _exploitationForCredentialAccess
+            info: "Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Exploitation for credential access may also result in Privilege Escalation depending on the process targeted or credentials obtained."
+            ->  os.executeCode,
+                exploitationForPrivilegeEscalation             
+
         | exploitationForDefenseEvasion // end step of securoty software discovery
             ->  _exploitationForDefenseEvasion
 
@@ -314,7 +349,10 @@ category Software {
             ->  _exploitationForPrivilegeEscalation
 
         & _exploitationForPrivilegeEscalation
-            ->  thirdpartySoftware._useThirdpartySoftware
+            info: "This could enable someone to move from unprivileged or user level permissions to SYSTEM or root permissions depending on the component that is vulnerable."
+            ->  administrator.adminRights,
+                system.systemRights,
+                thirdpartySoftware._useThirdpartySoftware
 
         & exploitationOfRemoteServices
             info: "An adversary may need to determine if the remote system is in a vulnerable state, which may be done through Network Service Scanning or other Discovery methods."
@@ -325,20 +363,30 @@ category Software {
 
         # applicationIsolationAndSandboxing
             info: "https://attack.mitre.org/mitigations/M1048/"
-            ->  _exploitationForDefenseEvasion,
+            ->  exploitationForClientExecution,
+                _exploitationForCredentialAccess,
+                _exploitationForDefenseEvasion,
+                _exploitationForPrivilegeEscalation,
                 _exploitationOfRemoteServices,
                 windows.distributedComponentObjectModel
+
+        # applicationVetting
+            info: "https://attack.mitre.org/mitigations/M1005/"       
+            ->  os.obfuscatedFilesOrInformation
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/"
             ->  _exploitationForDefenseEvasion,
+                _exploitationForPrivilegeEscalation,
                 internalNetwork.remoteAccess,
                 windows.systemFirmware,
                 windows.dLLSideLoading
 
         # threatIntelligenceProgram
             info: "https://attack.mitre.org/mitigations/M1019/"
-            ->  _exploitationOfRemoteServices              
+            ->  _exploitationForCredentialAccess,
+                _exploitationForPrivilegeEscalation,
+                _exploitationOfRemoteServices              
     }
 
     asset ThirdpartySoftware extends Service {      
@@ -522,6 +570,7 @@ category Software {
 
         & systemInformationDiscovery
             info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+            ->  adversary.maliciousCodeInserted
 
         | osExhaustionFlood
 
@@ -584,7 +633,8 @@ category Software {
             ->  antivirusCheck
 
         & antivirusCheck
-            ->  runCode
+            ->  runCode,
+                service.exploitationForClientExecution
 
         & spearphishingAttachmentDownload
             ->  employee.userExecution
@@ -593,14 +643,20 @@ category Software {
             ->  employee.userExecution
 
         | scripting
-            ->  _scripting
+            info: "Adversaries may use utilities such as Windows Management Instrumentation, PowerShell, Systeminfo, and the Query Registry to obtain system information and search for VME artifacts. Adversaries may use Scripting to combine these checks into one script and then have the program exit if it determines the system to be a virtual environment."
+            ->  windows.virtualizationOrSandboxEvasion,
+                _scripting
 
         | persistence
 
         & _scripting
             -> automatedCollection
+
+        & storedDataManipulation
+            info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."     
             
         # antivirus
+            info: "https://attack.mitre.org/mitigations/M1049/"
             ->  antivirusCheck,
                 obfuscatedFilesOrInformation,
                 spearphishingAttachmentDownload,
@@ -611,7 +667,10 @@ category Software {
             ->  _credentialsInFiles,
                 windows.controlPanelItems,
                 linux.clearCommandHistory,
-                macOS.clearCommandHistory
+                linux._sudo,
+                macOS.clearCommandHistory,
+                macOS._sudo,
+                storedDataManipulation
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             info: "https://attack.mitre.org/mitigations/M1036/" 
@@ -667,7 +726,9 @@ category Software {
                 communicationThroughRemovableMedia,
                 domainDiscovery,
                 administrator.createUserAccount,
-                windows._bITSJobs 
+                windows._bITSJobs,
+                linux._sudoCaching,
+                macOS._sudoCaching
 
         # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
             info: "https://attack.mitre.org/mitigations/M1038/"
@@ -730,7 +791,7 @@ category Software {
                 adminDiskWiped
 
         & userDiskWiped
-            info:"Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
+            info: "Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
 
         & adminDiskWiped
 
@@ -843,11 +904,13 @@ category Software {
 
         # encryptSensitiveInformation 
             info: "https://attack.mitre.org/mitigations/M1041/"
-            ->  _automatedCollection
+            ->  _automatedCollection,
+                storedDataManipulation  
 
         # remoteDataStorage 
             info: "https://attack.mitre.org/mitigations/M1029/"
             ->  _automatedCollection,
+                storedDataManipulation,
                 thirdpartySoftware._useThirdpartySoftware
 
         | dataSizedTransfer
@@ -864,6 +927,7 @@ category Software {
             ->  browser.runExtensions,
                 browser.checkBrowser,
                 browser.checkPlugin,
+                service._exploitationForCredentialAccess,
                 service._exploitationForPrivilegeEscalation,
                 service._exploitationOfRemoteServices  
 
@@ -871,6 +935,9 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1050/"
             ->  browser.checkBrowser,
                 browser.checkPlugin, 
+                service.exploitationForClientExecution,
+                service._exploitationForCredentialAccess,
+                service._exploitationForPrivilegeEscalation,
                 service._exploitationOfRemoteServices
 
         & networkServiceScan
@@ -881,7 +948,6 @@ category Software {
             info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
 
         | persistance
-
     }
     
     asset Windows extends OS {   
@@ -892,7 +958,7 @@ category Software {
             ->  persistence,
                 systemWindows.systemRights,
                 windowsUser.userRights,
-                windowsAdministrator.adminRights
+                windowsAdmin.adminRights
 
         & appInitDLLs 
             ->  persistence 
@@ -920,7 +986,7 @@ category Software {
 
         | codeSigning
             info: " Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
-            ->  windowsAdmin.bypassWindowsUserAccountControl
+            +>  windowsAdmin.bypassWindowsUserAccountControl
 
         & controlPanelItems
             info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
@@ -959,7 +1025,7 @@ category Software {
             ->  os.bypassProcessWhitelisting,
                 systemWindows.systemRights,
                 windowsUser.userRights,
-                windowsAdministrator.adminRights                    
+                windowsAdmin.adminRights                    
                
         | dLLSideLoading
             ->  os.bypassProcessWhitelisting,
@@ -982,6 +1048,29 @@ category Software {
             info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
             ->  executeCode    
         
+        | extraWindowMemoryInjection
+            info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
+            ->  adversary.maliciousCodeInserted
+
+        | fileSystemPermissionsWeakness
+            ->  _fileSystemPermissionsWeakness      
+
+        & _fileSystemPermissionsWeakness
+            info: "Adversaries may use this technique to replace legitimate binaries with malicious ones as a means of executing code at a higher permissions level."
+            ->  executeCode,
+                windowsAdmin.adminRights,
+                systemWindows.systemRights
+
+        & powerShell
+            info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
+            ->  _powerShell,
+                executeCode,
+                os.scripting
+
+        & _powerShell
+            info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
+            ->  internalNetwork.remoteSystemsConnection            
+
         | remoteDesktopProtocol // leads to Remote Desktop Protocol attack
             ->  system.systemRights
 
@@ -1029,13 +1118,14 @@ category Software {
             info:"System firmware may be modified by an adversary to perform or assist in malicious activity."
             ->  installMaliciousFirmwareUpdates
 
-        | installMaliciousFirmwareUpdates              
+        | installMaliciousFirmwareUpdates   
+
+        | persistence 
 
         & queryRegistery
             info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
-            //-> os.systemInformationDiscovery,
-               //computer.configuration,
-              // software.installSoftware
+            ->  os.scripting,
+                os.systemInformationDiscovery
 
         & networkShareDiscovery
             ->  internalNetwork.networkShareDiscovery
@@ -1044,10 +1134,10 @@ category Software {
         
         & userSecuritySoftwareDiscovery
             info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            // -> leads to exploitation for defense evasion attack
+            ->  virtualizationOrSandboxEvasion
         
         & adminSecuritySoftwareDiscovery
-            //-> leads to exploitation for defense evasion attack
+            ->  virtualizationOrSandboxEvasion
 
         & bypassUserAccountControl
             ->  executeCode
@@ -1101,7 +1191,12 @@ category Software {
             +>  domainTrustDiscovery,
                 bypassUserAccountControl,
                 _dLLSearchOrderHijacking,
-                dLLSideLoading
+                dLLSideLoading,
+                _fileSystemPermissionsWeakness
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  _powerShell           
 
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
@@ -1154,6 +1249,7 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1042/"
             +>  cmstp,
                 distributedComponentObjectModel,
+                powerShell,
                 registryKeysEnabled
 
         # updateSoftware
@@ -1164,19 +1260,26 @@ category Software {
         # userAccountControl
             info: "https://attack.mitre.org/mitigations/M1052/"
             +>  _applicationShimming, 
-                bypassUserAccountControl 
+                bypassUserAccountControl,
+                _fileSystemPermissionsWeakness 
             
         | videoCollection
             -> computer.collectVideo
+
+        | virtualizationOrSandboxEvasion
+            info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
+            ->  os.bypassAntivirus,
+                os.bypassHostForensicAnalysisDetection,    
+                os.bypassSignatureBasedDetection,  
+                os.bypassStaticFileAnalysis          
 
         & scheduledTask
             info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
             //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
 
         & systemTimeDiscovery
-            info:"The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
-            ->  scheduledTask
-      
+            info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
+            ->  scheduledTask   
     }
 
     asset Linux extends OS {
@@ -1221,6 +1324,22 @@ category Software {
         | executeCode 
             +>  computer.infectedLinuxComputer   
 
+        | persistence
+
+        | sudo
+            ->  _sudo
+
+        & _sudo
+            info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
+            ->  service.exploitationForPrivilegeEscalation
+
+        | sudoCaching
+            ->  _sudoCaching
+
+        & _sudoCaching
+            info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
+            ->  service.exploitationForPrivilegeEscalation    
+
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             info: "https://attack.mitre.org/mitigations/M1039/"
             ->  _clearCommandHistory               
@@ -1235,7 +1354,7 @@ category Software {
 
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
-            ->  _bash_profileAndBashrc       
+            +>  _bash_profileAndBashrc       
     }
 
     asset MacOS extends OS {
@@ -1279,9 +1398,29 @@ category Software {
             ->  rootMac.rootRights  
 
         | source
+            ->  executeCode
+
+        | executeCode 
+            +>  computer.infectedMacOSComputer  
+
+        | sudo
+            ->  _sudo
+            
+        & _sudo
+            info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
+            ->  service.exploitationForPrivilegeEscalation  
+
+        | sudoCaching
+            ->  _sudoCaching
+            
+        & _sudoCaching
+            info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
+            ->  service.exploitationForPrivilegeEscalation   
 
         | videoCollection
             ->  computer.collectVideo
+
+        | persistence         
 
         | spaceAfterFileName
             ->  employee.userExecution
@@ -1299,17 +1438,26 @@ category Software {
         & adminSecuritySoftwareDiscovery
             -> service.exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
+        | windowsManagementInstrumentation
+            ->  os.scripting  
 
         & keychainCollection
             info: "If an adversary knows the credentials for the login keychain, then they can get access to all the other credentials stored in this vault."
             ->  user.userCredentials
-
 
         & appleScript
             ->  runCode
 
         | runCode
             ->  computer.infectedMacOSComputer
+
+        & startupItems
+            ->  _startupItems
+
+        & _startupItems
+            info: "An adversary can create the appropriate folders/files in the StartupItems directory to register their own persistence mechanism."
+            ->  persistence,
+                service.exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack     
 
         # codeSigning
             info: "https://attack.mitre.org/mitigations/M1045/"  
@@ -1339,9 +1487,9 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1022/"
             +>  _bash_profileAndBashrc,
                 _dylibHijacking,
-                logonScripts
-    }
-    
+                logonScripts,
+                _startupItems
+    }    
 }
 
 category Network {
@@ -1376,7 +1524,8 @@ category Network {
                 checkBrowser,
                 checkPlugin,
                 os.domainGenerationAlgorithms,
-                windows.compiledHTMLFile
+                windows.compiledHTMLFile,
+                externalNetwork.webService
 
         | browserBookmark
             ->  browserBookmarkDiscovery
@@ -1412,6 +1561,8 @@ category Network {
             ->  firewall._bypassFirewall
                
         | bypassAccessControl
+
+        | bypassFirewall
         
         | bypassNetworkDetection
 
@@ -1455,7 +1606,7 @@ category Network {
         
         | internalNetworkResourcesInformation
 
-        | bypassFirewall
+        | remoteSystemsConnection
 
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
@@ -1499,6 +1650,20 @@ category Network {
     asset ExternalNetwork {
         | obfuscateNetworkTraffic
 
+        | bypassFirewall
+
+        | bypassNetworkDetection
+
+        | dataExfiltrated
+
+        & webService
+            info: "Adversaries may use an existing, legitimate external Web service as a means for relaying commands to a compromised system."
+            ->  os.bypassBinaryAnalysis,
+                os.bypassLogAnalysis,
+                internalNetwork.bypassFirewall,
+                bypassFirewall,
+                c2Server.c2Connected   
+
         # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
             info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  os.endpointDenialOfService,
@@ -1506,7 +1671,8 @@ category Network {
 
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
-            ->  c2Server.obfuscatedData,
+            ->  webService,
+                c2Server.obfuscatedData,
                 c2Server.generateDomainNames,
                 os.connectionProxy,
                 os._dataEncoding,
@@ -1519,12 +1685,6 @@ category Network {
         # sSLOrTLSInspection
             info: "https://attack.mitre.org/mitigations/M1020/"
             ->  obfuscateNetworkTraffic
-
-        | bypassNetworkDetection
-
-        | dataExfiltrated
-
-        | bypassFirewall
     }
 
     asset Firewall {
@@ -1649,7 +1809,6 @@ category Hardware {
         & dataExfiltrated
 
         | sensitiveDataCollected
-
     }
     
     asset Microphone {
@@ -1668,14 +1827,16 @@ associations {
     User [user] 1 <--Ui--> 1-* [os] OS
     User [windowsUser] 1 <--Use--> 1-* [windows] Windows
     User [linuxUser] 1 <--Use--> 1-* [linux] Linux   
-    User [macOSUser] 1-* <--Use--> 1-* [macOS] MacOS
-    User [user] 1-* <--Ui--> 1 [computer] Computer
-    User [user] 1-* <--Use--> 1-* [service] Service
-    User [user] 1-* <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
-  
+    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
+    User [user] 1 <--Ui--> 1-* [computer] Computer
+    User [user] 1 <--Use--> 1-* [service] Service
+    User [user] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
+    User [user] 1 <--Use--> 1-* [internalNetwork] InternalNetwork
+    User [user] 1 <--Use--> 1-* [externalNetwork] ExternalNetwork
+
     Administrator [administrator] 1 <--Ui--> 1-* [user] User
     Administrator [administrator] 1 <--Ui--> 1-* [os] OS
-    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
     Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
     Administrator [macosAdministrator] 1 <--Ui--> 1-* [macOS] MacOS
     Administrator [administrator] 1 <--Ui--> 1-* [computer] Computer
@@ -1687,10 +1848,11 @@ associations {
     //WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [administrator] Administrator
     //WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows  
 
-    Root [rootMac] 1-* <--Use--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Use--> 1-* [macOS] MacOS
 
     SYSTEM [system] 1 <--Ui--> 1 [os] OS 
     SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    SYSTEM [system] 1 <--Use--> 1-* [service] Service
     SYSTEM [system] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
 
     Employee [employee] 1 <--Use--> 1-* [browser] Browser
@@ -1710,7 +1872,8 @@ associations {
     Browser [browser] 1-* <--Software--> 1 [windows] Windows
     Browser [browser] 1-* <--Ui--> 1-* [user] User
     Browser [browser] 1-* <--Ui--> 1-* [internalNetwork] InternalNetwork
-
+    Browser [browser] 1-* <--Ui--> 1-* [externalNetwork] ExternalNetwork 
+    
     OS [os] 1 <--System--> 1-* [computer] Computer
     OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
     OS [os] 1 <--Contain--> 1 [windows] Windows
@@ -1725,21 +1888,19 @@ associations {
     
     //Computer [computer] 1 <--Software--> 1 [macOS] MacOS
     Computer [computerWindows] 1 <--Software--> 1 [windows] Windows
-    //Computer [computer] 1 <--Software--> 1 [linux] Linux //190820 added Source
+    //Computer [computer] 1 <--Software--> 1 [linux] Linux
     
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
-    ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [computer] Computer
-    ExternalNetwork [externalNetwork] 1 <--Connect--> 1-* [os] OS
-    ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
+    ExternalNetwork [externalNetwork] 1-* <--Contain--> 1-* [computer] Computer
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1 [windows] Windows
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [service] Service
-    InternalNetwork [internalNetwork] 1 <--Connect--> 1-* [externalNetwork] ExternalNetwork   
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [externalNetwork] ExternalNetwork   
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
-    InternalNetwork [internalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [user] User
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [administrator] Administrator
+    InternalNetwork [internalNetworkWindows] 1 <--Connect--> 1 [windows] Windows
+    InternalNetwork [internalNetwork] 1-* <--Use--> 1 [administrator] Administrator
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [computer] Computer
-
     //InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [networkSharedDrive] NetworkSharedDrive      
