@@ -1,0 +1,80 @@
+category Person {
+    asset User {
+        | userRights
+            ->  linux.sudoCaching,
+                macOS.sudoCaching
+    }  
+
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  linux._sudoCaching,
+                macOS._sudoCaching
+    }
+}               
+
+category Software {
+    asset Service {
+        | exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS{
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  linux._sudoCaching,
+                macOS._sudoCaching
+    } 
+
+    asset Linux extends OS {
+        | sudoCaching
+            ->  _sudoCaching
+
+        & _sudoCaching
+            info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
+            ->  service.exploitationForPrivilegeEscalation
+    } 
+
+    asset MacOS extends OS {
+        | sudoCaching
+            ->  _sudoCaching
+            
+        & _sudoCaching
+            info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
+            ->  service.exploitationForPrivilegeEscalation
+    }    
+}
+
+associations{
+
+    User [linuxUser] 1 <--Use--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
+    Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
+    Administrator [macosAdministrator] 1 <--Ui--> 1-* [macOS] MacOS
+    OS [os] 1 <--Contain--> 1 [linux] Linux  
+    OS [os] 1 <--Contain--> 1 [macOS] MacOS
+    MacOS [macOS] 1 <--Contain--> 1-* [service] Service
+    Linux [linux] 1 <--Contain--> 1-* [service] Service
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

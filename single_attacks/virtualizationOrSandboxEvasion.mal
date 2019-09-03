@@ -1,0 +1,57 @@
+category Software {
+    abstractAsset OS{
+        | bypassAntivirus
+
+        | bypassHostForensicAnalysisDetection
+
+        | bypassSignatureBasedDetection
+
+        | bypassStaticFileAnalysis 
+
+        | scripting
+            info: "Adversaries may use utilities such as Windows Management Instrumentation, PowerShell, Systeminfo, and the Query Registry to obtain system information and search for VME artifacts. Adversaries may use Scripting to combine these checks into one script and then have the program exit if it determines the system to be a virtual environment."
+            ->  windows.virtualizationOrSandboxEvasion
+    } 
+
+    asset Windows extends OS {   
+        & userSecuritySoftwareDiscovery
+            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            ->  virtualizationOrSandboxEvasion
+        
+        & adminSecuritySoftwareDiscovery
+            ->  virtualizationOrSandboxEvasion
+
+        | windowsManagementInstrumentation
+            ->  os.scripting  
+
+        & powerShell
+            ->  os.scripting
+
+        & queryRegistry 
+            ->  os.scripting
+
+        | virtualizationOrSandboxEvasion
+            info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
+            ->  os.bypassAntivirus,
+                os.bypassHostForensicAnalysisDetection,    
+                os.bypassSignatureBasedDetection,  
+                os.bypassStaticFileAnalysis       
+    } 
+}
+
+
+associations{
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,71 @@
+category Person {
+    asset User {
+        | userRights
+            ->  linux.sudo,
+                macOS.sudo
+    }  
+
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  linux._sudo,
+                macOS._sudo
+    }
+}               
+
+category Software {
+    asset Service {
+        | exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS{
+        # restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  linux._sudo,
+                macOS._sudo
+    } 
+
+    asset Linux extends OS {
+        | sudo
+            ->  _sudo
+
+        & _sudo
+            info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
+            ->  service.exploitationForPrivilegeEscalation
+    } 
+
+    asset MacOS extends OS {
+        | sudo
+            ->  _sudo
+            
+        & _sudo
+            info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
+            ->  service.exploitationForPrivilegeEscalation
+    }    
+}
+
+
+
+associations{
+
+    User [linuxUser] 1 <--Use--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
+    Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
+    Administrator [macosAdministrator] 1 <--Ui--> 1-* [macOS] MacOS
+    OS [os] 1 <--Contain--> 1 [linux] Linux  
+    OS [os] 1 <--Contain--> 1 [macOS] MacOS
+    MacOS [macOS] 1 <--Contain--> 1-* [service] Service
+    Linux [linux] 1 <--Contain--> 1-* [service] Service
+
+}
+
+
+
+
+
+
+
+
+
+
+

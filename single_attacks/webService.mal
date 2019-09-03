@@ -1,0 +1,72 @@
+category Person {
+    asset User {
+        | userRights
+            ->  externalNetwork.webService
+    } 
+}        
+
+category Software {
+    abstractAsset OS{
+        | bypassBinaryAnalysis
+
+        | bypassLogAnalysis      
+    } 
+}
+
+category Network {
+    asset Browser {
+        # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
+          info: "https://attack.mitre.org/mitigations/M1021/"
+            ->  externalNetwork.webService
+    } 
+
+    asset InternalNetwork {
+        | bypassFirewall  
+
+        # networkIntrusionPrevention
+
+    } 
+
+    asset ExternalNetwork {
+        | bypassFirewall 
+
+        & webService
+            info: "Adversaries may use an existing, legitimate external Web service as a means for relaying commands to a compromised system."
+            ->  os.bypassBinaryAnalysis,
+                os.bypassLogAnalysis,
+                internalNetwork.bypassFirewall,
+                bypassFirewall,
+                c2Server.c2Connected
+
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  webService
+    } 
+}
+
+category Hardware {
+    asset C2Server {
+        | c2Connected
+    } 
+}
+
+
+associations{
+
+    User [user] 1 <--Use--> 1-* [externalNetwork] ExternalNetwork
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [externalNetwork] ExternalNetwork 
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+    Browser [browser] 1-* <--Ui--> 1-* [externalNetwork] ExternalNetwork 
+}
+
+
+
+
+
+
+
+
+
+
+
