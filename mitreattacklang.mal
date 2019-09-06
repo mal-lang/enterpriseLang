@@ -17,6 +17,7 @@ category Person {
                 os.fileDeletion,
                 os.filePermissionsModification,
                 os.graphicalUserInterface,
+                os.inhibitSystemRecovery,
                 os.passwordPolicyDiscovery,
                 os.permissionGroupsDiscovery,
                 os.processInjection,
@@ -48,10 +49,14 @@ category Person {
                 windows.executionThroughAPI,
                 windows.executionThroughModuleLoad,
                 windows.fileSystemPermissionsWeakness,
+                windows.indirectCommandExecution,
                 windows.logonScripts,
                 windows.networkShareDiscovery,
                 windows.peripheralDeviceDiscovery,
                 windows.powerShell,
+                windows.signedBinaryProxyExecution,
+                windows.signedScriptProxyExecution,
+                windows.sIPAndTrustProviderHijacking,
                 windows.userSecuritySoftwareDiscovery,
                 windows.videoCollection,
                 linux.bash_profileAndBashrc,
@@ -96,6 +101,7 @@ category Person {
             info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  windows.bITSJobs,
                 windows._fileSystemPermissionsWeakness,
+                windows.indicatorBlocking,
                 macOS.dylibHijacking,
                 macOS.startupItems,
                 thirdpartySoftware.useThirdpartySoftware    
@@ -116,7 +122,8 @@ category Person {
                 os.detailedRemoteSystemDiscovery,
                 os.diskStructureWipe,
                 os.filePermissionsModification, 
-                os.graphicalUserInterface,               
+                os.graphicalUserInterface,  
+                os.inhibitSystemRecovery,             
                 os.networkServiceScan,
                 os.sensitiveDataCollected, 
                 os.storedDataManipulation,
@@ -147,7 +154,8 @@ category Person {
             info: "https://attack.mitre.org/mitigations/M1026/"
             ->  createUserAccount,
                 windows.modifyRegistrySettings,
-                windows._powerShell,    
+                windows._powerShell,
+                windows.signedBinaryProxyExecution,   
                 windows.systemFirmware, 
                 linux._sudo,
                 linux._sudoCaching,
@@ -180,8 +188,10 @@ category Person {
                 windowsWindowsAdmin.fileSystemPermissionsWeakness,
                 windowsWindowsAdmin.hooking,
                 windowsWindowsAdmin.hypervisor,
+                windowsWindowsAdmin.imageFileExecutionOptionsInjection,
                 windowsWindowsAdmin.powerShell,
                 windowsWindowsAdmin.queryRegistery,
+                windowsWindowsAdmin.sIDHistoryInjection,
                 windowsWindowsAdmin.scheduledTask,
                 windowsWindowsAdmin.systemFirmware
 
@@ -199,7 +209,6 @@ category Person {
         | rootRights
             ->  macOS.adminSecuritySoftwareDiscovery,
                 macOS.startupItems,
-                os.rootDataDestruction,
                 os.rootkit
     }
     
@@ -214,9 +223,13 @@ category Person {
                 windows.extraWindowMemoryInjection,
                 windows.hooking,
                 windows.hypervisor,
+                windows.imageFileExecutionOptionsInjection,
+                windows.sIDHistoryInjection,
+                windows.sIPAndTrustProviderHijacking,
                 os.credentialsInFiles,
                 os.filePermissionsModification,
                 os.graphicalUserInterface,
+                os.inhibitSystemRecovery,
                 os.systemDataDestruction,
                 os.storedDataManipulation,
                 os.rootkit,
@@ -427,7 +440,7 @@ category Software {
             info: "get domain names and information"
 
         | domainGenerationAlgorithms 
-            info:" Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination for command and control traffic rather than relying on a list of static IP addresses or domains." 
+            info: "Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination for command and control traffic rather than relying on a list of static IP addresses or domains." 
             ->  fallbackChannels, // leads to Fallback Channels attack
                 c2Server.communicate,
                 c2Server.generateDomainNames
@@ -457,7 +470,7 @@ category Software {
                 internalNetwork.bypassNetworkDetection
 
         | compileAfterDelivery     
-            info:"Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
+            info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
             ->  adversary.spearphishingAttachmentAttack,
                 bypassStaticFileAnalysis,
                 bypassBinaryAnalysis,
@@ -466,7 +479,7 @@ category Software {
                 bypassSignatureBasedDetection
 
         & connectionProxy
-            info:"Adversaries could use trust relationships to manage command and control communications, to reduce the number of simultaneous outbound network connections, to provide resiliency in the face of connection loss, or to ride over existing trusted communications paths between victims to avoid suspicion."
+            info: "Adversaries could use trust relationships to manage command and control communications, to reduce the number of simultaneous outbound network connections, to provide resiliency in the face of connection loss, or to ride over existing trusted communications paths between victims to avoid suspicion."
             -> c2Server.c2Connected           
 
         | credentialsInFiles
@@ -478,12 +491,12 @@ category Software {
                 system.systemCredentials   
 
         & customCryptographicProtocol
-            info:"AAdversaries may use a custom cryptographic protocol or algorithm to hide command and control traffic."
-            ->  c2Server.c2Connected        
+            info: "Adversaries may use a custom cryptographic protocol or algorithm to hide command and control traffic."
+            ->  c2Server.c2Connected  
 
         & customCommandAndControlProtocol
-            info:"Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
-            ->  c2Server.c2Connected          
+            info: "Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
+            ->  c2Server.c2Connected
 
         | dataEncoding
             info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
@@ -517,18 +530,30 @@ category Software {
         & executionGuardrails
             info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
             ->  bypassAntivirus, 
-                bypassHostForensicAnalysisDetection, 
+                bypassHostForensicAnalysis, 
                 bypassSignatureBasedDetection,  
                 bypassStaticFileAnalysis       
 
         | fallbackChannels  
-            info:" Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
+            info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
             ->  c2Server.communicate  
 
+        | indicatorRemovalFromTools
+            info: "An adversary may be able to modify the tool by removing the indicator that is no longer detected by the target's defensive systems."
+            ->  bypassHostIntrusionPrevention,
+                bypassLogAnalysis,
+                bypassAntivirus
+
+        & indicatorRemovalOnHost
+            info: "Adversaries may delete or alter generated artifacts on a host system, including logs and potentially captured files such as quarantined malware."
+            ->  bypassHostIntrusionPrevention,
+                bypassLogAnalysis,
+                bypassAntivirus    
+
         & obfuscatedFilesOrInformation
-            info:" Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
+            info: "Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
             ->  windows.deobfuscateOrDecodeFilesOrInformation, // leads to Deobfuscate/Decode Files or Information attack
-                bypassHostForensicAnalysisDetection,
+                bypassHostForensicAnalysis,
                 bypassSignatureBasedDetection,
                 bypassHostIntrusionPrevention,
                 bypassApplicationWhitelisting,
@@ -559,7 +584,7 @@ category Software {
                 obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface
 
         | filePermissionsModification
-            info:"Adversaries may modify file permissions/attributes to evade intended DACLs."
+            info: "Adversaries may modify file permissions/attributes to evade intended DACLs."
             ->  windows.accessibilityFeatures, // leads to Accessibility Features attack
                 windows.logonScripts, //leads to Logon Scripts attack
                 macOS.logonScripts // leads to Logon Scripts attack
@@ -569,7 +594,7 @@ category Software {
             ->  windows.remoteDesktopProtocol // leads to Remote Desktop Protocol attack on Windows
 
         & systemInformationDiscovery
-            info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+            info: "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
             ->  adversary.maliciousCodeInserted
 
         | osExhaustionFlood
@@ -580,7 +605,7 @@ category Software {
                 bypassProcessWhitelisting
 
         | rootkit
-            info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
+            info: "Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
             ->  bypassAntivirus,
                 bypassFileMonitoring,
                 bypassProcessWhitelisting,
@@ -589,17 +614,31 @@ category Software {
                 bypassSystemAccessControls,
                 windows.hypervisor
 
+        & standardCryptographicProtocol
+            info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
+            ->  c2Server.c2Connected             
+
+        & standardNonApplicationLayerProtocol
+            info: "Use of a standard non-application layer protocol for communication between host and C2 server or among infected hosts within a network."
+            ->  c2Server.communicate        
+
         | modifyAPICalls                
 
         | bypassAntivirus
-
-        | bypassBinaryAnalysis
 
         | bypassAutorunsAnalysis
 
         | bypassApplicationWhitelisting
 
+        | bypassBinaryAnalysis
+
+        | bypassDigitalCertificateValidation   
+
         | bypassFileOrPathWhitelisting
+
+        | bypassHostForensicAnalysis
+        
+        | bypassHostIntrusionPrevention
 
         | bypassProcessWhitelisting
 
@@ -613,11 +652,7 @@ category Software {
 
         | bypassStaticFileAnalysis
 
-        | bypassHostForensicAnalysisDetection
-        
-        | bypassHostIntrusionPrevention
-        
-        | bypassDigitalCertificateValidation   
+        | bypassUserModeSignatureValidation
         
         | passwordPolicyDiscovery
             ->  bruteForceWithPasswordPolicy
@@ -665,6 +700,7 @@ category Software {
         # restrictFileAndDirectoryPermissions 
             info: "https://attack.mitre.org/mitigations/M1022/"
             ->  _credentialsInFiles,
+                indicatorRemovalOnHost,
                 windows.controlPanelItems,
                 linux.clearCommandHistory,
                 linux._sudo,
@@ -708,6 +744,7 @@ category Software {
         # activeDirectoryConfiguration
             info: "https://attack.mitre.org/mitigations/M1015/"
             ->  _credentialsInFiles,
+                windows.sIDHistoryInjection, 
                 thirdpartySoftware._useThirdpartySoftware
 
         # audit 
@@ -725,10 +762,14 @@ category Software {
             ->  accountDiscovery, 
                 communicationThroughRemovableMedia,
                 domainDiscovery,
+                inhibitSystemRecovery,
                 administrator.createUserAccount,
                 windows._bITSJobs,
                 linux._sudoCaching,
                 macOS._sudoCaching
+
+        # softwareConfiguration
+            info: "https://attack.mitre.org/mitigations/M1054/"        
 
         # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
             info: "https://attack.mitre.org/mitigations/M1038/"
@@ -769,23 +810,24 @@ category Software {
 
         & fileDeletion
             info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
-            ->  bypassHostForensicAnalysisDetection
+            ->  bypassHostForensicAnalysis
 
         & fileDiscovery
             ->  automatedCollection
         
         & diskStructureWipe
-            info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
+            info: "Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
  
         # dataBackup
             info: "https://attack.mitre.org/mitigations/M1053/"
-            info:"Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
+            info: "Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
             ->  userDataDestruction,
                 adminDataDestruction,
-                rootDataDestruction,
                 systemDataDestruction,
                 userDataEncryptedForImpact, 
                 adminDataEncryptedForImpact,
+                systemDataEncryptedForImpact,
+                inhibitSystemRecovery,
                 diskStructureWipe,
                 userDiskWiped,
                 adminDiskWiped
@@ -841,19 +883,20 @@ category Software {
                 dataStaged 
 
         & _dataStaged // leads to exfiltration attacks
-            -> computer.exfiltrationOverPhysicalMedium,
-               exfiltrationOverAternativeProtocol,
-               scheduledExfiltration,
-               exfiltrationOverC2
+            ->  computer.exfiltrationOverPhysicalMedium,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2
         
         & userDataDestruction
+            ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
 
         & adminDataDestruction
-
-        & rootDataDestruction
+            ->  inhibitSystemRecovery  
 
         & systemDataDestruction
-        
+            ->  inhibitSystemRecovery  
+
         & dataCompressed
             ->  dataEncrypted,
                 dataStaged,
@@ -863,18 +906,25 @@ category Software {
                 scheduledExfiltration,
                 exfiltrationOverC2
 
+        & inhibitSystemRecovery
+            info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."     
+
         | scheduledExfiltration
             ->  exfiltrationOverC2,
-                exfiltrationOverAternativeProtocol
-        
+                exfiltrationOverAternativeProtocol       
     
         | exfiltrationOverAternativeProtocol
             ->  internalNetwork.dataExfiltration
 
         & userDataEncryptedForImpact
             info: "Attackers can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted"
+            ->  inhibitSystemRecovery 
 
         & adminDataEncryptedForImpact
+            ->  inhibitSystemRecovery 
+
+        & systemDataEncryptedForImpact
+            ->  inhibitSystemRecovery 
 
         | dataFromInformationRepositories 
             ->  service.informationRepositories
@@ -886,7 +936,6 @@ category Software {
           
         | automatedCollection
             ->  _automatedCollection
-
 
         & _automatedCollection
             ->  dataCollected, 
@@ -905,11 +954,13 @@ category Software {
         # encryptSensitiveInformation 
             info: "https://attack.mitre.org/mitigations/M1041/"
             ->  _automatedCollection,
+                indicatorRemovalOnHost,
                 storedDataManipulation  
 
         # remoteDataStorage 
             info: "https://attack.mitre.org/mitigations/M1029/"
             ->  _automatedCollection,
+                indicatorRemovalOnHost,
                 storedDataManipulation,
                 thirdpartySoftware._useThirdpartySoftware
 
@@ -975,7 +1026,7 @@ category Software {
         & _bITSJobs 
             info: "Adversaries may abuse BITS to download, execute, and even clean up after running malicious code."
             ->  executeCode,
-                os.bypassHostForensicAnalysisDetection,
+                bypassHostForensicAnalysis,
                 firewall.bypassFirewall 
 
         & cmstp
@@ -985,36 +1036,36 @@ category Software {
                 bypassAntivirus            
 
         | codeSigning
-            info: " Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             +>  windowsAdmin.bypassWindowsUserAccountControl
 
         & controlPanelItems
             info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
             ->  executeCode,
-                os.bypassApplicationWhitelisting,
-                os.bypassProcessWhitelisting
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting
 
         | componentObjectModelHijacking
-            info:" Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
+            info: "Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
             ->  adversary.maliciousCodeInserted,
                 bypassAutorunsAnalysis             
 
         | componentFirmware
             info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."       
-            ->  os.bypassFileMonitoring,
-                os.bypassHostIntrusionPrevention, 
-                os.bypassAntivirus         
+            ->  bypassFileMonitoring,
+                bypassHostIntrusionPrevention, 
+                bypassAntivirus         
 
         & compiledHTMLFile 
-            info:"Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
+            info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
             ->  employee.userExecution, // leads to User Execution attack
-                os.bypassApplicationWhitelisting,
-                os.bypassDigitalCertificateValidation   
+                bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation   
 
         | deobfuscateOrDecodeFilesOrInformation 
-            ->  os.bypassAntivirus,
-                os.bypassHostIntrusionPrevention,
-                os.bypassSignatureBasedDetection,
+            ->  bypassAntivirus,
+                bypassHostIntrusionPrevention,
+                bypassSignatureBasedDetection,
                 externalNetwork.bypassNetworkDetection,
                 internalNetwork.bypassNetworkDetection     
 
@@ -1022,14 +1073,14 @@ category Software {
             ->  _dLLSearchOrderHijacking 
 
         & _dLLSearchOrderHijacking
-            ->  os.bypassProcessWhitelisting,
+            ->  bypassProcessWhitelisting,
                 systemWindows.systemRights,
                 windowsUser.userRights,
                 windowsAdmin.adminRights                    
                
         | dLLSideLoading
-            ->  os.bypassProcessWhitelisting,
-                os.bypassAntivirus
+            ->  bypassProcessWhitelisting,
+                bypassAntivirus
 
         & executeMshta
             info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
@@ -1061,11 +1112,31 @@ category Software {
                 windowsAdmin.adminRights,
                 systemWindows.systemRights
 
+        | imageFileExecutionOptionsInjection
+            info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
+            ->  bypassAutorunsAnalysis,
+                persistence,
+                service.exploitationForPrivilegeEscalation
+
+        & indicatorBlocking
+            info: "An adversary may attempt to block indicators or events typically captured by sensors from being gathered and analyzed."
+            ->  bypassAntivirus,
+                bypassLogAnalysis,
+                bypassHostIntrusionPrevention     
+
+        | indirectCommandExecution
+            info: "Adversaries may abuse the Windows system features for Defense Evasion."
+            ->  executeCode,
+                bypassStaticFileAnalysis,
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting          
+
         & powerShell
             info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  _powerShell,
                 executeCode,
-                os.scripting
+                scripting
 
         & _powerShell
             info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
@@ -1075,10 +1146,46 @@ category Software {
             ->  system.systemRights
 
         | rootkit
-            info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
+            info: "Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
             +>  hooking, // leads to hooking attack
                 hypervisor, // leads to hypervisor attack
                 systemFirmware // leads to system firmware attack
+
+        & sIDHistoryInjection
+            info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
+            ->  service.adminRemoteServicesLogin, // leads to Remote Services attack
+                windowsAdminShares, // leads to Windows Admin Shares attack    
+                windowsRemoteManagement // leads to Windows Remote Management attack         
+
+        & signedBinaryProxyExecution
+            info: "Several Microsoft signed binaries that are default on Windows installations can be used to proxy execution of other files. This behavior may be abused by adversaries to execute malicious files that could bypass application whitelisting and signature validation on systems."
+            ->  bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation            
+
+        & signedScriptProxyExecution
+            info: "Scripts signed with trusted certificates can be used to proxy execution of malicious files."
+            ->  bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation          
+
+        & sIPAndTrustProviderHijacking
+            info: "Adversaries may abuse this architecture to subvert trust controls and bypass security policies that allow only legitimately signed code to execute on a system."
+            ->  bypassApplicationWhitelisting,
+                bypassAutorunsAnalysis,
+                bypassDigitalCertificateValidation,
+                bypassProcessWhitelisting,
+                bypassUserModeSignatureValidation 
+
+        & softwarePacking
+            info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
+            ->  indicatorRemovalFromTools        
+
+        & windowsAdminShares
+
+        | windowsManagementInstrumentation
+            info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
+            ->  os.inhibitSystemRecovery
+
+        & windowsRemoteManagement           
 
         | commandExecution
             ->  computer.infectedWindowsComputer
@@ -1090,7 +1197,7 @@ category Software {
             ->  dynamicDataExchange
 
         & distributedComponentObjectModel          
-            info:"Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
+            info: "Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
             ->  dynamicDataExchange
 
         | dynamicDataExchange
@@ -1098,12 +1205,12 @@ category Software {
             ->  userCommandLineInterface 
             
         | hooking             
-            info:"Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
+            info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
             ->  executeCode,
                 captureAPICalls
 
         | hypervisor           
-            info:"A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
+            info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
             ->  persistance
 
         | captureAPICalls
@@ -1115,17 +1222,15 @@ category Software {
             ->  windowsAdmin.adminRights   
 
         & systemFirmware
-            info:"System firmware may be modified by an adversary to perform or assist in malicious activity."
+            info: "System firmware may be modified by an adversary to perform or assist in malicious activity."
             ->  installMaliciousFirmwareUpdates
 
         | installMaliciousFirmwareUpdates   
 
-        | persistence 
-
         & queryRegistery
-            info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
-            ->  os.scripting,
-                os.systemInformationDiscovery
+            info: "The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
+            ->  scripting,
+                systemInformationDiscovery
 
         & networkShareDiscovery
             ->  internalNetwork.networkShareDiscovery
@@ -1149,11 +1254,11 @@ category Software {
             ->  computer.peripheralDeviceDiscovery
 
         & emailStorageCollection
-            info:"Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
+            info: "Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
             ->  dataCollected
 
         & outlookEmailCollection
-            info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
+            info: "Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
             ->  dataCollected
 
         | dataCollected
@@ -1186,6 +1291,10 @@ category Software {
         & bootkit 
             ->  persistance
 
+        # antivirus
+            info: "https://attack.mitre.org/mitigations/M1049/"
+            +>  softwarePacking
+
         # audit 
             info: "https://attack.mitre.org/mitigations/M1047/"
             +>  domainTrustDiscovery,
@@ -1198,7 +1307,7 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  _powerShell           
 
-        # executionPrevention             
+        # executionPrevention
             info: "https://attack.mitre.org/mitigations/M1038/"
             +>  accessibilityFeatures,
                 adminSecuritySoftwareDiscovery,
@@ -1214,6 +1323,9 @@ category Software {
                 networkShareDiscovery,
                 queryRegistery,
                 scheduledTask, 
+                signedBinaryProxyExecution,
+                signedScriptProxyExecution,
+                sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
                 userSecuritySoftwareDiscovery
 
@@ -1229,11 +1341,21 @@ category Software {
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
             +>  dLLSideLoading,
-                logonScripts   
+                indicatorBlocking,
+                logonScripts,
+                sIPAndTrustProviderHijacking   
+
+        # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
+            info: "https://attack.mitre.org/mitigations/M1024/"
+            ->  sIPAndTrustProviderHijacking
 
         # restrictLibraryLoading 
             info: "https://attack.mitre.org/mitigations/M1044/"
-            ->  _dLLSearchOrderHijacking          
+            ->  _dLLSearchOrderHijacking         
+
+        # softwareConfiguration
+            info: "https://attack.mitre.org/mitigations/M1054/"
+            +>  indicatorBlocking  
 
         # bootIntegrity 
             info: "https://attack.mitre.org/mitigations/M1046/"
@@ -1268,10 +1390,10 @@ category Software {
 
         | virtualizationOrSandboxEvasion
             info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
-            ->  os.bypassAntivirus,
-                os.bypassHostForensicAnalysisDetection,    
-                os.bypassSignatureBasedDetection,  
-                os.bypassStaticFileAnalysis          
+            ->  bypassAntivirus,
+                bypassHostForensicAnalysis,    
+                bypassSignatureBasedDetection,  
+                bypassStaticFileAnalysis          
 
         & scheduledTask
             info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
@@ -1294,8 +1416,8 @@ category Software {
             ->  _clearCommandHistory       
 
         & _clearCommandHistory
-            ->  os.bypassLogAnalysis, 
-                os.bypassHostForensicAnalysisDetection
+            ->  bypassLogAnalysis, 
+                bypassHostForensicAnalysis
 
         | spaceAfterFileName
             ->  employee.userExecution
@@ -1314,7 +1436,8 @@ category Software {
             ->  persistence
 
         & bashHistory 
-            ->  linuxAdministrator.adminCredentials,
+            ->  indicatorRemovalOnHost,
+                linuxAdministrator.adminCredentials,
                 linuxUser.userCredentials
 
         | source
@@ -1323,8 +1446,6 @@ category Software {
 
         | executeCode 
             +>  computer.infectedLinuxComputer   
-
-        | persistence
 
         | sudo
             ->  _sudo
@@ -1346,7 +1467,7 @@ category Software {
 
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
-            ->  bashHistory
+            +>  bashHistory
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
@@ -1359,7 +1480,8 @@ category Software {
 
     asset MacOS extends OS {
         & bashHistory 
-            ->  macosAdministrator.adminCredentials,
+            ->  indicatorRemovalOnHost,
+                macosAdministrator.adminCredentials,
                 macOSUser.userCredentials
 
         | bash_profileAndBashrc
@@ -1375,8 +1497,8 @@ category Software {
             ->  _clearCommandHistory  
 
         & _clearCommandHistory
-            ->  os.bypassLogAnalysis, 
-                os.bypassHostForensicAnalysisDetection
+            ->  bypassLogAnalysis, 
+                bypassHostForensicAnalysis
 
         | dylibHijacking   
             ->  _dylibHijacking 
@@ -1400,9 +1522,6 @@ category Software {
         | source
             ->  executeCode
 
-        | executeCode 
-            +>  computer.infectedMacOSComputer  
-
         | sudo
             ->  _sudo
             
@@ -1418,9 +1537,7 @@ category Software {
             ->  service.exploitationForPrivilegeEscalation   
 
         | videoCollection
-            ->  computer.collectVideo
-
-        | persistence         
+            ->  computer.collectVideo        
 
         | spaceAfterFileName
             ->  employee.userExecution
@@ -1439,7 +1556,7 @@ category Software {
             -> service.exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
         | windowsManagementInstrumentation
-            ->  os.scripting  
+            ->  scripting  
 
         & keychainCollection
             info: "If an adversary knows the credentials for the login keychain, then they can get access to all the other credentials stored in this vault."
@@ -1449,7 +1566,7 @@ category Software {
             ->  runCode
 
         | runCode
-            ->  computer.infectedMacOSComputer
+            +>  computer.infectedMacOSComputer
 
         & startupItems
             ->  _startupItems
@@ -1546,7 +1663,8 @@ category Network {
 
         # sSLOrTLSInspection
             info: "https://attack.mitre.org/mitigations/M1020/"
-            ->  obfuscateNetworkTraffic
+            ->  obfuscateNetworkTraffic,
+                os.standardCryptographicProtocol
 
         & applicationLayerConnexion
             ->  c2Connexion,
@@ -1588,6 +1706,7 @@ category Network {
             info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  os.customCommandAndControlProtocol,
                 os.endpointDenialOfService,
+                os.standardNonApplicationLayerProtocol,
                 windows._bITSJobs 
 
         & c2Connexion
@@ -1622,6 +1741,8 @@ category Network {
                 os.downloadRemoteFile,
                 os.fallbackChannels,
                 os.networkServiceScan,
+                os.standardCryptographicProtocol,
+                os.standardNonApplicationLayerProtocol,
                 os.uploadRemoteFile, 
                 c2Server.dataExfiltrated,
                 c2Server._obfuscatedData,
@@ -1634,6 +1755,7 @@ category Network {
                 administrator.createUserAccount,
                 os.commonlyUsedPortsConnection,
                 os.customCommandAndControlProtocol,
+                os.standardNonApplicationLayerProtocol,
                 windows.domainTrustDiscovery,
                 service.exploitationOfRemoteServices
 
@@ -1667,6 +1789,7 @@ category Network {
         # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
             info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  os.endpointDenialOfService,
+                os.standardNonApplicationLayerProtocol,
                 windows._bITSJobs  
 
         # networkIntrusionPrevention
@@ -1676,15 +1799,19 @@ category Network {
                 c2Server.generateDomainNames,
                 os.connectionProxy,
                 os._dataEncoding,
-                os.fallbackChannels
+                os.fallbackChannels,
+                os.standardCryptographicProtocol,
+                os.standardNonApplicationLayerProtocol
 
         # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
             info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  service.exploitationOfRemoteServices          
+            ->  service.exploitationOfRemoteServices,
+                os.standardNonApplicationLayerProtocol          
 
         # sSLOrTLSInspection
             info: "https://attack.mitre.org/mitigations/M1020/"
-            ->  obfuscateNetworkTraffic
+            ->  obfuscateNetworkTraffic,
+                os.standardCryptographicProtocol
     }
 
     asset Firewall {
