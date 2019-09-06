@@ -1,0 +1,61 @@
+category Software {
+    abstractAsset OS{
+        & standardNonApplicationLayerProtocol
+            info: "Use of a standard non-application layer protocol for communication between host and C2 server or among infected hosts within a network."
+            ->  c2Server.communicate 
+    } 
+
+}
+
+category Network {
+    asset InternalNetwork {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  os.standardNonApplicationLayerProtocol
+
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.standardNonApplicationLayerProtocol
+
+        # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.standardNonApplicationLayerProtocol
+    } 
+
+    asset ExternalNetwork {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  os.standardNonApplicationLayerProtocol
+
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.standardNonApplicationLayerProtocol
+
+        # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.standardNonApplicationLayerProtocol   
+    } 
+}
+
+category Hardware {
+    asset C2Server {
+        | communicate 
+    }
+}
+
+associations{
+    OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

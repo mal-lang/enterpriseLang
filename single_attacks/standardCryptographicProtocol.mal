@@ -1,0 +1,53 @@
+category Software {
+    abstractAsset OS{
+        & standardCryptographicProtocol
+            info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
+            ->  c2Server.c2Connected     
+    } 
+
+}
+
+category Network {
+    asset InternalNetwork {
+        # sSLOrTLSInspection
+            info: "https://attack.mitre.org/mitigations/M1020/"
+            ->  os.standardCryptographicProtocol
+
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.standardCryptographicProtocol
+    } 
+
+    asset ExternalNetwork {
+        # sSLOrTLSInspection
+            info: "https://attack.mitre.org/mitigations/M1020/"
+            ->  os.standardCryptographicProtocol
+
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.standardCryptographicProtocol
+    } 
+}
+
+category Hardware {
+    asset C2Server {
+        | c2Connected 
+    }
+}
+
+associations{
+    OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

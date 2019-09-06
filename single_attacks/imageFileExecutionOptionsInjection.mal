@@ -1,0 +1,56 @@
+category Person {
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.imageFileExecutionOptionsInjection
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.imageFileExecutionOptionsInjection
+    } 
+
+}
+
+category Software {
+    asset Service {
+        | exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS{
+        | bypassAutorunsAnalysis
+
+        | persistence
+    } 
+
+    asset Windows extends OS {   
+        | imageFileExecutionOptionsInjection
+            info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
+            ->  bypassAutorunsAnalysis,
+                persistence,
+                service.exploitationForPrivilegeEscalation
+
+    } 
+}
+
+
+associations{
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows  
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+

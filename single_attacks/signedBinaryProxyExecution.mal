@@ -1,0 +1,50 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.signedBinaryProxyExecution
+    } 
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.signedBinaryProxyExecution
+    } 
+}
+
+
+category Software {
+    abstractAsset OS{
+        | bypassApplicationWhitelisting
+
+        | bypassDigitalCertificateValidation  
+
+        # executionPrevention 
+    } 
+
+    asset Windows extends OS {   
+        & signedBinaryProxyExecution
+            info: "Several Microsoft signed binaries that are default on Windows installations can be used to proxy execution of other files. This behavior may be abused by adversaries to execute malicious files that could bypass application whitelisting and signature validation on systems."
+            ->  bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation  
+
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  signedBinaryProxyExecution
+
+    } 
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
+}
+
+
+
+
+
+
+
+
+
+
+
