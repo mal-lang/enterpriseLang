@@ -1,0 +1,46 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.kerberoasting
+    } 
+}    
+
+category Software {
+    asset Service {
+        | exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS{
+        | validAccounts  
+
+        | bruteForce
+        
+        | persistence  
+    } 
+
+    asset Windows extends OS {   
+        & kerberoasting
+            info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
+            ->  bruteForce,
+                persistence,
+                service.exploitationForPrivilegeEscalation,
+                validAccounts
+    } 
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service   
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

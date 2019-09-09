@@ -1,69 +1,57 @@
 category Person {
     asset Administrator {
         | adminRights
-            -> os.rootkit
-           
+            -> os.rootkit          
     }
 
-    asset System {
+    asset SYSTEM {
         | systemRights
             -> os.rootkit
     }
-
-    asset Root extends Administrator{
-        | rootRights
-            -> os.rootkit
-
-    }
-    
-    
 }
 
 category Software {
     abstractAsset OS{
         | rootkit
-        info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
-            -> hooking,
-               windows.hypervisor, //Hypervisor attack
-               windows.systemFirmware, // System Firmware attack
-               bypassAntivirus,
-               bypassFileMonitoring,
-               bypassProcessWhitelisting,
-               bypassSignatureBasedDetection, 
-               bypassHostIntrusionPrevention,
-               service.bypassSystemAccessControls
-
-        | hooking  
+            info: "Adversaries may use rootkits to hide the presence of programs, files, network connections, services, drivers, and other system components."
+            ->  modifyAPICalls, 
+                bypassAntivirus,
+                bypassFileMonitoring,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection, 
+                bypassHostIntrusionPrevention,
+                bypassSystemAccessControls,
+                bypassFileOrPathWhitelisting,
+                windows.hooking, // leads to hooking attack
+                windows.hypervisor, // leads to hypervisor attack
+                windows.systemFirmware // leads to system firmware attack
 
         | modifyAPICalls  
-
         | bypassAntivirus
         | bypassFileMonitoring
-        | bypassSystemAccessControls
         | bypassHostIntrusionPrevention
         | bypassProcessWhitelisting 
         | bypassSignatureBasedDetection  
+        | bypassSystemAccessControls  
+        | bypassFileOrPathWhitelisting
 
     }
 
     asset Windows extends OS{
+
         | hypervisor
-
-        | systemFirmware       
+        | hooking
+        & systemFirmware    
     }
 
-    asset Service {
-        | bypassSystemAccessControls        
-    }
 
 }
 
 
 associations{
     Administrator [administrator] 1 <--Ui--> 1-* [os] OS
-    OS [os] 1 <--Ui--> 1 [system] System  
-    OS [os] 1 <--Ui--> 1 [windows] Windows
-    OS [os] 1 <-- Contain --> 1-* [service] Service
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS 
+    OS [os] 1 <--Contain--> 1 [windows] Windows
 }
 
 
