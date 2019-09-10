@@ -1,0 +1,44 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.lC_LOAD_DYLIB_Addition
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | persistence
+    } 
+
+    asset MacOS extends OS {
+        & lC_LOAD_DYLIB_Addition
+            info: "Adversaries can remediate the issue that any changes will invalidate digital signatures on binaries because the binary is being modified by simply removing the LC_CODE_SIGNATURE command from the binary so that the signature isn’t checked at load time."
+            ->  persistence
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  lC_LOAD_DYLIB_Addition
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  lC_LOAD_DYLIB_Addition
+
+        # executionPrevention
+            +>  lC_LOAD_DYLIB_Addition // Whitelist applications via known hashes.
+    } 
+}
+
+associations{
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+
