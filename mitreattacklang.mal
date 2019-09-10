@@ -54,6 +54,7 @@ category Person {
                 windows.inputPrompt,
                 windows.installUtil,
                 windows.kerberoasting,
+                windows.lLMNR_NBT_NS_PoisoningAndRelay,
                 windows.logonScripts,
                 windows.networkShareDiscovery,
                 windows.peripheralDeviceDiscovery,
@@ -65,6 +66,7 @@ category Person {
                 windows.videoCollection,
                 linux.bash_profileAndBashrc,
                 linux.clearCommandHistory,
+                linux.localJobScheduling,
                 linux.spaceAfterFileName,
                 linux.source,
                 linux.sudo,
@@ -74,6 +76,11 @@ category Person {
                 macOS.clearCommandHistory,
                 macOS.dylibHijacking,
                 macOS.inputPrompt,
+                macOS.launchctl,
+                macOS.lC_LOAD_DYLIB_Addition,
+                macOS.lC_MAINHijacking,
+                macOS.localJobScheduling,
+                macOS.loginItem,
                 macOS.logonScripts,
                 macOS.spaceAfterFileName,
                 macOS.networkShareDiscovery,
@@ -108,7 +115,12 @@ category Person {
             ->  windows.bITSJobs,
                 windows._fileSystemPermissionsWeakness,
                 windows.indicatorBlocking,
+                linux.localJobScheduling,
                 macOS.dylibHijacking,
+                macOS.launchctl,
+                macOS.launchDaemon,
+                macOS.localJobScheduling,
+                macOS.loginItem,
                 macOS.startupItems,
                 service.userRemoteServicesLogin,
                 service.adminRemoteServicesLogin,
@@ -135,12 +147,15 @@ category Person {
                 os.inhibitSystemRecovery, 
                 os.installRootCertificate,            
                 os.networkServiceScan,
+                os.networkSniffing,
                 os.sensitiveDataCollected, 
                 os.storedDataManipulation,
                 linux.bash_profileAndBashrc,
                 linux.bootkit,
+                linux.localJobScheduling,
                 macOS.bash_profileAndBashrc,
                 macOS.keychainCollection,
+                macOS.localJobScheduling,
                 service.admintransmittedDataManipulation,
                 service.applicationDeploymentSystems,
                 thirdpartySoftware.useThirdpartySoftware,
@@ -172,6 +187,7 @@ category Person {
                 linux._sudo,
                 linux._sudoCaching,
                 macOS.kernelModulesAndExtensions,
+                macOS.lC_MAINHijacking,
                 macOS._sudo,
                 macOS._sudoCaching,
                 service.applicationDeploymentSystems,
@@ -203,6 +219,7 @@ category Person {
                 windowsWindowsAdmin.hooking,
                 windowsWindowsAdmin.hypervisor,
                 windowsWindowsAdmin.imageFileExecutionOptionsInjection,
+                windowsWindowsAdmin.lSASS_Driver,
                 windowsWindowsAdmin.powerShell,
                 windowsWindowsAdmin.queryRegistery,
                 windowsWindowsAdmin.sIDHistoryInjection,
@@ -223,6 +240,8 @@ category Person {
         | rootRights
             ->  linux.kernelModulesAndExtensions,
                 macOS.adminSecuritySoftwareDiscovery,
+                macOS.launchctl,
+                macOS.launchDaemon,
                 macOS.startupItems,
                 macOS.kernelModulesAndExtensions
     }
@@ -239,6 +258,7 @@ category Person {
                 windows.hooking,
                 windows.hypervisor,
                 windows.imageFileExecutionOptionsInjection,
+                windows.lSASS_Driver,
                 windows.sIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
                 os.credentialsInFiles,
@@ -246,6 +266,7 @@ category Person {
                 os.firmwareCorruption,
                 os.graphicalUserInterface,
                 os.inhibitSystemRecovery,
+                os.networkSniffing,
                 os.systemDataDestruction,
                 os.storedDataManipulation,
                 os.rootkit,
@@ -277,7 +298,8 @@ category Person {
                 _mediaInserted,
                 os._credentialsInFiles,
                 windows.inputPrompt,
-                macOS.inputPrompt,   
+                macOS.inputPrompt, 
+                macOS.loginItem,  
                 browser.runExtensions,
                 thirdpartySoftware._useThirdpartySoftware            
         
@@ -576,6 +598,11 @@ category Software {
         & installRootCertificate
             info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
             ->  bypassDigitalCertificateValidation   
+ 
+        & networkSniffing
+            info: "An adversary may place a network interface into promiscuous mode to passively access data in transit over the network, or use span ports to capture a larger amount of data."
+            ->  user.userCredentials,
+                windows.lLMNR_NBT_NS_PoisoningAndRelay
 
         & obfuscatedFilesOrInformation
             info: "Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
@@ -769,6 +796,7 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1032/" 
             ->  applicationDeploymentSoftware,
                 bruteForce,
+                networkSniffing,
                 service.userRemoteServicesLogin,
                 service.adminRemoteServicesLogin,
                 thirdpartySoftware._useThirdpartySoftware
@@ -1014,6 +1042,7 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1041/"
             ->  _automatedCollection,
                 indicatorRemovalOnHost,
+                networkSniffing,
                 storedDataManipulation  
 
         # remoteDataStorage 
@@ -1097,7 +1126,11 @@ category Software {
 
         | codeSigning
             info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
-            +>  windowsAdmin.bypassWindowsUserAccountControl
+            ->  windowsAdmin.bypassWindowsUserAccountControl
+
+        | collectHashInformation    
+            ->  networkSniffing, // leads to Network Sniffing attack
+                bruteForce // leads to Brute Force attack    
 
         & controlPanelItems
             info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
@@ -1216,6 +1249,15 @@ category Software {
                 persistence,
                 service.exploitationForPrivilegeEscalation,
                 validAccounts           
+
+        & lLMNR_NBT_NS_PoisoningAndRelay
+            info: "AAdversaries can spoof an authoritative source for name resolution on a victim network by responding to LLMNR (UDP 5355)/NBT-NS (UDP 137) traffic. The adversary can then collect the hash information sent over the wire through tools that monitor the ports for traffic or through Network Sniffing and crack the hashes offline through Brute Force to obtain the plaintext passwords."
+            ->  collectHashInformation
+
+        & lSASS_Driver
+            info: "Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations."
+            ->  executeCode,
+                persistence    
 
         & powerShell
             info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
@@ -1455,8 +1497,13 @@ category Software {
             +>  cmstp,
                 distributedComponentObjectModel,
                 installUtil,
+                lLMNR_NBT_NS_PoisoningAndRelay,
                 powerShell,
                 registryKeysEnabled
+
+        # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  lLMNR_NBT_NS_PoisoningAndRelay
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/" 
@@ -1527,6 +1574,11 @@ category Software {
         & kernelModulesAndExtensions
             info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
             ->  rootkit        
+
+        & localJobScheduling
+            info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence, to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
+            ->  persistence,
+                root.rootRights
 
         | source
             info:"The source command loads functions into the current shell or executes files in the current context."
@@ -1620,6 +1672,37 @@ category Software {
             info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
             ->  rootkit  
 
+        & launchctl
+            info: "Adversaries can abuse this functionality to execute code or even bypass whitelisting if launchctl is an allowed process."
+            ->  executeCode,
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting  
+
+        & launchDaemon
+            info: "Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root. Adversary can modify a current Launch Daemon’s executable and gain persistence or Privilege Escalation."
+            ->  persistence,
+                service.exploitationForPrivilegeEscalation         
+
+        & lC_LOAD_DYLIB_Addition
+            info: "Adversaries can remediate the issue that any changes will invalidate digital signatures on binaries because the binary is being modified by simply removing the LC_CODE_SIGNATURE command from the binary so that the signature isn’t checked at load time."
+            ->  persistence
+
+        & lC_MAINHijacking
+            info: "LC_MAIN that points to the binary’s entry point for execution and can be hijacked so that initial execution flows to a malicious addition. By modifying a binary in this way, application whitelisting can be bypassed because the file name or application path is still the same."
+            ->  bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting 
+
+        & localJobScheduling
+            info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence,  to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
+            ->  persistence,
+                root.rootRights
+
+        & loginItem
+            info: "If an adversary can register their own login item or modified an existing one, then they can use it to execute their code for a persistence mechanism each time the user logs in."
+            ->  persistence      
+
         & logonScripts
             ->  rootMac.rootRights  
 
@@ -1684,15 +1767,22 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1049/"
             +>  kernelModulesAndExtensions
 
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  lC_LOAD_DYLIB_Addition
+
         # codeSigning
             info: "https://attack.mitre.org/mitigations/M1045/"  
-            +>  appleScript
+            +>  appleScript,
+                lC_LOAD_DYLIB_Addition,
+                lC_MAINHijacking
 
         # executionPrevention
-            +>  networkShareDiscovery,
+            +>  adminSecuritySoftwareDiscovery,
                 kernelModulesAndExtensions,
-                userSecuritySoftwareDiscovery,
-                adminSecuritySoftwareDiscovery
+                lC_LOAD_DYLIB_Addition,
+                networkShareDiscovery,
+                userSecuritySoftwareDiscovery            
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             info: "https://attack.mitre.org/mitigations/M1039/"
@@ -2061,21 +2151,21 @@ associations {
     Adversary [adversary] 1 <--Attack--> 1 [windows] Windows 
 
     User [user] 1 <--Ui--> 1-* [os] OS
-    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
-    User [linuxUser] 1 <--Use--> 1-* [linux] Linux   
-    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
-    User [user] 1 <--Ui--> 1-* [computer] Computer
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    User [linuxUser] 1 <--Ui--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    User [user] 1 <--Use--> 1-* [computer] Computer
     User [user] 1 <--Use--> 1-* [service] Service
     User [user] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
     User [user] 1 <--Use--> 1-* [internalNetwork] InternalNetwork
     User [user] 1 <--Use--> 1-* [externalNetwork] ExternalNetwork
 
-    Administrator [administrator] 1 <--Ui--> 1-* [user] User
+    Administrator [administrator] 1 <--Manage--> 1-* [user] User
     Administrator [administrator] 1 <--Ui--> 1-* [os] OS
     Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
     Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
     Administrator [macosAdministrator] 1 <--Ui--> 1-* [macOS] MacOS
-    Administrator [administrator] 1 <--Ui--> 1-* [computer] Computer
+    Administrator [administrator] 1 <--Use--> 1-* [computer] Computer
     Administrator [administrator] 1 <--Use--> 1-* [service] Service
     Administrator [administrator] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
     
@@ -2084,7 +2174,9 @@ associations {
     //WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [administrator] Administrator
     //WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows  
 
-    Root [rootMac] 1 <--Use--> 1-* [macOS] MacOS
+    Root [root] 1 <--Ui--> 1-* [os] OS
+    Root [rootLinux] 1 <--Ui--> 1-* [linux] Linux
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
 
     SYSTEM [system] 1 <--Ui--> 1 [os] OS 
     SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
@@ -2094,10 +2186,10 @@ associations {
     Employee [employee] 1 <--Use--> 1-* [browser] Browser
     Employee [employee] 1 <--Use--> 1-* [computer] Computer
     Employee [employee] 1 <--Use--> 1-* [user] User
-    Employee [employee] 1 <--Use--> 1-* [os] OS
-    Employee [employee] 1 <--Use--> 1-* [windows] Windows
-    Employee [employee] 1 <--Use--> 1-* [macOS] MacOS
-    Employee [employee] 1 <--Use--> 1-* [linux] Linux
+    Employee [employee] 1 <--Ui--> 1-* [os] OS
+    Employee [employee] 1 <--Ui--> 1-* [windows] Windows
+    Employee [employee] 1 <--Ui--> 1-* [macOS] MacOS
+    Employee [employee] 1 <--Ui--> 1-* [linux] Linux
     Employee [employee] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
     Employee [employee] 1 <--Use--> 1-* [removableMedia] RemovableMedia
 
@@ -2106,12 +2198,12 @@ associations {
 
     Browser [browser] 1-* <--Software--> 1 [os] OS
     Browser [browser] 1-* <--Software--> 1 [windows] Windows
-    Browser [browser] 1-* <--Ui--> 1-* [user] User
-    Browser [browser] 1-* <--Ui--> 1-* [internalNetwork] InternalNetwork
-    Browser [browser] 1-* <--Ui--> 1-* [externalNetwork] ExternalNetwork 
+    Browser [browser] 1-* <--Use--> 1-* [user] User
+    Browser [browser] 1-* <--Connect--> 1-* [internalNetwork] InternalNetwork
+    Browser [browser] 1-* <--Connect--> 1-* [externalNetwork] ExternalNetwork 
     
     OS [os] 1 <--System--> 1-* [computer] Computer
-    OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+    OS [os] 1-* <--Connect--> 1-* [c2Server] C2Server
     OS [os] 1 <--Contain--> 1 [windows] Windows
     OS [os] 1 <--Contain--> 1 [linux] Linux  
     OS [os] 1 <--Contain--> 1 [macOS] MacOS
@@ -2120,6 +2212,8 @@ associations {
     OS [os] 1 <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware  
 
     Windows [windows] 1 <--Contain--> 1-* [service] Service
+    MacOS [macOS] 1 <--Contain--> 1-* [service] Service
+
     Service [service] 1-* <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware
     Service [service] 1-* <--Connect--> 1 [c2Server] C2Server
     
@@ -2127,8 +2221,8 @@ associations {
     Computer [computerWindows] 1 <--Software--> 1 [windows] Windows
     //Computer [computer] 1 <--Software--> 1 [linux] Linux
     
-    ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
-    ExternalNetwork [externalNetwork] 1-* <--Contain--> 1-* [computer] Computer
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1 [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [computer] Computer
     ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
     ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1 [windows] Windows
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [service] Service
@@ -2148,7 +2242,7 @@ associations {
     ExternalNetwork [externalNetwork] 1 <--Protect--> 0-1 [firewall] Firewall
 
     //Firewall [firewall] 0-1 <--Protect--> 1-* [thirdpartySoftware] ThirdpartySoftware
-    Computer [computer] 1-* <--Protects--> 0-1 [firewall] Firewall
+    Computer [computer] 1-* <--Protect--> 0-1 [firewall] Firewall
     Computer [computer] 1 <--Use--> 1 [microphone] Microphone
     VideoCallApplication [videoCallApplication] 1-* <--Software--> 1 [computer] Computer
     Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
