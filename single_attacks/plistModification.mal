@@ -1,0 +1,61 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.plistModification
+    } 
+
+    asset Administrator {
+
+    } 
+
+    asset Root extends Administrator {
+        | rootRights
+            ->  macOS.plistModification
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        # restrictFileAndDirectoryPermissions
+
+        | bypassApplicationWhitelisting
+
+        | bypassProcessWhitelisting
+
+        | bypassFileOrPathWhitelisting
+
+        | persistence  
+    } 
+
+    asset MacOS extends OS {
+        & plistModification
+            info: "Adversaries can modify these plist files to point to their own code, can use them to execute their code in the context of another user, bypass whitelisting procedures, or even use them as a persistence mechanism."
+            ->  bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting,
+                executeCode,
+                persistence
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  plistModification
+
+        | executeCode      
+    } 
+}
+
+associations {   
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS 
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

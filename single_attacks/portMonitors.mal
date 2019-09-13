@@ -1,0 +1,51 @@
+category Person {
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.portMonitors
+    } 
+    
+    asset SYSTEM {
+        | systemRights
+            ->  windows.portMonitors
+    } 
+}
+
+category Software {
+    asset Service {
+        | exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS{
+
+    } 
+
+    asset Windows extends OS {   
+        | portMonitors
+            info: "Adversaries can use this technique to load malicious code at startup that will persist on system reboot and execute as SYSTEM."
+            ->  executeCode
+
+        | executeCode  
+            +>  service.exploitationForPrivilegeEscalation        
+    } 
+}
+
+associations {    
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+

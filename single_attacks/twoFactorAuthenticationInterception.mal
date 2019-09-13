@@ -1,0 +1,46 @@
+category Person {
+
+    asset Administrator {
+        | adminRights
+            ->  os.twoFactorAuthenticationInterception
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            ->  os.twoFactorAuthenticationInterception
+    } 
+
+    asset Employee {
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  os.twoFactorAuthenticationInterception // Remove smart cards when not in use.
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        & twoFactorAuthenticationInterception
+            info: "Adversaries may target authentication mechanisms, such as smart cards, to gain access to systems, services, and network resources."
+            ->  connectionProxy
+
+        & connectionProxy
+    } 
+
+}
+
+associations {    
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS 
+    Employee [employee] 1 <--Ui--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

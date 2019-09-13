@@ -1,0 +1,62 @@
+category Person {
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.passTheTicket
+    } 
+
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.passTheTicket
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        & credentialDumping
+
+        # passwordPolicies
+
+        # activeDirectoryConfiguration
+    } 
+
+    asset Windows extends OS {   
+        & passTheTicket
+            info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
+            ->  credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
+                internalNetwork.c2Connexion // gain remote access 
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            +>  passTheTicket
+
+        # activeDirectoryConfiguration
+            info: "https://attack.mitre.org/mitigations/M1015/"
+            +>  passTheTicket
+    } 
+}
+
+category Network {
+    asset InternalNetwork {
+        | c2Connexion
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
+    InternalNetwork [internalNetworkWindows] 1 <--Connect--> 1 [windows] Windows
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+
