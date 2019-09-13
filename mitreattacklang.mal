@@ -56,17 +56,22 @@ category Person {
                 windows.kerberoasting,
                 windows.lLMNR_NBT_NS_PoisoningAndRelay,
                 windows.logonScripts,
+                windows.networkShareConnectionRemoval,
                 windows.networkShareDiscovery,
+                windows.officeApplicationStartup,
                 windows.peripheralDeviceDiscovery,
                 windows.powerShell,
                 windows.signedBinaryProxyExecution,
                 windows.signedScriptProxyExecution,
                 windows.sIPAndTrustProviderHijacking,
+                windows.templateInjection,
+                windows.trustedDeveloperUtilities,
                 windows.userSecuritySoftwareDiscovery,
                 windows.videoCollection,
                 linux.bash_profileAndBashrc,
                 linux.clearCommandHistory,
                 linux.localJobScheduling,
+                linux.portKnocking,
                 linux.spaceAfterFileName,
                 linux.source,
                 linux.sudo,
@@ -82,6 +87,8 @@ category Person {
                 macOS.localJobScheduling,
                 macOS.loginItem,
                 macOS.logonScripts,
+                macOS.plistModification,
+                macOS.portKnocking,
                 macOS.spaceAfterFileName,
                 macOS.networkShareDiscovery,
                 macOS.userSecuritySoftwareDiscovery,
@@ -115,6 +122,7 @@ category Person {
             ->  windows.bITSJobs,
                 windows._fileSystemPermissionsWeakness,
                 windows.indicatorBlocking,
+                windows.passTheTicket,
                 linux.localJobScheduling,
                 macOS.dylibHijacking,
                 macOS.launchctl,
@@ -129,6 +137,7 @@ category Person {
 
     asset Administrator {
         | adminRights
+            info: "Administrator is an actual account."
             ->  user.userRights,
                 createUserAccount,    
                 os.automatedCollection,
@@ -150,6 +159,7 @@ category Person {
                 os.networkSniffing,
                 os.sensitiveDataCollected, 
                 os.storedDataManipulation,
+                os.twoFactorAuthenticationInterception,
                 linux.bash_profileAndBashrc,
                 linux.bootkit,
                 linux.localJobScheduling,
@@ -180,6 +190,7 @@ category Person {
             ->  createUserAccount,
                 os.firmwareCorruption,
                 windows.modifyRegistrySettings,
+                windows.passTheTicket,
                 windows._powerShell,
                 windows.signedBinaryProxyExecution,   
                 windows.systemFirmware, 
@@ -197,6 +208,7 @@ category Person {
    
     asset WindowsAdmin extends Administrator {
         | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
             +>  accountManipulation,
                 windowsWindowsAdmin.accessibilityFeatures,
                 windowsWindowsAdmin.adminSecuritySoftwareDiscovery,
@@ -220,11 +232,17 @@ category Person {
                 windowsWindowsAdmin.hypervisor,
                 windowsWindowsAdmin.imageFileExecutionOptionsInjection,
                 windowsWindowsAdmin.lSASS_Driver,
+                windowsWindowsAdmin.networkShareConnectionRemoval,
+                windowsWindowsAdmin.officeApplicationStartup,
+                windowsWindowsAdmin.passwordFilterDLL,
+                windowsWindowsAdmin.portMonitors,
                 windowsWindowsAdmin.powerShell,
                 windowsWindowsAdmin.queryRegistery,
                 windowsWindowsAdmin.sIDHistoryInjection,
                 windowsWindowsAdmin.scheduledTask,
                 windowsWindowsAdmin.systemFirmware
+
+        | adminCredentials
 
         & accountManipulation
             ->  user.userCredentials
@@ -238,16 +256,19 @@ category Person {
     
     asset Root extends Administrator {
         | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
             ->  linux.kernelModulesAndExtensions,
                 macOS.adminSecuritySoftwareDiscovery,
                 macOS.launchctl,
                 macOS.launchDaemon,
+                macOS.plistModification,
                 macOS.startupItems,
                 macOS.kernelModulesAndExtensions
     }
     
     asset SYSTEM {
         | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
             ->  windows.appCertDLLs,
                 windows.bITSJobs,
                 windows.changeDefaultFileAssociation,
@@ -259,6 +280,8 @@ category Person {
                 windows.hypervisor,
                 windows.imageFileExecutionOptionsInjection,
                 windows.lSASS_Driver,
+                windows.passwordFilterDLL,
+                windows.portMonitors,
                 windows.sIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
                 os.credentialsInFiles,
@@ -267,9 +290,10 @@ category Person {
                 os.graphicalUserInterface,
                 os.inhibitSystemRecovery,
                 os.networkSniffing,
+                os.rootkit,
                 os.systemDataDestruction,
                 os.storedDataManipulation,
-                os.rootkit,
+                os.twoFactorAuthenticationInterception,
                 thirdpartySoftware.useThirdpartySoftware
 
         | systemCredentials
@@ -297,7 +321,9 @@ category Person {
                 userExecution,
                 _mediaInserted,
                 os._credentialsInFiles,
+                os.twoFactorAuthenticationInterception, // remove smart cards when not in use
                 windows.inputPrompt,
+                windows.templateInjection,
                 macOS.inputPrompt, 
                 macOS.loginItem,  
                 browser.runExtensions,
@@ -524,6 +550,8 @@ category Software {
             info: "Adversaries could use trust relationships to manage command and control communications, to reduce the number of simultaneous outbound network connections, to provide resiliency in the face of connection loss, or to ride over existing trusted communications paths between victims to avoid suspicion."
             -> c2Server.c2Connected           
 
+        & credentialDumping
+
         | credentialsInFiles
             ->  _credentialsInFiles
 
@@ -680,6 +708,10 @@ category Software {
             info: "Use of a standard non-application layer protocol for communication between host and C2 server or among infected hosts within a network."
             ->  c2Server.communicate        
 
+        & twoFactorAuthenticationInterception
+            info: "Adversaries may target authentication mechanisms, such as smart cards, to gain access to systems, services, and network resources."
+            ->  connectionProxy
+
         | modifyAPICalls                
 
         | bypassAntivirus
@@ -689,6 +721,8 @@ category Software {
         | bypassApplicationWhitelisting
 
         | bypassBinaryAnalysis
+
+        | bypassDefensiveNetworkServiceScanning
 
         | bypassDigitalCertificateValidation   
 
@@ -747,7 +781,8 @@ category Software {
         | persistence
 
         & _scripting
-            -> automatedCollection
+            -> automatedCollection,
+               windows.templateInjection // leads to Template Injection attack
 
         & storedDataManipulation
             info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."    
@@ -1182,7 +1217,8 @@ category Software {
                 bypassApplicationWhitelisting    
                
         | executeCode 
-            +>  componentFirmware, 
+            +>  componentFirmware,
+                service.exploitationForPrivilegeEscalation,
                 computer.infectedWindowsComputer         
 
         & executionThroughAPI    
@@ -1209,6 +1245,8 @@ category Software {
             ->  executeCode,
                 windowsAdmin.adminRights,
                 systemWindows.systemRights
+
+        & forcedAuthentication    
 
         | imageFileExecutionOptionsInjection
             info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
@@ -1259,6 +1297,24 @@ category Software {
             ->  executeCode,
                 persistence    
 
+        | networkShareConnectionRemoval
+            info: "Adversaries may remove share connections that are no longer useful in order to clean up traces of their operation."
+            ->  bypassHostForensicAnalysis
+
+        & officeApplicationStartup
+            info: "There are multiple mechanisms that can be used with Office for persistence when an Office-based application is started."
+            ->  persistence  
+
+        & passwordFilterDLL
+            info: "Adversaries can register malicious password filters to harvest credentials from local computers and/or entire domains."
+            ->  systemWindows.systemCredentials,
+                windowsAdmin.adminCredentials
+
+        & passTheTicket
+            info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
+            ->  credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
+                internalNetwork.c2Connexion // gain remote access 
+
         & powerShell
             info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  _powerShell,
@@ -1303,7 +1359,24 @@ category Software {
                 bypassAntivirus,
                 bypassHeuristicDetection      
 
+        & taintSharedContent   
+
+        & templateInjection
+            info: "Adversaries may abuse this technology to initially conceal malicious code to be executed."
+            ->  bypassStaticFileAnalysis, 
+                forcedAuthentication, // leads to Forced Authentication attack
+                browser.spearphishingAttachment, // can be delivered via Spearphishing Attachment
+                taintSharedContent // can be delivered via Taint Shared Content
+
+        & trustedDeveloperUtilities
+            info: "An adversary can use tracker.exe to proxy execution of an arbitrary DLL into another process. Since tracker.exe is also signed it can be used to bypass application whitelisting solutions."
+            ->  bypassApplicationWhitelisting,
+                executeCode,
+                signedBinaryProxyExecution,
+                signedScriptProxyExecution         
+
         & windowsAdminShares
+            ->  networkShareConnectionRemoval // leads to Network Share Connection Removal attack
 
         | windowsManagementInstrumentation
             info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
@@ -1377,6 +1450,10 @@ category Software {
         | peripheralDeviceDiscovery
             ->  computer.peripheralDeviceDiscovery
 
+        | portMonitors
+            info: "Adversaries can use this technique to load malicious code at startup that will persist on system reboot and execute as SYSTEM."
+            ->  executeCode
+
         & emailStorageCollection
             info: "Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
             ->  dataCollected
@@ -1415,9 +1492,14 @@ category Software {
         & bootkit 
             ->  persistance
 
+        # activeDirectoryConfiguration
+            info: "https://attack.mitre.org/mitigations/M1015/"
+            +>  passTheTicket
+
         # antivirus
             info: "https://attack.mitre.org/mitigations/M1049/"
-            +>  softwarePacking
+            +>  softwarePacking,
+                templateInjection
 
         # audit 
             info: "https://attack.mitre.org/mitigations/M1047/"
@@ -1452,7 +1534,16 @@ category Software {
                 signedScriptProxyExecution,
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
+                trustedDeveloperUtilities,
                 userSecuritySoftwareDiscovery
+
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  passwordFilterDLL   
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            +>  passTheTicket               
 
         # privilegedProcessIntegrity  
             info: "https://attack.mitre.org/mitigations/M1025/"
@@ -1480,7 +1571,8 @@ category Software {
 
         # softwareConfiguration
             info: "https://attack.mitre.org/mitigations/M1054/"
-            +>  indicatorBlocking  
+            +>  indicatorBlocking,
+                officeApplicationStartup  
 
         # bootIntegrity 
             info: "https://attack.mitre.org/mitigations/M1046/"
@@ -1498,8 +1590,11 @@ category Software {
                 distributedComponentObjectModel,
                 installUtil,
                 lLMNR_NBT_NS_PoisoningAndRelay,
+                officeApplicationStartup,
                 powerShell,
-                registryKeysEnabled
+                registryKeysEnabled,
+                templateInjection,
+                trustedDeveloperUtilities
 
         # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
             info: "https://attack.mitre.org/mitigations/M1037/"   
@@ -1508,7 +1603,8 @@ category Software {
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
-                _applicationShimming
+                _applicationShimming,
+                officeApplicationStartup
         
         # userAccountControl
             info: "https://attack.mitre.org/mitigations/M1052/"
@@ -1579,6 +1675,10 @@ category Software {
             info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence, to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
             ->  persistence,
                 root.rootRights
+
+        & portKnocking
+            info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
+            ->  bypassDefensiveNetworkServiceScanning
 
         | source
             info:"The source command loads functions into the current shell or executes files in the current context."
@@ -1652,13 +1752,10 @@ category Software {
 
         & _dylibHijacking 
             info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
-            ->  _exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
+            ->  service.exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
 
         | executeCode 
-            +>  computer.infectedMacOSComputer
-
-        | _exploitationForPrivilegeEscalation
-            // +>      
+            +>  computer.infectedMacOSComputer   
 
         | infectedOS
             +>  bashHistory
@@ -1705,6 +1802,18 @@ category Software {
 
         & logonScripts
             ->  rootMac.rootRights  
+
+        & plistModification
+            info: "Adversaries can modify these plist files to point to their own code, can use them to execute their code in the context of another user, bypass whitelisting procedures, or even use them as a persistence mechanism."
+            ->  bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting,
+                executeCode,
+                persistence
+
+        & portKnocking
+            info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
+            ->  bypassDefensiveNetworkServiceScanning
 
         | source
             ->  executeCode
@@ -1804,6 +1913,7 @@ category Software {
             +>  _bash_profileAndBashrc,
                 _dylibHijacking,
                 logonScripts,
+                plistModification,
                 _startupItems
     }    
 }
@@ -1942,7 +2052,8 @@ category Network {
                 os.networkServiceScan,
                 os.standardCryptographicProtocol,
                 os.standardNonApplicationLayerProtocol,
-                os.uploadRemoteFile, 
+                os.uploadRemoteFile,
+                windows.templateInjection,
                 c2Server.dataExfiltrated,
                 c2Server._obfuscatedData,
                 c2Server.dataExfiltrated,
@@ -2020,7 +2131,9 @@ category Network {
 
         # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
             info: "https://attack.mitre.org/mitigations/M1037/"   
-            ->  windows._bITSJobs
+            ->  windows._bITSJobs,
+                linux.portKnocking,
+                macOS.portKnocking
 
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             info: "https://attack.mitre.org/mitigations/M1030/"
@@ -2169,10 +2282,7 @@ associations {
     Administrator [administrator] 1 <--Use--> 1-* [service] Service
     Administrator [administrator] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
     
-    //WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [os] OS
     WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows    
-    //WindowsAdmin [windowsAdmin] 1 <--Use--> 1 [administrator] Administrator
-    //WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows  
 
     Root [root] 1 <--Ui--> 1-* [os] OS
     Root [rootLinux] 1 <--Ui--> 1-* [linux] Linux
@@ -2238,6 +2348,9 @@ associations {
     NetworkSharedDrive [networkSharedDrive] 1-* <--Ui--> 1-* [c2Server] C2Server
 
     Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows 
+    Firewall [firewall] 0-1 <--Protect--> 1-* [linux] Linux   
+    Firewall [firewall] 0-1 <--Protect--> 1-* [macOS] MacOS 
+    
     InternalNetwork [internalNetwork] 1 <--Protect--> 0-1 [firewall] Firewall
     ExternalNetwork [externalNetwork] 1 <--Protect--> 0-1 [firewall] Firewall
 
