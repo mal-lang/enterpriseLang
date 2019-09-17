@@ -26,7 +26,6 @@ category Software {
 
         | bypassAntivirus
 
-
         # restrictFileAndDirectoryPermissions 
             info: "https://attack.mitre.org/mitigations/M1022/"
             ->  disablingSecurityTools
