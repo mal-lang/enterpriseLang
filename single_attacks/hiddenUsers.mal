@@ -1,0 +1,44 @@
+category Person {
+
+    asset Administrator {
+        & createUserAccount 
+    } 
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  macOS.hiddenUsers
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        # operatingSystemConfiguration
+    } 
+
+    asset MacOS extends OS {
+        & hiddenUsers
+            ->  macosAdministrator.createUserAccount // By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily
+
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  hiddenUsers
+    } 
+
+}
+
+associations {    
+    Administrator [macosAdministrator] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

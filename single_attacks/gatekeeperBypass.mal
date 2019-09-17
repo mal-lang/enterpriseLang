@@ -1,0 +1,52 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.gatekeeperBypass
+    } 
+
+    asset Administrator {
+        
+    } 
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  macOS.gatekeeperBypass
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassApplicationWhitelisting
+
+        | bypassAntivirus
+
+        # executionPrevention
+    } 
+
+    asset MacOS extends OS {
+        & gatekeeperBypass
+            info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won’t set this flag. Additionally, other utilities or events like drive-by downloads don’t necessarily set it either. This completely bypasses the built-in Gatekeeper check."
+            ->  bypassApplicationWhitelisting,
+                bypassAntivirus 
+
+        # executionPrevention
+            +>  gatekeeperBypass
+    } 
+}
+
+associations {    
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

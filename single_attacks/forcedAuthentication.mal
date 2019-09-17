@@ -1,0 +1,52 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.forcedAuthentication
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        & bruteForce
+    }  
+
+    asset Windows extends OS {   
+        & forcedAuthentication
+            info: "Adversaries may take advantage of this behavior to gain access to user account hashes through forced SMB authentication."
+            ->  templateInjection,
+                collectHashInformation
+
+        | collectHashInformation 
+            info: "With access to the credential hash, an adversary can perform off-line Brute Force cracking to gain access to plaintext credentials, or reuse it for Pass the Hash."
+            ->  bruteForce,
+                passTheHash 
+
+        & templateInjection
+
+        & passTheHash
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            +>  passTheHash
+
+        # filterNetworkTraffic
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  forcedAuthentication
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+
