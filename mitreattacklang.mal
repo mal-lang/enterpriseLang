@@ -17,6 +17,7 @@ category Person {
                 os.fileDeletion,
                 os.filePermissionsModification,
                 os.graphicalUserInterface,
+                os.hiddenFilesAndDirectories,
                 os.inhibitSystemRecovery,
                 os.installRootCertificate,
                 os.passwordPolicyDiscovery,
@@ -50,6 +51,8 @@ category Person {
                 windows.executionThroughAPI,
                 windows.executionThroughModuleLoad,
                 windows.fileSystemPermissionsWeakness,
+                windows.forcedAuthentication,
+                windows.groupPolicyModification,
                 windows.indirectCommandExecution,
                 windows.inputPrompt,
                 windows.installUtil,
@@ -70,6 +73,7 @@ category Person {
                 windows.videoCollection,
                 linux.bash_profileAndBashrc,
                 linux.clearCommandHistory,
+                linux.hISTCONTROL,
                 linux.localJobScheduling,
                 linux.portKnocking,
                 linux.spaceAfterFileName,
@@ -80,6 +84,9 @@ category Person {
                 macOS.bash_profileAndBashrc,
                 macOS.clearCommandHistory,
                 macOS.dylibHijacking,
+                macOS.gatekeeperBypass,
+                macOS.hiddenWindow,
+                macOS.hISTCONTROL,
                 macOS.inputPrompt,
                 macOS.launchctl,
                 macOS.lC_LOAD_DYLIB_Addition,
@@ -119,7 +126,8 @@ category Person {
 
         # userAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1018/"     
-            ->  windows.bITSJobs,
+            ->  os.disablingSecurityTools,
+                windows.bITSJobs,
                 windows._fileSystemPermissionsWeakness,
                 windows.indicatorBlocking,
                 windows.passTheTicket,
@@ -228,6 +236,7 @@ category Person {
                 windowsWindowsAdmin.extraWindowMemoryInjection,
                 windowsWindowsAdmin.fileSystemLogicalOffsets,
                 windowsWindowsAdmin.fileSystemPermissionsWeakness,
+                windowsWindowsAdmin.groupPolicyModification,
                 windowsWindowsAdmin.hooking,
                 windowsWindowsAdmin.hypervisor,
                 windowsWindowsAdmin.imageFileExecutionOptionsInjection,
@@ -259,6 +268,8 @@ category Person {
             info: "Unix Root account is equivalent to WindowsAdmin account."
             ->  linux.kernelModulesAndExtensions,
                 macOS.adminSecuritySoftwareDiscovery,
+                macOS.gatekeeperBypass,
+                macOS.hiddenUsers,
                 macOS.launchctl,
                 macOS.launchDaemon,
                 macOS.plistModification,
@@ -548,7 +559,7 @@ category Software {
 
         & connectionProxy
             info: "Adversaries could use trust relationships to manage command and control communications, to reduce the number of simultaneous outbound network connections, to provide resiliency in the face of connection loss, or to ride over existing trusted communications paths between victims to avoid suspicion."
-            -> c2Server.c2Connected           
+            ->  c2Server.c2Connected           
 
         & credentialDumping
 
@@ -575,7 +586,7 @@ category Software {
         & _dataEncoding
             ->  c2Server.communicate
           
-        | disablingSecurityTools
+        & disablingSecurityTools
             info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
             ->  bypassFileMonitoring,
                 bypassHostIntrusionPrevention,
@@ -610,6 +621,11 @@ category Software {
 
         & firmwareCorruption
             info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
+
+        | hiddenFilesAndDirectories
+            info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a ‘hidden’ file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
+            ->  bypassHostForensicAnalysis,
+                persistence
 
         | indicatorRemovalFromTools
             info: "An adversary may be able to modify the tool by removing the indicator that is no longer detected by the target's defensive systems."
@@ -811,6 +827,7 @@ category Software {
         # restrictFileAndDirectoryPermissions 
             info: "https://attack.mitre.org/mitigations/M1022/"
             ->  _credentialsInFiles,
+                disablingSecurityTools,
                 indicatorRemovalOnHost,
                 windows.controlPanelItems,
                 linux.clearCommandHistory,
@@ -1165,7 +1182,8 @@ category Software {
 
         | collectHashInformation    
             ->  networkSniffing, // leads to Network Sniffing attack
-                bruteForce // leads to Brute Force attack    
+                bruteForce, // leads to Brute Force attack   
+                passTheHash // leads to Pass the Hash attack 
 
         & controlPanelItems
             info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
@@ -1246,7 +1264,20 @@ category Software {
                 windowsAdmin.adminRights,
                 systemWindows.systemRights
 
-        & forcedAuthentication    
+        & forcedAuthentication
+            info: "Adversaries may take advantage of this behavior to gain access to user account hashes through forced SMB authentication."
+            ->  templateInjection,
+                collectHashInformation 
+
+        & groupPolicyModification
+            info: "Malicious GPO modifications can be used to implement Scheduled Task, Disabling Security Tools, Remote File Copy, Create Account, Service Execution and more."
+            ->  scheduledTask, // leads to Scheduled Task attack
+                disablingSecurityTools, // leads to Disabling Security Tools attack
+                uploadRemoteFile, // leads to Remote File Copy attack
+                serviceExecution, // leads to Service Execution attack
+                windowsAdministrator.createUserAccount,
+                bypassSystemAccessControls,
+                bypassFileSystemAccessControls
 
         | imageFileExecutionOptionsInjection
             info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
@@ -1309,6 +1340,8 @@ category Software {
             info: "Adversaries can register malicious password filters to harvest credentials from local computers and/or entire domains."
             ->  systemWindows.systemCredentials,
                 windowsAdmin.adminCredentials
+
+        & passTheHash
 
         & passTheTicket
             info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
@@ -1417,6 +1450,10 @@ category Software {
 
         & logonScripts
             ->  windowsAdmin.adminRights   
+
+        & scheduledTask
+
+        & serviceExecution
 
         & systemFirmware
             info: "System firmware may be modified by an adversary to perform or assist in malicious activity."
@@ -1543,7 +1580,8 @@ category Software {
 
         # passwordPolicies 
             info: "https://attack.mitre.org/mitigations/M1027/" 
-            +>  passTheTicket               
+            +>  passTheHash,
+                passTheTicket               
 
         # privilegedProcessIntegrity  
             info: "https://attack.mitre.org/mitigations/M1025/"
@@ -1598,7 +1636,8 @@ category Software {
 
         # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
             info: "https://attack.mitre.org/mitigations/M1037/"   
-            ->  lLMNR_NBT_NS_PoisoningAndRelay
+            ->  lLMNR_NBT_NS_PoisoningAndRelay,
+                forcedAuthentication
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/" 
@@ -1667,6 +1706,11 @@ category Software {
                 linuxAdministrator.adminCredentials,
                 linuxUser.userCredentials
 
+        & hISTCONTROL
+            info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
+            ->  bypassLogAnalysis,
+                bypassHostForensicAnalysis
+
         & kernelModulesAndExtensions
             info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
             ->  rootkit        
@@ -1710,11 +1754,13 @@ category Software {
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             info: "https://attack.mitre.org/mitigations/M1039/"
-            ->  _clearCommandHistory               
+            ->  _clearCommandHistory,
+                hISTCONTROL              
 
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
-            +>  bashHistory
+            +>  bashHistory,
+                hISTCONTROL
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
@@ -1756,6 +1802,23 @@ category Software {
 
         | executeCode 
             +>  computer.infectedMacOSComputer   
+
+        & gatekeeperBypass
+            info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won’t set this flag. Additionally, other utilities or events like drive-by downloads don’t necessarily set it either. This completely bypasses the built-in Gatekeeper check."
+            ->  bypassApplicationWhitelisting,
+                bypassAntivirus 
+
+        & hiddenUsers
+            info: "By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily."
+            ->  macosAdministrator.createUserAccount
+
+        & hiddenWindow
+            info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
+
+        & hISTCONTROL
+            info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
+            ->  bypassLogAnalysis,
+                bypassHostForensicAnalysis
 
         | infectedOS
             +>  bashHistory
@@ -1888,6 +1951,8 @@ category Software {
 
         # executionPrevention
             +>  adminSecuritySoftwareDiscovery,
+                gatekeeperBypass,
+                hiddenWindow,
                 kernelModulesAndExtensions,
                 lC_LOAD_DYLIB_Addition,
                 networkShareDiscovery,
@@ -1895,14 +1960,17 @@ category Software {
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             info: "https://attack.mitre.org/mitigations/M1039/"
-            ->  _clearCommandHistory
+            ->  _clearCommandHistory,
+                hISTCONTROL
 
         //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
            // -> source     
 
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
-            +>  bashHistory
+            +>  bashHistory,
+                hiddenUsers,
+                hISTCONTROL
 
         # passwordPolicies // Set and enforce secure password policies for accounts 
             info: "https://attack.mitre.org/mitigations/M1027/"
