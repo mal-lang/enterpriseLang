@@ -24,6 +24,7 @@ category Person {
                 os.permissionGroupsDiscovery,
                 os.processInjection,
                 os.runningProcessDiscovery,
+                os.redundantAccess,
                 os.remoteSystemDiscovery,
                 os.rootkit,
                 os.scripting,
@@ -59,11 +60,15 @@ category Person {
                 windows.kerberoasting,
                 windows.lLMNR_NBT_NS_PoisoningAndRelay,
                 windows.logonScripts,
+                windows.modifyRegistry,
                 windows.networkShareConnectionRemoval,
                 windows.networkShareDiscovery,
                 windows.officeApplicationStartup,
                 windows.peripheralDeviceDiscovery,
                 windows.powerShell,
+                windows.registryRunKeysOrStartupFolder,
+                windows.regsvcsOrRegasm,
+                windows.regsvr32,
                 windows.signedBinaryProxyExecution,
                 windows.signedScriptProxyExecution,
                 windows.sIPAndTrustProviderHijacking,
@@ -100,6 +105,7 @@ category Person {
                 macOS.networkShareDiscovery,
                 macOS.userSecuritySoftwareDiscovery,
                 macOS.videoCollection,
+                macOS.reopenedApplications,
                 macOS.source,
                 macOS.sudo,
                 macOS.sudoCaching,
@@ -131,17 +137,27 @@ category Person {
                 windows._fileSystemPermissionsWeakness,
                 windows.indicatorBlocking,
                 windows.passTheTicket,
+                windows.remoteDesktopProtocol,
                 linux.localJobScheduling,
                 macOS.dylibHijacking,
                 macOS.launchctl,
                 macOS.launchDaemon,
                 macOS.localJobScheduling,
                 macOS.loginItem,
+                macOS.rc_common,
                 macOS.startupItems,
                 service.userRemoteServicesLogin,
                 service.adminRemoteServicesLogin,
                 thirdpartySoftware.useThirdpartySoftware    
     }
+
+    asset RemoteDesktopUser extends User {
+        | userRights
+            +>  windows.remoteDesktopProtocol
+
+        # multiFactorAuthentication
+            +>  windows.remoteDesktopProtocol
+    }     
 
     asset Administrator {
         | adminRights
@@ -165,6 +181,7 @@ category Person {
                 os.installRootCertificate,            
                 os.networkServiceScan,
                 os.networkSniffing,
+                os.redundantAccess,
                 os.sensitiveDataCollected, 
                 os.storedDataManipulation,
                 os.twoFactorAuthenticationInterception,
@@ -200,6 +217,7 @@ category Person {
                 windows.modifyRegistrySettings,
                 windows.passTheTicket,
                 windows._powerShell,
+                windows.remoteDesktopProtocol,
                 windows.signedBinaryProxyExecution,   
                 windows.systemFirmware, 
                 linux.kernelModulesAndExtensions,
@@ -241,12 +259,17 @@ category Person {
                 windowsWindowsAdmin.hypervisor,
                 windowsWindowsAdmin.imageFileExecutionOptionsInjection,
                 windowsWindowsAdmin.lSASS_Driver,
+                windowsWindowsAdmin.modifyRegistry,
+                windowsWindowsAdmin.netshHelperDLL,
                 windowsWindowsAdmin.networkShareConnectionRemoval,
                 windowsWindowsAdmin.officeApplicationStartup,
                 windowsWindowsAdmin.passwordFilterDLL,
                 windowsWindowsAdmin.portMonitors,
                 windowsWindowsAdmin.powerShell,
                 windowsWindowsAdmin.queryRegistery,
+                windowsWindowsAdmin.registryRunKeysOrStartupFolder,
+                windowsWindowsAdmin.regsvcsOrRegasm,
+                windowsWindowsAdmin.regsvr32,
                 windowsWindowsAdmin.sIDHistoryInjection,
                 windowsWindowsAdmin.scheduledTask,
                 windowsWindowsAdmin.systemFirmware
@@ -273,6 +296,7 @@ category Person {
                 macOS.launchctl,
                 macOS.launchDaemon,
                 macOS.plistModification,
+                macOS.rc_common,
                 macOS.startupItems,
                 macOS.kernelModulesAndExtensions
     }
@@ -291,6 +315,8 @@ category Person {
                 windows.hypervisor,
                 windows.imageFileExecutionOptionsInjection,
                 windows.lSASS_Driver,
+                windows.modifyRegistry,
+                windows.netshHelperDLL,
                 windows.passwordFilterDLL,
                 windows.portMonitors,
                 windows.sIDHistoryInjection,
@@ -301,6 +327,7 @@ category Person {
                 os.graphicalUserInterface,
                 os.inhibitSystemRecovery,
                 os.networkSniffing,
+                os.redundantAccess,
                 os.rootkit,
                 os.systemDataDestruction,
                 os.storedDataManipulation,
@@ -336,7 +363,8 @@ category Person {
                 windows.inputPrompt,
                 windows.templateInjection,
                 macOS.inputPrompt, 
-                macOS.loginItem,  
+                macOS.loginItem,
+                macOS.reopenedApplications, 
                 browser.runExtensions,
                 thirdpartySoftware._useThirdpartySoftware            
         
@@ -641,7 +669,33 @@ category Software {
 
         & installRootCertificate
             info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
-            ->  bypassDigitalCertificateValidation   
+            ->  bypassDigitalCertificateValidation  
+
+        & masquerading
+
+        & multibandCommunication
+            info: "Some adversaries may split communications between different protocols. There could be one protocol for inbound command and control and another for outbound data, allowing it to bypass certain firewall restrictions."
+            ->  c2Server.c2Connected,
+                externalNetwork.bypassFirewall,
+                internalNetwork.bypassFirewall
+
+        & multiHopProxy
+            info: "To disguise the source of malicious traffic, adversaries may chain together multiple proxies."
+            ->  c2Server.c2Connected
+
+        & multilayerEncryption
+            info: "An adversary performs C2 communications using multiple layers of encryption, typically (but not exclusively) tunneling a custom encryption scheme within a protocol encryption scheme such as HTTPS or SMTPS."
+            ->  c2Server.c2Connected
+
+        & multiStageChannels
+            info: "Adversaries may create multiple stages for command and control that are employed under different conditions or for certain functions."
+            ->  c2Server.c2Connected,
+                fallbackChannels // The loader may also have backup first-stage callbacks or Fallback Channels in case the original first-stage communication path is discovered and blocked.
+
+        & networkDenialOfService
+            info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
+            ->  applicationExhaustionFlood,
+                service.serviceExhaustionFlood
  
         & networkSniffing
             info: "An adversary may place a network interface into promiscuous mode to passively access data in transit over the network, or use span ports to capture a larger amount of data."
@@ -701,6 +755,13 @@ category Software {
             ->  administrator.adminRights,
                 bypassAntivirus,
                 bypassProcessWhitelisting
+
+        & redundantAccess
+            info: "Adversaries may use more than one remote access tool with varying command and control protocols as a hedge against detection. Adversaries may also attempt to gain access to Valid Accounts to use External Remote Services such as external VPNs as a way to maintain access despite interruptions to remote access tools deployed within a target network."
+            ->  validAccounts,
+                bypassAntivirus,
+                externalNetwork.bypassNetworkIntrusionDetection,
+                internalNetwork.bypassNetworkIntrusionDetection 
 
         | rootkit
             info: "Adversaries may use rootkits to hide the presence of programs, files, network connections, services, drivers, and other system components."
@@ -1156,10 +1217,10 @@ category Software {
             ->  persistence 
 
         & accessibilityFeatures
-            info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system"
+            info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system."
             ->  executeCode,
                 system.systemRights,
-                remoteDesktopProtocol 
+                _remoteDesktopProtocol 
 
         & bITSJobs  
             ->  _bITSJobs
@@ -1194,7 +1255,8 @@ category Software {
         | componentObjectModelHijacking
             info: "Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
             ->  adversary.maliciousCodeInserted,
-                bypassAutorunsAnalysis             
+                bypassAutorunsAnalysis,
+                _regsvr32             
 
         | componentFirmware
             info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."       
@@ -1326,7 +1388,15 @@ category Software {
         & lSASS_Driver
             info: "Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations."
             ->  executeCode,
-                persistence    
+                persistence
+
+        & modifyRegistry
+            info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution."
+            ->  persistence,
+                bypassHostForensicAnalysis
+
+        | netshHelperDLL
+            info: "Adversaries can use netsh.exe with helper DLLs to proxy execution of arbitrary code in a persistent manner."
 
         | networkShareConnectionRemoval
             info: "Adversaries may remove share connections that are no longer useful in order to clean up traces of their operation."
@@ -1358,8 +1428,46 @@ category Software {
             info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
             ->  internalNetwork.remoteSystemsConnection            
 
-        | remoteDesktopProtocol // leads to Remote Desktop Protocol attack
-            ->  system.systemRights
+        & codeProxyExecution
+            ->  persistence
+
+        | rDPSessionHijacking
+            info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
+
+        & registryRunKeysOrStartupFolder
+            info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
+            ->  masquerading, // leads to Masquerading attack
+                service.remoteAccessTools,
+                persistence
+
+        & regsvcsOrRegasm
+            info: "Adversaries can use Regsvcs and Regasm to proxy execution of code through a trusted Windows utility. Both utilities may be used to bypass process whitelisting."
+            ->  codeProxyExecution, 
+                bypassProcessWhitelisting,
+                bypassDigitalCertificateValidation
+
+        & regsvr32
+            info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
+            ->  bypassProcessWhitelisting,
+                bypassAntivirus,
+                bypassDigitalCertificateValidation,
+                codeProxyExecution,
+                _regsvr32
+
+        & _regsvr32
+            rationale: "This is a helper attack step for Regsvr32.exe to establish Persistence via Component Object Model Hijacking."
+            ->  persistence
+
+        & remoteDesktopProtocol
+            info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
+            ->  _remoteDesktopProtocol,
+                remoteSystemDiscovery,
+                rDPSessionHijacking
+
+        & _remoteDesktopProtocol
+            rationale: "This is a helper attack step. It requires all its parent attack steps to compromise - Accessibility Features when connected over Remote Desktop Protocol will cause the replaced file to be executed with SYSTEM privileges."
+            ->  persistence,
+                system.systemRights     
 
         & sIDHistoryInjection
             info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
@@ -1544,7 +1652,8 @@ category Software {
                 bypassUserAccountControl,
                 _dLLSearchOrderHijacking,
                 dLLSideLoading,
-                _fileSystemPermissionsWeakness
+                _fileSystemPermissionsWeakness,
+                remoteDesktopProtocol
 
         # codeSigning
             info: "https://attack.mitre.org/mitigations/M1045/"  
@@ -1566,6 +1675,8 @@ category Software {
                 installUtil,
                 networkShareDiscovery,
                 queryRegistery,
+                regsvcsOrRegasm,
+                regsvr32,
                 scheduledTask, 
                 signedBinaryProxyExecution,
                 signedScriptProxyExecution,
@@ -1573,6 +1684,10 @@ category Software {
                 systemTimeDiscovery,
                 trustedDeveloperUtilities,
                 userSecuritySoftwareDiscovery
+
+        # exploitProtection
+            info: "https://attack.mitre.org/mitigations/M1050/"
+            +>  regsvr32
 
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
@@ -1597,6 +1712,7 @@ category Software {
             +>  dLLSideLoading,
                 indicatorBlocking,
                 logonScripts,
+                modifyRegistry,
                 sIPAndTrustProviderHijacking   
 
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
@@ -1631,6 +1747,8 @@ category Software {
                 officeApplicationStartup,
                 powerShell,
                 registryKeysEnabled,
+                regsvcsOrRegasm,
+                remoteDesktopProtocol,
                 templateInjection,
                 trustedDeveloperUtilities
 
@@ -1638,6 +1756,10 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  lLMNR_NBT_NS_PoisoningAndRelay,
                 forcedAuthentication
+
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            +>  remoteDesktopProtocol   
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/" 
@@ -1878,6 +2000,14 @@ category Software {
             info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
             ->  bypassDefensiveNetworkServiceScanning
 
+        & rc_common
+            info: "Adversaries can use the rc.common file as a way to hide code for persistence that will execute on each reboot as the root user."
+            ->  persistence
+
+        & reopenedApplications
+            info: "An adversary can modify one of these files directly to include a link to their malicious executable to provide a persistence mechanism each time the user reboots their machine."
+            ->  persistence
+
         | source
             ->  executeCode
 
@@ -1948,6 +2078,10 @@ category Software {
             +>  appleScript,
                 lC_LOAD_DYLIB_Addition,
                 lC_MAINHijacking
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  reopenedApplications
 
         # executionPrevention
             +>  adminSecuritySoftwareDiscovery,
@@ -2083,8 +2217,14 @@ category Network {
             info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  os.customCommandAndControlProtocol,
                 os.endpointDenialOfService,
+                os.multiHopProxy,
+                os.networkDenialOfService,
                 os.standardNonApplicationLayerProtocol,
                 windows._bITSJobs 
+
+        # limitAccessToResourceOverNetwork
+            info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  windows.remoteDesktopProtocol      
 
         & c2Connexion
             ->  c2Server.c2Connected
@@ -2117,7 +2257,11 @@ category Network {
                 os._dataEncoding,
                 os.downloadRemoteFile,
                 os.fallbackChannels,
+                os.multibandCommunication,
+                os.multilayerEncryption,
+                os.multiStageChannels,
                 os.networkServiceScan,
+                os.redundantAccess,
                 os.standardCryptographicProtocol,
                 os.standardNonApplicationLayerProtocol,
                 os.uploadRemoteFile,
@@ -2167,6 +2311,8 @@ category Network {
         # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
             info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  os.endpointDenialOfService,
+                os.multiHopProxy,
+                os.networkDenialOfService,
                 os.standardNonApplicationLayerProtocol,
                 windows._bITSJobs  
 
@@ -2178,6 +2324,10 @@ category Network {
                 os.connectionProxy,
                 os._dataEncoding,
                 os.fallbackChannels,
+                os.multibandCommunication,
+                os.multilayerEncryption,
+                os.multiStageChannels,
+                os.redundantAccess,
                 os.standardCryptographicProtocol,
                 os.standardNonApplicationLayerProtocol
 
@@ -2206,7 +2356,8 @@ category Network {
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             info: "https://attack.mitre.org/mitigations/M1030/"
             ->  computer.uncommonlyUsedPortsConnection,
-                windows.distributedComponentObjectModel
+                windows.distributedComponentObjectModel,
+                windows.remoteDesktopProtocol
         
         | bypassFirewall
     }
@@ -2341,6 +2492,8 @@ associations {
     User [user] 1 <--Use--> 1-* [internalNetwork] InternalNetwork
     User [user] 1 <--Use--> 1-* [externalNetwork] ExternalNetwork
 
+    RemoteDesktopUser [windowsRemoteDestopUser] 1 <--Ui--> 1-* [windows] Windows
+
     Administrator [administrator] 1 <--Manage--> 1-* [user] User
     Administrator [administrator] 1 <--Ui--> 1-* [os] OS
     Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
@@ -2366,8 +2519,8 @@ associations {
     Employee [employee] 1 <--Use--> 1-* [user] User
     Employee [employee] 1 <--Ui--> 1-* [os] OS
     Employee [employee] 1 <--Ui--> 1-* [windows] Windows
-    Employee [employee] 1 <--Ui--> 1-* [macOS] MacOS
     Employee [employee] 1 <--Ui--> 1-* [linux] Linux
+    Employee [employee] 1 <--Ui--> 1-* [macOS] MacOS
     Employee [employee] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
     Employee [employee] 1 <--Use--> 1-* [removableMedia] RemovableMedia
 
@@ -2399,11 +2552,6 @@ associations {
     Computer [computerWindows] 1 <--Software--> 1 [windows] Windows
     //Computer [computer] 1 <--Software--> 1 [linux] Linux
     
-    ExternalNetwork [externalNetwork] 1 <--Connect--> 1 [c2Server] C2Server
-    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [computer] Computer
-    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
-    ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1 [windows] Windows
-    ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [service] Service
     InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [externalNetwork] ExternalNetwork   
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
@@ -2412,7 +2560,12 @@ associations {
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [computer] Computer
     //InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [networkSharedDrive] NetworkSharedDrive      
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [networkSharedDrive] NetworkSharedDrive
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1 [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [computer] Computer
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1 [windows] Windows
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [service] Service   
     NetworkSharedDrive [networkSharedDrive] 1-* <--Ui--> 1-* [c2Server] C2Server
 
     Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows 
