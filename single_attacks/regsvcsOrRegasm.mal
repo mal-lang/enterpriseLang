@@ -1,0 +1,61 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.regsvcsOrRegasm
+    } 
+
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.regsvcsOrRegasm
+    }              
+}
+
+category Software {
+    asset Service {
+        | remoteAccessTools
+    }  
+
+    abstractAsset OS {
+        | bypassDigitalCertificateValidation
+
+        | bypassProcessWhitelisting
+    } 
+
+    asset Windows extends OS {   
+        & regsvcsOrRegasm
+            info: "Adversaries can use Regsvcs and Regasm to proxy execution of code through a trusted Windows utility. Both utilities may be used to bypass process whitelisting."
+            ->  codeProxyExecution, 
+                bypassProcessWhitelisting,
+                bypassDigitalCertificateValidation
+
+        & codeProxyExecution
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  regsvcsOrRegasm
+
+        # executionPrevention
+            +>  regsvcsOrRegasm
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+

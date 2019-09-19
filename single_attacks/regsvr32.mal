@@ -1,0 +1,69 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.regsvr32
+    } 
+
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.regsvr32
+    }              
+}
+
+category Software {
+    abstractAsset OS {
+        | bypassDigitalCertificateValidation
+
+        | bypassProcessWhitelisting
+
+        | bypassAntivirus
+
+        | persistence
+    } 
+
+    asset Windows extends OS {   
+        & regsvr32
+            info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
+            ->  bypassProcessWhitelisting,
+                bypassAntivirus,
+                bypassDigitalCertificateValidation,
+                codeProxyExecution,
+                _regsvr32
+
+        & _regsvr32
+            rationale: "This is a helper attack step for Regsvr32.exe to establish Persistence via Component Object Model Hijacking."
+            ->  persistence
+
+        | componentObjectModelHijacking
+            ->  _regsvr32
+
+        & codeProxyExecution
+
+        # exploitProtection
+            info: "https://attack.mitre.org/mitigations/M1050/"
+            +>  regsvr32
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+
+

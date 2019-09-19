@@ -1,0 +1,68 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.redundantAccess
+    } 
+
+    asset Administrator {
+        | adminRights
+            ->  os.redundantAccess
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            ->  os.redundantAccess
+    }                
+}
+
+category Software {
+    abstractAsset OS{
+        & redundantAccess
+            info: "Adversaries may use more than one remote access tool with varying command and control protocols as a hedge against detection. Adversaries may also attempt to gain access to Valid Accounts to use External Remote Services such as external VPNs as a way to maintain access despite interruptions to remote access tools deployed within a target network."
+            ->  validAccounts,
+                bypassAntivirus,
+                externalNetwork.bypassNetworkIntrusionDetection,
+                internalNetwork.bypassNetworkIntrusionDetection
+
+        | bypassAntivirus
+
+        | validAccounts
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.redundantAccess
+
+        | bypassNetworkIntrusionDetection
+    } 
+
+    asset ExternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.redundantAccess
+
+        | bypassNetworkIntrusionDetection
+    }
+}
+
+associations {    
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS  
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

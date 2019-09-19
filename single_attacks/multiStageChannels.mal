@@ -1,0 +1,48 @@
+category Software {
+    abstractAsset OS{
+        & multiStageChannels
+            info: "Adversaries may create multiple stages for command and control that are employed under different conditions or for certain functions."
+            ->  c2Server.c2Connected,
+                fallbackChannels // The loader may also have backup first-stage callbacks or Fallback Channels in case the original first-stage communication path is discovered and blocked.
+
+        & fallbackChannels
+    } 
+}
+
+category Network {
+
+    asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.multiStageChannels
+    } 
+
+    asset ExternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.multiStageChannels
+    } 
+}
+
+category Hardware {
+    asset C2Server {
+        | c2Connected
+    } 
+}
+
+associations {    
+    OS [os] 1-* <--Connect--> 1-* [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

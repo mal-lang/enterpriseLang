@@ -1,0 +1,44 @@
+category Software {
+    abstractAsset OS{
+        & multiHopProxy
+            info: "To disguise the source of malicious traffic, adversaries may chain together multiple proxies."
+            ->  c2Server.c2Connected
+    } 
+}
+
+category Network {
+
+    asset InternalNetwork {
+        # filterNetworkTraffic
+            ->  os.multiHopProxy
+    } 
+
+    asset ExternalNetwork {
+        # filterNetworkTraffic
+            ->  os.multiHopProxy
+    } 
+}
+
+category Hardware {
+    asset C2Server {
+        | c2Connected
+    } 
+}
+
+
+associations {    
+    OS [os] 1-* <--Connect--> 1-* [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+
