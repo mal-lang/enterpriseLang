@@ -22,10 +22,13 @@ category Person {
                 os.installRootCertificate,
                 os.passwordPolicyDiscovery,
                 os.permissionGroupsDiscovery,
+                os.privateKeys,
                 os.processInjection,
                 os.runningProcessDiscovery,
+                os.runtimeDataManipulation,
                 os.redundantAccess,
                 os.remoteSystemDiscovery,
+                os.resourceHijacking,
                 os.rootkit,
                 os.scripting,
                 os.systemInformationDiscovery,
@@ -64,18 +67,25 @@ category Person {
                 windows.networkShareConnectionRemoval,
                 windows.networkShareDiscovery,
                 windows.officeApplicationStartup,
+                windows.pathInterception,
                 windows.peripheralDeviceDiscovery,
                 windows.powerShell,
+                windows.processDoppelganging,
+                windows.processHollowing,
                 windows.registryRunKeysOrStartupFolder,
                 windows.regsvcsOrRegasm,
                 windows.regsvr32,
+                windows.rundll32,
+                windows.screensaver,
                 windows.signedBinaryProxyExecution,
                 windows.signedScriptProxyExecution,
                 windows.sIPAndTrustProviderHijacking,
                 windows.templateInjection,
                 windows.trustedDeveloperUtilities,
                 windows.userSecuritySoftwareDiscovery,
+                windows.userServiceStop,
                 windows.videoCollection,
+                windows.xslScriptProcessing,
                 linux.bash_profileAndBashrc,
                 linux.clearCommandHistory,
                 linux.hISTCONTROL,
@@ -133,11 +143,14 @@ category Person {
         # userAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  os.disablingSecurityTools,
+                windows.adminServiceStop,
                 windows.bITSJobs,
                 windows._fileSystemPermissionsWeakness,
                 windows.indicatorBlocking,
                 windows.passTheTicket,
+                windows.pathInterception,
                 windows.remoteDesktopProtocol,
+                windows.userServiceStop,
                 linux.localJobScheduling,
                 macOS.dylibHijacking,
                 macOS.launchctl,
@@ -182,6 +195,8 @@ category Person {
                 os.networkServiceScan,
                 os.networkSniffing,
                 os.redundantAccess,
+                os.resourceHijacking,
+                os.runtimeDataManipulation,
                 os.sensitiveDataCollected, 
                 os.storedDataManipulation,
                 os.twoFactorAuthenticationInterception,
@@ -214,7 +229,7 @@ category Person {
             info: "https://attack.mitre.org/mitigations/M1026/"
             ->  createUserAccount,
                 os.firmwareCorruption,
-                windows.modifyRegistrySettings,
+                windows.modifyRegistry,
                 windows.passTheTicket,
                 windows._powerShell,
                 windows.remoteDesktopProtocol,
@@ -238,6 +253,7 @@ category Person {
             +>  accountManipulation,
                 windowsWindowsAdmin.accessibilityFeatures,
                 windowsWindowsAdmin.adminSecuritySoftwareDiscovery,
+                windowsWindowsAdmin.adminServiceStop,
                 windowsWindowsAdmin.appCertDLLs,
                 windowsWindowsAdmin.appInitDLLs,
                 windowsWindowsAdmin.applicationShimming,
@@ -247,6 +263,7 @@ category Person {
                 windowsWindowsAdmin.bypassUserAccountControl,
                 windowsWindowsAdmin.changeDefaultFileAssociation,
                 windowsWindowsAdmin.createService,
+                windowsWindowsAdmin.dCShadow,
                 windowsWindowsAdmin.distributedComponentObjectModel,
                 windowsWindowsAdmin.dLLSearchOrderHijacking,
                 windowsWindowsAdmin.executionThroughAPI,
@@ -264,12 +281,15 @@ category Person {
                 windowsWindowsAdmin.networkShareConnectionRemoval,
                 windowsWindowsAdmin.officeApplicationStartup,
                 windowsWindowsAdmin.passwordFilterDLL,
+                windowsWindowsAdmin.pathInterception,
                 windowsWindowsAdmin.portMonitors,
                 windowsWindowsAdmin.powerShell,
+                windowsWindowsAdmin.processDoppelganging,
                 windowsWindowsAdmin.queryRegistery,
                 windowsWindowsAdmin.registryRunKeysOrStartupFolder,
                 windowsWindowsAdmin.regsvcsOrRegasm,
                 windowsWindowsAdmin.regsvr32,
+                windowsWindowsAdmin.securitySupportProvider,
                 windowsWindowsAdmin.sIDHistoryInjection,
                 windowsWindowsAdmin.scheduledTask,
                 windowsWindowsAdmin.systemFirmware
@@ -318,9 +338,12 @@ category Person {
                 windows.modifyRegistry,
                 windows.netshHelperDLL,
                 windows.passwordFilterDLL,
+                windows.pathInterception,
                 windows.portMonitors,
+                windows.processDoppelganging,
                 windows.sIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
+                windows.systemServiceStop,
                 os.credentialsInFiles,
                 os.filePermissionsModification,
                 os.firmwareCorruption,
@@ -329,6 +352,7 @@ category Person {
                 os.networkSniffing,
                 os.redundantAccess,
                 os.rootkit,
+                os.runtimeDataManipulation,
                 os.systemDataDestruction,
                 os.storedDataManipulation,
                 os.twoFactorAuthenticationInterception,
@@ -553,7 +577,8 @@ category Software {
                 c2Server.generateDomainNames
 
         | compromisedSystems //with probability
-            ->  removableMedia.infectedMedia
+            ->  removableMedia.infectedMedia,
+                privateKeys
             
         & binaryPadding
             ->  bypassSignatureBasedDetection,
@@ -667,6 +692,8 @@ category Software {
                 bypassLogAnalysis,
                 bypassAntivirus    
 
+        | inputCapture
+
         & installRootCertificate
             info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
             ->  bypassDigitalCertificateValidation  
@@ -711,7 +738,17 @@ category Software {
                 bypassApplicationWhitelisting,
                 bypassProcessWhitelisting,
                 bypassLogAnalysis,
-                bypassFileOrPathWhitelisting          
+                bypassFileOrPathWhitelisting      
+
+        & privateKeys
+            info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
+            ->  service.userRemoteServicesLogin,
+                inputCapture,
+                bruteForce  
+
+        | resourceHijacking
+            info: "Adversaries may consume enough system resources to negatively impact and/or cause affected machines to become unresponsive."
+            ->  computer.unresponsive  
 
         | runCode
             ->  computer.infectedComputer
@@ -776,6 +813,9 @@ category Software {
                 windows.hooking, // leads to hooking attack
                 windows.hypervisor, // leads to hypervisor attack
                 windows.systemFirmware // leads to system firmware attack
+
+        & runtimeDataManipulation
+            info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
         & standardCryptographicProtocol
             info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
@@ -895,6 +935,8 @@ category Software {
                 linux._sudo,
                 macOS.clearCommandHistory,
                 macOS._sudo,
+                privateKeys,
+                runtimeDataManipulation,
                 storedDataManipulation
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
@@ -920,6 +962,7 @@ category Software {
                 _credentialsInFiles,
                 _credentialsInRegistry,
                 _validAccounts,
+                privateKeys,
                 thirdpartySoftware._useThirdpartySoftware
 
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
@@ -948,7 +991,8 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1047/"
             ->  _credentialsInFiles,
                 _credentialsInRegistry,
-                browser.runExtensions  
+                browser.runExtensions,
+                privateKeys  
 
         # codeSigning
             info: "https://attack.mitre.org/mitigations/M1045/" 
@@ -1097,6 +1141,12 @@ category Software {
         & systemDataDestruction
             ->  inhibitSystemRecovery  
 
+        & userDataEncryptedForImpact
+   
+        & adminDataEncryptedForImpact
+
+        & systemDataEncryptedForImpact
+
         & dataCompressed
             ->  dataEncrypted,
                 dataStaged,
@@ -1156,6 +1206,7 @@ category Software {
             ->  _automatedCollection,
                 indicatorRemovalOnHost,
                 networkSniffing,
+                privateKeys,
                 storedDataManipulation  
 
         # remoteDataStorage 
@@ -1270,6 +1321,11 @@ category Software {
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation   
 
+        | dCShadow
+            info: "This technique may bypass system logging and security monitors such as security information and event management (SIEM) products."
+            ->  _sIDHistoryInjection,
+                bypassLogAnalysis
+
         | deobfuscateOrDecodeFilesOrInformation 
             ->  bypassAntivirus,
                 bypassHostIntrusionPrevention,
@@ -1278,7 +1334,7 @@ category Software {
                 internalNetwork.bypassNetworkIntrusionDetection     
 
         | dLLSearchOrderHijacking
-            ->  _dLLSearchOrderHijacking 
+            ->  _dLLSearchOrderHijacking
 
         & _dLLSearchOrderHijacking
             ->  bypassProcessWhitelisting,
@@ -1391,9 +1447,11 @@ category Software {
                 persistence
 
         & modifyRegistry
-            info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution."
+            info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution. An adversary may modify these Registry keys to add new SSPs."
             ->  persistence,
-                bypassHostForensicAnalysis
+                securitySupportProvider,
+                bypassHostForensicAnalysis,
+                distributedComponentObjectModel   
 
         | netshHelperDLL
             info: "Adversaries can use netsh.exe with helper DLLs to proxy execution of arbitrary code in a persistent manner."
@@ -1401,6 +1459,12 @@ category Software {
         | networkShareConnectionRemoval
             info: "Adversaries may remove share connections that are no longer useful in order to clean up traces of their operation."
             ->  bypassHostForensicAnalysis
+
+        & ntfsFileAttributes
+            info: "Adversaries may store malicious data or binaries in file attribute metadata instead of directly in files, to evade some defenses, such as static indicator scanning tools and anti-virus."
+            ->  bypassSignatureBasedDetection,
+                bypassHostForensicAnalysis,
+                bypassAntivirus
 
         & officeApplicationStartup
             info: "There are multiple mechanisms that can be used with Office for persistence when an Office-based application is started."
@@ -1418,6 +1482,16 @@ category Software {
             ->  credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
                 internalNetwork.c2Connexion // gain remote access 
 
+        & pathInterception
+            info: "Adversaries may take advantage of performing path interception: unquoted paths, path environment variable misconfigurations, and search order hijacking."
+            ->  unquotedPaths,
+                pathEnvironmentVariableMisconfiguration,
+                searchOrderHijacking
+
+        | pathEnvironmentVariableMisconfiguration 
+            info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
+            ->  executeCode
+
         & powerShell
             info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  _powerShell,
@@ -1426,7 +1500,21 @@ category Software {
 
         & _powerShell
             info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
-            ->  internalNetwork.remoteSystemsConnection            
+            ->  internalNetwork.remoteSystemsConnection   
+
+        | processDoppelganging
+            info: "Process Doppelgänging involves replacing the memory of a legitimate process, enabling the veiled execution of malicious code that may evade defenses and detection."
+            ->  bypassAntivirus,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection,
+                bypassFileOrPathWhitelisting    
+
+        | processHollowing
+            info: "Execution of the malicious code is masked under a legitimate process and may evade defenses and detection analysis."
+            ->  bypassAntivirus,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection,
+                bypassFileOrPathWhitelisting   
 
         & codeProxyExecution
             ->  persistence
@@ -1467,13 +1555,37 @@ category Software {
         & _remoteDesktopProtocol
             rationale: "This is a helper attack step. It requires all its parent attack steps to compromise - Accessibility Features when connected over Remote Desktop Protocol will cause the replaced file to be executed with SYSTEM privileges."
             ->  persistence,
-                system.systemRights     
+                system.systemRights  
+
+        & rundll32
+            info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Rundll32 can also been used to execute scripts."
+            ->  bypassAntivirus,
+                bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation,
+                executeCode  
+
+        & securitySupportProvider
+            info: "An adversary may modify these Registry keys to add new SSPs."
+            ->  persistence
+
+        & screensaver
+            info: "Adversaries can use screensaver settings to maintain persistence by setting the screensaver to run malware after a certain timeframe of user inactivity."
+            ->  persistence
+
+        | searchOrderHijacking
+            info: "Search order hijacking occurs when an adversary abuses the order in which Windows searches for programs that are not given a path."
+            ->  _dLLSearchOrderHijacking // Search order hijacking is a common practice for DLL Search Order Hijacking    
 
         & sIDHistoryInjection
             info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
-            ->  service.adminRemoteServicesLogin, // leads to Remote Services attack
+            ->  _sIDHistoryInjection,
+                service.adminRemoteServicesLogin, // leads to Remote Services attack
                 windowsAdminShares, // leads to Windows Admin Shares attack    
-                windowsRemoteManagement // leads to Windows Remote Management attack         
+                windowsRemoteManagement // leads to Windows Remote Management attack 
+
+        & _sIDHistoryInjection 
+            info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
+            ->  persistence          
 
         & signedBinaryProxyExecution
             info: "Several Microsoft signed binaries that are default on Windows installations can be used to proxy execution of other files. This behavior may be abused by adversaries to execute malicious files that could bypass application whitelisting and signature validation on systems."
@@ -1514,7 +1626,24 @@ category Software {
             ->  bypassApplicationWhitelisting,
                 executeCode,
                 signedBinaryProxyExecution,
-                signedScriptProxyExecution         
+                signedScriptProxyExecution    
+
+        | unquotedPaths
+            info: "An adversary can place an executable in a higher level directory of the path, and Windows will resolve that executable instead of the intended executable."
+            ->  executeCode   
+
+        & userServiceStop
+            info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
+            ->  userDataDestruction,
+                userDataEncryptedForImpact
+
+        & adminServiceStop
+            ->  adminDataDestruction,
+                adminDataEncryptedForImpact
+
+        & systemServiceStop
+            ->  systemDataDestruction,
+                systemDataEncryptedForImpact
 
         & windowsAdminShares
             ->  networkShareConnectionRemoval // leads to Network Share Connection Removal attack
@@ -1551,10 +1680,7 @@ category Software {
             info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
             ->  persistance
 
-        | captureAPICalls
-
-        & modifyRegistrySettings
-            ->  distributedComponentObjectModel      
+        | captureAPICalls   
 
         & logonScripts
             ->  windowsAdmin.adminRights   
@@ -1637,6 +1763,14 @@ category Software {
         & bootkit 
             ->  persistance
 
+        & xslScriptProcessing
+            info: "Adversaries may abuse this functionality to execute arbitrary files while potentially bypassing application whitelisting defenses."
+            ->  executeCode,
+                windowsManagementInstrumentation, // leads to Windows Management Instrumentation attack
+                bypassAntivirus,
+                bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation
+
         # activeDirectoryConfiguration
             info: "https://attack.mitre.org/mitigations/M1015/"
             +>  passTheTicket
@@ -1653,6 +1787,7 @@ category Software {
                 _dLLSearchOrderHijacking,
                 dLLSideLoading,
                 _fileSystemPermissionsWeakness,
+                pathInterception,
                 remoteDesktopProtocol
 
         # codeSigning
@@ -1674,20 +1809,24 @@ category Software {
                 executionThroughModuleLoad,
                 installUtil,
                 networkShareDiscovery,
+                pathInterception,
                 queryRegistery,
                 regsvcsOrRegasm,
                 regsvr32,
                 scheduledTask, 
+                screensaver,
                 signedBinaryProxyExecution,
                 signedScriptProxyExecution,
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
                 trustedDeveloperUtilities,
-                userSecuritySoftwareDiscovery
+                userSecuritySoftwareDiscovery,
+                xslScriptProcessing
 
         # exploitProtection
             info: "https://attack.mitre.org/mitigations/M1050/"
-            +>  regsvr32
+            +>  regsvr32,
+                rundll32
 
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
@@ -1700,7 +1839,8 @@ category Software {
 
         # privilegedProcessIntegrity  
             info: "https://attack.mitre.org/mitigations/M1025/"
-            +>  authenticationPackage 
+            +>  authenticationPackage,
+                securitySupportProvider 
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
@@ -1713,11 +1853,19 @@ category Software {
                 indicatorBlocking,
                 logonScripts,
                 modifyRegistry,
-                sIPAndTrustProviderHijacking   
+                ntfsFileAttributes,
+                pathInterception,
+                sIPAndTrustProviderHijacking,
+                userServiceStop,
+                adminServiceStop,
+                systemServiceStop  
 
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
             info: "https://attack.mitre.org/mitigations/M1024/"
-            ->  sIPAndTrustProviderHijacking
+            ->  sIPAndTrustProviderHijacking,
+                userServiceStop,
+                adminServiceStop,
+                systemServiceStop
 
         # restrictLibraryLoading 
             info: "https://attack.mitre.org/mitigations/M1044/"
@@ -1749,6 +1897,7 @@ category Software {
                 registryKeysEnabled,
                 regsvcsOrRegasm,
                 remoteDesktopProtocol,
+                screensaver,
                 templateInjection,
                 trustedDeveloperUtilities
 
@@ -2277,8 +2426,13 @@ category Network {
                 administrator.createUserAccount,
                 os.commonlyUsedPortsConnection,
                 os.customCommandAndControlProtocol,
+                os.privateKeys,
+                os.runtimeDataManipulation,
                 os.standardNonApplicationLayerProtocol,
                 windows.domainTrustDiscovery,
+                windows.userServiceStop,
+                windows.adminServiceStop,
+                windows.systemServiceStop,
                 service.exploitationOfRemoteServices
 
         # vulnerabilityScanning // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
@@ -2334,7 +2488,12 @@ category Network {
         # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
             info: "https://attack.mitre.org/mitigations/M1030/"
             ->  service.exploitationOfRemoteServices,
-                os.standardNonApplicationLayerProtocol          
+                os.privateKeys,
+                os.runtimeDataManipulation,
+                os.standardNonApplicationLayerProtocol,
+                windows.userServiceStop,
+                windows.adminServiceStop,
+                windows.systemServiceStop          
 
         # sSLOrTLSInspection
             info: "https://attack.mitre.org/mitigations/M1020/"
@@ -2395,7 +2554,9 @@ category Hardware {
         & uncommonlyUsedPortsConnection
             ->  internalNetwork.c2Connexion,
                 firewall.bypassFirewall,
-                internalNetwork.bypassProxies       
+                internalNetwork.bypassProxies  
+
+        | unresponsive
 
         | exfiltrationOverPhysicalMedium
             ->  removableMedia.dataExfiltrated
@@ -2424,6 +2585,12 @@ category Hardware {
         & _collectVideo
             ->  os.dataCollected
     }
+
+    asset NTFSPartition extends Computer {
+        E nftsPartitionExists
+            <-  nftsPartition
+            ->  windows.ntfsFileAttributes
+    } 
 
     asset Webcam {
         | collectVideo
@@ -2580,4 +2747,6 @@ associations {
     Computer [computer] 1 <--Use--> 1 [microphone] Microphone
     VideoCallApplication [videoCallApplication] 1-* <--Software--> 1 [computer] Computer
     Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
+    NTFSPartition [nftsPartition] 1-* <--Hardware--> 1 [windows] Windows
+    NTFSPartition [nftsPartition] 1-* <--Extends--> 1 [windowsComputer] Computer
 }
