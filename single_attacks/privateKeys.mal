@@ -1,0 +1,75 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.privateKeys
+    } 
+}
+
+category Software {
+    asset Service {
+        & userRemoteServicesLogin
+    } 
+
+    abstractAsset OS {
+        | compromisedSystems //with probability
+            ->  privateKeys
+
+        & privateKeys
+            info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
+            ->  service.userRemoteServicesLogin,
+                inputCapture,
+                bruteForce
+
+        | inputCapture
+
+        & bruteForce
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            ->  privateKeys
+
+        # encryptSensitiveInformation 
+            info: "https://attack.mitre.org/mitigations/M1041/"
+            ->  privateKeys
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            ->  privateKeys
+
+        # restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  privateKeys
+    } 
+}
+
+category Network {
+    asset InternalNetwork {
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.privateKeys
+    } 
+
+    asset ExternalNetwork {
+        # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.privateKeys
+    } 
+}
+
+associations {    
+    User [user] 1 <--Ui--> 1-* [os] OS
+    OS [os] 1 <--Contain--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

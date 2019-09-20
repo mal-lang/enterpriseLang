@@ -1,0 +1,42 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.processHollowing
+    } 
+}
+
+category Software {
+    abstractAsset OS {
+        | bypassProcessWhitelisting
+
+        | bypassAntivirus
+
+        | bypassFileOrPathWhitelisting  
+
+        | bypassSignatureBasedDetection
+    } 
+
+    asset Windows extends OS {   
+        | processHollowing
+            info: "Execution of the malicious code is masked under a legitimate process and may evade defenses and detection analysis."
+            ->  bypassAntivirus,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection,
+                bypassFileOrPathWhitelisting     
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

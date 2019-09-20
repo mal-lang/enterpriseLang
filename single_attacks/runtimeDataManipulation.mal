@@ -1,0 +1,64 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.runtimeDataManipulation
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+            ->  os.runtimeDataManipulation
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  os.runtimeDataManipulation
+    }       
+}
+
+category Software {
+    abstractAsset OS {
+        & runtimeDataManipulation
+            info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
+
+        # restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  runtimeDataManipulation
+    } 
+}
+
+
+category Network {
+    asset InternalNetwork {
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.runtimeDataManipulation
+    } 
+
+    asset ExternalNetwork {
+        # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.runtimeDataManipulation
+    } 
+}
+
+
+associations {    
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS 
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

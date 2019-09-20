@@ -1,0 +1,45 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.screensaver
+    }               
+}
+
+category Software {
+    abstractAsset OS {
+        | persistence   
+
+        # disableOrRemoveFeatureOrProgram
+        
+        # executionPrevention
+    } 
+
+    asset Windows extends OS {   
+        & screensaver
+            info: "Adversaries can use screensaver settings to maintain persistence by setting the screensaver to run malware after a certain timeframe of user inactivity."
+            ->  persistence
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  screensaver
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  screensaver
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+
