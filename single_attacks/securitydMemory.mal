@@ -1,0 +1,24 @@
+category Person {
+    asset Administrator {
+    }
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  macOS.securitydMemory
+    }
+}
+
+category Software {
+    asset MacOS {
+        | securitydMemory
+            info: "If an adversary can obtain root access (allowing them to read securityd’s memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user’s logon keychain."
+            ->  keychainCollection
+
+        & keychainCollection
+    }
+}
+
+associations {
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}

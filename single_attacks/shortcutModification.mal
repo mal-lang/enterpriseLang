@@ -1,0 +1,44 @@
+category Person{
+    asset User {
+        | userRights
+            ->  windows.shortcutModification
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.shortcutModification
+    }
+
+    asset Administrator {
+        | adminRights
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.shortcutModification
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+
+        & masquerading
+    }
+
+    asset Windows extends OS{
+        & shortcutModification
+            info: "Adversaries could use shortcuts to execute their tools for persistence. Adversaries could also edit the target path or entirely replace an existing shortcut so their tools will be executed instead of the intended legitimate program."
+            ->  executeCode,
+                persistence,
+                masquerading // create a new shortcut as a means of indirection that may use Masquerading to look like a legitimate program
+
+        | executeCode 
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows  
+}
+

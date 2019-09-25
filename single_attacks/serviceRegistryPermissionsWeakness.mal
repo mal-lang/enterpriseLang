@@ -1,0 +1,45 @@
+category Person{
+    asset Administrator {
+        | adminRights
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.serviceRegistryPermissionsWeakness
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.serviceRegistryPermissionsWeakness
+    }
+}
+
+category Software {
+    asset Service {
+        | exploitationForPrivilegeEscalation
+    }
+
+    asset OS {
+        | persistence
+    }
+
+    asset Windows extends OS{
+        | serviceRegistryPermissionsWeakness
+            ->  _serviceRegistryPermissionsWeakness,
+                persistence
+
+        & _serviceRegistryPermissionsWeakness
+            ->  service.exploitationForPrivilegeEscalation
+
+        # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
+            info: "https://attack.mitre.org/mitigations/M1024/"
+            ->  _serviceRegistryPermissionsWeakness
+    }
+}
+
+associations {
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}
