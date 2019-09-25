@@ -77,6 +77,7 @@ category Person {
                 windows.regsvr32,
                 windows.rundll32,
                 windows.screensaver,
+                windows.shortcutModification,
                 windows.signedBinaryProxyExecution,
                 windows.signedScriptProxyExecution,
                 windows.sIPAndTrustProviderHijacking,
@@ -91,6 +92,7 @@ category Person {
                 linux.hISTCONTROL,
                 linux.localJobScheduling,
                 linux.portKnocking,
+                linux.setuidAndSetgid,
                 linux.spaceAfterFileName,
                 linux.source,
                 linux.sudo,
@@ -103,6 +105,7 @@ category Person {
                 macOS.hiddenWindow,
                 macOS.hISTCONTROL,
                 macOS.inputPrompt,
+                macOS.launchAgent,
                 macOS.launchctl,
                 macOS.lC_LOAD_DYLIB_Addition,
                 macOS.lC_MAINHijacking,
@@ -116,6 +119,7 @@ category Person {
                 macOS.userSecuritySoftwareDiscovery,
                 macOS.videoCollection,
                 macOS.reopenedApplications,
+                macOS.setuidAndSetgid,
                 macOS.source,
                 macOS.sudo,
                 macOS.sudoCaching,
@@ -147,12 +151,16 @@ category Person {
                 windows.bITSJobs,
                 windows._fileSystemPermissionsWeakness,
                 windows.indicatorBlocking,
+                windows.manInTheBrowser,
                 windows.passTheTicket,
                 windows.pathInterception,
                 windows.remoteDesktopProtocol,
+                windows.sharedWebroot,
+                windows.shortcutModification,
                 windows.userServiceStop,
                 linux.localJobScheduling,
                 macOS.dylibHijacking,
+                macOS.launchAgent,
                 macOS.launchctl,
                 macOS.launchDaemon,
                 macOS.localJobScheduling,
@@ -191,6 +199,7 @@ category Person {
                 os.firmwareCorruption, 
                 os.graphicalUserInterface,  
                 os.inhibitSystemRecovery, 
+                os.inputCapture,
                 os.installRootCertificate,            
                 os.networkServiceScan,
                 os.networkSniffing,
@@ -233,7 +242,8 @@ category Person {
                 windows.passTheTicket,
                 windows._powerShell,
                 windows.remoteDesktopProtocol,
-                windows.signedBinaryProxyExecution,   
+                windows.signedBinaryProxyExecution, 
+                windows.sharedWebroot,  
                 windows.systemFirmware, 
                 linux.kernelModulesAndExtensions,
                 linux._sudo,
@@ -276,6 +286,8 @@ category Person {
                 windowsWindowsAdmin.hypervisor,
                 windowsWindowsAdmin.imageFileExecutionOptionsInjection,
                 windowsWindowsAdmin.lSASS_Driver,
+                windowsWindowsAdmin.manInTheBrowser,
+                windowsWindowsAdmin.modifyExistingService,
                 windowsWindowsAdmin.modifyRegistry,
                 windowsWindowsAdmin.netshHelperDLL,
                 windowsWindowsAdmin.networkShareConnectionRemoval,
@@ -290,6 +302,8 @@ category Person {
                 windowsWindowsAdmin.regsvcsOrRegasm,
                 windowsWindowsAdmin.regsvr32,
                 windowsWindowsAdmin.securitySupportProvider,
+                windowsWindowsAdmin.serviceRegistryPermissionsWeakness,
+                windowsWindowsAdmin.shortcutModification,
                 windowsWindowsAdmin.sIDHistoryInjection,
                 windowsWindowsAdmin.scheduledTask,
                 windowsWindowsAdmin.systemFirmware
@@ -313,10 +327,12 @@ category Person {
                 macOS.adminSecuritySoftwareDiscovery,
                 macOS.gatekeeperBypass,
                 macOS.hiddenUsers,
+                macOS.launchAgent,
                 macOS.launchctl,
                 macOS.launchDaemon,
                 macOS.plistModification,
                 macOS.rc_common,
+                macOS.securitydMemory,
                 macOS.startupItems,
                 macOS.kernelModulesAndExtensions
     }
@@ -335,12 +351,15 @@ category Person {
                 windows.hypervisor,
                 windows.imageFileExecutionOptionsInjection,
                 windows.lSASS_Driver,
+                windows.manInTheBrowser,
+                windows.modifyExistingService,
                 windows.modifyRegistry,
                 windows.netshHelperDLL,
                 windows.passwordFilterDLL,
                 windows.pathInterception,
                 windows.portMonitors,
                 windows.processDoppelganging,
+                windows.serviceRegistryPermissionsWeakness,
                 windows.sIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
                 windows.systemServiceStop,
@@ -349,6 +368,7 @@ category Person {
                 os.firmwareCorruption,
                 os.graphicalUserInterface,
                 os.inhibitSystemRecovery,
+                os.inputCapture,
                 os.networkSniffing,
                 os.redundantAccess,
                 os.rootkit,
@@ -374,23 +394,7 @@ category Person {
             ->  browser.maliciousAds
 
         & spearphishingAttachmentDownload
-            -> browser.spearphishingAttachment
-
-        # userTraining 
-            info: "https://attack.mitre.org/mitigations/M1017/"        
-            ->  spearphishingAttachmentDownload, 
-                spearphishingLinkClicked, 
-                userExecution,
-                _mediaInserted,
-                os._credentialsInFiles,
-                os.twoFactorAuthenticationInterception, // remove smart cards when not in use
-                windows.inputPrompt,
-                windows.templateInjection,
-                macOS.inputPrompt, 
-                macOS.loginItem,
-                macOS.reopenedApplications, 
-                browser.runExtensions,
-                thirdpartySoftware._useThirdpartySoftware            
+            -> browser.spearphishingAttachment         
         
         & userExecution
             ->  computer.infectedComputer,
@@ -408,7 +412,24 @@ category Person {
             ->  _mediaInserted
 
         & _mediaInserted
-            ->  removableMedia.dataExfiltrated      
+            ->  removableMedia.dataExfiltrated  
+
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  spearphishingAttachmentDownload, 
+                spearphishingLinkClicked, 
+                userExecution,
+                _mediaInserted,
+                os._credentialsInFiles,
+                os.twoFactorAuthenticationInterception, // remove smart cards when not in use
+                windows.inputPrompt,
+                windows.manInTheBrowser,
+                windows.templateInjection,
+                macOS.inputPrompt, 
+                macOS.loginItem,
+                macOS.reopenedApplications, 
+                browser.runExtensions,
+                thirdpartySoftware._useThirdpartySoftware  
     }
     
     asset Adversary {
@@ -668,6 +689,10 @@ category Software {
                 bypassSignatureBasedDetection,  
                 bypassStaticFileAnalysis       
 
+        & exfiltrationOverOtherNetworkMedium 
+            info: "Adversaries could choose to do exfiltration over a WiFi connection, modem, cellular data connection, Bluetooth, or another radio frequency (RF) channel if they have sufficient access or proximity, and the connection might not be secured or defended as well as the primary Internet-connected channel because it is not routed through the same enterprise network."     
+            ->  otherNetworkMedium.transmit
+
         | fallbackChannels  
             info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
             ->  c2Server.communicate  
@@ -693,6 +718,9 @@ category Software {
                 bypassAntivirus    
 
         | inputCapture
+            info: "Adversaries can use methods of capturing user input for obtaining credentials for Valid Accounts and information Collection that include keylogging and user input field interception."
+            ->  validAccounts,
+                user.userCredentials 
 
         & installRootCertificate
             info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
@@ -1003,6 +1031,7 @@ category Software {
             ->  accountDiscovery, 
                 communicationThroughRemovableMedia,
                 domainDiscovery,
+                exfiltrationOverOtherNetworkMedium,
                 inhibitSystemRecovery,
                 installRootCertificate,
                 administrator.createUserAccount,
@@ -1446,6 +1475,16 @@ category Software {
             ->  executeCode,
                 persistence
 
+        & manInTheBrowser
+            info: "Adversaries can take advantage of security vulnerabilities and inherent functionality in browser software to change content, modify behavior, and intercept information as part of various man in the browser techniques."
+            ->  browser.compromisedBrowser
+
+        | modifyExistingService
+            info: "Adversaries can modify an existing service to persist malware on a system by using system utilities or by using custom tools to interact with the Windows API. Adversaries may also intentionally corrupt or kill services to execute malicious recovery programs/commands."
+            ->  persistence,
+                masquerading, // Use of existing services is a type of Masquerading that may make detection analysis more challenging
+                executeCode
+
         & modifyRegistry
             info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution. An adversary may modify these Registry keys to add new SSPs."
             ->  persistence,
@@ -1564,17 +1603,34 @@ category Software {
                 bypassDigitalCertificateValidation,
                 executeCode  
 
-        & securitySupportProvider
-            info: "An adversary may modify these Registry keys to add new SSPs."
-            ->  persistence
-
         & screensaver
             info: "Adversaries can use screensaver settings to maintain persistence by setting the screensaver to run malware after a certain timeframe of user inactivity."
             ->  persistence
 
         | searchOrderHijacking
             info: "Search order hijacking occurs when an adversary abuses the order in which Windows searches for programs that are not given a path."
-            ->  _dLLSearchOrderHijacking // Search order hijacking is a common practice for DLL Search Order Hijacking    
+            ->  _dLLSearchOrderHijacking // Search order hijacking is a common practice for DLL Search Order Hijacking   
+
+        & securitySupportProvider
+            info: "An adversary may modify these Registry keys to add new SSPs."
+            ->  persistence
+
+        | serviceRegistryPermissionsWeakness
+            ->  _serviceRegistryPermissionsWeakness,
+                persistence
+
+        & _serviceRegistryPermissionsWeakness
+            ->  service.exploitationForPrivilegeEscalation
+
+        & sharedWebroot
+            info: "Adversaries may add malicious content to an internally accessible website through an open network file share that contains the website's webroot or Web content directory and then browse to that content with a Web browser to cause the server to execute the malicious content."
+            ->  browser.executionThroughMaliciousContent
+
+        & shortcutModification
+            info: "Adversaries could use shortcuts to execute their tools for persistence. Adversaries could also edit the target path or entirely replace an existing shortcut so their tools will be executed instead of the intended legitimate program."
+            ->  executeCode,
+                persistence,
+                masquerading // create a new shortcut as a means of indirection that may use Masquerading to look like a legitimate program
 
         & sIDHistoryInjection
             info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
@@ -1855,10 +1911,12 @@ category Software {
                 modifyRegistry,
                 ntfsFileAttributes,
                 pathInterception,
+                sharedWebroot,
                 sIPAndTrustProviderHijacking,
                 userServiceStop,
                 adminServiceStop,
-                systemServiceStop  
+                systemServiceStop,
+                _serviceRegistryPermissionsWeakness  
 
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
             info: "https://attack.mitre.org/mitigations/M1024/"
@@ -1958,10 +2016,6 @@ category Software {
 
         | spaceAfterFileName
             ->  employee.userExecution
-        
-        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
-           // -> spaceAfterFileName,
-           //    source
 
         | infectedOS
             +>  bashHistory
@@ -1993,14 +2047,16 @@ category Software {
 
         & portKnocking
             info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
-            ->  bypassDefensiveNetworkServiceScanning
+            ->  bypassDefensiveNetworkServiceScanning  
+
+        & setuidAndSetgid
+            info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context."
+            ->  service.exploitationForPrivilegeEscalation,
+                persistence  
 
         | source
             info:"The source command loads functions into the current shell or executes files in the current context."
             ->  executeCode
-
-        | executeCode 
-            +>  computer.infectedLinuxComputer   
 
         | sudo
             ->  _sudo
@@ -2014,7 +2070,10 @@ category Software {
 
         & _sudoCaching
             info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
-            ->  service.exploitationForPrivilegeEscalation    
+            ->  service.exploitationForPrivilegeEscalation 
+
+        | executeCode 
+            +>  computer.infectedLinuxComputer 
 
         # antivirus
             info: "https://attack.mitre.org/mitigations/M1049/"
@@ -2031,7 +2090,8 @@ category Software {
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
             +>  bashHistory,
-                hISTCONTROL
+                hISTCONTROL,
+                setuidAndSetgid
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
@@ -2103,6 +2163,10 @@ category Software {
             info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
             ->  rootkit  
 
+        & launchAgent
+            info: "Adversaries may install a new launch agent that can be configured to execute at login by using launchd or launchctl to load a plist into the appropriate directories."     
+            ->  persistence
+
         & launchctl
             info: "Adversaries can abuse this functionality to execute code or even bypass whitelisting if launchctl is an allowed process."
             ->  executeCode,
@@ -2157,6 +2221,15 @@ category Software {
             info: "An adversary can modify one of these files directly to include a link to their malicious executable to provide a persistence mechanism each time the user reboots their machine."
             ->  persistence
 
+        | securitydMemory
+            info: "If an adversary can obtain root access (allowing them to read securityd’s memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user’s logon keychain."
+            ->  keychainCollection
+
+        & setuidAndSetgid
+            info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context."
+            ->  service.exploitationForPrivilegeEscalation,
+                persistence
+
         | source
             ->  executeCode
 
@@ -2179,9 +2252,6 @@ category Software {
 
         | spaceAfterFileName
             ->  employee.userExecution
-        
-        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
-           // -> spaceAfterFileName
 
         & networkShareDiscovery
             ->  internalNetwork.networkShareDiscovery
@@ -2244,16 +2314,14 @@ category Software {
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             info: "https://attack.mitre.org/mitigations/M1039/"
             ->  _clearCommandHistory,
-                hISTCONTROL
-
-        //# fileMonitoring  This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
-           // -> source     
+                hISTCONTROL   
 
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
             +>  bashHistory,
                 hiddenUsers,
-                hISTCONTROL
+                hISTCONTROL,
+                setuidAndSetgid
 
         # passwordPolicies // Set and enforce secure password policies for accounts 
             info: "https://attack.mitre.org/mitigations/M1027/"
@@ -2280,6 +2348,8 @@ category Network {
 
         & checkPlugin
             ->  os.codeDelivered
+
+        | executionThroughMaliciousContent
 
         | maliciousAds
             ->  compromisedBrowser
@@ -2373,7 +2443,8 @@ category Network {
 
         # limitAccessToResourceOverNetwork
             info: "https://attack.mitre.org/mitigations/M1035/"   
-            ->  windows.remoteDesktopProtocol      
+            ->  windows.remoteDesktopProtocol,
+                windows.sharedWebroot      
 
         & c2Connexion
             ->  c2Server.c2Connected
@@ -2432,6 +2503,7 @@ category Network {
                 windows.domainTrustDiscovery,
                 windows.userServiceStop,
                 windows.adminServiceStop,
+                windows.sharedWebroot,
                 windows.systemServiceStop,
                 service.exploitationOfRemoteServices
 
@@ -2499,6 +2571,36 @@ category Network {
             info: "https://attack.mitre.org/mitigations/M1020/"
             ->  obfuscateNetworkTraffic,
                 os.standardCryptographicProtocol
+    }
+
+    asset C2Server {
+        | c2Connected 
+            ->  communicate,
+                obfuscatedData,
+                packetCapture
+
+        | communicate 
+
+        & dataExfiltrated
+
+        | generateDomainNames 
+
+        | obfuscatedData
+            ->  _obfuscatedData
+
+        & _obfuscatedData
+            ->  externalNetwork.bypassNetworkIntrusionDetection,
+                internalNetwork.bypassNetworkIntrusionDetection,
+                bypassNetworkIntrusionDetection
+
+        | packetCapture
+
+        | bypassNetworkIntrusionDetection
+    }
+
+    asset OtherNetworkMedium extends C2Server {
+        | transmit
+
     }
 
     asset Firewall {
@@ -2597,32 +2699,6 @@ category Hardware {
             ->  computer._collectVideo
     }
 
-    asset C2Server {
-        | c2Connected 
-            ->  communicate,
-                obfuscatedData,
-                packetCapture
-
-        | communicate 
-
-        & dataExfiltrated
-
-        | generateDomainNames 
-
-        | obfuscatedData
-            ->  _obfuscatedData
-
-        & _obfuscatedData
-            ->  externalNetwork.bypassNetworkIntrusionDetection,
-                internalNetwork.bypassNetworkIntrusionDetection,
-                bypassNetworkIntrusionDetection
-
-        | packetCapture
-
-        | bypassNetworkIntrusionDetection
-
-    }
-
     asset RemovableMedia {
         | dataFromRemovableMedia
             ->  sensitiveDataCollected
@@ -2711,6 +2787,7 @@ associations {
 
     Windows [windows] 1 <--Contain--> 1-* [service] Service
     MacOS [macOS] 1 <--Contain--> 1-* [service] Service
+    Linux [linux] 1 <--Contain--> 1-* [service] Service
 
     Service [service] 1-* <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware
     Service [service] 1-* <--Connect--> 1 [c2Server] C2Server
@@ -2734,6 +2811,7 @@ associations {
     ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1 [windows] Windows
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [service] Service   
     NetworkSharedDrive [networkSharedDrive] 1-* <--Ui--> 1-* [c2Server] C2Server
+    OtherNetworkMedium [otherNetworkMedium] 1-* <--Ui--> 1-* [os] OS
 
     Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows 
     Firewall [firewall] 0-1 <--Protect--> 1-* [linux] Linux   
