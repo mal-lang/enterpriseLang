@@ -1,0 +1,50 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.windowsManagementInstrumentation
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.windowsManagementInstrumentation
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+
+        # privilegedAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.windowsManagementInstrumentation
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.windowsManagementInstrumentation 
+    }
+}
+
+category Software {
+    asset OS {
+        & systemInformationDiscovery
+    }
+
+    asset Windows extends OS{
+        & windowsManagementInstrumentation 
+            info: "An adversary can use WMI to interact with local and remote systems and use it as a means to perform many tactic functions."
+            ->  systemInformationDiscovery, // extract information about the operating system
+                executeCode
+
+        & windowsAdminShares
+            ->  windowsManagementInstrumentation // leads to Windows Management Instrumentation attack
+
+        | executeCode      
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+
+}
