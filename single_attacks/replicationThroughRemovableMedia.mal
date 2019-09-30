@@ -1,37 +1,42 @@
-category Hardware {
-    asset RemovableMedia{
-        | infectedMedia
-            -> employee.insertMedia
-    }
-    
-    asset Computer {
-    | infectedWindowsComputer
-}
-
-}
 category Person {
-    asset Employee {
-        | insertMedia
-            -> userExecution,
-               manualManipulation
-        & userExecution
-            -> computer.infectedWindowsComputer
-        # trainedUser
-            ->  userExecution,
-                manualManipulation
-        & manualManipulation
-            -> user.userRights
-    }
     asset User {
-
         | userRights
+            ->  windows.replicationThroughRemovableMedia
     }
 }
 
+category Software {
+    abstractAsset OS {  
+        | communicationThroughRemovableMedia
+        
+        # limitHardwareInstallation
+
+        # disableOrRemoveFeatureOrProgram  
+    }
+
+    asset Windows extends OS {   
+        | replicationThroughRemovableMedia
+            info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
+            ->  communicationThroughRemovableMedia,
+                removableMedia.infectedMedia
+
+        # limitHardwareInstallation
+            info: "https://attack.mitre.org/mitigations/M1034/"   
+            +>  replicationThroughRemovableMedia
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  replicationThroughRemovableMedia
+    }
+}
+
+category Hardware {
+    asset RemovableMedia {
+        | infectedMedia
+    }
+}
 
 associations{
-    RemovableMedia [removableMedia] 1-* <-- ui --> 1 [employee] Employee
-    Employee [employee] 1 <--use--> 1-* [user] User
-    Employee [employee] 1 <--use--> 1-* [computer] Computer
-
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Windows [windows] 1 <--Use--> 1-* [removableMedia] RemovableMedia
 }

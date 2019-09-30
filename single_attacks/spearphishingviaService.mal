@@ -1,0 +1,40 @@
+category Person {
+    asset Employee {
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  service.spearphishingViaService
+    }
+}
+                
+category Software {
+    asset Service {
+        & spearphishingViaService
+            info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
+            ->  browser.spearphishingAttachment, 
+                browser.spearphishingLink
+    }
+             
+    abstractAsset OS {  
+        # antivirus
+            info: "https://attack.mitre.org/mitigations/M1049/"
+            ->  service.spearphishingViaService  
+    }
+}
+
+ category Network {
+    asset Browser {
+        & spearphishingLink
+
+        & spearphishingAttachment
+
+        # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
+          info: "https://attack.mitre.org/mitigations/M1021/"
+            ->  service.spearphishingViaService
+    }
+}
+
+associations {
+    Employee [employee] 1 <--Use--> 1-* [service] Service
+    Browser [browser] 1-* <--Use--> 1-* [service] Service
+    OS [os] 1 <--Contain--> 1-* [service] Service
+}
