@@ -141,6 +141,7 @@ category Person {
                 service.remoteAccessTools,
                 service.usertransmittedDataManipulation,
                 thirdpartySoftware.useThirdpartySoftware,
+                browser.installExtensions,
                 internalNetwork.usertransmittedDataManipulation,
                 externalNetwork.webService
 
@@ -434,13 +435,6 @@ category Person {
                 computer.infectedWindowsComputer,
                 os.scripting
 
-        | insertMedia
-            ->  userExecution,
-                manualManipulation
-
-        | manualManipulation
-            ->  user.userRights
-
         | mediaInserted
             ->  _mediaInserted
 
@@ -461,7 +455,8 @@ category Person {
                 macOS.inputPrompt, 
                 macOS.loginItem,
                 macOS.reopenedApplications, 
-                browser.runExtensions,
+                browser.browserExtensions,
+                service.spearphishingViaService,
                 thirdpartySoftware._useThirdpartySoftware  
     }
     
@@ -516,6 +511,11 @@ category Software {
             ->  internalNetwork.c2Connexion
 
         | serviceExhaustionFlood
+
+        & spearphishingViaService
+            info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
+            ->  browser.spearphishingAttachment, 
+                browser.spearphishingLink
 
         & supplyChainCompromise
             info: "Supply chain compromise is the manipulation of products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
@@ -641,9 +641,10 @@ category Software {
                 c2Server.communicate,
                 c2Server.generateDomainNames
 
-        | compromisedSystems //with probability
+        | compromisedSystems // with probability
             ->  privateKeys,
                 systemNetworkConnectionsDiscovery,
+                browser.installExtensions,
                 removableMedia.infectedMedia,
                 thirdpartySoftware.trustedRelationship
 
@@ -828,9 +829,6 @@ category Software {
         | executeCode
             ->  computer.infectedComputer
 
-        | replicationThroughRemovableMedia
-            -> communicationThroughRemovableMedia
-
         & communicationThroughRemovableMedia
 
         & remoteSystemDiscovery
@@ -1010,7 +1008,8 @@ category Software {
             ->  antivirusCheck,
                 obfuscatedFilesOrInformation,
                 spearphishingAttachmentDownload,
-                spearphishingLinkDownload   
+                spearphishingLinkDownload,
+                service.spearphishingViaService   
 
         # restrictFileAndDirectoryPermissions 
             info: "https://attack.mitre.org/mitigations/M1022/"
@@ -1078,12 +1077,16 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1047/"
             ->  _credentialsInFiles,
                 _credentialsInRegistry,
-                browser.runExtensions,
+                browser.browserExtensions,
                 privateKeys  
 
         # codeSigning
             info: "https://attack.mitre.org/mitigations/M1045/" 
-            ->  applicationDeploymentSoftware           
+            ->  applicationDeploymentSoftware    
+
+        # limitHardwareInstallation
+            info: "https://attack.mitre.org/mitigations/M1034/"   
+            ->  hardwareAddition.hardwareAdditions     
 
         # operatingSystemConfiguration 
             info: "https://attack.mitre.org/mitigations/M1028/"
@@ -1109,7 +1112,7 @@ category Software {
                 adminDiskWiped,
                 applicationWindowDiscovery,
                 binaryPadding,
-                browser.runExtensions,
+                browser.browserExtensions,
                 computer.collectAudio,
                 computer._collectVideo,
                 dataCompressed, 
@@ -1311,13 +1314,11 @@ category Software {
 
         # limitSoftwareInstallation
             info: "https://attack.mitre.org/mitigations/M1033/"
-            ->  browser.runExtensions,
-                browser.compromisedBrowser 
+            ->  browser.browserExtensions
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/"
             ->  firmwareCorruption,
-                browser.runExtensions,
                 browser.checkBrowser,
                 browser.checkPlugin,
                 service._exploitationForCredentialAccess,
@@ -1662,6 +1663,11 @@ category Software {
             ->  persistence,
                 system.systemRights  
 
+        | replicationThroughRemovableMedia
+            info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
+            ->  communicationThroughRemovableMedia,
+                removableMedia.infectedMedia
+
         & rundll32
             info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Rundll32 can also been used to execute scripts."
             ->  bypassAntivirus,
@@ -1976,6 +1982,10 @@ category Software {
                 rundll32,
                 networkSharedDrive._taintSharedContent
 
+        # limitHardwareInstallation
+            info: "https://attack.mitre.org/mitigations/M1034/"   
+            +>  replicationThroughRemovableMedia
+
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
             +>  passwordFilterDLL   
@@ -2050,6 +2060,7 @@ category Software {
                 registryKeysEnabled,
                 regsvcsOrRegasm,
                 remoteDesktopProtocol,
+                replicationThroughRemovableMedia,
                 screensaver,
                 templateInjection,
                 trustedDeveloperUtilities,
@@ -2486,6 +2497,7 @@ category Network {
           info: "https://attack.mitre.org/mitigations/M1021/"
             ->  spearphishingAttachment, 
                 spearphishingLink,
+                service.spearphishingViaService,
                 checkBrowser,
                 checkPlugin,
                 os.domainGenerationAlgorithms,
@@ -2500,10 +2512,13 @@ category Network {
                 internalNetwork.internalNetworkResourcesInformation
 
         | installExtensions
-            ->  runExtensions
+            ->  browserExtensions
 
-        & runExtensions
-            ->  os.persistence
+        & browserExtensions
+            info: "Once the extension is installed, it can browse to websites in the background, steal all information that a user enters into a browser, to include credentials, and be used as an installer for a RAT for persistence." 
+            ->  user.userInformation,
+                user.userCredentials,
+                os.persistence
     }
 
     asset InternalNetwork {
@@ -2562,7 +2577,8 @@ category Network {
         # limitAccessToResourceOverNetwork
             info: "https://attack.mitre.org/mitigations/M1035/"   
             ->  windows.remoteDesktopProtocol,
-                windows.sharedWebroot      
+                windows.sharedWebroot,
+                hardwareAddition.hardwareAdditions     
 
         & c2Connexion
             ->  c2Server.c2Connected
@@ -2581,6 +2597,7 @@ category Network {
         | internalNetworkResourcesInformation
 
         | remoteSystemsConnection
+            ->  networkSharedDrive.dataFromNetworkSharedDrive 
 
         | webShell
             info: "Web shells may serve as Redundant Access or as a persistence mechanism."
@@ -2645,6 +2662,10 @@ category Network {
         & _taintSharedContent
             info: "Once a user opens the shared tainted content, the malicious portion can be executed to run the adversary's code on a remote system."
             ->  windows.executeCode
+
+        | dataFromNetworkSharedDrive
+            info: "Adversaries may search network shares on computers they have compromised to find files of interest."
+            ->  os.sensitiveDataCollected
     }
 
     asset ExternalNetwork {
@@ -2810,6 +2831,12 @@ category Hardware {
             ->  os.dataCollected
     }
 
+    asset HardwareAddition extends Computer {
+        & hardwareAdditions
+            info: "Computer accessories, computers, or networking hardware may be introduced into a system as a vector to gain execution." 
+            ->  os.executeCode  
+    }
+
     asset NTFSPartition extends Computer {
         E nftsPartitionExists
             <-  nftsPartition
@@ -2823,15 +2850,11 @@ category Hardware {
 
     asset RemovableMedia {
         | dataFromRemovableMedia
-            ->  sensitiveDataCollected
+            ->  os.sensitiveDataCollected
 
         | infectedMedia
-            ->  employee.insertMedia,
-                os.replicationThroughRemovableMedia
 
         & dataExfiltrated
-
-        | sensitiveDataCollected
     }
     
     asset Microphone {
@@ -2854,6 +2877,7 @@ associations {
     User [user] 1 <--Use--> 1-* [computer] Computer
     User [user] 1 <--Use--> 1-* [service] Service
     User [user] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
+    User [user] 1 <--Use--> 1-* [browser] Browser
     User [user] 1 <--Use--> 1-* [internalNetwork] InternalNetwork
     User [user] 1 <--Use--> 1-* [externalNetwork] ExternalNetwork
 
@@ -2886,6 +2910,7 @@ associations {
     Employee [employee] 1 <--Ui--> 1-* [windows] Windows
     Employee [employee] 1 <--Ui--> 1-* [linux] Linux
     Employee [employee] 1 <--Ui--> 1-* [macOS] MacOS
+    Employee [employee] 1 <--Use--> 1-* [service] Service
     Employee [employee] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
     Employee [employee] 1 <--Use--> 1-* [removableMedia] RemovableMedia
 
@@ -2895,6 +2920,7 @@ associations {
     Browser [browser] 1-* <--Software--> 1 [os] OS
     Browser [browser] 1-* <--Software--> 1 [windows] Windows
     Browser [browser] 1-* <--Use--> 1-* [user] User
+    Browser [browser] 1-* <--Use--> 1-* [service] Service
     Browser [browser] 1-* <--Connect--> 1-* [internalNetwork] InternalNetwork
     Browser [browser] 1-* <--Connect--> 1-* [externalNetwork] ExternalNetwork 
     
@@ -2903,11 +2929,12 @@ associations {
     OS [os] 1 <--Contain--> 1 [windows] Windows
     OS [os] 1 <--Contain--> 1 [linux] Linux  
     OS [os] 1 <--Contain--> 1 [macOS] MacOS
-    OS [os] 1 <--Use--> 1-* [removableMedia] RemovableMedia
     OS [os] 1 <--Contain--> 1-* [service] Service
     OS [os] 1 <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware  
+    OS [os] 1 <--Use--> 1-* [removableMedia] RemovableMedia
 
     Windows [windows] 1 <--Contain--> 1-* [service] Service
+    Windows [windows] 1 <--Use--> 1-* [removableMedia] RemovableMedia
     MacOS [macOS] 1 <--Contain--> 1-* [service] Service
     Linux [linux] 1 <--Contain--> 1-* [service] Service
 
@@ -2921,21 +2948,23 @@ associations {
     InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [externalNetwork] ExternalNetwork   
     InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
     InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
-    InternalNetwork [internalNetworkWindows] 1 <--Connect--> 1 [windows] Windows
+    InternalNetwork [internalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
     InternalNetwork [internalNetwork] 1-* <--Use--> 1 [administrator] Administrator
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [computer] Computer
     //InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [networkSharedDrive] NetworkSharedDrive
+    InternalNetwork [internalNetwork] 1 <--Connect--> 1-* [hardwareAddition] HardwareAddition
     ExternalNetwork [externalNetwork] 1 <--Connect--> 1 [c2Server] C2Server
     ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [computer] Computer
     ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
     ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1 [windows] Windows
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [service] Service   
     //NetworkSharedDrive [networkSharedDrive] 1-* <--Ui--> 1-* [c2Server] C2Server
+    NetworkSharedDrive [networkSharedDrive] 1-* <--SystemAccess--> 1 [os] OS
     NetworkSharedDrive [networkSharedDrive] 1-* <--SystemAccess--> 1 [windows] Windows
-    OtherNetworkMedium [otherNetworkMedium] 1-* <--Ui--> 1-* [os] OS
+    OtherNetworkMedium [otherNetworkMedium] 1-* <--Ui--> 1 [os] OS
 
     Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows
     Firewall [firewall] 0-1 <--Protect--> 1-* [linux] Linux
@@ -2951,4 +2980,6 @@ associations {
     Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
     NTFSPartition [nftsPartition] 1-* <--Hardware--> 1 [windows] Windows
     NTFSPartition [nftsPartition] 1-* <--Extends--> 1 [windowsComputer] Computer
+    //HardwareAddition [hardwareAddition] 1-* <--Extends--> 1 [computerAdditions] Computer
+    HardwareAddition [hardwareAddition] 1-* <--Ui--> 1 [os] OS
 }
