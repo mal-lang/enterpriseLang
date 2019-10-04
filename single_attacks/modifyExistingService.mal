@@ -46,6 +46,7 @@ category Software {
 }
 
 associations { 
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
     WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
     SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
 }
