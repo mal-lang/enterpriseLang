@@ -1,0 +1,92 @@
+category Person {
+    asset User {
+        | userRights
+            ->  linux.sshHijacking,
+                macOS.sshHijacking
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+    }
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  linux.sshHijacking,
+                macOS.sshHijacking
+    }
+}
+
+category Software {
+    abstractAsset OS { 
+        | interceptSSHCredentials
+    }
+
+    asset Linux extends OS {
+        & sshHijacking
+            info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
+            ->  interceptSSHCredentials
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  sshHijacking
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            +>  sshHijacking   
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            +>  sshHijacking   
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  sshHijacking   
+
+        # userAccountControl
+            info: "https://attack.mitre.org/mitigations/M1052/"
+            +>  sshHijacking   
+    }
+
+    asset MacOS extends OS {
+        & sshHijacking
+            info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
+            ->  interceptSSHCredentials
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  sshHijacking
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            +>  sshHijacking
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            +>  sshHijacking
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  sshHijacking
+
+        # userAccountControl
+            info: "https://attack.mitre.org/mitigations/M1052/"
+            +>  sshHijacking
+    }     
+}
+
+
+associations {
+    User [linuxUser] 1 <--Ui--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootLinux] 1 <--Ui--> 1-* [linux] Linux
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS   
+}
+
+
+
+
+
+
+

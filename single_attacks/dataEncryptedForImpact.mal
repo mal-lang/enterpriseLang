@@ -1,28 +1,61 @@
 category Person {
     asset User {
         | userRights
-            -> computer.userDataEncryptedForImpact
+            -> os.userDataEncryptedForImpact
     }
 
     asset Administrator {
         | adminRights
-            -> computer.adminDataEncryptedForImpact
+            -> os.adminDataEncryptedForImpact
     }
 
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  os.systemDataEncryptedForImpact
+    }
 }
 
-category Hardware{
-    asset Computer {
+category Software {
+    abstractAsset OS { 
+        | validAccounts
+
+        & credentialDumping
+        
         & userDataEncryptedForImpact
-            info: "Attackers can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted"
-        & adminDataEncryptedForImpact
+            info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  validAccounts,
+                credentialDumping,
+                windows.windowsAdminShares
 
-        # whitelisting
-            -> userDataEncryptedForImpact, 
-               adminDataEncryptedForImpact
+        & adminDataEncryptedForImpact
+            info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  validAccounts,
+                credentialDumping,
+                windows.windowsAdminShares
+
+        & systemDataEncryptedForImpact
+            info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  validAccounts,
+                credentialDumping,
+                windows.windowsAdminShares
+
+        # dataBackup
+            info: "https://attack.mitre.org/mitigations/M1053/"
+            info: "Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
+            ->  userDataEncryptedForImpact, 
+                adminDataEncryptedForImpact,
+                systemDataEncryptedForImpact
     }
+
+    asset Windows extends OS { 
+        & windowsAdminShares
+    }    
 }
+
 associations {
-    User [user] 1-* <--use--> 1 [computer] Computer
-    Administrator [administrator] 1-* <--use--> 1 [computer] Computer
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS
+    OS [os] 1 <--Contain--> 1 [windows] Windows
 }
