@@ -1,4 +1,10 @@
 category Person{
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.modifyExistingService
+    }       
+                
     asset Administrator {
         | adminRights
     }
@@ -22,14 +28,20 @@ category Software {
         | persistence
 
         | executeCode  
+        
+        # audit
     }
 
     asset Windows extends OS{
-        | modifyExistingService
+        & modifyExistingService
             info: "Adversaries can modify an existing service to persist malware on a system by using system utilities or by using custom tools to interact with the Windows API. Adversaries may also intentionally corrupt or kill services to execute malicious recovery programs/commands."
             ->  persistence,
                 masquerading, // Use of existing services is a type of Masquerading that may make detection analysis more challenging
                 executeCode
+                
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  modifyExistingService
     }
 }
 
