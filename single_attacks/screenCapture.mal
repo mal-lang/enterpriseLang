@@ -1,0 +1,18 @@
+category Hardware{
+    asset Computer {
+        | infectedComputer
+            ->  os.screenCapture
+    }
+}
+
+category Software {
+    asset OS{
+        # whitelisting
+            -> screenCapture   
+        & screenCapture
+    }
+}
+
+associations {
+    Computer [computer] 1 <-- ui--> 1-* [os] OS
+}

@@ -1,0 +1,27 @@
+category Person{
+    asset User { 
+        | userRights
+            -> windows.domainTrustDiscovery
+    }
+}
+
+category Software {
+    asset OS {
+    }
+    asset Windows extends OS{
+        | trustedDomainInfo
+            //connect to ???
+        & domainTrustDiscovery
+            ->  trustedDomainInfo
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            ->  domainTrustDiscovery
+        # networkSegmentation 
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  domainTrustDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [windows] Windows
+}
