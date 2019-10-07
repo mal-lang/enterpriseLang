@@ -20,13 +20,13 @@ category Person {
 
 category Software {
     abstractAsset OS { 
-        | interceptSSHCredentials
+        | sSHCredentialInterception
     }
 
     asset Linux extends OS {
         & sshHijacking
             info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
-            ->  interceptSSHCredentials
+            ->  sSHCredentialInterception
 
         # disableOrRemoveFeatureOrProgram
             info: "https://attack.mitre.org/mitigations/M1042/"
@@ -52,7 +52,7 @@ category Software {
     asset MacOS extends OS {
         & sshHijacking
             info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
-            ->  interceptSSHCredentials
+            ->  sSHCredentialInterception
 
         # disableOrRemoveFeatureOrProgram
             info: "https://attack.mitre.org/mitigations/M1042/"

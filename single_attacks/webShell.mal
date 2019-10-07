@@ -2,8 +2,6 @@ category Software {
     abstractAsset OS { 
         & redundantAccess
 
-        | persistence
-
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
             ->  internalNetwork.webShell
@@ -19,7 +17,9 @@ category Network {
         | webShell
             info: "Web shells may serve as Redundant Access or as a persistence mechanism."
             ->  os.redundantAccess, // use a Web Shell to maintain access 
-                os.persistence
+                persistence
+
+        | persistence
     }
 }
 
