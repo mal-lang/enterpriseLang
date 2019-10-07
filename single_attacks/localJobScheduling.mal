@@ -12,12 +12,12 @@ category Person {
 
     asset Administrator {
         | adminRights
-            ->  linux.localJobScheduling,
-                macOS.localJobScheduling
     } 
  
     asset Root extends Administrator {
         | rootRights
+            ->  linux.localJobScheduling,
+                macOS.localJobScheduling
     } 
 }
 
@@ -44,8 +44,6 @@ category Software {
 associations{
     User [linuxUser] 1 <--Use--> 1-* [linux] Linux   
     User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
-    Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
-    Administrator [macosAdministrator] 1 <--Ui--> 1-* [macOS] MacOS
     Root [root] 1 <--Use--> 1-* [os] OS
     Root [rootLinux] 1 <--Use--> 1-* [linux] Linux
     Root [rootMac] 1 <--Use--> 1-* [macOS] MacOS

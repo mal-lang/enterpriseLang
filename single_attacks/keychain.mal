@@ -1,8 +1,12 @@
 category Person {
     asset Administrator {
         | adminRights
-            -> macOS.keychainCollection
+    }
 
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  macOS.keychainCollection
     }
 
     asset User {
@@ -23,6 +27,6 @@ category Software {
 }
 
 associations {
-    Administrator [administrator] 1 <--ui--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
     User [user] 1 <-- ui--> 1-* [macOS] MacOS
 }

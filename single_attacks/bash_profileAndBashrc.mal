@@ -4,11 +4,17 @@ category Person{
             ->  linux.bash_profileAndBashrc,
                 macOS.bash_profileAndBashrc
     }
+    
      asset Administrator {
         | adminRights
+    }
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
             ->  linux.bash_profileAndBashrc,
                 macOS.bash_profileAndBashrc
-    }
+    }            
 }
 
 category Software {
