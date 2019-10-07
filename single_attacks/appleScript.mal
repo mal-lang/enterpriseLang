@@ -1,0 +1,25 @@
+category Person{
+    asset User {
+        | userRights
+            -> macOS.appleScript
+    }
+}
+category Software {
+    asset OS {
+        | runCode
+    }
+
+    asset MacOS extends OS{
+        & appleScript
+            -> runCode
+        #  codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            -> appleScript
+    }
+}
+
+
+associations {
+    User [user] 1-*<-- ui--> 1-* [macOS] MacOS
+}
+

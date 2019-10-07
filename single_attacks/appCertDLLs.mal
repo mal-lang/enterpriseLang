@@ -1,0 +1,38 @@
+category Person{
+    asset User {
+        | userRights
+            -> windows.appCertDLLs
+    }
+    asset Administrator {
+        | adminRights
+            ->  windows.appCertDLLs
+    }
+    asset SYSTEM {
+        | systemRights
+            ->  windows.appCertDLLs
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+    asset Windows extends OS{
+        | appCertDLLs
+            -> _appCertDLLs 
+        & _appCertDLLs
+            ->  persistence,
+                system.systemRights,
+                user.userRights,
+                administrator.adminRights
+        # executionPrevention 
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            -> _appCertDLLs
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [windows] Windows
+    Administrator [administrator] 1-* <-- ui--> 1-* [windows] Windows
+    SYSTEM [system] 1-* <-- ui--> 1-* [windows] Windows
+}
