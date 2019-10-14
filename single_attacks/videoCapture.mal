@@ -1,26 +1,33 @@
 category Person {
     asset User {
         | userRights
-            -> windows.webcamCollection,
-               macOS.webcamCollection
+            ->  windows.videoCapture,
+                macOS.videoCapture
     }
 }
 
 category Software {
-    asset Windows{
-        | webcamCollection
-            -> computer.collectVideo,
+    abstractAsset OS {  
+        & dataCollected
+    }
+    
+    asset Windows extends OS {
+        | videoCapture
+            -> computer.collectVideo
+    }
+    
+    asset MacOS extends OS {
+        | videoCapture
+            -> computer.collectVideo
 
     }
-    asset MacOS {
-        | webcamCollection
-            -> computer.collectVideo,
-
+    
+    asset Service {
     }
-  
+    
     asset videoCallApplication extends Service {
-        | collectVideo
-            -> computer._collectVideo
+        | _collectVideo
+            ->  computer.collectVideo
     }
 }
 
@@ -28,34 +35,29 @@ category Hardware {
     asset Computer {
         E webcamExists
             <- webcam
-            -> webcam.collectVideo
+            -> webcam._collectVideo
 
         E videoCallApplicationExists
             <- videoCallApplication
-            -> videoCallApplication.collectVideo
+            -> videoCallApplication._collectVideo
 
         | collectVideo
-            -> _collectVideo
-
-        & _collectVideo
-            -> dataCollected
-
-        # whitelisting
-            -> _collectVideo
-
-        | dataCollected
+            info: "An adversary can leverage a computer's peripheral devices (e.g., integrated cameras or webcams) or applications (e.g., video call services) to capture video recordings for the purpose of gathering information. Images may also be captured from devices or applications, potentially in specified intervals, in lieu of video files."
+            ->  os.dataCollected
     }
+    
     asset Webcam {
-        | collectVideo
-            -> computer._collectVideo
+        | _collectVideo
+            -> computer.collectVideo
     }
 }
 
 associations {
-    User [user] 1-* <--use--> 1 [windows] Windows
-    User [user] 1-* <--use--> 1 [macOS] MacOS
-    Computer [computer] 1-* <--software--> 1 [windows] Windows
-    Computer [computer] 1-* <--software--> 1 [macOS] MacOS
-    VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
-    Webcan [webcam] 1 <--hardware--> 1 [computer] Computer
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows 
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    OS [os] 1 <--System--> 1-* [computer] Computer
+    Computer [computer] 1 <--Software--> 1 [windows] Windows
+    Computer [computer] 1 <--Software--> 1 [macOS] MacOS
+    VideoCallApplication [videoCallApplication] 1-* <--Software--> 1 [computer] Computer
+    Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
 }
