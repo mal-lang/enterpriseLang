@@ -30,6 +30,10 @@ category Network {
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
             ->  os.commonlyUsedPortsConnection
+            
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.commonlyUsedPortsConnection
     }
 
     asset InternalNetwork {
@@ -39,6 +43,10 @@ category Network {
         
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.commonlyUsedPortsConnection
+            
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
             ->  os.commonlyUsedPortsConnection
     }
 }
