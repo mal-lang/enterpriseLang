@@ -1,8 +1,8 @@
 category Person{
     asset User {
         | userRights
-            ->  linux.bash_profileAndBashrc,
-                macOS.bash_profileAndBashrc
+            ->  linux._bash_profileAndBashrc,
+                macOS._bash_profileAndBashrc
     }
     
      asset Administrator {
@@ -12,32 +12,38 @@ category Person{
     asset Root extends Administrator {
         | rootRights
             info: "Unix Root account is equivalent to WindowsAdmin account."
-            ->  linux.bash_profileAndBashrc,
-                macOS.bash_profileAndBashrc
+            ->  linux._bash_profileAndBashrc,
+                macOS._bash_profileAndBashrc
     }            
 }
 
 category Software {
     asset OS {
         | persistence
+        
+        # restrictFileAndDirectoryPermissions
     }
     asset Linux extends OS {
-        |  bash_profileAndBashrc
-            -> _bash_profileAndBashrc
-        &  _bash_profileAndBashrc 
+        | _bash_profileAndBashrc
+            -> bash_profileAndBashrc
+            
+        & bash_profileAndBashrc 
             ->  persistence
+            
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
-            ->  _bash_profileAndBashrc
+            +>  bash_profileAndBashrc
     }
     asset MacOS extends OS{
-        |  bash_profileAndBashrc
-            -> _bash_profileAndBashrc
-        &  _bash_profileAndBashrc 
+        | _bash_profileAndBashrc
+            -> bash_profileAndBashrc
+            
+        & bash_profileAndBashrc 
             ->  persistence
-        #  restrictFileAndDirectoryPermissions
-            info: "https://attack.mitre.org/mitigations/M1022/" 
-            -> _bash_profileAndBashrc 
+            
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  bash_profileAndBashrc
     }
 }
 
