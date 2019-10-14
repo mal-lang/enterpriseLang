@@ -28,6 +28,7 @@ category Software {
             -> bash_profileAndBashrc
             
         & bash_profileAndBashrc 
+            info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
             
         # restrictFileAndDirectoryPermissions
@@ -39,6 +40,7 @@ category Software {
             -> bash_profileAndBashrc
             
         & bash_profileAndBashrc 
+            info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
             
         # restrictFileAndDirectoryPermissions
