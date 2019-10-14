@@ -18,10 +18,8 @@ category Software {
 }
 
 category Network {
-    asset C2Server extends ExternalNetwork {
-
-        | c2Connexion
-            
+    asset C2Server {
+        | c2Connected       
     }
 
     asset ExternalNetwork {
