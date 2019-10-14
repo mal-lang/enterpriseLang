@@ -44,6 +44,10 @@ category Network {
     
     asset Firewall {
         & _bypassFirewall
+        
+        # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.uncommonlyUsedPortsConnection
     }    
 }
 
