@@ -1,25 +1,41 @@
 category Person {
     asset User {
         | userRights
-            -> computer.uploadRemoteFile, 
-               computer.downloadRemoteFile
+            ->  os.remoteFileCopy
     }
 }
 
-category Hardware{
-    asset Computer {
-        & uploadRemoteFile
-            // leads to file execution attacks
-           // -> employee.userExecution
-        & downloadRemoteFile
-            info: "data collection from the user" 
-        # networkIntrusionDetection
-            info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
-            -> uploadRemoteFile, 
-               downloadRemoteFile
+category Software{
+    abstractAsset OS {  
+        & remoteFileCopy
+            info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
+            ->  windows.windowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
+                windows.remoteDesktopProtocol
+    }
+    
+    asset Windows extends OS {   
+        & windowsAdminShares
+        
+        & remoteDesktopProtocol
+    }
+}
+
+category Network {
+    asset ExternalNetwork {        
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.remoteFileCopy
+    }
+
+    asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.remoteFileCopy
     }
 }
 
 associations{
-    User [user] 1 <-- ui--> 1 [computer] Computer
+    User [user] 1 <--Ui--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
 }
