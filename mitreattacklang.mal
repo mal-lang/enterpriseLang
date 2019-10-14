@@ -711,7 +711,9 @@ category Software {
         & commonlyUsedPortsConnection
             info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
             ->  c2Server.c2Connected,
-                firewall._bypassFirewall
+                firewall._bypassFirewall,
+                externalNetwork.bypassNetworkIntrusionDetection,
+                internalNetwork.bypassNetworkIntrusionDetection
 
         | compileAfterDelivery     
             info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
