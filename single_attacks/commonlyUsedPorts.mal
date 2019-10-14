@@ -10,8 +10,7 @@ category Software {
         & commonlyUsedPortsConnection
             info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
             ->  c2Server.c2Connected,
-                externalNetwork.bypassFirewall,
-                internalNetwork.bypassFirewall,
+                firewall._bypassFirewall,
                 externalNetwork.bypassNetworkDetection,
                 internalNetwork.bypassNetworkDetection
     }
@@ -23,8 +22,6 @@ category Network {
     }
 
     asset ExternalNetwork {
-        | bypassFirewall
-
         | bypassNetworkDetection
         
         # networkIntrusionPrevention
@@ -37,11 +34,7 @@ category Network {
     }
 
     asset InternalNetwork {
-        | bypassFirewall
-
         | bypassNetworkDetection
-        
-        & c2Connexion
         
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
@@ -51,12 +44,20 @@ category Network {
             info: "https://attack.mitre.org/mitigations/M1030/"
             ->  os.commonlyUsedPortsConnection
     }
+    
+    asset Firewall {
+        & _bypassFirewall
+        
+        # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.commonlyUsedPortsConnection
+    }   
 }
 
 assocations {
     OS [os] 1 <--System--> 1-* [computer] Computer
     OS [os] 1-* <--Connect--> 1-* [c2Server] C2Server
+    Firewall [firewall] 0-1 <--Protect--> 1-* [os] OS
     InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
     ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
-
 }
