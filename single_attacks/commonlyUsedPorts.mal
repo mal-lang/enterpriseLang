@@ -1,17 +1,19 @@
 category Hardware {
     asset Computer {
         | infectedComputer 
-            -> commonlyUsedPortsConnection
+            ->  os.commonlyUsedPortsConnection
+    }
+}
 
+category Software {
+    abstractAsset OS {  
         & commonlyUsedPortsConnection
-            -> c2server.c2Connexion,
+            info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
+            ->  c2server.c2Connexion,
                 externalNetwork.bypassFirewall,
                 internalNetwork.bypassFirewall,
                 externalNetwork.bypassNetworkDetection,
                 internalNetwork.bypassNetworkDetection
-
-        # networkIntrusionDetection
-            -> commonlyUsedPortsConnection
     }
 }
 
@@ -26,18 +28,27 @@ category Network {
         | bypassFirewall
 
         | bypassNetworkDetection
+        
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.commonlyUsedPortsConnection
     }
 
     asset InternalNetwork {
         | bypassFirewall
 
         | bypassNetworkDetection
+        
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.commonlyUsedPortsConnection
     }
 }
 
 assocations {
-    Computer [computer] 1-* <--contains--> 1-* [externalNetwork] ExternalNetwork
-    Computer [computer] 1-* <--contains--> 1-* [internalNetwork] InternalNetwork
-    Computer [computer] 1-* <--connected--> 1-* [c2Server] C2Server
+    OS [os] 1 <--System--> 1-* [computer] Computer
+    OS [os] 1-* <--Connect--> 1-* [c2Server] C2Server
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
 
 }
