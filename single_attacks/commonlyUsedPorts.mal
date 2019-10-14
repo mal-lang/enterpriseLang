@@ -9,7 +9,7 @@ category Software {
     abstractAsset OS {  
         & commonlyUsedPortsConnection
             info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
-            ->  c2server.c2Connexion,
+            ->  c2Server.c2Connected,
                 externalNetwork.bypassFirewall,
                 internalNetwork.bypassFirewall,
                 externalNetwork.bypassNetworkDetection,
@@ -19,7 +19,7 @@ category Software {
 
 category Network {
     asset C2Server {
-        | c2Connected       
+        | c2Connected
     }
 
     asset ExternalNetwork {
@@ -40,6 +40,8 @@ category Network {
         | bypassFirewall
 
         | bypassNetworkDetection
+        
+        & c2Connexion
         
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
