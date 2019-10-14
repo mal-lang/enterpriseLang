@@ -1,15 +1,17 @@
-category Person{
-    asset User {
-        | userRights
-            -> windows.appCertDLLs
-    }
+category Person{    
     asset Administrator {
         | adminRights
-            ->  windows.appCertDLLs
     }
+    
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin._appCertDLLs
+    }
+    
     asset SYSTEM {
         | systemRights
-            ->  windows.appCertDLLs
+            ->  windows._appCertDLLs
     }
 }
 
@@ -17,22 +19,25 @@ category Software {
     asset OS {
         | persistence
     }
+    
     asset Windows extends OS{
-        | appCertDLLs
-            -> _appCertDLLs 
-        & _appCertDLLs
+        | _appCertDLLs
+            -> appCertDLLs
+            
+        & appCertDLLs
+            info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
             ->  persistence,
-                system.systemRights,
-                user.userRights,
-                administrator.adminRights
+                systemWindows.systemRights,
+                windowsAdmin.adminRights
+                
         # executionPrevention 
             info: "https://attack.mitre.org/mitigations/M1038/"
-            -> _appCertDLLs
+            ->  appCertDLLs
     }
 }
 
 associations {
-    User [user] 1-* <-- ui--> 1-* [windows] Windows
-    Administrator [administrator] 1-* <-- ui--> 1-* [windows] Windows
-    SYSTEM [system] 1-* <-- ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
 }
