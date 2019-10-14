@@ -18,26 +18,26 @@ category Person {
 
 category Software {
     abstractAsset OS { 
-        | validAccounts
+        | _validAccounts
 
-        & credentialDumping
+        & _credentialDumping
         
         & userDataEncryptedForImpact
             info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
-            ->  validAccounts,
-                credentialDumping,
+            ->  _validAccounts,
+                _credentialDumping,
                 windows.windowsAdminShares
 
         & adminDataEncryptedForImpact
             info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
-            ->  validAccounts,
-                credentialDumping,
+            ->  _validAccounts,
+                _credentialDumping,
                 windows.windowsAdminShares
 
         & systemDataEncryptedForImpact
             info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
-            ->  validAccounts,
-                credentialDumping,
+            ->  _validAccounts,
+                _credentialDumping,
                 windows.windowsAdminShares
 
         # dataBackup

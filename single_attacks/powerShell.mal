@@ -1,16 +1,19 @@
 category Person {
     asset User {
         | userRights
-            ->  windows.powerShell
+            ->  windows._powerShell
     } 
 
     asset Administrator {
-        | adminRights
-            ->  windows.powerShell
-
         # privilegedAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  windows._powerShell        
+            ->  windows.powerShell        
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin._powerShell
     } 
 }   
 
@@ -22,12 +25,12 @@ category Software {
     } 
 
     asset Windows extends OS {  
-        & powerShell
+        & _powerShell
             info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
-            ->  _powerShell,
+            ->  powerShell,
                 executeCode
 
-        & _powerShell
+        & powerShell
             info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
             ->  internalNetwork.remoteSystemsConnection
 
@@ -35,11 +38,11 @@ category Software {
 
         # codeSigning
             info: "https://attack.mitre.org/mitigations/M1045/"  
-            +>  _powerShell
+            +>  powerShell
 
         # disableOrRemoveFeatureOrProgram
             info: "https://attack.mitre.org/mitigations/M1042/"
-            +>  powerShell
+            +>  _powerShell
 
     }    
 }

@@ -17,7 +17,7 @@ category Person {
 
 category Software {
     asset Service {
-        | exploitationForPrivilegeEscalation
+        | _exploitationForPrivilegeEscalation
     } 
 
     abstractAsset OS{
@@ -28,7 +28,7 @@ category Software {
         & launchDaemon
             info: "Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root. Adversary can modify a current Launch Daemon’s executable and gain persistence or Privilege Escalation."
             ->  persistence,
-                service.exploitationForPrivilegeEscalation
+                service._exploitationForPrivilegeEscalation
     } 
 }
 

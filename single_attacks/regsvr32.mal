@@ -33,7 +33,7 @@ category Software {
                 bypassAntivirus,
                 bypassDigitalCertificateValidation,
                 codeProxyExecution,
-                _regsvr32
+                regsvr32
 
         & _regsvr32
             rationale: "This is a helper attack step for Regsvr32.exe to establish Persistence via Component Object Model Hijacking."

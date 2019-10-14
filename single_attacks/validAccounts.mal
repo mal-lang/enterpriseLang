@@ -1,12 +1,12 @@
 category Person {
     asset User{
         | userCredential //it is the end point of a credential access attack
-            ->  os.validAccounts       
+            ->  os._validAccounts       
     }
 
     asset Administrator{
         | adminCredential
-            ->  os.validAccounts
+            ->  os._validAccounts
     }
 }
 
@@ -18,10 +18,10 @@ category Software {
     }
 
     abstractAsset OS{
-        | validAccounts
-            ->  _validAccounts    
+        | _validAccounts
+            ->  validAccounts    
 
-        & _validAccounts
+        & validAccounts
             info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
             ->  service.userRemoteServicesLogin,
                 service.adminRemoteServicesLogin,
@@ -34,11 +34,11 @@ category Software {
 
         # passwordPolicies 
             info: "https://attack.mitre.org/mitigations/M1027/" 
-            ->  _validAccounts
+            ->  validAccounts
 
         # privilegedAccountManagement // Limit credential overlap across systems to prevent access if account credentials are obtained.
             info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  _validAccounts  
+            ->  validAccounts  
 
         | bypassHostIntrusionPrevention
 

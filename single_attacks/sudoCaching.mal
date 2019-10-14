@@ -1,46 +1,51 @@
 category Person {
     asset User {
         | userRights
-            ->  linux.sudoCaching,
-                macOS.sudoCaching
+            ->  linux._sudoCaching,
+                macOS._sudoCaching
     }  
 
     asset Administrator {
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  linux._sudoCaching,
-                macOS._sudoCaching
+            ->  linux.sudoCaching,
+                macOS.sudoCaching
     }
 }               
 
 category Software {
     asset Service {
-        | exploitationForPrivilegeEscalation
+        | _exploitationForPrivilegeEscalation
     } 
 
     abstractAsset OS{
         # operatingSystemConfiguration 
-            info: "https://attack.mitre.org/mitigations/M1028/"
-            ->  linux._sudoCaching,
-                macOS._sudoCaching
     } 
 
     asset Linux extends OS {
-        | sudoCaching
-            ->  _sudoCaching
+        | _sudoCaching
+            ->  sudoCaching
 
-        & _sudoCaching
+        & sudoCaching
             info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
-            ->  service.exploitationForPrivilegeEscalation
+            ->  service._exploitationForPrivilegeEscalation
+
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            +>  sudoCaching
     } 
 
     asset MacOS extends OS {
-        | sudoCaching
-            ->  _sudoCaching
-            
-        & _sudoCaching
+        | _sudoCaching
+            ->  sudoCaching
+
+        & sudoCaching
             info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
-            ->  service.exploitationForPrivilegeEscalation
+            ->  service._exploitationForPrivilegeEscalation
+
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            +>  sudoCaching
     }    
 }
 

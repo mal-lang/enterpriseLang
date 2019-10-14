@@ -1,11 +1,11 @@
 category Person {
     asset User {
         | userRights
-            ->  linux.systemdService
+            ->  linux._systemdService
 
         # userAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1018/"     
-            ->  linux._systemdService
+            ->  linux.systemdService
     }
 
     asset Administrator {
@@ -13,13 +13,13 @@ category Person {
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  linux._systemdService
+            ->  linux.systemdService
     }
 
     asset Root extends Administrator {
         | rootRights
             info: "Unix Root account is equivalent to WindowsAdmin account."
-            ->  linux.systemdService
+            ->  linux._systemdService
     }
 }
 
@@ -33,20 +33,20 @@ category Software {
     }
 
     asset Linux extends OS {
-        | systemdService
-            -> _systemdService
+        | _systemdService
+            -> systemdService
 
-        & _systemdService
+        & systemdService
             info: "Adversaries have used systemd functionality to establish persistent access to victim systems by creating and/or modifying service unit files that cause systemd to execute malicious commands at recurring intervals, such as at system boot."
             ->  persistence
 
         # limitSoftwareInstallation
             info: "https://attack.mitre.org/mitigations/M1033/"
-            +>  _systemdService
+            +>  systemdService
 
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
-            +>  _systemdService
+            +>  systemdService
     }
 }
 

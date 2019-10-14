@@ -1,46 +1,46 @@
 category Person {
     asset User {
         | userRights
-            ->  thirdpartySoftware.useThirdpartySoftware
+            ->  thirdpartySoftware._useThirdpartySoftware
 
         # userAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1018/"     
-            ->  thirdpartySoftware.useThirdpartySoftware                       
+            ->  thirdpartySoftware._useThirdpartySoftware                       
     }
 
     asset Employee {
         # userTraining 
-            ->  thirdpartySoftware._useThirdpartySoftware
+            ->  thirdpartySoftware.useThirdpartySoftware 
     }
 
     asset Administrator {
         | adminRights
-            ->  thirdpartySoftware.useThirdpartySoftware
+            ->  thirdpartySoftware._useThirdpartySoftware
 
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  thirdpartySoftware.useThirdpartySoftware // grant access to application deployment systems only to a limited number of authorized administrators
+            ->  thirdpartySoftware._useThirdpartySoftware // grant access to application deployment systems only to a limited number of authorized administrators
     }
 
     asset SYSTEM {
         | systemRights
-            ->  thirdpartySoftware.useThirdpartySoftware
+            ->  thirdpartySoftware._useThirdpartySoftware
     } 
 }
 
 category Software{
     asset Service {
-        & _exploitationForPrivilegeEscalation
+        & exploitationForPrivilegeEscalation
             ->  thirdpartySoftware._useThirdpartySoftware
 
     }
 
     asset ThirdpartySoftware extends Service {      
+        & _useThirdpartySoftware 
+            ->  useThirdpartySoftware
+
         & useThirdpartySoftware 
             info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
-            ->  _useThirdpartySoftware 
-
-        & _useThirdpartySoftware 
             ->  os.executeCode 
     }
 
@@ -49,23 +49,23 @@ category Software{
 
         # activeDirectoryConfiguration
             info: "https://attack.mitre.org/mitigations/M1015/"
-            ->  thirdpartySoftware._useThirdpartySoftware
+            ->  thirdpartySoftware.useThirdpartySoftware
 
         # multiFactorAuthentication
             info: "https://attack.mitre.org/mitigations/M1032/" 
-            ->  thirdpartySoftware._useThirdpartySoftware
+            ->  thirdpartySoftware.useThirdpartySoftware
 
         # passwordPolicies 
             info: "https://attack.mitre.org/mitigations/M1027/" 
-            ->  thirdpartySoftware._useThirdpartySoftware
+            ->  thirdpartySoftware.useThirdpartySoftware
 
         # remoteDataStorage 
             info: "https://attack.mitre.org/mitigations/M1029/"
-            ->  thirdpartySoftware._useThirdpartySoftware
+            ->  thirdpartySoftware.useThirdpartySoftware
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/"
-            ->  service._exploitationForPrivilegeEscalation
+            ->  service.exploitationForPrivilegeEscalation
 
     } 
 }
@@ -75,7 +75,7 @@ category Network {
     asset Firewall {
         # networkSegmentation
             info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  thirdpartySoftware._useThirdpartySoftware
+            ->  thirdpartySoftware.useThirdpartySoftware
     } 
 }
 

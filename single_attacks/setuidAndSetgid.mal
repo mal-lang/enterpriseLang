@@ -8,7 +8,7 @@ category Person {
 
 category Software {
     asset Service {
-        | exploitationForPrivilegeEscalation
+        | _exploitationForPrivilegeEscalation
     }
 
     asset OS {
@@ -19,7 +19,7 @@ category Software {
     asset MacOS extends OS {
         & setuidAndSetgid
             info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context."
-            ->  service.exploitationForPrivilegeEscalation,
+            ->  service._exploitationForPrivilegeEscalation,
                 persistence
        
         # operatingSystemConfiguration
@@ -30,7 +30,7 @@ category Software {
     asset Linux extends OS {
         & setuidAndSetgid
             info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context."
-            ->  service.exploitationForPrivilegeEscalation,
+            ->  service._exploitationForPrivilegeEscalation,
                 persistence
        
         # operatingSystemConfiguration

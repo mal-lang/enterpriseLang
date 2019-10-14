@@ -6,14 +6,14 @@ category Software {
     asset ThirdpartySoftware extends Service {      
         & trustedRelationship
             info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
-            ->  os.validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
+            ->  os._validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
     }
 
     abstractAsset OS {   
         | compromisedSystems //with probability
             ->  thirdpartySoftware.trustedRelationship
 
-        | validAccounts
+        | _validAccounts
 
         # userAccountControl
             info: "https://attack.mitre.org/mitigations/M1052/"

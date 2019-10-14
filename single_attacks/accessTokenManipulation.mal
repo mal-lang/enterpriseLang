@@ -23,7 +23,7 @@ category Person {
 
 category Software {
     asset Service {
-        | exploitationForPrivilegeEscalation
+        | _exploitationForPrivilegeEscalation
     }      
 
     abstractAsset OS {
@@ -38,11 +38,11 @@ category Software {
 
         & userAccessTokenManipulation
             info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
-            ->  service.exploitationForPrivilegeEscalation
+            ->  service._exploitationForPrivilegeEscalation
 
         & adminAccessTokenManipulation
             info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
-            ->  service.exploitationForPrivilegeEscalation
+            ->  service._exploitationForPrivilegeEscalation
     } 
 }
   

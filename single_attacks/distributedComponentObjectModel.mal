@@ -1,13 +1,15 @@
 category Person {    
     asset Administrator {
+        | adminRights
+
         # privilegedAccountManagement
             info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  windows.modifyRegistrySettings
+            ->  windows.modifyRegistry
     }
 
     asset WindowsAdmin extends Administrator {
-        | systemRights
-            ->   windows.distributedComponentObjectModel
+        | adminRights
+            +>  windowsWindowsAdmin.distributedComponentObjectModel
 
     }
     
@@ -20,11 +22,13 @@ category Person {
 
 category Software {
     asset OS {
+        # disableOrRemoveFeatureOrProgram
 
+        # applicationIsolationAndSandboxing
     }
 
     asset Windows extends OS {    
-        & modifyRegistrySettings
+        & modifyRegistry
             ->  distributedComponentObjectModel      
 
         & distributedComponentObjectModel          
@@ -35,20 +39,13 @@ category Software {
 
         # disableOrRemoveFeatureOrProgram
             info: "https://attack.mitre.org/mitigations/M1042/"
-            +>  distributedComponentObjectModel     
-    }
-}
+            +>  distributedComponentObjectModel   
 
-
-category Software {
-    asset Service {
         # applicationIsolationAndSandboxing
             info: "https://attack.mitre.org/mitigations/M1048/"
-            ->  windows.distributedComponentObjectModel
-
+            +>  distributedComponentObjectModel
     }
 }
-
 
 category Network {
     asset Firewall {
@@ -61,7 +58,8 @@ category Network {
 
 associations {
     Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
-    Windows [windows] 1 <--Contain--> 1-* [service] Service
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
     Windows [windows] 1 <--Protect--> 1 [firewall] Firewall
 
 } 

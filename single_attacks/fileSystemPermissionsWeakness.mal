@@ -1,11 +1,11 @@
 category Person {
     asset User {
         | userRights
-            ->  windows.fileSystemPermissionsWeakness
+            ->  windows._fileSystemPermissionsWeakness
 
         # userAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1018/"     
-            ->  windows._fileSystemPermissionsWeakness
+            ->  windows.fileSystemPermissionsWeakness
     }  
 
     asset Administrator {
@@ -14,7 +14,7 @@ category Person {
 
     asset WindowsAdmin extends Administrator {
         | adminRights
-            ->  windowsWindowsAdmin.fileSystemPermissionsWeakness
+            ->  windowsWindowsAdmin._fileSystemPermissionsWeakness
     }
 
     asset SYSTEM {
@@ -32,10 +32,10 @@ category Software {
     } 
 
     asset Windows extends OS {
-        | fileSystemPermissionsWeakness
-            ->  _fileSystemPermissionsWeakness      
+        | _fileSystemPermissionsWeakness
+            ->  fileSystemPermissionsWeakness      
 
-        & _fileSystemPermissionsWeakness
+        & fileSystemPermissionsWeakness
             info: "Adversaries may use this technique to replace legitimate binaries with malicious ones as a means of executing code at a higher permissions level."
             ->  executeCode,
                 windowsAdmin.adminRights,
@@ -45,11 +45,11 @@ category Software {
 
         # audit 
             info: "https://attack.mitre.org/mitigations/M1047/"
-            +>  _fileSystemPermissionsWeakness
+            +>  fileSystemPermissionsWeakness
                
         # userAccountControl
             info: "https://attack.mitre.org/mitigations/M1052/"
-            +>  _fileSystemPermissionsWeakness         
+            +>  fileSystemPermissionsWeakness         
     }    
 }
 

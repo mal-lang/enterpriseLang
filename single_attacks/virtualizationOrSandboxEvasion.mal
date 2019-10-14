@@ -8,7 +8,7 @@ category Software {
 
         | bypassStaticFileAnalysis 
 
-        | scripting
+        & scripting
             info: "Adversaries may use utilities such as Windows Management Instrumentation, PowerShell, Systeminfo, and the Query Registry to obtain system information and search for VME artifacts. Adversaries may use Scripting to combine these checks into one script and then have the program exit if it determines the system to be a virtual environment."
             ->  windows.virtualizationOrSandboxEvasion
     } 

@@ -1,8 +1,8 @@
 category Person {
     asset User {
         | userRights
-            ->  linux.clearCommandHistory,
-                macOS.clearCommandHistory
+            ->  linux._clearCommandHistory,
+                macOS._clearCommandHistory
     }
 }
 
@@ -11,8 +11,8 @@ category Software{
     abstractAsset OS{
         # restrictFileAndDirectoryPermissions 
             info: "https://attack.mitre.org/mitigations/M1022/"
-            ->  linux.clearCommandHistory,
-                macOS.clearCommandHistory
+            ->  linux._clearCommandHistory,
+                macOS._clearCommandHistory
 
         | bypassLogAnalysis
           
@@ -20,29 +20,31 @@ category Software{
     }
 
     asset Linux extends OS {
-        & clearCommandHistory
-            ->  _clearCommandHistory       
-
         & _clearCommandHistory
-            ->  os.bypassLogAnalysis, 
-                os.bypassHostForensicAnalysis
+            ->  clearCommandHistory       
+
+        & clearCommandHistory
+            info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
+            ->  bypassLogAnalysis, 
+                bypassHostForensicAnalysis
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             info: "https://attack.mitre.org/mitigations/M1039/"
-            ->  _clearCommandHistory
+            ->  clearCommandHistory
     }
 
     asset MacOS extends OS {
-        & clearCommandHistory
-            ->  _clearCommandHistory  
-
         & _clearCommandHistory
-            ->  os.bypassLogAnalysis, 
-                os.bypassHostForensicAnalysis
+            ->  clearCommandHistory       
+
+        & clearCommandHistory
+            info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
+            ->  bypassLogAnalysis, 
+                bypassHostForensicAnalysis
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             info: "https://attack.mitre.org/mitigations/M1039/"
-            ->  _clearCommandHistory
+            ->  clearCommandHistory
     }
 }
 

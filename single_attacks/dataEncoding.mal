@@ -1,17 +1,17 @@
 category Person {
     asset User {
         | userRights
-            ->  os.dataEncoding        
+            ->  os._dataEncoding        
     }
 }
 
 category Software {
     abstractAsset OS {  
-        | dataEncoding
-            info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
-            ->  _dataEncoding
+        | _dataEncoding
+            ->  dataEncoding
 
-        & _dataEncoding
+        & dataEncoding
+            info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
             ->  c2Server.communicate
     }
 }
@@ -20,13 +20,13 @@ category Network {
         asset ExternalNetwork {
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
-            ->  os._dataEncoding   
+            ->  os.dataEncoding   
 
     }
         asset InternalNetwork {
         # networkIntrusionPrevention
             info: "https://attack.mitre.org/mitigations/M1031/"
-            ->  os._dataEncoding     
+            ->  os.dataEncoding     
     }
 
 }

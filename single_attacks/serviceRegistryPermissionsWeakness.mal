@@ -17,7 +17,7 @@ category Person{
 
 category Software {
     asset Service {
-        | exploitationForPrivilegeEscalation
+        | _exploitationForPrivilegeEscalation
     }
 
     asset OS {
@@ -30,6 +30,7 @@ category Software {
                 persistence
 
         & _serviceRegistryPermissionsWeakness
+            info: "When the service starts or is restarted, then the adversary-controlled program will execute, allowing the adversary to gain persistence and/or privilege escalation to the account context the service is set to execute."
             ->  service.exploitationForPrivilegeEscalation
 
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.

@@ -1,7 +1,7 @@
 category Person {
     asset User {
         | userRights
-            ->  windows.taintSharedContent
+            ->  windows._taintSharedContent
     }
 }
 
@@ -15,23 +15,23 @@ category Software {
     }
 
     asset Windows extends OS{
-        | taintSharedContent
-            rationale: "This is a helper attack step that requires access to shared folders."
-            ->  networkSharedDrive._taintSharedContent  
+        | _taintSharedContent
+            info: "This is a helper attack step that requires access to shared folders."
+            ->  networkSharedDrive.taintSharedContent  
 
         | executeCode
 
         # executionPrevention
             info: "https://attack.mitre.org/mitigations/M1038/"
-            +>  networkSharedDrive._taintSharedContent
+            +>  networkSharedDrive.taintSharedContent
 
         # exploitProtection
             info: "https://attack.mitre.org/mitigations/M1050/"
-            +>  networkSharedDrive._taintSharedContent
+            +>  networkSharedDrive.taintSharedContent
 
         # restrictFileAndDirectoryPermissions
             info: "https://attack.mitre.org/mitigations/M1022/"
-            +>  networkSharedDrive._taintSharedContent
+            +>  networkSharedDrive.taintSharedContent
     }
 }
 
@@ -41,7 +41,7 @@ category Network {
     }
 
     asset NetworkSharedDrive extends InternalNetwork {
-        & _taintSharedContent
+        & taintSharedContent
             info: "Once a user opens the shared tainted content, the malicious portion can be executed to run the adversary's code on a remote system."
             ->  windows.executeCode
     }

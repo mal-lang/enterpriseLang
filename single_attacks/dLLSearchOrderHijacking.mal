@@ -1,21 +1,21 @@
 category Person {
     asset User {
         | userRights
-            ->  windows.dLLSearchOrderHijacking
+            ->  windows._dLLSearchOrderHijacking
     }
 
     asset Administrator {
         | adminRights
-            ->  windows.dLLSearchOrderHijacking
     }
 
     asset WindowsAdmin extends Administrator {
         | adminRights
+            +>  windowsWindowsAdmin._dLLSearchOrderHijacking
     }
 
     asset SYSTEM {
         | systemRights
-            ->  windows.dLLSearchOrderHijacking
+            ->  windows._dLLSearchOrderHijacking
     } 
 }
 
@@ -29,33 +29,34 @@ category Software{
     }
 
     asset Windows extends OS {
-        | dLLSearchOrderHijacking
-            ->  _dLLSearchOrderHijacking 
+        | _dLLSearchOrderHijacking
+            ->  dLLSearchOrderHijacking 
 
-        & _dLLSearchOrderHijacking
-            ->  os.bypassProcessWhitelisting,
+        & dLLSearchOrderHijacking
+            info: "Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence."
+            ->  bypassProcessWhitelisting,
                 systemWindows.systemRights,
                 windowsUser.userRights,
                 windowsAdministrator.adminRights
 
         # executionPrevention             
             info: "https://attack.mitre.org/mitigations/M1038/"
-            +>  _dLLSearchOrderHijacking         
+            +>  dLLSearchOrderHijacking         
 
         # audit 
             info: "https://attack.mitre.org/mitigations/M1047/"
-            +>  _dLLSearchOrderHijacking
+            +>  dLLSearchOrderHijacking
 
         # restrictLibraryLoading 
             info: "https://attack.mitre.org/mitigations/M1044/"
-            ->  _dLLSearchOrderHijacking
+            ->  dLLSearchOrderHijacking
     }
 }
    
 
 associations{   
     User [windowsUser] 1 <--Use--> 1-* [windows] Windows
-    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
     SYSTEM [systemWindows] 1-* <--Ui--> 1-* [windows] Windows
     OS [os] 1 <--Contain--> 1 [windows] Windows
 }

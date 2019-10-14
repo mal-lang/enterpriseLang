@@ -14,7 +14,7 @@ category Person {
 
 category Software {
     abstractAsset OS{
-        & credentialDumping
+        & _credentialDumping
 
         # passwordPolicies
 
@@ -24,7 +24,7 @@ category Software {
     asset Windows extends OS {   
         & passTheTicket
             info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
-            ->  credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
+            ->  _credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
                 internalNetwork.c2Connexion // gain remote access 
 
         # passwordPolicies 
