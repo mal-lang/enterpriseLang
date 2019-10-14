@@ -5,7 +5,12 @@ category Person{
 
     asset Administrator {
         | adminRights
-            -> windows.applicationShimming
+    }
+      
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin._applicationShimming
     }
 }
 
@@ -15,22 +20,30 @@ category Software {
     }
 
     asset Windows extends OS{
-        | applicationShimming
-            -> _applicationShimming
-        & _applicationShimming
+        | _applicationShimming
+            ->  applicationShimming
+            
+        & applicationShimming
+            info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
             ->  persistence,
-                user.userRights,
-                administrator.adminRights
+                windowsUser.userRights,
+                windowsAdministrator.adminRights,
+                bypassUserAccountControl // certain shims can be used to Bypass User Account Control 
+                
+        & bypassUserAccountControl
+                
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/" 
-            ->  _applicationShimming
+            ->  applicationShimming
+            
         # userAccountControl
             info: "https://attack.mitre.org/mitigations/M1052/"
-            ->  _applicationShimming    
+            ->  applicationShimming    
     }
 }
 
 associations {
-    User [user] 1-* <-- ui--> 1-* [windows] Windows
-    Administrator [administrator] 1-* <-- ui--> 1-* [windows] Windows
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
 }
