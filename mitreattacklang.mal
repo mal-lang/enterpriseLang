@@ -1,3 +1,6 @@
+//id: "org.mal-lang.mitreattacklang"
+//version: "1.0.0"
+
 category Person {
     asset User {
         | userRights
@@ -199,7 +202,7 @@ category Person {
             +>  windows.remoteDesktopProtocol
 
         # multiFactorAuthentication
-            +>  windows.remoteDesktopProtocol
+            ->  windows.remoteDesktopProtocol
     }     
 
     asset Administrator {
@@ -447,7 +450,7 @@ category Person {
     }
 
     asset Employee {
-        & spearphishingLinkClicked [UniformDistribution(20,1)]
+        & spearphishingLinkClicked [Uniform(1,20)]
             rationale: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
             ->  browser.spearphishingLink
 
@@ -773,7 +776,8 @@ category Software {
                 externalNetwork.obfuscateNetworkTraffic          
                  
         | executeCode 
-            ->  internalNetwork.remoteAccess
+            ->  computer.infectedComputer,
+                internalNetwork.remoteAccess
 
         & endpointDenialOfService 
             info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
@@ -800,7 +804,7 @@ category Software {
             info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
 
         | hiddenFilesAndDirectories
-            info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a ‘hidden’ file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
+            info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a 'hidden' file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
             ->  bypassHostForensicAnalysis,
                 persistence
 
@@ -878,9 +882,6 @@ category Software {
         | resourceHijacking
             info: "Adversaries may consume enough system resources to negatively impact and/or cause affected machines to become unresponsive."
             ->  computer.unresponsive  
-
-        | executeCode
-            ->  computer.infectedComputer
 
         & communicationThroughRemovableMedia
 
@@ -1152,18 +1153,21 @@ category Software {
             info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             ->  _validAccounts,
                 _credentialDumping,
+                inhibitSystemRecovery,
                 windows.windowsAdminShares
 
         & adminDataEncryptedForImpact
             info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             ->  _validAccounts,
                 _credentialDumping,
+                inhibitSystemRecovery,
                 windows.windowsAdminShares
 
         & systemDataEncryptedForImpact
             info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             ->  _validAccounts,
                 _credentialDumping,
+                inhibitSystemRecovery,
                 windows.windowsAdminShares
 
         & dataCompressed
@@ -1184,16 +1188,6 @@ category Software {
         | exfiltrationOverAternativeProtocol
             ->  internalNetwork.dataExfiltration
 
-        & userDataEncryptedForImpact
-            info: "Attackers can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted"
-            ->  inhibitSystemRecovery 
-
-        & adminDataEncryptedForImpact
-            ->  inhibitSystemRecovery 
-
-        & systemDataEncryptedForImpact
-            ->  inhibitSystemRecovery 
-
         | dataFromInformationRepositories 
             ->  service.informationRepositories
           
@@ -1211,9 +1205,6 @@ category Software {
         | automatedExfiltration
             ->  exfiltrationOverAternativeProtocol,
                 exfiltrationOverC2
-        
-        | exfiltrationOverAternativeProtocol
-            ->  internalNetwork.dataExfiltration
 
         & networkServiceScan
             info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
@@ -1254,7 +1245,6 @@ category Software {
  
         # dataBackup
             info: "https://attack.mitre.org/mitigations/M1053/"
-            info: "Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
             ->  userDataDestruction,
                 adminDataDestruction,
                 systemDataDestruction,
@@ -1451,7 +1441,7 @@ category Software {
                 bypassApplicationWhitelisting,
                 bypassAntivirus            
 
-        | codeSigning
+        | codeSigningCertificate
             info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             ->  windowsAdmin.bypassWindowsUserAccountControl
 
@@ -1985,10 +1975,6 @@ category Software {
         & outlookEmailCollection
             info: "Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
             ->  dataCollected
-
-        | hypervisor
-
-        | systemFirmware   
         
         | _applicationShimming
             ->  applicationShimming
@@ -2024,10 +2010,7 @@ category Software {
             ->  bypassAntivirus,
                 bypassHostForensicAnalysis,    
                 bypassSignatureBasedDetection,  
-                bypassStaticFileAnalysis          
-
-        & windowsRemoteManagement
-            ->  service.externalRemoteServices // Windows Remote Management can also be used externally     
+                bypassStaticFileAnalysis              
 
         & xslScriptProcessing
             info: "Adversaries may abuse this functionality to execute arbitrary files while potentially bypassing application whitelisting defenses."
@@ -2111,7 +2094,9 @@ category Software {
 
         # operatingSystemConfiguration
             info: "https://attack.mitre.org/mitigations/M1028/" 
-            +>  passwordFilterDLL   
+            +>  passwordFilterDLL,
+                bITSJobs,
+                remoteDesktopProtocol   
 
         # passwordPolicies 
             info: "https://attack.mitre.org/mitigations/M1027/" 
@@ -2197,12 +2182,7 @@ category Software {
         # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
             info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  lLMNR_NBT_NS_PoisoningAndRelay,
-                forcedAuthentication
-
-        # operatingSystemConfiguration 
-            info: "https://attack.mitre.org/mitigations/M1028/"
-            +>  bITSJobs,
-                remoteDesktopProtocol   
+                forcedAuthentication 
 
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/" 
@@ -2272,7 +2252,7 @@ category Software {
             ->  bypassDefensiveNetworkServiceScanning  
 
         & setuidAndSetgid
-            info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context."
+            info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user's context."
             ->  service._exploitationForPrivilegeEscalation,
                 persistence  
 
@@ -2378,7 +2358,7 @@ category Software {
             info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
 
-        | codeSigning
+        | codeSigningCertificate
             info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
 
         & _clearCommandHistory
@@ -2400,7 +2380,7 @@ category Software {
             +>  computer.infectedMacOSComputer   
 
         & gatekeeperBypass
-            info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won’t set this flag. Additionally, other utilities or events like drive-by downloads don’t necessarily set it either. This completely bypasses the built-in Gatekeeper check."
+            info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won't set this flag. Additionally, other utilities or events like drive-by downloads don't necessarily set it either. This completely bypasses the built-in Gatekeeper check."
             ->  bypassApplicationWhitelisting,
                 bypassAntivirus 
 
@@ -2440,16 +2420,16 @@ category Software {
                 bypassFileOrPathWhitelisting  
 
         & launchDaemon
-            info: "Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root. Adversary can modify a current Launch Daemon’s executable and gain persistence or Privilege Escalation."
+            info: "Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root. Adversary can modify a current Launch Daemon's executable and gain persistence or Privilege Escalation."
             ->  persistence,
                 service._exploitationForPrivilegeEscalation         
 
         & lC_LOAD_DYLIB_Addition
-            info: "Adversaries can remediate the issue that any changes will invalidate digital signatures on binaries because the binary is being modified by simply removing the LC_CODE_SIGNATURE command from the binary so that the signature isn’t checked at load time."
+            info: "Adversaries can remediate the issue that any changes will invalidate digital signatures on binaries because the binary is being modified by simply removing the LC_CODE_SIGNATURE command from the binary so that the signature isn't checked at load time."
             ->  persistence
 
         & lC_MAINHijacking
-            info: "LC_MAIN that points to the binary’s entry point for execution and can be hijacked so that initial execution flows to a malicious addition. By modifying a binary in this way, application whitelisting can be bypassed because the file name or application path is still the same."
+            info: "LC_MAIN that points to the binary's entry point for execution and can be hijacked so that initial execution flows to a malicious addition. By modifying a binary in this way, application whitelisting can be bypassed because the file name or application path is still the same."
             ->  bypassApplicationWhitelisting,
                 bypassProcessWhitelisting,
                 bypassFileOrPathWhitelisting 
@@ -2487,11 +2467,11 @@ category Software {
             ->  persistence
 
         | securitydMemory
-            info: "If an adversary can obtain root access (allowing them to read securityd’s memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user’s logon keychain."
+            info: "If an adversary can obtain root access (allowing them to read securityd's memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user's logon keychain."
             ->  keychainCollection
 
         & setuidAndSetgid
-            info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context."
+            info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user's context."
             ->  service._exploitationForPrivilegeEscalation,
                 persistence
 
@@ -2546,9 +2526,6 @@ category Software {
 
         & appleScript
             ->  executeCode
-
-        | executeCode
-            +>  computer.infectedMacOSComputer
 
         & _startupItems
             ->  startupItems
