@@ -1,0 +1,47 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.fileAndDirectoryPermissionsModification
+    }
+
+    asset Administrator {
+        | adminRights
+            ->  os.fileAndDirectoryPermissionsModification
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  os.fileAndDirectoryPermissionsModification
+    }
+}
+
+category Software {
+    asset OS {
+        | fileAndDirectoryPermissionsModification
+            info: "File and directory permissions are commonly managed by discretionary access control lists (DACLs) specified by the file or directory owner."
+            ->  bypassFileSystemAccessControls,
+                windows.accessibilityFeatures, // leads to Accessibility Features attack
+                windows.logonScripts, //leads to Logon Scripts attack
+                macOS.logonScripts // leads to Logon Scripts attack
+
+        | bypassFileSystemAccessControls
+    }
+
+    asset Windows extends OS {   
+        & accessibilityFeatures
+
+        & logonScripts 
+    }
+
+    asset MacOS extends OS {
+        & logonScripts
+    }
+}
+
+associations {
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [systemWindows] 1-* <-- Ui--> 1-* [os] OS
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+    OS [os] 1 <--Contain--> 1 [macOS] MacOS
+} 

@@ -1,0 +1,82 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows._powerShellProfile
+    } 
+
+    asset Administrator {
+        | adminRights     
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin._powerShellProfile
+    } 
+}   
+
+category Software {
+    asset Service {
+        | _exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS{
+        | persistence
+
+        # codeSigning
+        
+        # softwareConfiguration
+
+    } 
+
+    asset Windows extends OS {  
+        & _powerShellProfile
+            info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
+            ->  powerShellProfile
+
+        | powerShellProfile
+            info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."   
+            ->  service._exploitationForPrivilegeEscalation,
+                persistence
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  _powerShellProfile
+
+        # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
+            info: "https://attack.mitre.org/mitigations/M1024/"
+            ->  _powerShellProfile
+
+        # softwareConfiguration
+            info: "https://attack.mitre.org/mitigations/M1054/"
+            +>  _powerShellProfile
+    }    
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

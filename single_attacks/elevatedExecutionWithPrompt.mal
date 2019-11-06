@@ -1,0 +1,51 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.elevatedExecutionWithPrompt
+    }
+
+    asset Administrator {
+
+    }
+
+    asset Root extends Administrator {
+        | rootRights
+
+    }
+}
+
+category Software {
+    abstractAsset OS { 
+        & masquerading
+
+        # executionPrevention
+
+    } 
+
+    asset MacOS extends OS {
+        & elevatedExecutionWithPrompt
+            info: "Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials."
+            ->  rootMac.rootRights,
+                masquerading // combined with Masquerading to trick the user into granting escalated privileges to malicious code.
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  elevatedExecutionWithPrompt
+    } 
+}
+
+associations{
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

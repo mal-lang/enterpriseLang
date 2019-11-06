@@ -1,0 +1,32 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.softwareDiscovery
+
+    }
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+            ->  os.softwareDiscovery
+    }
+}
+
+category Software {
+    abstractAsset OS {   
+        | softwareDiscovery
+            info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
+    }
+}
+
+associations {
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+

@@ -1,38 +1,51 @@
-category Software{
+category Software {
     abstractAsset OS{
         & connectionProxy
-            info:"Adversaries could use trust relationships to manage command and control communications, to reduce the number of simultaneous outbound network connections, to provide resiliency in the face of connection loss, or to ride over existing trusted communications paths between victims to avoid suspicion."
-            -> c2Server.c2Connected 
+            info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
+            ->  bypassLogAnalysis,
+                c2Server.c2Connected,
+                externalNetwork.bypassFirewall,
+                internalNetwork.bypassFirewall
+
+        | bypassLogAnalysis
     }
 }
 
 category Network {
+    asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.connectionProxy
+
+        | bypassFirewall
+    } 
 
     asset ExternalNetwork {
         # networkIntrusionPrevention
-            -> os.connectionProxy
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.connectionProxy
+
+        | bypassFirewall
     }
 
-    asset InternalNetwork {
-        # networkIntrusionPrevention
-            -> os.connectionProxy
-    }
-}
-
-category Hardware {
     asset C2Server {
-
         | c2Connected 
-            -> packetCapture
+    }               
+}
 
-        | packetCapture
-    }
+associations {    
+    OS [os] 1-* <--Connect--> 1-* [c2Server] C2Server
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
 }
 
 
-associations{
-    OS [os] 1 <--Connect--> 1 [c2Server] C2Server
-    ExternalNetwork [externalNetwork] 1-*  <--Connect--> 1 [os] OS
-    InternalNetwork [internalNetwork] 1-*  <--Connect--> 1 [os] OS
-}
+
+
+
+
+
+
+
+
 
