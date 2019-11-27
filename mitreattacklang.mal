@@ -22,6 +22,7 @@ category Person {
                 os.graphicalUserInterface,
                 os.hiddenFilesAndDirectories,
                 os.inhibitSystemRecovery,
+                os.internalSpearphishing,
                 os.installRootCertificate,
                 os.passwordPolicyDiscovery,
                 os.permissionGroupsDiscovery,
@@ -157,6 +158,7 @@ category Person {
                 thirdpartySoftware.stealApplicationAccessToken,
                 thirdpartySoftware._useThirdpartySoftware,
                 browser.credentialsFromWebBrowsers,
+                browser.driveByCompromise,
                 browser.installExtensions,
                 browser.stealWebSessionCookie,
                 internalNetwork.usertransmittedDataManipulation,
@@ -170,7 +172,26 @@ category Person {
                 internalNetwork.exchangeServerCollection,
                 service.userRemoteServicesLogin
 
-        | userInformation     
+        | userInformation    
+
+        & spearphishingLinkClicked [Uniform(1,20)]
+            rationale: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
+            ->  userExecution,
+                thirdpartySoftware.applicationAccessToken
+
+        & spearphishingAttachmentDownload
+            ->  userExecution   
+        
+        & userExecution
+            ->  computer.infectedComputer,
+                computer.infectedWindowsComputer,
+                os.scripting
+
+        | mediaInserted
+            ->  _mediaInserted
+
+        & _mediaInserted
+            ->  removableMedia.dataExfiltrated     
 
         # userAccountManagement  
             info: "https://attack.mitre.org/mitigations/M1018/"     
@@ -209,8 +230,24 @@ category Person {
 
         # userTraining 
             info: "https://attack.mitre.org/mitigations/M1017/"        
-            ->  browser.stealWebSessionCookie,
-                thirdpartySoftware.stealApplicationAccessToken  
+            ->  browser.stealWebSessionCookie,      
+                spearphishingAttachmentDownload, 
+                spearphishingLinkClicked, 
+                userExecution,
+                _mediaInserted,
+                os._credentialDumping,
+                os.credentialsInFiles,
+                os.twoFactorAuthenticationInterception, // remove smart cards when not in use
+                windows.inputPrompt,
+                windows.manInTheBrowser,
+                windows.templateInjection,
+                macOS.inputPrompt, 
+                macOS.loginItem,
+                macOS.reopenedApplications, 
+                browser.browserExtensions,
+                service.spearphishingViaService,
+                thirdpartySoftware.useThirdpartySoftware,
+                thirdpartySoftware.stealApplicationAccessToken       
     }
 
     asset RemoteDesktopUser extends User {
@@ -479,78 +516,6 @@ category Person {
         | systemCredentials
             ->  systemRights
     }
-
-    asset Employee {
-        & spearphishingLinkClicked [Uniform(1,20)]
-            rationale: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
-            ->  browser.spearphishingLink
-
-        | pageVisited
-            ->  browser.maliciousWebsite
-
-        | adLinkClicked
-            ->  browser.maliciousAds
-
-        & spearphishingAttachmentDownload
-            ->  browser.spearphishingAttachment         
-        
-        & userExecution
-            ->  computer.infectedComputer,
-                computer.infectedWindowsComputer,
-                os.scripting
-
-        | mediaInserted
-            ->  _mediaInserted
-
-        & _mediaInserted
-            ->  removableMedia.dataExfiltrated  
-
-        # userTraining 
-            info: "https://attack.mitre.org/mitigations/M1017/"        
-            ->  spearphishingAttachmentDownload, 
-                spearphishingLinkClicked, 
-                userExecution,
-                _mediaInserted,
-                os._credentialDumping,
-                os.credentialsInFiles,
-                os.twoFactorAuthenticationInterception, // remove smart cards when not in use
-                windows.inputPrompt,
-                windows.manInTheBrowser,
-                windows.templateInjection,
-                macOS.inputPrompt, 
-                macOS.loginItem,
-                macOS.reopenedApplications, 
-                browser.browserExtensions,
-                service.spearphishingViaService,
-                thirdpartySoftware.useThirdpartySoftware  
-    }
-    
-    asset Adversary {
-        | maliciousWebsite
-            ->  browser.maliciousWebsite, 
-                employee.pageVisited
-
-        | maliciousAds
-            ->  browser.maliciousAds, 
-                employee.adLinkClicked
-
-        | maliciousCodeInserted
-            ->  windows.executeCode      
-
-        | internalSpearphishingAttack
-            info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
-            ->  spearphishingLinkAttack,
-                spearphishingAttachmentAttack,
-                os.inputCapture // capture credentials through Input Capture on sites that mimic email login interfaces 
-
-        | spearphishingAttachmentAttack
-            ->  employee.spearphishingAttachmentDownload,
-                browser.spearphishingAttachment
-
-        | spearphishingLinkAttack
-            ->  employee.spearphishingLinkClicked,
-                browser.spearphishingLink  
-    }
 }
 
 category Software {
@@ -781,7 +746,7 @@ category Software {
 
         | compileAfterDelivery     
             info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
-            ->  adversary.spearphishingAttachmentAttack,
+            ->  browser.spearphishingAttachment,
                 bypassStaticFileAnalysis,
                 bypassBinaryAnalysis,
                 bypassAntivirus,
@@ -890,6 +855,12 @@ category Software {
             info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
             ->  bypassDigitalCertificateValidation  
 
+        | internalSpearphishing
+            info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
+            ->  browser.spearphishingLink,
+                browser.spearphishingAttachment,
+                inputCapture // capture credentials through Input Capture on sites that mimic email login interfaces 
+
         & masquerading
             info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
             ->  bypassFileOrPathWhitelisting
@@ -978,7 +949,7 @@ category Software {
 
         & systemInformationDiscovery
             info: "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
-            ->  adversary.maliciousCodeInserted,
+            ->  processInjection,
                 systemNetworkConfigurationDiscovery,
                 systemNetworkConnectionsDiscovery
 
@@ -995,6 +966,7 @@ category Software {
         | osExhaustionFlood
 
         & processInjection
+            info: "Process injection is a method of executing arbitrary code in the address space of a separate live process. It can be used for Defense Evasion and Privilege Escalation."
             ->  administrator.adminRights,
                 bypassAntivirus,
                 bypassProcessWhitelisting
@@ -1086,18 +1058,9 @@ category Software {
             info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             ->  user.userCredentials           
 
-        | codeDelivered
-            ->  antivirusCheck
-
         & antivirusCheck
             ->  executeCode,
                 service.exploitationForClientExecution
-
-        & spearphishingAttachmentDownload
-            ->  employee.userExecution
-
-        & spearphishingLinkDownload
-            ->  employee.userExecution
 
         | persistence
 
@@ -1163,7 +1126,7 @@ category Software {
             info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
             ->  windows.windowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
                 windows.remoteDesktopProtocol,
-                employee.userExecution, // leads to file execution attacks
+                user.userExecution, // leads to file execution attacks
                 _automatedCollection // combined with Remote File Copy attack
         
         & sensitiveDataCollected
@@ -1289,8 +1252,8 @@ category Software {
             info: "https://attack.mitre.org/mitigations/M1049/"
             ->  antivirusCheck,
                 obfuscatedFilesOrInformation,
-                spearphishingAttachmentDownload,
-                spearphishingLinkDownload,
+                user.spearphishingAttachmentDownload,
+                user.spearphishingLinkClicked,
                 service.spearphishingViaService   
 
         # restrictFileAndDirectoryPermissions 
@@ -1352,8 +1315,7 @@ category Software {
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             info: "https://attack.mitre.org/mitigations/M1048/"
             ->  scripting,
-                browser.checkBrowser,
-                browser.checkPlugin 
+                browser.driveByCompromise
 
         # doNotMitigate // Execution Guardrails likely should not be mitigated with preventative controls because it may protect unintended targets from being compromised.
             info: "https://attack.mitre.org/mitigations/M1055/"
@@ -1458,8 +1420,7 @@ category Software {
         # updateSoftware
             info: "https://attack.mitre.org/mitigations/M1051/"
             ->  firmwareCorruption,
-                browser.checkBrowser,
-                browser.checkPlugin,
+                browser.driveByCompromise,
                 service.exploitationForCredentialAccess,
                 service.exploitationForPrivilegeEscalation,
                 service.exploitationOfRemoteServices,
@@ -1471,8 +1432,7 @@ category Software {
 
         # exploitProtection
             info: "https://attack.mitre.org/mitigations/M1050/"
-            ->  browser.checkBrowser,
-                browser.checkPlugin, 
+            ->  browser.driveByCompromise,
                 service.exploitationForClientExecution,
                 service.exploitationForCredentialAccess,
                 service.exploitationForPrivilegeEscalation,
@@ -1540,7 +1500,7 @@ category Software {
 
         | componentObjectModelHijacking
             info: "Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
-            ->  adversary.maliciousCodeInserted,
+            ->  processInjection,
                 bypassAutorunsAnalysis,
                 _regsvr32             
 
@@ -1552,7 +1512,7 @@ category Software {
 
         & compiledHTMLFile 
             info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
-            ->  employee.userExecution, // leads to User Execution attack
+            ->  user.userExecution, // leads to User Execution attack
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation   
 
@@ -1602,7 +1562,7 @@ category Software {
         
         | extraWindowMemoryInjection
             info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
-            ->  adversary.maliciousCodeInserted
+            ->  processInjection
 
         | fileSystemLogicalOffsets
             info: "Windows allows programs to have direct access to logical volumes. This technique bypasses Windows file access controls as well as file system monitoring tools."
@@ -1684,7 +1644,7 @@ category Software {
 
         & manInTheBrowser
             info: "Adversaries can take advantage of security vulnerabilities and inherent functionality in browser software to change content, modify behavior, and intercept information as part of various man in the browser techniques."
-            ->  browser.compromisedBrowser
+            ->  browser.driveByCompromise
 
         & modifyExistingService
             info: "Adversaries can modify an existing service to persist malware on a system by using system utilities or by using custom tools to interact with the Windows API. Adversaries may also intentionally corrupt or kill services to execute malicious recovery programs/commands."
@@ -2325,7 +2285,7 @@ category Software {
                 bypassHostForensicAnalysis
 
         | spaceAfterFileName
-            ->  employee.userExecution
+            ->  user.userExecution
 
         | infectedOS
             +>  bashHistory
@@ -2636,7 +2596,7 @@ category Software {
             -> computer.collectVideo     
 
         | spaceAfterFileName
-            ->  employee.userExecution
+            ->  user.userExecution
 
         & networkShareDiscovery
             ->  internalNetwork.networkShareDiscovery
@@ -2736,34 +2696,23 @@ category Software {
 
 category Network {
     asset Browser {
-        | maliciousWebsite
-            ->  checkPlugin,
-                checkBrowser
-
-        & checkBrowser
-            ->  os.codeDelivered
-
-        & checkPlugin
-            ->  os.codeDelivered
+        & driveByCompromise
+            info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
+            ->  thirdpartySoftware.stealApplicationAccessToken
 
         | executionThroughMaliciousContent
-
-        | maliciousAds
-            ->  compromisedBrowser
-
-        & compromisedBrowser
-            ->  os.codeDelivered
 
         & credentialsFromWebBrowsers
             info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
             ->  user.userCredentials
         
         & spearphishingLink
-            ->  os.spearphishingLinkDownload,
-                thirdpartySoftware.applicationAccessToken
+            info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
+            ->  user.spearphishingLinkClicked
 
         & spearphishingAttachment
-            ->  os.spearphishingAttachmentDownload,
+            info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
+            ->  user.spearphishingAttachmentDownload,
                 windows.controlPanelItems // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
 
         | browserBookmark
@@ -2784,7 +2733,7 @@ category Network {
 
         | _websiteDefacement
             info: "This is a helper attack step that websites are a common victim of defacement. Website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise."
-            ->  employee.pageVisited // Belongs to Drive-by Compromise attack
+            ->  driveByCompromise // Belongs to Drive-by Compromise attack
 
         & stealWebSessionCookie
             info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
@@ -2804,8 +2753,7 @@ category Network {
             ->  spearphishingAttachment, 
                 spearphishingLink,
                 service.spearphishingViaService,
-                checkBrowser,
-                checkPlugin,
+                driveByCompromise,
                 os.domainGenerationAlgorithms,
                 windows.compiledHTMLFile,
                 externalNetwork.webService
@@ -3179,11 +3127,6 @@ category Hardware {
 }
 
 associations {    
-    
-    Adversary [adversary] 1 <--Attack--> 1-* [employee] Employee 
-    Adversary [adversary] 1 <--Attack--> 1-* [browser] Browser 
-    Adversary [adversary] 1 <--Attack--> 1-* [os] OS 
-    Adversary [adversary] 1 <--Attack--> 1 [windows] Windows 
 
     User [user] 1 <--Ui--> 1-* [os] OS
     User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
@@ -3195,6 +3138,7 @@ associations {
     User [user] 1 <--Use--> 1-* [browser] Browser
     User [user] 1 <--Use--> 1-* [internalNetwork] InternalNetwork
     User [user] 1 <--Use--> 1-* [externalNetwork] ExternalNetwork
+    User [user] 1 <--Use--> 1-* [removableMedia] RemovableMedia
 
     RemoteDesktopUser [windowsRemoteDestopUser] 1 <--Ui--> 1-* [windows] Windows
 
@@ -3217,17 +3161,6 @@ associations {
     SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
     SYSTEM [system] 1 <--Use--> 1-* [service] Service
     SYSTEM [system] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
-
-    Employee [employee] 1-* <--UserID--> 1-* [user] User
-    Employee [employee] 1 <--Ui--> 1-* [os] OS
-    Employee [employee] 1 <--Ui--> 1-* [windows] Windows
-    Employee [employee] 1 <--Ui--> 1-* [linux] Linux
-    Employee [employee] 1 <--Ui--> 1-* [macOS] MacOS
-    Employee [employee] 1 <--Use--> 1-* [service] Service
-    Employee [employee] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
-    Employee [employee] 1 <--Use--> 1-* [browser] Browser
-    Employee [employee] 1 <--Use--> 1-* [computer] Computer
-    Employee [employee] 1 <--Use--> 1-* [removableMedia] RemovableMedia
 
     Computer [computer] 1 <--Use--> 1-* [removableMedia] RemovableMedia
     Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
@@ -3258,7 +3191,7 @@ associations {
     Service [service] 1-* <--Connect--> 1 [c2Server] C2Server
     
     //Computer [computer] 1 <--Software--> 1 [macOS] MacOS
-    Computer [computerWindows] 1 <--Software--> 1 [windows] Windows
+    Computer [computerWindows] 1 <--System--> 1 [windows] Windows
     //Computer [computer] 1 <--Software--> 1 [linux] Linux
     
     InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [externalNetwork] ExternalNetwork   
@@ -3266,7 +3199,7 @@ associations {
     InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
     InternalNetwork [internalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
     InternalNetwork [internalNetwork] 1-* <--Use--> 1 [administrator] Administrator
-    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [computer] Computer
+    InternalNetwork [internalNetwork] 1 <--Connect--> 1-* [computer] Computer
     //InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [macOS] MacOS
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
     InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware
@@ -3279,9 +3212,9 @@ associations {
     ExternalNetwork [externalNetwork] 1-* <--Use--> 1 [administrator] Administrator
     ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [service] Service   
     //NetworkSharedDrive [networkSharedDrive] 1-* <--Ui--> 1-* [c2Server] C2Server
-    NetworkSharedDrive [networkSharedDrive] 1-* <--SystemAccess--> 1 [os] OS
-    NetworkSharedDrive [networkSharedDrive] 1-* <--SystemAccess--> 1 [windows] Windows
-    OtherNetworkMedium [otherNetworkMedium] 1-* <--Ui--> 1 [os] OS
+    NetworkSharedDrive [networkSharedDrive] 1-* <--Connect--> 1 [os] OS
+    NetworkSharedDrive [networkSharedDrive] 1-* <--Connect--> 1 [windows] Windows
+    OtherNetworkMedium [otherNetworkMedium] 1-* <--Connect--> 1 [os] OS
     
     Firewall [firewall] 0-1 <--Protect--> 1-* [os] OS
     Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows
@@ -3297,8 +3230,8 @@ associations {
     Computer [computer] 1 <--Use--> 1 [microphone] Microphone
     VideoCallApplication [videoCallApplication] 1-* <--Software--> 1 [computer] Computer
     Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
-    NTFSPartition [nftsPartition] 1-* <--Hardware--> 1 [windows] Windows
+    NTFSPartition [nftsPartition] 1-* <--System--> 1 [windows] Windows
     NTFSPartition [nftsPartition] 1-* <--Extends--> 1 [windowsComputer] Computer
     //HardwareAddition [hardwareAddition] 1-* <--Extends--> 1 [computerAdditions] Computer
-    HardwareAddition [hardwareAddition] 1-* <--Ui--> 1 [os] OS
+    HardwareAddition [hardwareAddition] 1-* <--System--> 1 [os] OS
 }
