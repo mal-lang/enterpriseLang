@@ -47,6 +47,7 @@ category Person {
                 os.userDataDestruction, 
                 os.userDataEncryptedForImpact,
                 os.userDiskWiped,
+                windows.accountManipulation,
                 windows._bITSJobs,
                 windows.bypassUserAccountControl,
                 windows.changeDefaultFileAssociation,
@@ -317,6 +318,7 @@ category Person {
             ->  createUserAccount,
                 os._credentialDumping,
                 os.firmwareCorruption,
+                windows.accountManipulation,
                 windows.modifyRegistry,
                 windows.passTheTicket,
                 windows.powerShell,
@@ -351,7 +353,7 @@ category Person {
     asset WindowsAdmin extends Administrator {
         | adminRights
             info: "WindowsAdmin account is equivalent to Unix Root account."
-            +>  accountManipulation,
+            +>  //windowsWindowsAdmin.accountManipulation,
                 windowsWindowsAdmin.accessibilityFeatures,
                 windowsWindowsAdmin.adminAccessTokenManipulation,
                 windowsWindowsAdmin.adminSecuritySoftwareDiscovery,
@@ -417,11 +419,8 @@ category Person {
 
         | adminCredentials
 
-        & accountManipulation
-            ->  user.userCredentials
-
         # multiFactorAuthentication
-            +>  accountManipulation     
+            +>  windowsWindowsAdmin.accountManipulation     
 
         | bypassWindowsUserAccountControl     
     }
@@ -595,7 +594,9 @@ category Software {
 
         & exploitationOfRemoteServices
             ->  _exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
-
+                // remoteFileCopy // 2017 WannaCry ransomware attack
+                // newService // 2017 WannaCry ransomware attack
+                
         & externalRemoteServices
             info: "Adversaries may use remote services to initially access and/or persist within a network."
             ->  internalNetwork.persistence,
@@ -1441,6 +1442,11 @@ category Software {
     }
     
     asset Windows extends OS {   
+        & accountManipulation
+            info: "Account manipulation may aid adversaries in maintaining access to credentials and certain permission levels within an environment." 
+            ->  windowsUser.userCredentials,
+                persistence
+
         | _appCertDLLs
             ->  appCertDLLs 
             
@@ -1720,7 +1726,8 @@ category Software {
 
         & powerShell
             info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
-            ->  internalNetwork.remoteSystemsConnection
+            ->  internalNetwork.remoteSystemsConnection,
+                persistence
 
         & _powerShellProfile
             info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
@@ -2897,6 +2904,7 @@ category Network {
                 os.privateKeys,
                 os.runtimeDataManipulation,
                 os.standardNonApplicationLayerProtocol,
+                windows.accountManipulation,
                 windows.componentObjectModelAndDistributedCOM,
                 windows.domainTrustDiscovery,
                 windows.userServiceStop,
@@ -2985,8 +2993,9 @@ category Network {
                 os.privateKeys,
                 os.runtimeDataManipulation,
                 os.standardNonApplicationLayerProtocol,
-                windows.userServiceStop,
+                windows.accountManipulation,
                 windows.adminServiceStop,
+                windows.userServiceStop,
                 windows.systemServiceStop          
 
         # sSLOrTLSInspection
@@ -3031,11 +3040,15 @@ category Hardware {
                 internalNetwork.applicationLayerConnexion,
                 os.commonlyUsedPortsConnection,
                 os.uncommonlyUsedPortsConnection,
+                //os.endpointDenialOfService,  // 2015 Ukraine power grid
+                //os.fileDeletion,  // 2015 Ukraine power grid
                 removableMedia.dataFromRemovableMedia
 
         | infectedWindowsComputer
             ->  windows.dynamicDataExchange
-
+                //windows.accountManipulation,  // 2016 the Cayman National Isle of Man Bank attack
+                //windows.powerShellProfile  // 2016 the Cayman National Isle of Man Bank attack
+                
         | infectedLinuxComputer
 
         | infectedMacOSComputer 
