@@ -23,23 +23,56 @@ limitations under the License.
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.mal-lang</groupId>
-  <artifactId>mitreattacklang</artifactId>
+  <artifactId>attacklang</artifactId>
   <packaging>jar</packaging>
   <version>1.0.0</version>
-  <name>mitreattacklang</name>
+  <name>attacklang</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <malcompiler.version>0.1.0-SNAPSHOT</malcompiler.version>
-    <kernelcad.version>1.5.1-SNAPSHOT</kernelcad.version>
+    <kernelcad.version>1.6.1</kernelcad.version>
     <corelib.version>${kernelcad.version}</corelib.version>
     <simulator.version>${kernelcad.version}</simulator.version>
-    <mal.file>mitreattacklang.mal</mal.file>
-    <mal.securicad.package>org.mal_lang.mitreattacklang</mal.securicad.package>
-    <mal.reference.package>org.mal_lang.mitreattacklang.test</mal.reference.package>
+    <mal.file>200218mitreattacklang.mal</mal.file>
+    <mal.securicad.package>org.mal_lang.attacklang</mal.securicad.package>
+    <mal.reference.package>org.mal_lang.attacklang.test</mal.reference.package>
   </properties>
 
   <profiles>
+    <profile>
+      <id>securiCAD</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.foreseeti</groupId>
+          <artifactId>corelib</artifactId>
+          <version>${corelib.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.foreseeti</groupId>
+          <artifactId>simulator</artifactId>
+          <version>${simulator.version}</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.mal-lang</groupId>
+            <artifactId>mal-maven-plugin</artifactId>
+            <version>${malcompiler.version}</version>
+            <executions>
+              <execution>
+                <id>generate-code</id>
+                <goals>
+                  <goal>securicad</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <!--
     This profile is used to build a jar file for securiCAD without
     running the tests.
