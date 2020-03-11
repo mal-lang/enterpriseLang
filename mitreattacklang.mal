@@ -191,7 +191,7 @@ category Person {
         | mediaInserted
             ->  _mediaInserted
 
-        & _mediaInserted
+        & _mediaInserted @hidden
             ->  removableMedia.dataExfiltrated     
 
         # userAccountManagement  
@@ -564,7 +564,7 @@ category Software {
             user info: "Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution."
             ->  os10.executeCode            
 
-        | _exploitationForCredentialAccess
+        | _exploitationForCredentialAccess @hidden
             ->  exploitationForCredentialAccess
 
         & exploitationForCredentialAccess
@@ -572,14 +572,14 @@ category Software {
             ->  os10.executeCode,
                 _exploitationForPrivilegeEscalation             
 
-        | _exploitationForDefenseEvasion // end step of securoty software discovery
+        | _exploitationForDefenseEvasion @hidden // end step of securoty software discovery
             ->  exploitationForDefenseEvasion
 
         & exploitationForDefenseEvasion
             ->  os10.bypassAntivirus,
                 os10.bypassSystemAccessControls
 
-        | _exploitationForPrivilegeEscalation
+        | _exploitationForPrivilegeEscalation @hidden
             ->  exploitationForPrivilegeEscalation
 
         & exploitationForPrivilegeEscalation
@@ -588,7 +588,7 @@ category Software {
                 system1.systemRights,
                 thirdpartySoftware5._useThirdpartySoftware
 
-        & _exploitationOfRemoteServices
+        & _exploitationOfRemoteServices @hidden
             user info: "An adversary may need to determine if the remote system is in a vulnerable state, which may be done through Network Service Scanning or other Discovery methods."
             ->  exploitationOfRemoteServices
 
@@ -662,7 +662,7 @@ category Software {
             user info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
             ->  os11._validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
 
-        & _useThirdpartySoftware 
+        & _useThirdpartySoftware @hidden
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
             ->  useThirdpartySoftware
 
@@ -671,7 +671,7 @@ category Software {
     }
 
     asset VideoCallApplication extends Service { 
-        | _collectVideo
+        | _collectVideo @hidden
             ->  computer9.collectVideo
     }
     
@@ -753,7 +753,7 @@ category Software {
                 bypassHostIntrusionPrevention,
                 bypassSignatureBasedDetection
 
-        & _credentialDumping
+        & _credentialDumping @hidden
             ->  credentialDumping,
                 systemOwnerOrUserDiscovery
 
@@ -761,7 +761,7 @@ category Software {
             user info: "Credential dumping is the process of obtaining account login and password information, normally in the form of a hash or a clear text password, from the operating system and software."
             ->  collectHashInformation
 
-        | _credentialsInFiles
+        | _credentialsInFiles @hidden
             ->  credentialsInFiles
 
         & credentialsInFiles
@@ -777,7 +777,7 @@ category Software {
             user info: "Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
             ->  c2Server1.c2Connected
 
-        | _dataEncoding
+        | _dataEncoding @hidden
             user info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
             ->  dataEncoding
 
@@ -1079,7 +1079,7 @@ category Software {
                 firewall1._bypassFirewall,
                 internalNetwork4.bypassProxies 
 
-        | _validAccounts
+        | _validAccounts @hidden
             ->  validAccounts    
 
         & validAccounts
@@ -1094,7 +1094,7 @@ category Software {
                 bypassSystemAccessControls,
                 bypassAntivirus  
 
-        | _credentialsInRegistry
+        | _credentialsInRegistry @hidden
             ->  credentialsInRegistry
 
         & credentialsInRegistry
@@ -1220,7 +1220,7 @@ category Software {
         | dataFromInformationRepositories 
             ->  service4.informationRepositories
           
-        | _automatedCollection
+        | _automatedCollection @hidden
             ->  automatedCollection
 
         & automatedCollection
@@ -1443,7 +1443,7 @@ category Software {
             ->  windowsUser.userCredentials,
                 persistence
 
-        | _appCertDLLs
+        | _appCertDLLs @hidden
             ->  appCertDLLs 
             
         & appCertDLLs
@@ -1461,7 +1461,7 @@ category Software {
                 system.systemRights,
                 _remoteDesktopProtocol 
 
-        & _bITSJobs  
+        & _bITSJobs @hidden
             ->  bITSJobs
 
         & bITSJobs
@@ -1485,7 +1485,7 @@ category Software {
                 bruteForce, // leads to Brute Force attack   
                 passTheHash // leads to Pass the Hash attack 
 
-        & _componentObjectModelAndDistributedCOM
+        & _componentObjectModelAndDistributedCOM @hidden
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
             ->  componentObjectModelAndDistributedCOM
 
@@ -1529,7 +1529,7 @@ category Software {
                 externalNetworkWindows.bypassNetworkIntrusionDetection,
                 internalNetworkWindows.bypassNetworkIntrusionDetection     
 
-        | _dLLSearchOrderHijacking
+        | _dLLSearchOrderHijacking @hidden
             ->  dLLSearchOrderHijacking 
 
         & dLLSearchOrderHijacking
@@ -1570,7 +1570,7 @@ category Software {
             ->  bypassFileMonitoring,
                 bypassFileSystemAccessControls
 
-        | _fileSystemPermissionsWeakness
+        | _fileSystemPermissionsWeakness @hidden
             ->  fileSystemPermissionsWeakness      
 
         & fileSystemPermissionsWeakness
@@ -1713,7 +1713,7 @@ category Software {
             user info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
             ->  executeCode
 
-        & _powerShell
+        & _powerShell @hidden
             user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  powerShell,
                 windowsRemoteManagement, // call with the winrm
@@ -1725,7 +1725,7 @@ category Software {
             ->  internalNetworkWindows.remoteSystemsConnection,
                 persistence
 
-        & _powerShellProfile
+        & _powerShellProfile @hidden
             user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
             ->  powerShellProfile
 
@@ -1774,7 +1774,7 @@ category Software {
                 codeProxyExecution,
                 _regsvr32
 
-        & _regsvr32
+        & _regsvr32 @hidden
             developer info: "This is a helper attack step for Regsvr32.exe to establish Persistence via Component Object Model Hijacking."
             ->  persistence
 
@@ -1784,7 +1784,7 @@ category Software {
                 remoteSystemDiscovery,
                 rDPSessionHijacking
 
-        & _remoteDesktopProtocol
+        & _remoteDesktopProtocol @hidden
             developer info: "This is a helper attack step. It requires all its parent attack steps to compromise - Accessibility Features when connected over Remote Desktop Protocol will cause the replaced file to be executed with SYSTEM privileges."
             ->  persistence,
                 systemWindows.systemRights  
@@ -1825,7 +1825,7 @@ category Software {
             ->  _serviceRegistryPermissionsWeakness,
                 persistence
 
-        & _serviceRegistryPermissionsWeakness
+        & _serviceRegistryPermissionsWeakness @hidden
             user info: "When the service starts or is restarted, then the adversary-controlled program will execute, allowing the adversary to gain persistence and/or privilege escalation to the account context the service is set to execute."
             ->  service5._exploitationForPrivilegeEscalation
 
@@ -1846,7 +1846,7 @@ category Software {
                 windowsAdminShares, // leads to Windows Admin Shares attack    
                 windowsRemoteManagement // leads to Windows Remote Management attack 
 
-        & _sIDHistoryInjection 
+        & _sIDHistoryInjection @hidden
             user info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
             ->  persistence          
 
@@ -1879,7 +1879,7 @@ category Software {
             user info: "Adversaries may try to get information about registered services."
             ->  service5.serviceInformation 
 
-        | _taintSharedContent
+        | _taintSharedContent @hidden
             user info: "This is a helper attack step that requires access to shared folders."
             ->  networkSharedDrive1.taintSharedContent   
 
@@ -2039,7 +2039,7 @@ category Software {
             user info: "Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
             ->  dataCollected
         
-        | _applicationShimming
+        | _applicationShimming @hidden
             ->  applicationShimming
             
         & applicationShimming
@@ -2278,7 +2278,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1046/"
             +>  bootkit
 
-        & _clearCommandHistory
+        & _clearCommandHistory @hidden
             ->  clearCommandHistory       
 
         & clearCommandHistory
@@ -2292,7 +2292,7 @@ category Software {
         | infectedOS
             +>  bashHistory
 
-        | _bash_profileAndBashrc
+        | _bash_profileAndBashrc @hidden
             ->  bash_profileAndBashrc
 
         & bash_profileAndBashrc 
@@ -2339,21 +2339,21 @@ category Software {
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
 
-        | _sudo
+        | _sudo @hidden
             ->  sudo
 
         & sudo
             user info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
             ->  service6._exploitationForPrivilegeEscalation
 
-        | _sudoCaching
+        | _sudoCaching @hidden
             ->  sudoCaching
 
         & sudoCaching
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
             ->  service6._exploitationForPrivilegeEscalation 
 
-        | _systemdService
+        | _systemdService @hidden
             ->  systemdService
 
         & systemdService
@@ -2434,7 +2434,7 @@ category Software {
                 macosAdministrator.adminCredentials,
                 macOSUser.userCredentials
 
-        | _bash_profileAndBashrc
+        | _bash_profileAndBashrc @hidden
             ->  bash_profileAndBashrc
 
         & bash_profileAndBashrc 
@@ -2444,7 +2444,7 @@ category Software {
         | codeSigningCertificate
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
 
-        & _clearCommandHistory
+        & _clearCommandHistory @hidden
             ->  clearCommandHistory       
 
         & clearCommandHistory
@@ -2452,7 +2452,7 @@ category Software {
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
 
-        & _dylibHijacking   
+        & _dylibHijacking @hidden   
             ->  dylibHijacking 
 
         & dylibHijacking 
@@ -2575,14 +2575,14 @@ category Software {
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
 
-        | _sudo
+        | _sudo @hidden
             ->  sudo
             
         & sudo
             user info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
             ->  service7._exploitationForPrivilegeEscalation  
 
-        | _sudoCaching
+        | _sudoCaching @hidden
             ->  sudoCaching
             
         & sudoCaching
@@ -2620,7 +2620,7 @@ category Software {
         & appleScript
             ->  executeCode
 
-        & _startupItems
+        & _startupItems @hidden
             ->  startupItems
 
         & startupItems
@@ -2733,7 +2733,7 @@ category Network {
                 user10.userCredentials,
                 os4.persistence
 
-        | _websiteDefacement
+        | _websiteDefacement @hidden
             user info: "This is a helper attack step that websites are a common victim of defacement. Website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise."
             ->  driveByCompromise // Belongs to Drive-by Compromise attack
 
@@ -3005,7 +3005,7 @@ category Network {
     }
 
     asset Firewall {
-        & _bypassFirewall
+        & _bypassFirewall @hidden
             ->  bypassFirewall,
                 internalNetwork11.dataExfiltration,
                 internalNetwork11.c2Connexion
@@ -3088,7 +3088,7 @@ category Hardware {
 
         | generateDomainNames 
 
-        | _dataObfuscation
+        | _dataObfuscation @hidden
             ->  dataObfuscation
 
         & dataObfuscation
@@ -3115,7 +3115,7 @@ category Hardware {
     } 
 
     asset Webcam {
-        | _collectVideo
+        | _collectVideo @hidden
             -> computer10.collectVideo
     }
 
@@ -3136,104 +3136,104 @@ category Hardware {
 
 associations {    
 
-    User [user1] 1 <--Ui--> 1..* [os] OS
-    User [windowsUser] 1 <--Ui--> 1..* [windows] Windows
-    User [linuxUser] 1 <--Ui--> 1..* [linux] Linux   
-    User [macOSUser] 1 <--Ui--> 1..* [macOS] MacOS
-    User [user2] 1 <--Use--> 1..* [computer] Computer
-    User [user3] 1 <--Use--> 1..* [service] Service
-    User [user4] 1 <--Use--> 1..* [thirdpartySoftware] ThirdpartySoftware
-    User [user5] 1 <--Use--> 1..* [browser] Browser
-    User [user6] 1 <--Use--> 1..* [internalNetwork] InternalNetwork
-    User [user7] 1 <--Use--> 1..* [externalNetwork] ExternalNetwork
-    User [user8] 1 <--Use--> 1..* [removableMedia] RemovableMedia
+    User [user1] * <--Ui--> 1..* [os] OS
+    User [windowsUser] * <--Ui--> * [windows] Windows
+    User [linuxUser] * <--Ui--> * [linux] Linux   
+    User [macOSUser] * <--Ui--> * [macOS] MacOS
+    User [user2] * <--Use--> * [computer] Computer
+    User [user3] * <--Use--> * [service] Service
+    User [user4] * <--Use--> * [thirdpartySoftware] ThirdpartySoftware
+    User [user5] * <--Use--> * [browser] Browser
+    User [user6] * <--Use--> 1..* [internalNetwork] InternalNetwork
+    User [user7] * <--Use--> * [externalNetwork] ExternalNetwork
+    User [user8] * <--Use--> * [removableMedia] RemovableMedia
 
-    RemoteDesktopUser [windowsRemoteDestopUser] 1 <--Ui--> 1..* [windows1] Windows
+    RemoteDesktopUser [windowsRemoteDestopUser] * <--Ui--> * [windows1] Windows
 
-    Administrator [administrator1] 1 <--Manage--> 1..* [user9] User
-    Administrator [administrator2] 1 <--Ui--> 1..* [os1] OS
-    Administrator [windowsAdministrator] 1 <--Ui--> 1..* [windows2] Windows
-    Administrator [linuxAdministrator] 1 <--Ui--> 1..* [linux1] Linux
-    Administrator [macosAdministrator] 1 <--Ui--> 1..* [macOS1] MacOS
-    Administrator [administrator3] 1 <--Use--> 1..* [computer1] Computer
-    Administrator [administrator4] 1 <--Use--> 1..* [service1] Service
-    Administrator [administrator5] 1 <--Use--> 1..* [thirdpartySoftware1] ThirdpartySoftware
+    Administrator [administrator1] * <--Manage--> * [user9] User
+    Administrator [administrator2] * <--Ui--> 1..* [os1] OS
+    Administrator [windowsAdministrator] * <--Ui--> * [windows2] Windows
+    Administrator [linuxAdministrator] * <--Ui--> * [linux1] Linux
+    Administrator [macosAdministrator] * <--Ui--> * [macOS1] MacOS
+    Administrator [administrator3] * <--Use--> * [computer1] Computer
+    Administrator [administrator4] * <--Use--> * [service1] Service
+    Administrator [administrator5] * <--Use--> * [thirdpartySoftware1] ThirdpartySoftware
     
-    WindowsAdmin [windowsAdmin] 1..* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    WindowsAdmin [windowsAdmin] * <--Ui--> * [windowsWindowsAdmin] Windows
 
-    Root [root] 1 <--Ui--> 1..* [os2] OS
-    Root [rootLinux] 1 <--Ui--> 1..* [linux2] Linux
-    Root [rootMac] 1 <--Ui--> 1..* [macOS2] MacOS
+    Root [root] * <--Ui--> 1..* [os2] OS
+    Root [rootLinux] * <--Ui--> * [linux2] Linux
+    Root [rootMac] * <--Ui--> * [macOS2] MacOS
 
-    SYSTEM [system] 1 <--Ui--> 1 [os3] OS 
-    SYSTEM [systemWindows] 1 <--Ui--> 1..* [windows3] Windows
-    SYSTEM [system1] 1 <--Use--> 1..* [service2] Service
-    SYSTEM [system2] 1 <--Use--> 1..* [thirdpartySoftware2] ThirdpartySoftware
+    SYSTEM [system] * <--Ui--> 1..* [os3] OS 
+    SYSTEM [systemWindows] * <--Ui--> * [windows3] Windows
+    SYSTEM [system1] * <--Use--> * [service2] Service
+    SYSTEM [system2] * <--Use--> * [thirdpartySoftware2] ThirdpartySoftware
 
-    Browser [browser1] 1..* <--Software--> 1 [os4] OS
-    Browser [browser2] 1..* <--Software--> 1 [windows4] Windows
-    Browser [browser3] 1..* <--Use--> 1..* [user10] User
-    Browser [browser4] 1..* <--Use--> 1..* [service3] Service
-    Browser [browser5] 1..* <--Use--> 1..* [thirdpartySoftware3] ThirdpartySoftware 
-    Browser [browser6] 1..* <--Connect--> 1..* [internalNetwork1] InternalNetwork
-    Browser [browser7] 1..* <--Connect--> 1..* [externalNetwork1] ExternalNetwork 
+    Browser [browser1] * <--Software--> * [os4] OS
+    Browser [browser2] * <--Software--> * [windows4] Windows
+    Browser [browser3] * <--Use--> * [user10] User
+    Browser [browser4] * <--Use--> * [service3] Service
+    Browser [browser5] * <--Use--> * [thirdpartySoftware3] ThirdpartySoftware 
+    Browser [browser6] * <--Connect--> * [internalNetwork1] InternalNetwork
+    Browser [browser7] * <--Connect--> *[externalNetwork1] ExternalNetwork 
     
-    OS [os5] 1 <--System--> 1..* [computer4] Computer
-    OS [os6] 1..* <--Connect--> 1..* [c2Server1] C2Server
-    OS [os7] 1 <--Contain--> 1 [windows5] Windows
-    OS [os8] 1 <--Contain--> 1 [linux3] Linux  
-    OS [os9] 1 <--Contain--> 1 [macOS3] MacOS
-    OS [os10] 1 <--Contain--> 1..* [service4] Service
-    OS [os11] 1 <--Contain--> 1..* [thirdpartySoftware4] ThirdpartySoftware  
-    OS [os12] 1 <--Use--> 1..* [removableMedia2] RemovableMedia
+    OS [os5] 1..* <--System--> * [computer4] Computer
+    OS [os6] * <--Connect--> * [c2Server1] C2Server
+    OS [os7] * <--Contain--> * [windows5] Windows
+    OS [os8] * <--Contain--> * [linux3] Linux  
+    OS [os9] * <--Contain--> * [macOS3] MacOS
+    OS [os10] * <--Contain--> * [service4] Service
+    OS [os11] * <--Contain--> * [thirdpartySoftware4] ThirdpartySoftware  
+    OS [os12] * <--Use--> * [removableMedia2] RemovableMedia
 
-    Windows [windows6] 1 <--Contain--> 1..* [service5] Service
-    Windows [windows7] 1 <--Use--> 1..* [removableMedia3] RemovableMedia
-    Linux [linux4] 1 <--Contain--> 1..* [service6] Service
-    MacOS [macOS4] 1 <--Contain--> 1..* [service7] Service
+    Windows [windows6] * <--Contain--> * [service5] Service
+    Windows [windows7] * <--Use--> * [removableMedia3] RemovableMedia
+    Linux [linux4] * <--Contain--> * [service6] Service
+    MacOS [macOS4] * <--Contain--> * [service7] Service
 
-    Service [service8] 1..* <--Contain--> 1..* [thirdpartySoftware5] ThirdpartySoftware
-    Service [service9] 1..* <--Connect--> 1 [c2Server2] C2Server
+    Service [service8] * <--Contain--> * [thirdpartySoftware5] ThirdpartySoftware
+    Service [service9] * <--Connect--> * [c2Server2] C2Server
 
-    InternalNetwork [internalNetwork2] 1..* <--Connect--> 1..* [externalNetwork2] ExternalNetwork   
-    InternalNetwork [internalNetwork3] 1 <--Connect--> 1 [c2Server3] C2Server
-    InternalNetwork [internalNetwork4] 1..* <--Connect--> 1..* [os13] OS
-    InternalNetwork [internalNetworkWindows] 1..* <--Connect--> 1..* [windows9] Windows
-    InternalNetwork [internalNetworkLinux] 1..* <--Connect--> 1..* [linuxInNet] Linux
-    InternalNetwork [internalNetworkMacOS] 1..* <--Connect--> 1..* [macOSInNet] MacOS 
+    InternalNetwork [internalNetwork2] * <--Connect--> * [externalNetwork2] ExternalNetwork   
+    InternalNetwork [internalNetwork3] * <--Connect--> * [c2Server3] C2Server
+    InternalNetwork [internalNetwork4] * <--Connect--> 1..* [os13] OS
+    InternalNetwork [internalNetworkWindows] * <--Connect--> * [windows9] Windows
+    InternalNetwork [internalNetworkLinux] * <--Connect--> * [linuxInNet] Linux
+    InternalNetwork [internalNetworkMacOS] * <--Connect--> * [macOSInNet] MacOS 
 
-    InternalNetwork [internalNetwork5] 1..* <--Use--> 1 [administrator6] Administrator
-    InternalNetwork [internalNetwork6] 1 <--Connect--> 1..* [computer5] Computer
-    InternalNetwork [internalNetwork7] 1 <--Contain--> 1..* [service10] Service
-    InternalNetwork [internalNetwork8] 1 <--Contain--> 1..* [thirdpartySoftware6] ThirdpartySoftware
-    InternalNetwork [internalNetwork9] 1 <--Contain--> 1..* [networkSharedDrive0] NetworkSharedDrive
-    InternalNetwork [internalNetwork10] 1 <--Connect--> 1..* [hardwareAddition] HardwareAddition
-    ExternalNetwork [externalNetwork3] 1 <--Connect--> 1 [c2Server4] C2Server
-    ExternalNetwork [externalNetwork4] 1..* <--Connect--> 1..* [computer6] Computer
-    ExternalNetwork [externalNetwork5] 1..* <--Connect--> 1..* [os14] OS
-    ExternalNetwork [externalNetworkWindows] 1..* <--Connect--> 1 [windows10] Windows
-    ExternalNetwork [externalNetwork6] 1..* <--Use--> 1 [administrator7] Administrator
-    ExternalNetwork [externalNetwork7] 1 <--Contain--> 1..* [service11] Service
-    NetworkSharedDrive [networkSharedDrive1] 1..* <--Connect--> 1 [os15] OS
-    NetworkSharedDrive [networkSharedDrive2] 1..* <--Connect--> 1 [windows11] Windows
-    OtherNetworkMedium [otherNetworkMedium] 1..* <--Connect--> 1 [os16] OS
+    InternalNetwork [internalNetwork5] * <--Use--> * [administrator6] Administrator
+    InternalNetwork [internalNetwork6] * <--Connect--> * [computer5] Computer
+    InternalNetwork [internalNetwork7] * <--Contain--> * [service10] Service
+    InternalNetwork [internalNetwork8] * <--Contain--> * [thirdpartySoftware6] ThirdpartySoftware
+    InternalNetwork [internalNetwork9] * <--Contain--> * [networkSharedDrive0] NetworkSharedDrive
+    InternalNetwork [internalNetwork10] * <--Connect--> * [hardwareAddition] HardwareAddition
+    ExternalNetwork [externalNetwork3] * <--Connect--> * [c2Server4] C2Server
+    ExternalNetwork [externalNetwork4] * <--Connect--> * [computer6] Computer
+    ExternalNetwork [externalNetwork5] * <--Connect--> * [os14] OS
+    ExternalNetwork [externalNetworkWindows] * <--Connect--> * [windows10] Windows
+    ExternalNetwork [externalNetwork6] * <--Use--> * [administrator7] Administrator
+    ExternalNetwork [externalNetwork7] * <--Contain--> * [service11] Service
+    NetworkSharedDrive [networkSharedDrive1] * <--Connect--> * [os15] OS
+    NetworkSharedDrive [networkSharedDrive2] * <--Connect--> * [windows11] Windows
+    OtherNetworkMedium [otherNetworkMedium] * <--Connect--> * [os16] OS
     
-    Firewall [firewall1] 0..1 <--Protect--> 1..* [os17] OS
-    Firewall [firewall2] 0..1 <--Protect--> 1..* [windows12] Windows
-    Firewall [firewall3] 0..1 <--Protect--> 1..* [linux6] Linux
-    Firewall [firewall4] 0..1 <--Protect--> 1..* [macOS7] MacOS
-    Firewall [firewall5] 0..1 <--Protect--> 1..* [thirdpartySoftware7] ThirdpartySoftware    
-    InternalNetwork [internalNetwork11] 1 <--Protect--> 0..1 [firewall6] Firewall
-    ExternalNetwork [externalNetwork8] 1 <--Protect--> 0..1 [firewall7] Firewall
-    Computer [computer7] 1..* <--Protect--> 0..1 [firewall8] Firewall
+    Firewall [firewall1] 0..1 <--Protect--> * [os17] OS
+    Firewall [firewall2] 0..1 <--Protect--> * [windows12] Windows
+    Firewall [firewall3] 0..1 <--Protect--> * [linux6] Linux
+    Firewall [firewall4] 0..1 <--Protect--> * [macOS7] MacOS
+    Firewall [firewall5] 0..1 <--Protect--> * [thirdpartySoftware7] ThirdpartySoftware    
+    InternalNetwork [internalNetwork11] * <--Protect--> 0..1 [firewall6] Firewall
+    ExternalNetwork [externalNetwork8] * <--Protect--> 0..1 [firewall7] Firewall
+    Computer [computer7] * <--Protect--> 0..1 [firewall8] Firewall
 
-    Computer [computer2] 1 <--Use--> 1..* [removableMedia1] RemovableMedia
-    Computer [computer3] 1 <--Control--> 1 [c2Server0] C2Server   
-    Computer [computerWindows] 1 <--System--> 1 [windows8] Windows
-    Computer [computer8] 1 <--Use--> 1 [microphone] Microphone
-    VideoCallApplication [videoCallApplication] 1..* <--Software--> 1 [computer9] Computer
-    Webcam [webcam] 1 <--Hardware--> 1 [computer10] Computer
-    NTFSPartition [ntfsPartition1] 1..* <--System--> 1 [windows13] Windows
-    NTFSPartition [ntfsPartition2] 1..* <--Extends--> 1 [windowsComputer] Computer
-    HardwareAddition [hardwareAddition] 1..* <--System--> 1 [os18] OS
+    Computer [computer2] * <--Use--> * [removableMedia1] RemovableMedia
+    Computer [computer3] * <--Control--> * [c2Server0] C2Server   
+    Computer [computerWindows] * <--System--> * [windows8] Windows
+    Computer [computer8] * <--Use--> * [microphone] Microphone
+    VideoCallApplication [videoCallApplication] * <--Software--> * [computer9] Computer
+    Webcam [webcam] * <--Hardware--> * [computer10] Computer
+    NTFSPartition [ntfsPartition1] * <--System--> * [windows13] Windows
+    NTFSPartition [ntfsPartition2] * <--Extends--> * [windowsComputer] Computer
+    HardwareAddition [hardwareAddition] * <--System--> * [os18] OS
 }
