@@ -4,13 +4,14 @@ mitreattacklang is a domain-specific MAL language intended to assess the cyber s
 
 This project can be built according to exampleLang (https://github.com/mal-lang/exampleLang):
 
-* The file `pom.xml` is the Maven configuration file of the project.
+* The file `pom.xml` is the Maven configuration file of the project, make sure that <kernelcad.version> is 1.6.2-SNAPSHOT in pom.xml. 
 * The directory `src/main/mal` contains the MAL specification
   `exampleLang.mal`, which is the MAL specification of exampleLang.
 * The directory `src/main/resources/icons` contains SVG icons for the
   assets in exampleLang.
 * The directory `src/test/java/org/mal_lang/examplelang/test`
   contains the unit tests of exampleLang.
+* It requires a new alpha version of securiCAD Professional. The instructions on how to download it here: https://github.com/foreseeti/foreseeti-maven-repo.
 
 ## Apache Maven
 
