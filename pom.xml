@@ -31,7 +31,7 @@ limitations under the License.
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <malcompiler.version>0.1.0-SNAPSHOT</malcompiler.version>
-    <kernelcad.version>1.6.1</kernelcad.version>
+    <kernelcad.version>1.6.2-SNAPSHOT</kernelcad.version>
     <corelib.version>${kernelcad.version}</corelib.version>
     <simulator.version>${kernelcad.version}</simulator.version>
     <mal.file>200218mitreattacklang.mal</mal.file>
