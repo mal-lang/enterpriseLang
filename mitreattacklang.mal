@@ -3136,7 +3136,7 @@ category Hardware {
 
 associations {    
 
-    User [user1] * <--Ui--> 1..* [os] OS
+    User [user1] * <--Ui--> * [os] OS
     User [windowsUser] * <--Ui--> * [windows] Windows
     User [linuxUser] * <--Ui--> * [linux] Linux   
     User [macOSUser] * <--Ui--> * [macOS] MacOS
@@ -3144,14 +3144,14 @@ associations {
     User [user3] * <--Use--> * [service] Service
     User [user4] * <--Use--> * [thirdpartySoftware] ThirdpartySoftware
     User [user5] * <--Use--> * [browser] Browser
-    User [user6] * <--Use--> 1..* [internalNetwork] InternalNetwork
+    User [user6] * <--Use--> * [internalNetwork] InternalNetwork
     User [user7] * <--Use--> * [externalNetwork] ExternalNetwork
     User [user8] * <--Use--> * [removableMedia] RemovableMedia
 
     RemoteDesktopUser [windowsRemoteDestopUser] * <--Ui--> * [windows1] Windows
 
     Administrator [administrator1] * <--Manage--> * [user9] User
-    Administrator [administrator2] * <--Ui--> 1..* [os1] OS
+    Administrator [administrator2] * <--Ui--> * [os1] OS
     Administrator [windowsAdministrator] * <--Ui--> * [windows2] Windows
     Administrator [linuxAdministrator] * <--Ui--> * [linux1] Linux
     Administrator [macosAdministrator] * <--Ui--> * [macOS1] MacOS
@@ -3161,24 +3161,25 @@ associations {
     
     WindowsAdmin [windowsAdmin] * <--Ui--> * [windowsWindowsAdmin] Windows
 
-    Root [root] * <--Ui--> 1..* [os2] OS
+    Root [root] * <--Ui--> * [os2] OS
     Root [rootLinux] * <--Ui--> * [linux2] Linux
     Root [rootMac] * <--Ui--> * [macOS2] MacOS
 
-    SYSTEM [system] * <--Ui--> 1..* [os3] OS 
+    SYSTEM [system] * <--Ui--> * [os3] OS 
     SYSTEM [systemWindows] * <--Ui--> * [windows3] Windows
     SYSTEM [system1] * <--Use--> * [service2] Service
     SYSTEM [system2] * <--Use--> * [thirdpartySoftware2] ThirdpartySoftware
 
     Browser [browser1] * <--Software--> * [os4] OS
     Browser [browser2] * <--Software--> * [windows4] Windows
+    Browser [browser11] * <--Browser--> * [computer11] Computer    
     Browser [browser3] * <--Use--> * [user10] User
     Browser [browser4] * <--Use--> * [service3] Service
     Browser [browser5] * <--Use--> * [thirdpartySoftware3] ThirdpartySoftware 
     Browser [browser6] * <--Connect--> * [internalNetwork1] InternalNetwork
-    Browser [browser7] * <--Connect--> *[externalNetwork1] ExternalNetwork 
+    Browser [browser7] * <--Connect--> * [externalNetwork1] ExternalNetwork 
     
-    OS [os5] 1..* <--System--> * [computer4] Computer
+    OS [os5] * <--System--> * [computer4] Computer
     OS [os6] * <--Connect--> * [c2Server1] C2Server
     OS [os7] * <--Contain--> * [windows5] Windows
     OS [os8] * <--Contain--> * [linux3] Linux  
@@ -3197,7 +3198,7 @@ associations {
 
     InternalNetwork [internalNetwork2] * <--Connect--> * [externalNetwork2] ExternalNetwork   
     InternalNetwork [internalNetwork3] * <--Connect--> * [c2Server3] C2Server
-    InternalNetwork [internalNetwork4] * <--Connect--> 1..* [os13] OS
+    InternalNetwork [internalNetwork4] * <--Connect--> * [os13] OS
     InternalNetwork [internalNetworkWindows] * <--Connect--> * [windows9] Windows
     InternalNetwork [internalNetworkLinux] * <--Connect--> * [linuxInNet] Linux
     InternalNetwork [internalNetworkMacOS] * <--Connect--> * [macOSInNet] MacOS 
