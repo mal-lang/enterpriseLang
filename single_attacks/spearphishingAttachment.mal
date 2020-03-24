@@ -1,43 +1,39 @@
+#id: "org.mal_lang.attacklang"
+#version: "1.0.0"
 
 category Person {
-    asset Employee {
+    asset User {
         & spearphishingAttachmentDownload
-            -> browser.spearphishingAttachment
-        # trainedEmployee 
-            -> spearphishingAttachmentDownload
-        
-
-    }
-    asset Adversary {
-        | spearphishingAttachmentAttack
-            -> employee.spearphishingAttachmentDownload,
-                browser.spearphishingAttachment
+            ->  userExecution 
+            
+        & userExecution
+            ->  computer.infectedComputer
+            
+        # userTraining 
+            ->  spearphishingAttachmentDownload,
+                userExecution
     }
 }
 
 category Software {
-    asset OS {
-        & spearphishingAttachmentDownload
-            //-> user.userExecution 
-        # antivirus    
-            -> spearphishingAttachmentDownload
-    }
-}
-category Network {
     asset Browser {
-        & spearphishingAttachment
-            -> os.spearphishingAttachmentDownload
-        # blockAttachmentsCheck //Block unknown or unused attachments by default that should not be transmitted over email 
-            -> spearphishingAttachment
-        # phishingdetection
-            -> spearphishingAttachment
-        
+        & spearphishingAttachment 
+            ->  user.spearphishingAttachmentDownload
+            
+        # restrictWebBasedContent
+            ->  spearphishingAttachment
     }
 }
-associations{
-    Employee [employee] 1 <--use--> 1-* [browser] Browser
-    Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
-    Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser 
-    //User [user] 1 <-- ui--> 1-* [os] OS
-    Browser [browser] 1-* <-- software --> 1 [os] OS
+
+category Hardware {
+    asset Computer {
+        | infectedComputer
+    }
 }
+
+associations {
+    User [user] 1 <--Use--> * [computer] Computer
+    User [user] * <--Use--> * [browser] Browser
+    Browser [computerBrowser] * <--Run--> 1..* [computer] Computer
+}  
+

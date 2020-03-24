@@ -1,28 +1,48 @@
+#id: "org.mal_lang.attacklang"
+#version: "1.0.0"
+
+category Person {
+    asset User {
+        & spearphishingAttachmentDownload
+            ->  userExecution 
+            
+        & spearphishingLinkClicked [Uniform(1,20)]
+            developer info: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
+            ->  userExecution
+
+        & userExecution
+            ->  computer.infectedComputer
+            
+        # userTraining 
+            ->  spearphishingAttachmentDownload,
+                spearphishingLinkClicked, 
+                userExecution
+    }
+}
+
+category Software {
+    asset OS {  
+        # executionPrevention
+            user info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  user1.userExecution
+    }
+
+    asset Windows extends OS {   
+        & _powerShell @hidden
+            user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
+            ->  windowsUser.userExecution
+    }
+}
+
 category Hardware {
     asset Computer {
         | infectedComputer
     }
 }
 
-category Software{
-    asset OS {
-        # antivirus
-            -> employee.userExecution
-    }
-}
+associations {
+    User [user1] * <--Ui--> * [os] OS
+    User [user2] * <--Use--> * [computer] Computer
+    User [windowsUser] * <--Ui--> * [windows] Windows
+}  
 
-category Person {
-    asset Employee {
-        & userExecution
-            -> computer.infectedComputer
-        # trainedUser
-            -> userExecution
-        | test
-            -> userExecution
-    }
-}
-
-associations{
-    Employee [employee] 1 <--use--> 1-* [computer] Computer
-    Employee [employee] 1 <--use--> 1-* [os] OS
-}
