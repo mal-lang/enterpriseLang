@@ -562,7 +562,7 @@ category Software {
 
         & exploitationForClientExecution
             user info: "Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution."
-            ->  os10.executeCode            
+            ->  user3.userExecution            
 
         | _exploitationForCredentialAccess @hidden
             ->  exploitationForCredentialAccess
@@ -1717,7 +1717,7 @@ category Software {
             user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  powerShell,
                 windowsRemoteManagement, // call with the winrm
-                executeCode,
+                windowsUser.userExecution,
                 scripting
 
         & powerShell
@@ -3155,13 +3155,13 @@ associations {
     Administrator [windowsAdministrator] * <--Ui--> * [windows2] Windows
     Administrator [linuxAdministrator] * <--Ui--> * [linux1] Linux
     Administrator [macosAdministrator] * <--Ui--> * [macOS1] MacOS
-    Administrator [administrator3] * <--Use--> * [computer1] Computer
+    //Administrator [administrator3] * <--Use--> * [computer1] Computer
     Administrator [administrator4] * <--Use--> * [service1] Service
     Administrator [administrator5] * <--Use--> * [thirdpartySoftware1] ThirdpartySoftware
     
     WindowsAdmin [windowsAdmin] * <--Ui--> * [windowsWindowsAdmin] Windows
 
-    Root [root] * <--Ui--> * [os2] OS
+    //Root [root] * <--Ui--> * [os2] OS
     Root [rootLinux] * <--Ui--> * [linux2] Linux
     Root [rootMac] * <--Ui--> * [macOS2] MacOS
 
@@ -3172,7 +3172,7 @@ associations {
 
     Browser [browser1] * <--Software--> * [os4] OS
     Browser [browser2] * <--Software--> * [windows4] Windows
-    Browser [browser11] * <--Browser--> * [computer11] Computer    
+    //Browser [browser11] * <--Browser--> * [computer11] Computer    
     Browser [browser3] * <--Use--> * [user10] User
     Browser [browser4] * <--Use--> * [service3] Service
     Browser [browser5] * <--Use--> * [thirdpartySoftware3] ThirdpartySoftware 
@@ -3189,7 +3189,7 @@ associations {
     OS [os12] * <--Use--> * [removableMedia2] RemovableMedia
 
     Windows [windows6] * <--Contain--> * [service5] Service
-    Windows [windows7] * <--Use--> * [removableMedia3] RemovableMedia
+    //Windows [windows7] * <--Use--> * [removableMedia3] RemovableMedia
     Linux [linux4] * <--Contain--> * [service6] Service
     MacOS [macOS4] * <--Contain--> * [service7] Service
 
@@ -3200,7 +3200,7 @@ associations {
     InternalNetwork [internalNetwork3] * <--Connect--> * [c2Server3] C2Server
     InternalNetwork [internalNetwork4] * <--Connect--> * [os13] OS
     InternalNetwork [internalNetworkWindows] * <--Connect--> * [windows9] Windows
-    InternalNetwork [internalNetworkLinux] * <--Connect--> * [linuxInNet] Linux
+    //InternalNetwork [internalNetworkLinux] * <--Connect--> * [linuxInNet] Linux
     InternalNetwork [internalNetworkMacOS] * <--Connect--> * [macOSInNet] MacOS 
 
     InternalNetwork [internalNetwork5] * <--Use--> * [administrator6] Administrator
@@ -3210,7 +3210,7 @@ associations {
     InternalNetwork [internalNetwork9] * <--Contain--> * [networkSharedDrive0] NetworkSharedDrive
     InternalNetwork [internalNetwork10] * <--Connect--> * [hardwareAddition] HardwareAddition
     ExternalNetwork [externalNetwork3] * <--Connect--> * [c2Server4] C2Server
-    ExternalNetwork [externalNetwork4] * <--Connect--> * [computer6] Computer
+    //ExternalNetwork [externalNetwork4] * <--Connect--> * [computer6] Computer
     ExternalNetwork [externalNetwork5] * <--Connect--> * [os14] OS
     ExternalNetwork [externalNetworkWindows] * <--Connect--> * [windows10] Windows
     ExternalNetwork [externalNetwork6] * <--Use--> * [administrator7] Administrator
@@ -3225,11 +3225,11 @@ associations {
     Firewall [firewall4] 0..1 <--Protect--> * [macOS7] MacOS
     Firewall [firewall5] 0..1 <--Protect--> * [thirdpartySoftware7] ThirdpartySoftware    
     InternalNetwork [internalNetwork11] * <--Protect--> 0..1 [firewall6] Firewall
-    ExternalNetwork [externalNetwork8] * <--Protect--> 0..1 [firewall7] Firewall
-    Computer [computer7] * <--Protect--> 0..1 [firewall8] Firewall
+    //ExternalNetwork [externalNetwork8] * <--Protect--> 0..1 [firewall7] Firewall
+    //Computer [computer7] * <--Protect--> 0..1 [firewall8] Firewall
 
     Computer [computer2] * <--Use--> * [removableMedia1] RemovableMedia
-    Computer [computer3] * <--Control--> * [c2Server0] C2Server   
+    //Computer [computer3] * <--Control--> * [c2Server0] C2Server   
     Computer [computerWindows] * <--System--> * [windows8] Windows
     Computer [computer8] * <--Use--> * [microphone] Microphone
     VideoCallApplication [videoCallApplication] * <--Software--> * [computer9] Computer
