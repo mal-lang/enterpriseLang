@@ -177,12 +177,15 @@ category Person {
 
         & spearphishingLinkClicked [Uniform(1,20)]
             developer info: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
-            ->  userExecution,
+            ->  attemptUserExecution,
                 thirdpartySoftware.applicationAccessToken
 
         & spearphishingAttachmentDownload
-            ->  userExecution   
-        
+            ->  attemptUserExecution
+
+        | attemptUserExecution
+            ->  userExecution
+
         & userExecution
             ->  computer.infectedComputer,
                 computer.infectedWindowsComputer,
@@ -526,11 +529,11 @@ category Software {
 
         | blockReportingMessage // 2015 Ukrain power grid attack
             user info: "https://collaborate.mitre.org/attackics/index.php/Technique/T804"
-            ->  os10.systemShutdownOrReboot 
+            //->  os10.systemShutdownOrReboot 
 
         | blockCommandMessage // 2015 Ukrain power grid attack 
             user info: "https://collaborate.mitre.org/attackics/index.php/Technique/T803"
-            ->  os10.systemShutdownOrReboot 
+            //->  os10.systemShutdownOrReboot 
 
         | serviceInformation 
 
@@ -573,7 +576,7 @@ category Software {
 
         & exploitationForClientExecution
             user info: "Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution."
-            ->  user3.userExecution            
+            ->  user3.attemptUserExecution            
 
         | _exploitationForCredentialAccess @hidden
             ->  exploitationForCredentialAccess
@@ -982,7 +985,7 @@ category Software {
         | graphicalUserInterface
             user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
             ->  windows5.remoteDesktopProtocol, // leads to Remote Desktop Protocol attack on Windows
-                windows5.systemFirmware // 2015 Ukraine power grid attack
+                windows5.attemptSystemFirmware // 2015 Ukraine power grid attack
 
         | softwareDiscovery
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
@@ -1032,7 +1035,7 @@ category Software {
                 bypassFileOrPathWhitelisting,
                 windows5.hooking, // leads to hooking attack
                 windows5.hypervisor, // leads to hypervisor attack
-                windows5.systemFirmware // leads to system firmware attack
+                windows5.attemptSystemFirmware // leads to system firmware attack
 
         & runtimeDataManipulation
             user info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
@@ -1175,7 +1178,7 @@ category Software {
             user info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
             ->  windows5.windowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
                 windows5.remoteDesktopProtocol,
-                user1.userExecution, // leads to file execution attacks
+                user1.attemptUserExecution, // leads to file execution attacks
                 _automatedCollection // combined with Remote File Copy attack
         
         & sensitiveDataCollected
@@ -1566,7 +1569,7 @@ category Software {
 
         & compiledHTMLFile
             user info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
-            ->  windowsUser.userExecution, // leads to User Execution attack
+            ->  windowsUser.attemptUserExecution, // leads to User Execution attack
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation   
 
@@ -1779,7 +1782,7 @@ category Software {
             user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  powerShell,
                 windowsRemoteManagement, // call with the winrm
-                windowsUser.userExecution,
+                windowsUser.attemptUserExecution,
                 scripting
 
         & powerShell
@@ -2054,6 +2057,9 @@ category Software {
                 adminAccessTokenManipulation,
                 windowsAdmin.adminRights   
 
+        | attemptSystemFirmware
+            ->  systemFirmware
+        
         & systemFirmware
             user info: "System firmware may be modified by an adversary to perform or assist in malicious activity."
             ->  installMaliciousFirmwareUpdates,
@@ -2061,6 +2067,7 @@ category Software {
                 service5.blockReportingMessage // 2015 Ukraine power grid attack
 
         | installMaliciousFirmwareUpdates
+            ->  systemShutdownOrReboot
 
         | timestomp
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
@@ -2350,7 +2357,7 @@ category Software {
                 bypassHostForensicAnalysis
 
         | spaceAfterFileName
-            ->  linuxUser.userExecution
+            ->  linuxUser.attemptUserExecution
 
         | infectedOS
             +>  bashHistory
@@ -2665,7 +2672,7 @@ category Software {
             ->  computer4.collectVideo     
 
         | spaceAfterFileName
-            ->  macOSUser.userExecution
+            ->  macOSUser.attemptUserExecution
 
         & networkShareDiscovery
             ->  internalNetworkMacOS.networkShareDiscovery
@@ -2773,28 +2780,28 @@ category Network {
 
         & credentialsFromWebBrowsers
             user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
-            ->  user10.userCredentials
+            ->  user5.userCredentials
  
         | attemptSpearphishingLink       
             ->  spearphishingLink
 
         & spearphishingLink
             user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
-            ->  user10.spearphishingLinkClicked
+            ->  user5.spearphishingLinkClicked
 
         | attemptSpearhishingAttachment
             ->  spearphishingAttachment
 
         & spearphishingAttachment
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
-            ->  user10.spearphishingAttachmentDownload,
+            ->  user5.spearphishingAttachmentDownload,
                 windows4.controlPanelItems // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
 
         | browserBookmark
             ->  browserBookmarkDiscovery
 
         | browserBookmarkDiscovery 
-            ->  user10.userInformation,
+            ->  user5.userInformation,
                 internalNetwork1.internalNetworkResourcesInformation
 
         | installExtensions
@@ -2802,8 +2809,8 @@ category Network {
 
         & browserExtensions
             user info: "Once the extension is installed, it can browse to websites in the background, steal all information that a user enters into a browser, to include credentials, and be used as an installer for a RAT for persistence." 
-            ->  user10.userInformation,
-                user10.userCredentials,
+            ->  user5.userInformation,
+                user5.userCredentials,
                 os4.persistence
 
         | _websiteDefacement @hidden
@@ -3251,7 +3258,6 @@ associations {
     Browser [browser1] * <--Software--> * [os4] OS
     Browser [browser2] * <--Software--> * [windows4] Windows
     Browser [browser11] * <--Run--> 1..* [computer11] Computer    
-    Browser [browser3] * <--Use--> * [user10] User
     Browser [browser4] * <--Use--> * [service3] Service
     Browser [browser5] * <--Use--> * [thirdpartySoftware3] ThirdpartySoftware 
     Browser [browser6] * <--Connect--> * [internalNetwork1] InternalNetwork
