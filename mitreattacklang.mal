@@ -353,8 +353,7 @@ category Person {
     asset WindowsAdmin extends Administrator {
         | adminRights
             user info: "WindowsAdmin account is equivalent to Unix Root account."
-            +>  //windowsWindowsAdmin.accountManipulation,
-                windowsWindowsAdmin.accessibilityFeatures,
+            +>  windowsWindowsAdmin.accessibilityFeatures,
                 windowsWindowsAdmin.adminAccessTokenManipulation,
                 windowsWindowsAdmin.adminSecuritySoftwareDiscovery,
                 windowsWindowsAdmin.adminServiceStop,
@@ -368,12 +367,10 @@ category Person {
                 windowsWindowsAdmin.changeDefaultFileAssociation,
                 windowsWindowsAdmin.componentObjectModelAndDistributedCOM,
                 windowsWindowsAdmin.controlPanelItems,
-                windowsWindowsAdmin.createService,
                 windowsWindowsAdmin.dCShadow,
                 windowsWindowsAdmin.distributedComponentObjectModel,
                 windowsWindowsAdmin._dLLSearchOrderHijacking,
                 windowsWindowsAdmin.executionThroughAPI,
-                windowsWindowsAdmin.executeService,
                 windowsWindowsAdmin.extraWindowMemoryInjection,
                 windowsWindowsAdmin.fileSystemLogicalOffsets,
                 windowsWindowsAdmin._fileSystemPermissionsWeakness,
@@ -419,10 +416,10 @@ category Person {
 
         | adminCredentials
 
-        # multiFactorAuthentication
-            +>  windowsWindowsAdmin.accountManipulation     
+        | bypassWindowsUserAccountControl
 
-        | bypassWindowsUserAccountControl     
+        # multiFactorAuthentication
+            +>  windowsWindowsAdmin.accountManipulation       
     }
     
     asset Root extends Administrator {
@@ -456,7 +453,7 @@ category Person {
                 macOS2.trap
     }
     
-    asset SYSTEM {
+    asset SysAdmin {
         | systemRights
             user info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
             ->  windows3._appCertDLLs,
@@ -518,7 +515,7 @@ category Person {
 
 category Software {
     asset Service {
-        & applicationDeploymentSystems  
+        & applicationDeploymentSystems
 
         | applicationVulnerability
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
@@ -526,6 +523,14 @@ category Software {
                 externalNetwork7.exploitPublicFacingApplication
 
         | blockUserAccess  
+
+        | blockReportingMessage // 2015 Ukrain power grid attack
+            user info: "https://collaborate.mitre.org/attackics/index.php/Technique/T804"
+            ->  os10.systemShutdownOrReboot 
+
+        | blockCommandMessage // 2015 Ukrain power grid attack 
+            user info: "https://collaborate.mitre.org/attackics/index.php/Technique/T803"
+            ->  os10.systemShutdownOrReboot 
 
         | serviceInformation 
 
@@ -551,10 +556,16 @@ category Software {
 
         | serviceExhaustionFlood
 
+        | attemptSpearphishingViaService // add entry point
+            ->  spearphishingViaService
+
         & spearphishingViaService
             user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
             ->  browser4.spearphishingAttachment, 
                 browser4.spearphishingLink
+
+        | attemptSupplyChainCompromise // add entry point
+            ->  supplyChainCompromise
 
         & supplyChainCompromise
             user info: "Supply chain compromise is the manipulation of products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
@@ -600,7 +611,8 @@ category Software {
         & externalRemoteServices
             user info: "Adversaries may use remote services to initially access and/or persist within a network."
             ->  internalNetwork7.persistence,
-                internalNetwork7.remoteAccess
+                internalNetwork7.remoteAccess,
+                os10.graphicalUserInterface // 2015 Ukraine power grid attack
 
         # applicationIsolationAndSandboxing
             user info: "https://attack.mitre.org/mitigations/M1048/"
@@ -679,11 +691,14 @@ category Software {
         | accountAccessRemoval
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
 
+        | attemptApplicationDeploymentSoftware // add entry point
+            ->  applicationDeploymentSoftware
+
         & applicationDeploymentSoftware
             user info: "Access to a network-wide or enterprise-wide software deployment system enables an adversary to have remote code execution on all systems that are connected to such a system."
             ->  executeCode
 
-        | applicationExhaustionFlood   
+        | applicationExhaustionFlood
             ->  service4.blockUserAccess 
 
         | infectedOS
@@ -720,6 +735,9 @@ category Software {
                 c2Server1.c2Connected,
                 externalNetwork5.bypassFirewall,
                 internalNetwork4.bypassFirewall
+
+        | attemptBinaryPadding // add entry point
+            ->  binaryPadding
 
         & binaryPadding
             ->  bypassSignatureBasedDetection,
@@ -769,9 +787,15 @@ category Software {
                 administrator2.adminCredentials,
                 system.systemCredentials   
 
+        | attemptCustomCryptographicProtocol // add emtry point
+            ->  customCryptographicProtocol   
+
         & customCryptographicProtocol
             user info: "Adversaries may use a custom cryptographic protocol or algorithm to hide command and control traffic."
             ->  c2Server1.c2Connected  
+
+        | attemptCustomCommandAndControlProtocol // add emtry point
+            ->  customCommandAndControlProtocol
 
         & customCommandAndControlProtocol
             user info: "Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
@@ -801,7 +825,10 @@ category Software {
             ->  computer4.infectedComputer,
                 internalNetwork4.remoteAccess
 
-        & endpointDenialOfService 
+        | attemptEndpointDenialOfService // add entry point
+            ->  endpointDenialOfService
+
+        & endpointDenialOfService
             user info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
             ->  applicationExhaustionFlood,
                 osExhaustionFlood,
@@ -814,7 +841,10 @@ category Software {
                 bypassSignatureBasedDetection,  
                 bypassStaticFileAnalysis       
 
-        & exfiltrationOverOtherNetworkMedium 
+        | attemptExfiltrationOverOtherNetworkMedium // add entry point
+            ->  exfiltrationOverOtherNetworkMedium
+
+        & exfiltrationOverOtherNetworkMedium
             user info: "Adversaries could choose to do exfiltration over a WiFi connection, modem, cellular data connection, Bluetooth, or another radio frequency (RF) channel if they have sufficient access or proximity, and the connection might not be secured or defended as well as the primary Internet-connected channel because it is not routed through the same enterprise network."     
             ->  otherNetworkMedium.transmit
 
@@ -861,24 +891,39 @@ category Software {
             user info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
             ->  bypassFileOrPathWhitelisting
 
+        | attemptMultibandCommunication // add entry point
+            ->  multibandCommunication
+
         & multibandCommunication
             user info: "Some adversaries may split communications between different protocols. There could be one protocol for inbound command and control and another for outbound data, allowing it to bypass certain firewall restrictions."
             ->  c2Server1.c2Connected,
                 externalNetwork5.bypassFirewall,
                 internalNetwork4.bypassFirewall
 
+        | attemptMultiHopProxy // add entry point
+            ->  multiHopProxy
+
         & multiHopProxy
             user info: "To disguise the source of malicious traffic, adversaries may chain together multiple proxies."
             ->  c2Server1.c2Connected
+
+        | attemptMultilayerEncryption // add entry point
+            ->  multilayerEncryption
 
         & multilayerEncryption
             user info: "An adversary performs C2 communications using multiple layers of encryption, typically (but not exclusively) tunneling a custom encryption scheme within a protocol encryption scheme such as HTTPS or SMTPS."
             ->  c2Server1.c2Connected
 
+        | attemptMultiStageChannels // add entry point
+            ->  multiStageChannels
+
         & multiStageChannels
             user info: "Adversaries may create multiple stages for command and control that are employed under different conditions or for certain functions."
             ->  c2Server1.c2Connected,
                 fallbackChannels // The loader may also have backup first-stage callbacks or Fallback Channels in case the original first-stage communication path is discovered and blocked.
+
+        | attemptNetworkDenialOfService // add entry point
+            ->  networkDenialOfService
 
         & networkDenialOfService
             user info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
@@ -936,7 +981,8 @@ category Software {
 
         | graphicalUserInterface
             user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
-            ->  windows5.remoteDesktopProtocol // leads to Remote Desktop Protocol attack on Windows
+            ->  windows5.remoteDesktopProtocol, // leads to Remote Desktop Protocol attack on Windows
+                windows5.systemFirmware // 2015 Ukraine power grid attack
 
         | softwareDiscovery
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
@@ -993,7 +1039,10 @@ category Software {
 
         & standardCryptographicProtocol
             user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
-            ->  c2Server1.c2Connected             
+            ->  c2Server1.c2Connected
+
+        | attemptStandardNonApplicationLayerProtocol
+            ->  standardNonApplicationLayerProtocol    
 
         & standardNonApplicationLayerProtocol
             user info: "Use of a standard non-application layer protocol for communication between host and C2 server or among infected hosts within a network."
@@ -1054,6 +1103,9 @@ category Software {
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             ->  user1.userCredentials           
 
+        | attemptAntivirusCheck // add entry point
+            ->  antivirusCheck    
+
         & antivirusCheck
             ->  executeCode,
                 service4.exploitationForClientExecution
@@ -1092,7 +1144,8 @@ category Software {
                 bypassHostIntrusionPrevention,
                 bypassProcessWhitelisting,
                 bypassSystemAccessControls,
-                bypassAntivirus  
+                bypassAntivirus,
+                graphicalUserInterface // 2015 Ukraine power grid attack  
 
         | _credentialsInRegistry @hidden
             ->  credentialsInRegistry
@@ -1157,7 +1210,7 @@ category Software {
 
         | dataSizedTransfer
             user info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
-            -> c2Server1.dataExfiltrated  
+            ->  c2Server1.dataExfiltrated  
 
         | dataStaged
             user info: "Collected data is staged in a central location or directory prior to Exfiltration. Data may be kept in separate files or combined into one file through techniques such as Data Compressed or Data Encrypted."
@@ -1452,7 +1505,7 @@ category Software {
                 systemWindows.systemRights,
                 windowsAdmin.adminRights
 
-        & appInitDLLs 
+        & appInitDLLs
             ->  persistence 
 
         & accessibilityFeatures
@@ -1511,7 +1564,7 @@ category Software {
                 bypassHostIntrusionPrevention, 
                 bypassAntivirus         
 
-        & compiledHTMLFile 
+        & compiledHTMLFile
             user info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
             ->  windowsUser.userExecution, // leads to User Execution attack
                 bypassApplicationWhitelisting,
@@ -1554,10 +1607,10 @@ category Software {
                 service5._exploitationForPrivilegeEscalation,
                 computerWindows.infectedWindowsComputer         
 
-        & executionThroughAPI    
+        & executionThroughAPI
             user info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
 
-        & executionThroughModuleLoad 
+        & executionThroughModuleLoad
             user info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
             ->  executeCode    
         
@@ -1599,6 +1652,9 @@ category Software {
             ->  bypassAutorunsAnalysis,
                 persistence,
                 service5._exploitationForPrivilegeEscalation
+
+        | attemptIndicatorBlocking // add entry point
+            ->  indicatorBlocking
 
         & indicatorBlocking
             user info: "An adversary may attempt to block indicators or events typically captured by sensors from being gathered and analyzed."
@@ -1673,6 +1729,9 @@ category Software {
             ->  service5._exploitationForPrivilegeEscalation, // an adversary may also use a service to escalate privileges from administrator to SYSTEM
                 masquerading // benign software with Masquerading
 
+        | attemptNtfsFileAttributes // add entry point
+            ->  ntfsFileAttributes
+
         & ntfsFileAttributes
             user info: "Adversaries may store malicious data or binaries in file attribute metadata instead of directly in files, to evade some defenses, such as static indicator scanning tools and anti-virus."
             ->  bypassSignatureBasedDetection,
@@ -1691,6 +1750,9 @@ category Software {
         & passTheHash
             user info: "This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash."
             ->  internalNetworkWindows.remoteSystemsConnection // PtH may be used to perform actions on local or remote systems
+
+        | attemptPassTheTicket // add entry point
+            ->  passTheTicket
 
         & passTheTicket
             user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
@@ -1754,7 +1816,7 @@ category Software {
         | rDPSessionHijacking
             user info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
 
-        & registryRunKeysOrStartupFolder
+        | registryRunKeysOrStartupFolder
             user info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
             ->  masquerading, // leads to Masquerading attack
                 service5.remoteAccessTools,
@@ -1766,6 +1828,10 @@ category Software {
                 bypassProcessWhitelisting,
                 bypassDigitalCertificateValidation
 
+        & _regsvr32 @hidden
+            developer info: "This is a helper attack step for Regsvr32.exe to establish Persistence via Component Object Model Hijacking."
+            ->  persistence
+
         & regsvr32
             user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
             ->  bypassProcessWhitelisting,
@@ -1773,10 +1839,6 @@ category Software {
                 bypassDigitalCertificateValidation,
                 codeProxyExecution,
                 _regsvr32
-
-        & _regsvr32 @hidden
-            developer info: "This is a helper attack step for Regsvr32.exe to establish Persistence via Component Object Model Hijacking."
-            ->  persistence
 
         & remoteDesktopProtocol
             user info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
@@ -1829,6 +1891,9 @@ category Software {
             user info: "When the service starts or is restarted, then the adversary-controlled program will execute, allowing the adversary to gain persistence and/or privilege escalation to the account context the service is set to execute."
             ->  service5._exploitationForPrivilegeEscalation
 
+        | attemptSharedWebroot // add entry point
+            ->  sharedWebroot
+
         & sharedWebroot
             user info: "Adversaries may add malicious content to an internally accessible website through an open network file share that contains the website's webroot or Web content directory and then browse to that content with a Web browser to cause the server to execute the malicious content."
             ->  browser2.executionThroughMaliciousContent
@@ -1867,6 +1932,9 @@ category Software {
                 bypassDigitalCertificateValidation,
                 bypassProcessWhitelisting,
                 bypassUserModeSignatureValidation 
+
+        | attemptSoftwarePacking // add entry point
+            ->  softwarePacking
 
         & softwarePacking
             user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
@@ -1918,6 +1986,9 @@ category Software {
             user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
             //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
 
+        | attemptSystemTimeDiscovery // add entry point
+            ->  systemTimeDiscovery
+
         & systemTimeDiscovery
             user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
             ->  scheduledTask         
@@ -1952,13 +2023,13 @@ category Software {
         | commandExecution
             ->  computerWindows.infectedWindowsComputer
 
-        & createService
-            ->  executeService
-            
+        | attemptRegistryKeysEnabled // add entry point
+            ->  registryKeysEnabled
+
         & registryKeysEnabled
             ->  dynamicDataExchange
 
-        & distributedComponentObjectModel          
+        & distributedComponentObjectModel
             user info: "Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
             ->  dynamicDataExchange
 
@@ -1985,7 +2056,9 @@ category Software {
 
         & systemFirmware
             user info: "System firmware may be modified by an adversary to perform or assist in malicious activity."
-            ->  installMaliciousFirmwareUpdates
+            ->  installMaliciousFirmwareUpdates,
+                service5.blockCommandMessage, // 2015 Ukraine power grid attack
+                service5.blockReportingMessage // 2015 Ukraine power grid attack
 
         | installMaliciousFirmwareUpdates
 
@@ -2008,8 +2081,6 @@ category Software {
         & adminAccessTokenManipulation
             user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
             ->  service5._exploitationForPrivilegeEscalation
-
-        & userCommandLineInterface
         
         & userSecuritySoftwareDiscovery
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
@@ -2020,9 +2091,6 @@ category Software {
 
         & bypassUserAccountControl
             ->  executeCode
-
-        & executeService
-            ->  persistance
        
         | peripheralDeviceDiscovery
             ->  computerWindows.peripheralDeviceDiscovery
@@ -2062,7 +2130,7 @@ category Software {
         & domainTrustDiscovery
             ->  trustedDomainInfo
 
-        & bootkit 
+        & bootkit
             ->  persistance
             
         | videoCapture
@@ -2127,7 +2195,6 @@ category Software {
                 appInitDLLs,
                 cmstp,
                 controlPanelItems,
-                createService,
                 dLLSearchOrderHijacking,
                 executeMshta,
                 executionThroughAPI,
@@ -2274,10 +2341,6 @@ category Software {
         & bootkit
             ->  persistance
 
-        # bootIntegrity 
-            user info: "https://attack.mitre.org/mitigations/M1046/"
-            +>  bootkit
-
         & _clearCommandHistory @hidden
             ->  clearCommandHistory       
 
@@ -2295,11 +2358,11 @@ category Software {
         | _bash_profileAndBashrc @hidden
             ->  bash_profileAndBashrc
 
-        & bash_profileAndBashrc 
+        & bash_profileAndBashrc
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
 
-        & bashHistory 
+        & bashHistory
             ->  indicatorRemovalOnHost,
                 linuxAdministrator.adminCredentials,
                 linuxUser.userCredentials
@@ -2380,6 +2443,10 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1047/"
             +>  serverSoftwareComponent
 
+        # bootIntegrity 
+            user info: "https://attack.mitre.org/mitigations/M1046/"
+            +>  bootkit
+
         # codeSigning
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  serverSoftwareComponent
@@ -2429,7 +2496,7 @@ category Software {
     }
 
     asset MacOS extends OS {
-        & bashHistory 
+        & bashHistory
             ->  indicatorRemovalOnHost,
                 macosAdministrator.adminCredentials,
                 macOSUser.userCredentials
@@ -2437,7 +2504,7 @@ category Software {
         | _bash_profileAndBashrc @hidden
             ->  bash_profileAndBashrc
 
-        & bash_profileAndBashrc 
+        & bash_profileAndBashrc
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
 
@@ -2452,7 +2519,7 @@ category Software {
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
 
-        & _dylibHijacking @hidden   
+        | _dylibHijacking @hidden   
             ->  dylibHijacking 
 
         & dylibHijacking 
@@ -2707,10 +2774,16 @@ category Network {
         & credentialsFromWebBrowsers
             user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
             ->  user10.userCredentials
-        
+ 
+        | attemptSpearphishingLink       
+            ->  spearphishingLink
+
         & spearphishingLink
             user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
             ->  user10.spearphishingLinkClicked
+
+        | attemptSpearhishingAttachment
+            ->  spearphishingAttachment
 
         & spearphishingAttachment
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
@@ -2741,7 +2814,7 @@ category Network {
             user info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
             ->  webSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
 
-        & webSessionCookie
+        | webSessionCookie
             user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
             ->  bypassLogonCredentials,
                 bypassMultiFactorAuthentication
@@ -2776,6 +2849,9 @@ category Network {
 
         & dataExfiltration
             ->  externalNetwork2.dataExfiltrated
+
+        | attemptDefacement // add entry point
+            ->  defacement
 
         & defacement
             user info: "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users."
@@ -2886,7 +2962,6 @@ category Network {
                 os13.uncommonlyUsedPortsConnection,
                 windows9.templateInjection,
                 c2Server3.dataExfiltrated,
-                c2Server3.dataExfiltrated,
                 c2Server3.generateDomainNames
 
         # networkSegmentation
@@ -2920,7 +2995,7 @@ category Network {
 
     asset NetworkSharedDrive extends InternalNetwork {
         & taintSharedContent
-            user info: "Once a user opens the shared tainted content, the malicious portion can be executed to run the adversary's code on a remote system."
+            user info: "Once a user opens the shared tainted content, tfhe malicious portion can be executed to run the adversary's code on a remote system."
             ->  windows9.executeCode
 
         | dataFromNetworkSharedDrive
@@ -2936,6 +3011,9 @@ category Network {
         | bypassNetworkIntrusionDetection
 
         | dataExfiltrated
+
+        | attemptDefacement // add entry point
+            ->  defacement
 
         & defacement
             user info: "Websites are a common victim of defacement that often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda."
@@ -3036,8 +3114,8 @@ category Hardware {
                 internalNetwork6.applicationLayerConnexion,
                 os5.commonlyUsedPortsConnection,
                 os5.uncommonlyUsedPortsConnection,
-                //os.endpointDenialOfService,  // 2015 Ukraine power grid
-                //os.fileDeletion,  // 2015 Ukraine power grid
+                os5.validAccounts, // 2015 Ukraine power grid
+                os5.fileDeletion, // 2015 Ukraine power grid
                 removableMedia1.dataFromRemovableMedia
 
         | infectedWindowsComputer
@@ -3125,7 +3203,7 @@ category Hardware {
 
         | infectedMedia
 
-        & dataExfiltrated
+        | dataExfiltrated
     }
     
     asset Microphone {
@@ -3165,14 +3243,14 @@ associations {
     Root [rootLinux] * <--Ui--> * [linux2] Linux
     Root [rootMac] * <--Ui--> * [macOS2] MacOS
 
-    SYSTEM [system] * <--Ui--> * [os3] OS 
-    SYSTEM [systemWindows] * <--Ui--> * [windows3] Windows
-    SYSTEM [system1] * <--Use--> * [service2] Service
-    SYSTEM [system2] * <--Use--> * [thirdpartySoftware2] ThirdpartySoftware
+    SysAdmin [system] * <--Ui--> * [os3] OS 
+    SysAdmin [systemWindows] * <--Ui--> * [windows3] Windows
+    SysAdmin [system1] * <--Use--> * [service2] Service
+    SysAdmin [system2] * <--Use--> * [thirdpartySoftware2] ThirdpartySoftware
 
     Browser [browser1] * <--Software--> * [os4] OS
     Browser [browser2] * <--Software--> * [windows4] Windows
-    //Browser [browser11] * <--Browser--> * [computer11] Computer    
+    Browser [browser11] * <--Run--> 1..* [computer11] Computer    
     Browser [browser3] * <--Use--> * [user10] User
     Browser [browser4] * <--Use--> * [service3] Service
     Browser [browser5] * <--Use--> * [thirdpartySoftware3] ThirdpartySoftware 
