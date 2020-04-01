@@ -690,6 +690,76 @@ category Software {
             ->  computer9.collectVideo
     }
     
+    asset Browser {
+        & driveByCompromise
+            user info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
+            ->  thirdpartySoftware3.stealApplicationAccessToken
+
+        | executionThroughMaliciousContent
+
+        & credentialsFromWebBrowsers
+            user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
+            ->  user5.userCredentials
+ 
+        | attemptSpearphishingLink       
+            ->  spearphishingLink
+
+        & spearphishingLink
+            user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
+            ->  user5.spearphishingLinkClicked
+
+        | attemptSpearhishingAttachment
+            ->  spearphishingAttachment
+
+        & spearphishingAttachment
+            user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
+            ->  user5.spearphishingAttachmentDownload,
+                windows4.controlPanelItems // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
+
+        | browserBookmark
+            ->  browserBookmarkDiscovery
+
+        | browserBookmarkDiscovery 
+            ->  user5.userInformation,
+                internalNetwork1.internalNetworkResourcesInformation
+
+        | installExtensions
+            ->  browserExtensions
+
+        & browserExtensions
+            user info: "Once the extension is installed, it can browse to websites in the background, steal all information that a user enters into a browser, to include credentials, and be used as an installer for a RAT for persistence." 
+            ->  user5.userInformation,
+                user5.userCredentials,
+                os4.persistence
+
+        | _websiteDefacement @hidden
+            user info: "This is a helper attack step that websites are a common victim of defacement. Website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise."
+            ->  driveByCompromise // Belongs to Drive-by Compromise attack
+
+        & stealWebSessionCookie
+            user info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
+            ->  webSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
+
+        | webSessionCookie
+            user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
+            ->  bypassLogonCredentials,
+                bypassMultiFactorAuthentication
+
+        | bypassLogonCredentials
+
+        | bypassMultiFactorAuthentication   
+
+        # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
+            user info: "https://attack.mitre.org/mitigations/M1021/"
+            ->  spearphishingAttachment, 
+                spearphishingLink,
+                service3.spearphishingViaService,
+                driveByCompromise,
+                os4.domainGenerationAlgorithms,
+                windows4.compiledHTMLFile,
+                externalNetwork1.webService
+    }
+
     asset OS {   
         | accountAccessRemoval
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
@@ -1304,8 +1374,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1049/"
             ->  antivirusCheck,
                 obfuscatedFilesOrInformation,
-                user1.spearphishingAttachmentDownload,
-                user1.spearphishingLinkClicked,
+                browser1.spearphishingAttachment,
+                browser1.spearphishingLink,
                 service4.spearphishingViaService   
 
         # restrictFileAndDirectoryPermissions 
@@ -2067,7 +2137,8 @@ category Software {
                 service5.blockReportingMessage // 2015 Ukraine power grid attack
 
         | installMaliciousFirmwareUpdates
-            ->  systemShutdownOrReboot
+            ->  systemShutdownOrReboot,
+                userServiceStop
 
         | timestomp
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
@@ -2771,76 +2842,6 @@ category Software {
 }
 
 category Network {
-    asset Browser {
-        & driveByCompromise
-            user info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
-            ->  thirdpartySoftware3.stealApplicationAccessToken
-
-        | executionThroughMaliciousContent
-
-        & credentialsFromWebBrowsers
-            user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
-            ->  user5.userCredentials
- 
-        | attemptSpearphishingLink       
-            ->  spearphishingLink
-
-        & spearphishingLink
-            user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
-            ->  user5.spearphishingLinkClicked
-
-        | attemptSpearhishingAttachment
-            ->  spearphishingAttachment
-
-        & spearphishingAttachment
-            user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
-            ->  user5.spearphishingAttachmentDownload,
-                windows4.controlPanelItems // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
-
-        | browserBookmark
-            ->  browserBookmarkDiscovery
-
-        | browserBookmarkDiscovery 
-            ->  user5.userInformation,
-                internalNetwork1.internalNetworkResourcesInformation
-
-        | installExtensions
-            ->  browserExtensions
-
-        & browserExtensions
-            user info: "Once the extension is installed, it can browse to websites in the background, steal all information that a user enters into a browser, to include credentials, and be used as an installer for a RAT for persistence." 
-            ->  user5.userInformation,
-                user5.userCredentials,
-                os4.persistence
-
-        | _websiteDefacement @hidden
-            user info: "This is a helper attack step that websites are a common victim of defacement. Website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise."
-            ->  driveByCompromise // Belongs to Drive-by Compromise attack
-
-        & stealWebSessionCookie
-            user info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
-            ->  webSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
-
-        | webSessionCookie
-            user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
-            ->  bypassLogonCredentials,
-                bypassMultiFactorAuthentication
-
-        | bypassLogonCredentials
-
-        | bypassMultiFactorAuthentication   
-
-        # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
-            user info: "https://attack.mitre.org/mitigations/M1021/"
-            ->  spearphishingAttachment, 
-                spearphishingLink,
-                service3.spearphishingViaService,
-                driveByCompromise,
-                os4.domainGenerationAlgorithms,
-                windows4.compiledHTMLFile,
-                externalNetwork1.webService
-    }
-
     asset InternalNetwork {
         | obfuscateNetworkTraffic
 
@@ -2951,6 +2952,7 @@ category Network {
             ->  applicationLayerConnexion,
                 c2Connexion,
                 dataExfiltration,
+                browser6.spearphishingAttachment,
                 os13.commonlyUsedPortsConnection,
                 os13.connectionProxy,
                 os13.customCommandAndControlProtocol,
@@ -3050,6 +3052,7 @@ category Network {
         # networkIntrusionPrevention
             user info: "https://attack.mitre.org/mitigations/M1031/"
             ->  webService,
+                browser7.spearphishingAttachment,
                 c2Server4.dataObfuscation,
                 c2Server4.generateDomainNames,
                 os14.commonlyUsedPortsConnection,
@@ -3257,7 +3260,7 @@ associations {
 
     Browser [browser1] * <--Software--> * [os4] OS
     Browser [browser2] * <--Software--> * [windows4] Windows
-    Browser [browser11] * <--Run--> 1..* [computer11] Computer    
+    Browser [browser11] * <--Run--> 1..* [computer11] Computer  
     Browser [browser4] * <--Use--> * [service3] Service
     Browser [browser5] * <--Use--> * [thirdpartySoftware3] ThirdpartySoftware 
     Browser [browser6] * <--Connect--> * [internalNetwork1] InternalNetwork
