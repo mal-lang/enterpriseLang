@@ -1,8 +1,10 @@
-# mitreattacklang
+# enterpriselang
 
-mitreattacklang is a domain-specific MAL language intended to assess the cyber security of enterprise systems from a holistic point of view.
+enterpriselang is a domain-specific MAL language based on the MITRE ATT&CK® Matrix, which intends to assess the cyber security of enterprise systems from a holistic point of view.
 
-This project can be built according to exampleLang (https://github.com/mal-lang/exampleLang):
+* We keep updating the file `enterpriselang.mal` and the folder `securiCAD_models`. The files within the folder `single_attacks` are not up-to-date, please refer to the file `enterpriselang.mal`.
+
+# This project can be built according to exampleLang (https://github.com/mal-lang/exampleLang):
 
 * The file `pom.xml` is the Maven configuration file of the project, make sure that <kernelcad.version> is 1.6.2-SNAPSHOT in pom.xml. 
 * The directory `src/main/mal` contains the MAL specification
