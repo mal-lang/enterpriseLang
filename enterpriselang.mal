@@ -175,8 +175,12 @@ category Person {
 
         | userInformation    
 
-        & spearphishingLinkClicked [Uniform(1,20)]
-            developer info: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
+        & spearphishingLinkClicked [Normal(71,6.06)]
+            developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887
+                                                              https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968
+                                                              https://er.educause.edu/-/media/files/article-downloads/eqm0517.pdf
+                                                              https://papers.ssrn.com/sol3/Delivery.cfm/SSRN_ID2544742_code2188666.pdf?abstractid=2544742&mirid=1&type=2
+                                                              https://www.researchgate.net/profile/Aj_Burns2/publication/331173610_Spear_phishing_in_a_barrel_Insights_from_a_targeted_phishing_campaign/links/5d35ff3292851cd0467e230e/Spear-phishing-in-a-barrel-Insights-from-a-targeted-phishing-campaign.pdf?_sg%5B0%5D=Rj5KKH57QsWMZYQJXBjze1ZHluHC_j4oD6_KSklzaO8wFIa2SpR_5FNIk8i1k33pRKJRVam8W1b6O0HkpXLwqA.tMX2WJztmLeSsW6Y16MSzYbk3fH0iaP_fD4U8h2A2kuZE2dKelZ1-OyfRTX-CsI7L6v1Pycpi_4cXWSTQ9-euA&_sg%5B1%5D=QK9KdedGNSsTZg2m2S3Co0PVI3T03WSyRB629irZJhzknSeAKJnh8Mc2XBkewXgJyG4xFkvRuE6TiVlzV2vgrAL5f5XH_MKfgDH5zFAjULFi.tMX2WJztmLeSsW6Y16MSzYbk3fH0iaP_fD4U8h2A2kuZE2dKelZ1-OyfRTX-CsI7L6v1Pycpi_4cXWSTQ9-euA&_iepl="
             ->  attemptUserExecution,
                 thirdpartySoftware.applicationAccessToken
 
