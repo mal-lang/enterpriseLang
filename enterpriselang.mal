@@ -1,3 +1,7 @@
+// enterpriseLang
+// Authors: Wenjun Xiong (wenjx@kth.se), Emeline Legrand, Oscar Åberg
+// Probability distributions: Lina Evensjö 
+
 #id: "org.mal_lang.attacklang"
 #version: "1.0.0"
 
@@ -533,11 +537,9 @@ category Software {
 
         | blockReportingMessage // 2015 Ukrain power grid attack
             user info: "https://collaborate.mitre.org/attackics/index.php/Technique/T804"
-            //->  os10.systemShutdownOrReboot 
+            ->  delayOperations
 
-        | blockCommandMessage // 2015 Ukrain power grid attack 
-            user info: "https://collaborate.mitre.org/attackics/index.php/Technique/T803"
-            //->  os10.systemShutdownOrReboot 
+        | delayOperations
 
         | serviceInformation 
 
@@ -613,15 +615,18 @@ category Software {
             ->  exploitationOfRemoteServices
 
         & exploitationOfRemoteServices
-            ->  _exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
-                // remoteFileCopy // 2017 WannaCry ransomware attack
-                // newService // 2017 WannaCry ransomware attack
-                
+            ->  _exploitationForPrivilegeEscalation, // leads to Exploitation for Privilege Escalation attack
+                computer7.infectedComputer // 2016 bank robbery
+     
+        | attemptExternalRemoteServices // 2015 Ukraine power grid attack, 2016 bank robbery
+            ->  externalRemoteServices
+
         & externalRemoteServices
             user info: "Adversaries may use remote services to initially access and/or persist within a network."
             ->  internalNetwork7.persistence,
                 internalNetwork7.remoteAccess,
-                os10.graphicalUserInterface // 2015 Ukraine power grid attack
+                os10.validAccounts, // 2015 Ukraine power grid attack
+                _exploitationOfRemoteServices // 2016 bank robbery
 
         # applicationIsolationAndSandboxing
             user info: "https://attack.mitre.org/mitigations/M1048/"
@@ -911,7 +916,7 @@ category Software {
             user info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
             ->  applicationExhaustionFlood,
                 osExhaustionFlood,
-                service4.serviceExhaustionFlood
+                service4.blockReportingMessage
 
         & executionGuardrails
             user info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
@@ -1217,7 +1222,6 @@ category Software {
             user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
             ->  service4.userRemoteServicesLogin,
                 service4.adminRemoteServicesLogin,
-                service4.externalRemoteServices,
                 internalNetwork4.bypassFirewall,
                 internalNetwork4.bypassNetworkIntrusionDetection,
                 bypassHostIntrusionPrevention,
@@ -1854,7 +1858,7 @@ category Software {
             user info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
             ->  executeCode
 
-        & _powerShell @hidden
+        & _powerShell
             user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  powerShell,
                 windowsRemoteManagement, // call with the winrm
@@ -1864,7 +1868,10 @@ category Software {
         & powerShell
             user info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
             ->  internalNetworkWindows.remoteSystemsConnection,
+                bankRobbery, // 2016 bank robbery
                 persistence
+
+        | bankRobbery // 2016 bank robbery
 
         & _powerShellProfile @hidden
             user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
@@ -2138,13 +2145,7 @@ category Software {
         
         & systemFirmware
             user info: "System firmware may be modified by an adversary to perform or assist in malicious activity."
-            ->  installMaliciousFirmwareUpdates,
-                service5.blockCommandMessage, // 2015 Ukraine power grid attack
-                service5.blockReportingMessage // 2015 Ukraine power grid attack
-
-        | installMaliciousFirmwareUpdates
             ->  service5.electricitySupplyShutdown // 2015 Ukraine power grid attack
-                // userServiceStop
 
         | timestomp
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
@@ -3112,10 +3113,15 @@ category Network {
                 linux6.portKnocking,
                 macOS7.portKnocking
 
+        # limitAccessToResourceOverNetwork
+            user info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  service13.externalRemoteServices // 2015 Ukriane power grid attack, 2016 bank robbery
+
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  os17.commonlyUsedPortsConnection,
                 os17.uncommonlyUsedPortsConnection,
+                service13.externalRemoteServices, // 2016 bank robbery
                 windows12.distributedComponentObjectModel,
                 windows12.remoteDesktopProtocol,
                 windows12.windowsRemoteManagement,
@@ -3130,14 +3136,15 @@ category Hardware {
                 internalNetwork6.applicationLayerConnexion,
                 os5.commonlyUsedPortsConnection,
                 os5.uncommonlyUsedPortsConnection,
-                os5.validAccounts, // 2015 Ukraine power grid
                 os5.fileDeletion, // 2015 Ukraine power grid
+                windows8.accountManipulation, // 2016 bank robbery
+                windows8.bankRobbery, // 2016 bank robbery
+                //windows8.powerShell, // 2016 bank robbery
+                service12.attemptExternalRemoteServices, // 2015 Ukraine power grid
                 removableMedia1.dataFromRemovableMedia
 
         | infectedWindowsComputer
             ->  windows8.dynamicDataExchange
-                //windows.accountManipulation,  // 2016 the Cayman National Isle of Man Bank attack
-                //windows.powerShellProfile  // 2016 the Cayman National Isle of Man Bank attack
                 
         | infectedLinuxComputer
 
@@ -3281,6 +3288,7 @@ associations {
     OS [os11] * <--Run--> * [thirdpartySoftware4] ThirdpartySoftware  
     OS [os12] * <--Operate--> * [removableMedia2] RemovableMedia
 
+    Computer [computer7] * <--Run--> * [service12] Service 
     Windows [windows6] * <--Run--> * [service5] Service
     Linux [linux4] * <--Run--> * [service6] Service
     MacOS [macOS4] * <--Run--> * [service7] Service
@@ -3315,13 +3323,12 @@ associations {
     Firewall [firewall2] 0..1 <--Protect--> * [windows12] Windows
     Firewall [firewall3] 0..1 <--Protect--> * [linux6] Linux
     Firewall [firewall4] 0..1 <--Protect--> * [macOS7] MacOS
-    Firewall [firewall5] 0..1 <--Protect--> * [thirdpartySoftware7] ThirdpartySoftware    
+    Firewall [firewall5] 0..1 <--Protect--> * [thirdpartySoftware7] ThirdpartySoftware 
+    Firewall [firewall6] 0..1 <--Protect--> * [service13] Service
     InternalNetwork [internalNetwork11] * <--Protect--> 0..1 [firewall6] Firewall
     //ExternalNetwork [externalNetwork8] * <--Protect--> 0..1 [firewall7] Firewall
-    //Computer [computer7] * <--Protect--> 0..1 [firewall8] Firewall
 
-    Computer [computer2] * <--Serve--> * [removableMedia1] RemovableMedia
-    //Computer [computer3] * <--Control--> * [c2Server0] C2Server   
+    Computer [computer2] * <--Serve--> * [removableMedia1] RemovableMedia  
     Computer [computerWindows] * <--Operate--> * [windows8] Windows
     Computer [computer8] * <--Serve--> * [microphone] Microphone
     VideoCallApplication [videoCallApplication] * <--Serve--> * [computer9] Computer
