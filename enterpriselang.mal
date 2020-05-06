@@ -3214,13 +3214,17 @@ category Hardware {
             <-  ntfsPartition2
             ->  windows13.ntfsFileAttributes
     } 
+    
+    asset PeripheralDevice {
 
-    asset Webcam {
+    } 
+
+    asset Webcam extends PeripheralDevice {
         | _collectVideo @hidden
             -> computer10.collectVideo
     }
 
-    asset RemovableMedia {
+    asset RemovableMedia extends PeripheralDevice {
         | dataFromRemovableMedia
             ->  os12.sensitiveDataCollected
 
@@ -3229,7 +3233,7 @@ category Hardware {
         | dataExfiltrated
     }
     
-    asset Microphone {
+    asset Microphone extends PeripheralDevice {
         | collectAudio
             ->  computer8.collectAudio
     }
