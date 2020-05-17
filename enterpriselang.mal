@@ -84,8 +84,8 @@ category Person {
                 windows.parentPIDSpoofing,
                 windows.pathInterception,
                 windows.peripheralDeviceDiscovery,
-                windows._powerShell,
-                windows._powerShellProfile,
+                windows.powerShell,
+                windows.powerShellProfile,
                 windows.processDoppelganging,
                 windows.processHollowing,
                 windows.registryRunKeysOrStartupFolder,
@@ -159,14 +159,14 @@ category Person {
                 service._exploitationOfRemoteServices,
                 service.externalRemoteServices,
                 service.remoteAccessTools,
-                service.usertransmittedDataManipulation,
                 thirdpartySoftware.stealApplicationAccessToken,
                 thirdpartySoftware._useThirdpartySoftware,
                 browser.credentialsFromWebBrowsers,
                 browser.driveByCompromise,
                 browser.installExtensions,
                 browser.stealWebSessionCookie,
-                internalNetwork.usertransmittedDataManipulation,
+                internalNetwork.transmittedDataManipulation,
+                externalNetwork.transmittedDataManipulation,
                 externalNetwork.webService
 
         | userCredentials
@@ -181,10 +181,8 @@ category Person {
 
         & spearphishingLinkClicked [TruncatedNormal(0.712,0.00367)]
             developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887
-                                                              https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968
-                                                              https://er.educause.edu/-/media/files/article-downloads/eqm0517.pdf
-                                                              https://papers.ssrn.com/sol3/Delivery.cfm/SSRN_ID2544742_code2188666.pdf?abstractid=2544742&mirid=1&type=2
-                                                              https://www.researchgate.net/profile/Aj_Burns2/publication/331173610_Spear_phishing_in_a_barrel_Insights_from_a_targeted_phishing_campaign/links/5d35ff3292851cd0467e230e/Spear-phishing-in-a-barrel-Insights-from-a-targeted-phishing-campaign.pdf?_sg%5B0%5D=Rj5KKH57QsWMZYQJXBjze1ZHluHC_j4oD6_KSklzaO8wFIa2SpR_5FNIk8i1k33pRKJRVam8W1b6O0HkpXLwqA.tMX2WJztmLeSsW6Y16MSzYbk3fH0iaP_fD4U8h2A2kuZE2dKelZ1-OyfRTX-CsI7L6v1Pycpi_4cXWSTQ9-euA&_sg%5B1%5D=QK9KdedGNSsTZg2m2S3Co0PVI3T03WSyRB629irZJhzknSeAKJnh8Mc2XBkewXgJyG4xFkvRuE6TiVlzV2vgrAL5f5XH_MKfgDH5zFAjULFi.tMX2WJztmLeSsW6Y16MSzYbk3fH0iaP_fD4U8h2A2kuZE2dKelZ1-OyfRTX-CsI7L6v1Pycpi_4cXWSTQ9-euA&_iepl="
+                                                               https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968
+                                                               https://er.educause.edu/-/media/files/article-downloads/eqm0517.pdf"
             ->  attemptUserExecution,
                 thirdpartySoftware.applicationAccessToken
 
@@ -192,7 +190,7 @@ category Person {
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
             ->  attemptUserExecution
 
-        | attemptUserExecution
+        | attemptUserExecution @hidden
             ->  userExecution
 
         & userExecution
@@ -205,7 +203,7 @@ category Person {
             ->  _mediaInserted
 
         & _mediaInserted @hidden
-            ->  removableMedia.dataExfiltrated     
+            ->  removableMedia.dataExfiltration   
 
         # userAccountManagement  
             user info: "https://attack.mitre.org/mitigations/M1018/"     
@@ -245,8 +243,8 @@ category Person {
         # userTraining [Bernoulli(0.22)]
             user info: "https://attack.mitre.org/mitigations/M1017/"
             developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745
-                                                              https://doi.org/10.1145/1572532.1572536
-                                                              https://ieeexplore.ieee.org/abstract/document/6585241"
+                                                               https://doi.org/10.1145/1572532.1572536
+                                                               https://ieeexplore.ieee.org/abstract/document/6585241"       
             ->  browser.stealWebSessionCookie,      
                 spearphishingAttachmentDownload, 
                 spearphishingLinkClicked, 
@@ -310,11 +308,12 @@ category Person {
                 os1.systemOwnerOrUserDiscovery,
                 os1.systemShutdownOrReboot,
                 os1.twoFactorAuthenticationInterception,
-                service1.admintransmittedDataManipulation,
+                service1.transmittedDataManipulation,
                 service1.applicationDeploymentSystems,
                 thirdpartySoftware1._useThirdpartySoftware,
-                internalNetwork5.admintransmittedDataManipulation,
-                internalNetwork5.bypassAccessControl
+                internalNetwork5.transmittedDataManipulation,
+                internalNetwork5.bypassAccessControl,
+                externalNetwork6.transmittedDataManipulation
              
         | adminCredentials
             ->  adminRights,
@@ -406,8 +405,8 @@ category Person {
                 windowsWindowsAdmin.passwordFilterDLL,
                 windowsWindowsAdmin.pathInterception,
                 windowsWindowsAdmin.portMonitors,
-                windowsWindowsAdmin._powerShell,
-                windowsWindowsAdmin._powerShellProfile,
+                windowsWindowsAdmin.powerShell,
+                windowsWindowsAdmin.powerShellProfile,
                 windowsWindowsAdmin.processDoppelganging,
                 windowsWindowsAdmin.queryRegistery,
                 windowsWindowsAdmin.registryRunKeysOrStartupFolder,
@@ -468,65 +467,6 @@ category Person {
                 macOS2._startupItems,
                 macOS2.trap
     }
-    
-    asset SysAdmin {
-        | systemRights
-            user info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
-            ->  windows3._appCertDLLs,
-                windows3._bITSJobs,
-                windows3.changeDefaultFileAssociation,
-                windows3._componentObjectModelAndDistributedCOM,
-                windows3.controlPanelItems,
-                windows3.distributedComponentObjectModel,
-                windows3._dLLSearchOrderHijacking,
-                windows3.executionThroughAPI,
-                windows3.extraWindowMemoryInjection,
-                windows3.hooking,
-                windows3.hypervisor,
-                windows3.imageFileExecutionOptionsInjection,
-                windows3.lSASS_Driver,
-                windows3.manInTheBrowser,
-                windows3.modifyExistingService,
-                windows3.modifyRegistry,
-                windows3.netshHelperDLL,
-                windows3.passwordFilterDLL,
-                windows3.pathInterception,
-                windows3.portMonitors,
-                windows3.processDoppelganging,
-                windows3.serverSoftwareComponent,
-                windows3.serviceExecution,
-                windows3.serviceRegistryPermissionsWeakness,
-                windows3.sIDHistoryInjection,
-                windows3.sIPAndTrustProviderHijacking,
-                windows3.systemServiceDiscovery,
-                windows3.systemServiceStop,
-                windows3.timeProviders,
-                windows3.timestomp,
-                windows3.windowsManagementInstrumentationEventSubscription,
-                windows3.winlogonHelperDLL,
-                os3.accountAccessRemoval,
-                os3._credentialDumping,
-                os3._credentialsInFiles,
-                os3.fileAndDirectoryDiscovery,
-                os3.fileAndDirectoryPermissionsModification,
-                os3.firmwareCorruption,
-                os3.graphicalUserInterface,
-                os3.inhibitSystemRecovery,
-                os3.inputCapture,
-                os3.networkSniffing,
-                os3.redundantAccess,
-                os3.rootkit,
-                os3.runtimeDataManipulation,
-                os3.systemDataDestruction,
-                os3.systemDataEncryptedForImpact,
-                os3.systemShutdownOrReboot,
-                os3.storedDataManipulation,
-                os3.twoFactorAuthenticationInterception,
-                thirdpartySoftware2._useThirdpartySoftware
-
-        | systemCredentials
-            ->  systemRights
-    }
 }
 
 category Software {
@@ -540,28 +480,17 @@ category Software {
 
         | blockUserAccess  
 
-        | blockReportingMessage // 2015 Ukrain power grid attack
-            user info: "https://collaborate.mitre.org/attackics/index.php/Technique/T804"
-            ->  delayOperations
-
-        | delayOperations
-
         | serviceInformation 
-
-        | electricitySupplyShutdown
 
         & userRemoteServicesLogin
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
-            ->  c2Server2.c2Connected 
+            ->  internalNetwork7.c2Connected 
 
         & adminRemoteServicesLogin
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
-            ->  c2Server2.c2Connected 
+            ->  internalNetwork7.c2Connected 
 
-        & usertransmittedDataManipulation
-            user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
-
-        & admintransmittedDataManipulation
+        & transmittedDataManipulation
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
         | informationRepositories
@@ -572,7 +501,7 @@ category Software {
 
         | serviceExhaustionFlood
 
-        | attemptSpearphishingViaService // add entry point
+        | attemptSpearphishingViaService @hidden
             ->  spearphishingViaService
 
         & spearphishingViaService
@@ -580,7 +509,7 @@ category Software {
             ->  browser4.spearphishingAttachment, 
                 browser4.spearphishingLink
 
-        | attemptSupplyChainCompromise // add entry point
+        | attemptSupplyChainCompromise @hidden
             ->  supplyChainCompromise
 
         & supplyChainCompromise
@@ -599,7 +528,7 @@ category Software {
             ->  os10.executeCode,
                 _exploitationForPrivilegeEscalation             
 
-        | _exploitationForDefenseEvasion @hidden // end step of securoty software discovery
+        | _exploitationForDefenseEvasion @hidden
             ->  exploitationForDefenseEvasion
 
         & exploitationForDefenseEvasion
@@ -620,18 +549,18 @@ category Software {
             ->  exploitationOfRemoteServices
 
         & exploitationOfRemoteServices
-            ->  _exploitationForPrivilegeEscalation, // leads to Exploitation for Privilege Escalation attack
-                computer7.infectedComputer // 2016 bank robbery
+            ->  _exploitationForPrivilegeEscalation,
+                computer7.infectedComputer
      
-        | attemptExternalRemoteServices // 2015 Ukraine power grid attack, 2016 bank robbery
+        | attemptExternalRemoteServices @hidden 
             ->  externalRemoteServices
 
         & externalRemoteServices
             user info: "Adversaries may use remote services to initially access and/or persist within a network."
             ->  internalNetwork7.persistence,
                 internalNetwork7.remoteAccess,
-                os10.validAccounts, // 2015 Ukraine power grid attack
-                _exploitationOfRemoteServices // 2016 bank robbery
+                os10.validAccounts,
+                _exploitationOfRemoteServices
 
         # applicationIsolationAndSandboxing
             user info: "https://attack.mitre.org/mitigations/M1048/"
@@ -649,8 +578,7 @@ category Software {
 
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
-            ->  usertransmittedDataManipulation,
-                admintransmittedDataManipulation
+            ->  transmittedDataManipulation
 
         # executionPrevention
             user info: "https://attack.mitre.org/mitigations/M1038/"
@@ -717,14 +645,14 @@ category Software {
             user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
             ->  user5.userCredentials
  
-        | attemptSpearphishingLink       
+        | attemptSpearphishingLink @hidden      
             ->  spearphishingLink
 
         & spearphishingLink
             user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
             ->  user5.spearphishingLinkClicked
 
-        | attemptSpearhishingAttachment
+        | attemptSpearhishingAttachment @hidden
             ->  spearphishingAttachment
 
         & spearphishingAttachment
@@ -780,7 +708,7 @@ category Software {
         | accountAccessRemoval
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
 
-        | attemptApplicationDeploymentSoftware // add entry point
+        | attemptApplicationDeploymentSoftware @hidden
             ->  applicationDeploymentSoftware
 
         & applicationDeploymentSoftware
@@ -808,8 +736,8 @@ category Software {
         | domainGenerationAlgorithms 
             user info: "Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination for command and control traffic rather than relying on a list of static IP addresses or domains." 
             ->  fallbackChannels, // leads to Fallback Channels attack
-                c2Server1.communicate,
-                c2Server1.generateDomainNames
+                internalNetwork4.communicate,
+                internalNetwork4.generateDomainNames
 
         | compromisedSystems // with probability
             ->  privateKeys,
@@ -821,11 +749,11 @@ category Software {
         & connectionProxy
             user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
             ->  bypassLogAnalysis,
-                c2Server1.c2Connected,
-                externalNetwork5.bypassFirewall,
-                internalNetwork4.bypassFirewall
+                internalNetwork4.c2Connected,
+                internalNetwork4.bypassFirewall,
+                externalNetwork5.bypassFirewall
 
-        | attemptBinaryPadding // add entry point
+        | attemptBinaryPadding @hidden
             ->  binaryPadding
 
         & binaryPadding
@@ -846,10 +774,10 @@ category Software {
 
         & commonlyUsedPortsConnection
             user info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
-            ->  c2Server1.c2Connected,
+            ->  internalNetwork4.c2Connected,
+                internalNetwork4.bypassNetworkIntrusionDetection,
                 firewall1._bypassFirewall,
-                externalNetwork5.bypassNetworkIntrusionDetection,
-                internalNetwork4.bypassNetworkIntrusionDetection
+                externalNetwork5.bypassNetworkIntrusionDetection
 
         | compileAfterDelivery     
             user info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
@@ -876,26 +804,26 @@ category Software {
                 administrator2.adminCredentials,
                 system.systemCredentials   
 
-        | attemptCustomCryptographicProtocol // add emtry point
+        | attemptCustomCryptographicProtocol @hidden
             ->  customCryptographicProtocol   
 
         & customCryptographicProtocol
             user info: "Adversaries may use a custom cryptographic protocol or algorithm to hide command and control traffic."
-            ->  c2Server1.c2Connected  
+            ->  internalNetwork4.c2Connected  
 
-        | attemptCustomCommandAndControlProtocol // add emtry point
+        | attemptCustomCommandAndControlProtocol @hidden
             ->  customCommandAndControlProtocol
 
         & customCommandAndControlProtocol
             user info: "Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
-            ->  c2Server1.c2Connected
+            ->  internalNetwork4.c2Connected
 
         | _dataEncoding @hidden
             user info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
             ->  dataEncoding
 
         & dataEncoding
-            ->  c2Server1.communicate
+            ->  internalNetwork4.communicate
           
         & disablingSecurityTools
             user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
@@ -914,14 +842,14 @@ category Software {
             ->  computer4.infectedComputer,
                 internalNetwork4.remoteAccess
 
-        | attemptEndpointDenialOfService // add entry point
+        | attemptEndpointDenialOfService @hidden
             ->  endpointDenialOfService
 
         & endpointDenialOfService
             user info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
             ->  applicationExhaustionFlood,
                 osExhaustionFlood,
-                service4.blockReportingMessage
+                windows5.attemptUserServiceStop
 
         & executionGuardrails
             user info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
@@ -930,7 +858,7 @@ category Software {
                 bypassSignatureBasedDetection,  
                 bypassStaticFileAnalysis       
 
-        | attemptExfiltrationOverOtherNetworkMedium // add entry point
+        | attemptExfiltrationOverOtherNetworkMedium @hidden
             ->  exfiltrationOverOtherNetworkMedium
 
         & exfiltrationOverOtherNetworkMedium
@@ -939,7 +867,7 @@ category Software {
 
         | fallbackChannels  
             user info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
-            ->  c2Server1.communicate  
+            ->  internalNetwork4.communicate  
 
         & firmwareCorruption
             user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
@@ -974,44 +902,44 @@ category Software {
             user info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
             ->  browser1.spearphishingLink,
                 browser1.spearphishingAttachment,
-                inputCapture // capture credentials through Input Capture on sites that mimic email login interfaces 
+                inputCapture
 
         & masquerading
             user info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
             ->  bypassFileOrPathWhitelisting
 
-        | attemptMultibandCommunication // add entry point
+        | attemptMultibandCommunication @hidden
             ->  multibandCommunication
 
         & multibandCommunication
             user info: "Some adversaries may split communications between different protocols. There could be one protocol for inbound command and control and another for outbound data, allowing it to bypass certain firewall restrictions."
-            ->  c2Server1.c2Connected,
-                externalNetwork5.bypassFirewall,
-                internalNetwork4.bypassFirewall
+            ->  internalNetwork4.c2Connected,
+                internalNetwork4.bypassFirewall,
+                externalNetwork5.bypassFirewall
 
-        | attemptMultiHopProxy // add entry point
+        | attemptMultiHopProxy @hidden
             ->  multiHopProxy
 
         & multiHopProxy
             user info: "To disguise the source of malicious traffic, adversaries may chain together multiple proxies."
-            ->  c2Server1.c2Connected
+            ->  internalNetwork4.c2Connected
 
-        | attemptMultilayerEncryption // add entry point
+        | attemptMultilayerEncryption @hidden
             ->  multilayerEncryption
 
         & multilayerEncryption
             user info: "An adversary performs C2 communications using multiple layers of encryption, typically (but not exclusively) tunneling a custom encryption scheme within a protocol encryption scheme such as HTTPS or SMTPS."
-            ->  c2Server1.c2Connected
+            ->  internalNetwork4.c2Connected
 
-        | attemptMultiStageChannels // add entry point
+        | attemptMultiStageChannels @hidden
             ->  multiStageChannels
 
         & multiStageChannels
             user info: "Adversaries may create multiple stages for command and control that are employed under different conditions or for certain functions."
-            ->  c2Server1.c2Connected,
-                fallbackChannels // The loader may also have backup first-stage callbacks or Fallback Channels in case the original first-stage communication path is discovered and blocked.
+            ->  internalNetwork4.c2Connected,
+                fallbackChannels
 
-        | attemptNetworkDenialOfService // add entry point
+        | attemptNetworkDenialOfService @hidden
             ->  networkDenialOfService
 
         & networkDenialOfService
@@ -1071,7 +999,7 @@ category Software {
         | graphicalUserInterface
             user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
             ->  windows5.remoteDesktopProtocol, // leads to Remote Desktop Protocol attack on Windows
-                windows5.attemptSystemFirmware // 2015 Ukraine power grid attack
+                windows5.attemptSystemFirmware
 
         | softwareDiscovery
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
@@ -1128,14 +1056,14 @@ category Software {
 
         & standardCryptographicProtocol
             user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
-            ->  c2Server1.c2Connected
+            ->  internalNetwork4.c2Connected
 
         | attemptStandardNonApplicationLayerProtocol
             ->  standardNonApplicationLayerProtocol    
 
         & standardNonApplicationLayerProtocol
             user info: "Use of a standard non-application layer protocol for communication between host and C2 server or among infected hosts within a network."
-            ->  c2Server1.communicate        
+            ->  internalNetwork4.communicate        
 
         | systemNetworkConfigurationDiscovery
             user info: "Adversaries will likely look for details about the network configuration and settings of systems they access or through information discovery of remote systems."
@@ -1192,7 +1120,7 @@ category Software {
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             ->  user1.userCredentials           
 
-        | attemptAntivirusCheck // add entry point
+        | attemptAntivirusCheck @hidden
             ->  antivirusCheck    
 
         & antivirusCheck
@@ -1204,10 +1132,10 @@ category Software {
         & scripting
             user info: "Adversaries may use scripts to aid in operations and perform multiple actions that would otherwise be manual."
             ->  _automatedCollection,
-                browser1.spearphishingAttachment, // scripts can be embedded inside Office documents as macros that can be set to execute when files used in Spearphishing Attachment
-                service4.exploitationForClientExecution, // malicious embedded macros are an alternative means of execution than software exploitation through Exploitation for Client Execution
+                browser1.spearphishingAttachment, 
+                service4.exploitationForClientExecution,
                 windows5.virtualizationOrSandboxEvasion,
-                windows5.templateInjection // leads to Template Injection attack
+                windows5.templateInjection
 
         | sSHCredentialInterception
 
@@ -1216,8 +1144,8 @@ category Software {
 
         & uncommonlyUsedPortsConnection
             user info: "Adversaries may conduct C2 communications over a non-standard port to bypass proxies and firewalls that have been improperly configured."
-            ->  c2Server1.c2Connected,
-                firewall1._bypassFirewall,
+            ->  firewall1._bypassFirewall,
+                internalNetwork4.c2Connected,
                 internalNetwork4.bypassProxies 
 
         | _validAccounts @hidden
@@ -1233,7 +1161,7 @@ category Software {
                 bypassProcessWhitelisting,
                 bypassSystemAccessControls,
                 bypassAntivirus,
-                graphicalUserInterface // 2015 Ukraine power grid attack  
+                graphicalUserInterface 
 
         | _credentialsInRegistry @hidden
             ->  credentialsInRegistry
@@ -1252,7 +1180,6 @@ category Software {
         
         & diskStructureWipe
             user info: "Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources."
-            ->  systemShutdownOrReboot
 
         & userDiskWiped
             user info: "Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
@@ -1298,7 +1225,7 @@ category Software {
 
         | dataSizedTransfer
             user info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
-            ->  c2Server1.dataExfiltrated  
+            ->  internalNetwork4.dataExfiltration
 
         | dataStaged
             user info: "Collected data is staged in a central location or directory prior to Exfiltration. Data may be kept in separate files or combined into one file through techniques such as Data Compressed or Data Encrypted."
@@ -1370,7 +1297,7 @@ category Software {
                 sensitiveDataCollected
 
         | exfiltrationOverC2
-            ->  c2Server1.dataExfiltrated
+            ->  internalNetwork4.dataExfiltration
 
         | automatedExfiltration
             ->  exfiltrationOverAternativeProtocol,
@@ -1385,11 +1312,11 @@ category Software {
 
         | persistance
 
-        # antivirus [Bernoulli(0.53)]
+        # antivirus
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797
-                                                              https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460
-                                                              https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
+                                                               https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460
+                                                               https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             ->  antivirusCheck,
                 obfuscatedFilesOrInformation,
                 browser1.spearphishingAttachment,
@@ -1581,6 +1508,65 @@ category Software {
                 externalNetwork5.exploitPublicFacingApplication
     }
     
+    asset SysAdmin {
+        | systemRights
+            user info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows3._appCertDLLs,
+                windows3._bITSJobs,
+                windows3.changeDefaultFileAssociation,
+                windows3._componentObjectModelAndDistributedCOM,
+                windows3.controlPanelItems,
+                windows3.distributedComponentObjectModel,
+                windows3._dLLSearchOrderHijacking,
+                windows3.executionThroughAPI,
+                windows3.extraWindowMemoryInjection,
+                windows3.hooking,
+                windows3.hypervisor,
+                windows3.imageFileExecutionOptionsInjection,
+                windows3.lSASS_Driver,
+                windows3.manInTheBrowser,
+                windows3.modifyExistingService,
+                windows3.modifyRegistry,
+                windows3.netshHelperDLL,
+                windows3.passwordFilterDLL,
+                windows3.pathInterception,
+                windows3.portMonitors,
+                windows3.processDoppelganging,
+                windows3.serverSoftwareComponent,
+                windows3.serviceExecution,
+                windows3.serviceRegistryPermissionsWeakness,
+                windows3.sIDHistoryInjection,
+                windows3.sIPAndTrustProviderHijacking,
+                windows3.systemServiceDiscovery,
+                windows3.systemServiceStop,
+                windows3.timeProviders,
+                windows3.timestomp,
+                windows3.windowsManagementInstrumentationEventSubscription,
+                windows3.winlogonHelperDLL,
+                os3.accountAccessRemoval,
+                os3._credentialDumping,
+                os3._credentialsInFiles,
+                os3.fileAndDirectoryDiscovery,
+                os3.fileAndDirectoryPermissionsModification,
+                os3.firmwareCorruption,
+                os3.graphicalUserInterface,
+                os3.inhibitSystemRecovery,
+                os3.inputCapture,
+                os3.networkSniffing,
+                os3.redundantAccess,
+                os3.rootkit,
+                os3.runtimeDataManipulation,
+                os3.systemDataDestruction,
+                os3.systemDataEncryptedForImpact,
+                os3.systemShutdownOrReboot,
+                os3.storedDataManipulation,
+                os3.twoFactorAuthenticationInterception,
+                thirdpartySoftware2._useThirdpartySoftware
+
+        | systemCredentials
+            ->  systemRights
+    }
+    
     asset Windows extends OS {   
         & accountManipulation
             user info: "Account manipulation may aid adversaries in maintaining access to credentials and certain permission levels within an environment." 
@@ -1744,7 +1730,7 @@ category Software {
                 persistence,
                 service5._exploitationForPrivilegeEscalation
 
-        | attemptIndicatorBlocking // add entry point
+        | attemptIndicatorBlocking @hidden
             ->  indicatorBlocking
 
         & indicatorBlocking
@@ -1764,7 +1750,7 @@ category Software {
         & inputPrompt
             user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
             ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
-                _powerShell, // leads to PowerShell attack
+                attemptPowerShell, // leads to PowerShell attack
                 windowsUser.userCredentials       
 
         & installUtil
@@ -1820,7 +1806,7 @@ category Software {
             ->  service5._exploitationForPrivilegeEscalation, // an adversary may also use a service to escalate privileges from administrator to SYSTEM
                 masquerading // benign software with Masquerading
 
-        | attemptNtfsFileAttributes // add entry point
+        | attemptNtfsFileAttributes @hidden
             ->  ntfsFileAttributes
 
         & ntfsFileAttributes
@@ -1842,7 +1828,7 @@ category Software {
             user info: "This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash."
             ->  internalNetworkWindows.remoteSystemsConnection // PtH may be used to perform actions on local or remote systems
 
-        | attemptPassTheTicket // add entry point
+        | attemptPassTheTicket @hidden
             ->  passTheTicket
 
         & passTheTicket
@@ -1866,7 +1852,7 @@ category Software {
             user info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
             ->  executeCode
 
-        & _powerShell
+        | attemptPowerShell @hidden
             user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  powerShell,
                 windowsRemoteManagement, // call with the winrm
@@ -1876,10 +1862,8 @@ category Software {
         & powerShell
             user info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
             ->  internalNetworkWindows.remoteSystemsConnection,
-                bankRobbery, // 2016 bank robbery
+                externalNetworkWindows.attemptTransmittedDataManipulation,
                 persistence
-
-        | bankRobbery // 2016 bank robbery
 
         & _powerShellProfile @hidden
             user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
@@ -1985,7 +1969,7 @@ category Software {
             user info: "When the service starts or is restarted, then the adversary-controlled program will execute, allowing the adversary to gain persistence and/or privilege escalation to the account context the service is set to execute."
             ->  service5._exploitationForPrivilegeEscalation
 
-        | attemptSharedWebroot // add entry point
+        | attemptSharedWebroot @hidden
             ->  sharedWebroot
 
         & sharedWebroot
@@ -2027,7 +2011,7 @@ category Software {
                 bypassProcessWhitelisting,
                 bypassUserModeSignatureValidation 
 
-        | attemptSoftwarePacking // add entry point
+        | attemptSoftwarePacking @hidden
             ->  softwarePacking
 
         & softwarePacking
@@ -2067,6 +2051,9 @@ category Software {
             user info: "An adversary can place an executable in a higher level directory of the path, and Windows will resolve that executable instead of the intended executable."
             ->  executeCode   
 
+        | attemptUserServiceStop @hidden
+            ->  userServiceStop
+
         & userServiceStop
             user info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
             ->  userDataDestruction,
@@ -2076,20 +2063,20 @@ category Software {
             ->  adminDataDestruction,
                 adminDataEncryptedForImpact
 
+        & systemServiceStop
+            ->  systemDataDestruction,
+                systemDataEncryptedForImpact
+
         & scheduledTask
             user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
             //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
 
-        | attemptSystemTimeDiscovery // add entry point
+        | attemptSystemTimeDiscovery @hidden
             ->  systemTimeDiscovery
 
         & systemTimeDiscovery
             user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
             ->  scheduledTask         
-
-        & systemServiceStop
-            ->  systemDataDestruction,
-                systemDataEncryptedForImpact
 
         & windowsAdminShares
             ->  networkShareConnectionRemoval, // leads to Network Share Connection Removal attack
@@ -2117,7 +2104,7 @@ category Software {
         | commandExecution
             ->  computerWindows.infectedWindowsComputer
 
-        | attemptRegistryKeysEnabled // add entry point
+        | attemptRegistryKeysEnabled @hidden
             ->  registryKeysEnabled
 
         & registryKeysEnabled
@@ -2148,12 +2135,15 @@ category Software {
                 adminAccessTokenManipulation,
                 windowsAdmin.adminRights   
 
-        | attemptSystemFirmware
+        | attemptSystemFirmware @hidden
             ->  systemFirmware
         
         & systemFirmware
             user info: "System firmware may be modified by an adversary to perform or assist in malicious activity."
-            ->  service5.electricitySupplyShutdown // 2015 Ukraine power grid attack
+            ->  systemShutdownOrReboot
+
+        | systemShutdownOrReboot
+            user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."  
 
         | timestomp
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
@@ -2400,7 +2390,7 @@ category Software {
                 installUtil,
                 lLMNR_NBT_NS_PoisoningAndRelay,
                 officeApplicationStartup,
-                _powerShell,
+                powerShell,
                 registryKeysEnabled,
                 regsvcsOrRegasm,
                 remoteDesktopProtocol,
@@ -2871,9 +2861,9 @@ category Network {
                 externalNetwork2.bypassNetworkIntrusionDetection
 
         & dataExfiltration
-            ->  externalNetwork2.dataExfiltrated
+            ->  externalNetwork2.dataExfiltration
 
-        | attemptDefacement // add entry point
+        | attemptDefacement @hidden
             ->  defacement
 
         & defacement
@@ -2891,14 +2881,11 @@ category Network {
 
         | bypassProxies
 
-        & usertransmittedDataManipulation
+        & transmittedDataManipulation
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
-        & admintransmittedDataManipulation
-            user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. " 
-
         & c2Connexion
-            ->  c2Server3.c2Connected
+            ->  c2Connected
 
         & exchangeServerCollection
             user info: "Adversaries may leverage a user's credentials and interact directly with the Exchange server to acquire information from within a network."
@@ -2931,10 +2918,28 @@ category Network {
 
         | remoteExecution
 
+        | c2Connected 
+            ->  communicate,
+                dataObfuscation,
+                packetCapture
+
+        | communicate 
+
+        | generateDomainNames 
+
+        | _dataObfuscation @hidden
+            ->  dataObfuscation
+
+        & dataObfuscation
+            user info: "This encompasses many methods, such as adding junk data to protocol traffic, using steganography, commingling legitimate traffic with C2 communications traffic, or using a non-standard data encoding system."
+            ->  externalNetwork2.bypassNetworkIntrusionDetection,
+                bypassNetworkIntrusionDetection
+
+        | packetCapture
+
         # encryptSensitiveInformation
             user info:"https://attack.mitre.org/mitigations/M1041/"   
-            ->  usertransmittedDataManipulation,
-                admintransmittedDataManipulation,
+            ->  transmittedDataManipulation,
                 exchangeServerCollection
 
         # executionPrevention             
@@ -2967,6 +2972,7 @@ category Network {
             ->  applicationLayerConnexion,
                 c2Connexion,
                 dataExfiltration,
+                generateDomainNames,
                 browser6.spearphishingAttachment,
                 os13.commonlyUsedPortsConnection,
                 os13.connectionProxy,
@@ -2984,9 +2990,7 @@ category Network {
                 os13.standardCryptographicProtocol,
                 os13.standardNonApplicationLayerProtocol,
                 os13.uncommonlyUsedPortsConnection,
-                windows9.templateInjection,
-                c2Server3.dataExfiltrated,
-                c2Server3.generateDomainNames
+                windows9.templateInjection
 
         # networkSegmentation
             user info: "https://attack.mitre.org/mitigations/M1030/"
@@ -3034,9 +3038,9 @@ category Network {
 
         | bypassNetworkIntrusionDetection
 
-        | dataExfiltrated
+        | dataExfiltration
 
-        | attemptDefacement // add entry point
+        | attemptDefacement @hidden
             ->  defacement
 
         & defacement
@@ -3052,9 +3056,19 @@ category Network {
             user info: "Adversaries may use an existing, legitimate external Web service as a means for relaying commands to a compromised system."
             ->  os14.bypassBinaryAnalysis,
                 os14.bypassLogAnalysis,
-                internalNetwork2.bypassFirewall,
                 bypassFirewall,
-                c2Server4.c2Connected   
+                internalNetwork2.bypassFirewall,
+                internalNetwork2.c2Connected
+
+        | attemptTransmittedDataManipulation @hidden
+            ->  transmittedDataManipulation
+
+        & transmittedDataManipulation
+            user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+            
+        # encryptSensitiveInformation
+            user info:"https://attack.mitre.org/mitigations/M1041/"   
+            ->  transmittedDataManipulation
 
         # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
             user info: "https://attack.mitre.org/mitigations/M1037/"   
@@ -3068,8 +3082,8 @@ category Network {
             user info: "https://attack.mitre.org/mitigations/M1031/"
             ->  webService,
                 browser7.spearphishingAttachment,
-                c2Server4.dataObfuscation,
-                c2Server4.generateDomainNames,
+                internalNetwork2.dataObfuscation,
+                internalNetwork2.generateDomainNames,
                 os14.commonlyUsedPortsConnection,
                 os14.uncommonlyUsedPortsConnection,
                 os14.connectionProxy,
@@ -3123,13 +3137,13 @@ category Network {
 
         # limitAccessToResourceOverNetwork
             user info: "https://attack.mitre.org/mitigations/M1035/"   
-            ->  service13.externalRemoteServices // 2015 Ukriane power grid attack, 2016 bank robbery
+            ->  service13.externalRemoteServices
 
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  os17.commonlyUsedPortsConnection,
                 os17.uncommonlyUsedPortsConnection,
-                service13.externalRemoteServices, // 2016 bank robbery
+                service13.externalRemoteServices,
                 windows12.distributedComponentObjectModel,
                 windows12.remoteDesktopProtocol,
                 windows12.windowsRemoteManagement,
@@ -3144,11 +3158,10 @@ category Hardware {
                 internalNetwork6.applicationLayerConnexion,
                 os5.commonlyUsedPortsConnection,
                 os5.uncommonlyUsedPortsConnection,
-                os5.fileDeletion, // 2015 Ukraine power grid
-                windows8.accountManipulation, // 2016 bank robbery
-                windows8.bankRobbery, // 2016 bank robbery
-                //windows8.powerShell, // 2016 bank robbery
-                service12.attemptExternalRemoteServices, // 2015 Ukraine power grid
+                os5.fileDeletion,
+                windows8.attemptPowerShell,
+                windows8.accountManipulation,
+                service12.attemptExternalRemoteServices,
                 removableMedia1.dataFromRemovableMedia
 
         | infectedWindowsComputer
@@ -3161,7 +3174,7 @@ category Hardware {
         | unresponsive
 
         | exfiltrationOverPhysicalMedium
-            ->  removableMedia1.dataExfiltrated
+            ->  removableMedia1.dataExfiltration
 
         E microphoneExists
             <-  microphone
@@ -3185,47 +3198,15 @@ category Hardware {
             ->  os5.dataCollected
     }
 
-    asset C2Server extends Computer {
-        | c2Connected 
-            ->  communicate,
-                dataObfuscation,
-                packetCapture
-
-        | communicate 
-
-        & dataExfiltrated
-
-        | generateDomainNames 
-
-        | _dataObfuscation @hidden
-            ->  dataObfuscation
-
-        & dataObfuscation
-            user info: "This encompasses many methods, such as adding junk data to protocol traffic, using steganography, commingling legitimate traffic with C2 communications traffic, or using a non-standard data encoding system."
-            ->  externalNetwork3.bypassNetworkIntrusionDetection,
-                internalNetwork3.bypassNetworkIntrusionDetection,
-                bypassNetworkIntrusionDetection
-
-        | packetCapture
-
-        | bypassNetworkIntrusionDetection
-    }
-
     asset HardwareAddition extends Computer {
         & hardwareAdditions
             user info: "Computer accessories, computers, or networking hardware may be introduced into a system as a vector to gain execution." 
             ->  os18.executeCode  
     }
 
-    asset NTFSPartition extends Computer {
-        E ntfsPartitionExists
-            <-  ntfsPartition2
-            ->  windows13.ntfsFileAttributes
-    } 
-    
     asset PeripheralDevice {
 
-    } 
+    }
 
     asset Webcam extends PeripheralDevice {
         | _collectVideo @hidden
@@ -3238,7 +3219,7 @@ category Hardware {
 
         | infectedMedia
 
-        | dataExfiltrated
+        | dataExfiltration
     }
     
     asset Microphone extends PeripheralDevice {
@@ -3248,80 +3229,68 @@ category Hardware {
 }
 
 associations {    
-
-    User [user1] * <--Use--> * [os] OS
-    User [windowsUser] * <--Use--> * [windows] Windows
-    User [linuxUser] * <--Use--> * [linux] Linux   
-    User [macOSUser] * <--Use--> * [macOS] MacOS
+//main asset associations
     User [user2] * <--Use--> * [computer] Computer
-    User [user3] * <--Access--> * [service] Service
-    User [user4] * <--Access--> * [thirdpartySoftware] ThirdpartySoftware
-    User [user5] * <--Use--> * [browser] Browser
-    User [user6] * <--Use--> * [internalNetwork] InternalNetwork
-    User [user7] * <--Use--> * [externalNetwork] ExternalNetwork
-    User [user8] * <--Use--> * [removableMedia] RemovableMedia
-
-    RemoteDesktopUser [windowsRemoteDestopUser] * <--Use--> * [windows1] Windows
-
+    Computer [computerPeripheral] * <--Serve--> * [reripheralDevice] PeripheralDevice
     Administrator [administrator1] * <--Manage--> * [user9] User
-    Administrator [administrator2] * <--Use--> * [os1] OS
-    Administrator [windowsAdministrator] * <--Use--> * [windows2] Windows
-    Administrator [linuxAdministrator] * <--Use--> * [linux1] Linux
-    Administrator [macosAdministrator] * <--Use--> * [macOS1] MacOS
-    //Administrator [administrator3] * <--Use--> * [computer1] Computer
-    Administrator [administrator4] * <--Access--> * [service1] Service
-    Administrator [administrator5] * <--Access--> * [thirdpartySoftware1] ThirdpartySoftware
-    
-    WindowsAdmin [windowsAdmin] * <--Use--> * [windowsWindowsAdmin] Windows
+    OS [os5] * <--Operate--> * [computer4] Computer
+    OS [os10] * <--Run--> * [service4] Service
+    Browser [browser4] * <--Access--> * [service3] Service
+    SysAdmin [systemWindows] * <--Operate--> * [windows3] Windows
+    Firewall [firewall7] 0..1 <--Protect--> * [computer12] Computer
+    InternalNetwork [internalNetwork11] * <--Protect--> 0..1 [firewall6] Firewall
+    ExternalNetwork [externalNetwork8] * <--Protect--> 0..1 [firewall7] Firewall
 
-    //Root [root] * <--Use--> * [os2] OS
+//other associations used for connecting attack steps
+    User [user1] * <--Operate--> * [os] OS
+    User [windowsUser] * <--Operate--> * [windows] Windows
+    User [linuxUser] * <--Operate--> * [linux] Linux   
+    User [macOSUser] * <--Operate--> * [macOS] MacOS
+    User [user3] * <--Run--> * [service] Service
+    User [user4] * <--Run--> * [thirdpartySoftware] ThirdpartySoftware
+    User [user5] * <--Access--> * [browser] Browser
+    User [user6] * <--Communicate--> * [internalNetwork] InternalNetwork
+    User [user7] * <--Communicate--> * [externalNetwork] ExternalNetwork
+    User [user8] * <--Use--> * [removableMedia] RemovableMedia
+    RemoteDesktopUser [windowsRemoteDestopUser] * <--Use--> * [windows1] Windows
+    Administrator [administrator2] * <--Operate--> * [os1] OS
+    Administrator [windowsAdministrator] * <--Operate--> * [windows2] Windows
+    Administrator [linuxAdministrator] * <--Operate--> * [linux1] Linux
+    Administrator [macosAdministrator] * <--Operate--> * [macOS1] MacOS
+    Administrator [administrator4] * <--Run--> * [service1] Service
+    Administrator [administrator5] * <--Run--> * [thirdpartySoftware1] ThirdpartySoftware  
+    WindowsAdmin [windowsAdmin] * <--Use--> * [windowsWindowsAdmin] Windows
     Root [rootLinux] * <--Use--> * [linux2] Linux
     Root [rootMac] * <--Use--> * [macOS2] MacOS
-
-    SysAdmin [system] * <--Use--> * [os3] OS 
-    SysAdmin [systemWindows] * <--Use--> * [windows3] Windows
-    SysAdmin [system1] * <--Access--> * [service2] Service
-    SysAdmin [system2] * <--Access--> * [thirdpartySoftware2] ThirdpartySoftware
-
+    SysAdmin [system] * <--Operate--> * [os3] OS 
+    SysAdmin [system1] * <--Run--> * [service2] Service
+    SysAdmin [system2] * <--Run--> * [thirdpartySoftware2] ThirdpartySoftware
     Browser [browser1] * <--Run--> * [os4] OS
     Browser [browser2] * <--Run--> * [windows4] Windows
-    Browser [browser11] * <--Access--> 1..* [computer11] Computer  
-    Browser [browser4] * <--Access--> * [service3] Service
+    Browser [browser11] * <--Access--> * [computer11] Computer  
     Browser [browser5] * <--Access--> * [thirdpartySoftware3] ThirdpartySoftware 
     Browser [browser6] * <--Communicate--> * [internalNetwork1] InternalNetwork
-    Browser [browser7] * <--Communicate--> * [externalNetwork1] ExternalNetwork 
-    
-    OS [os5] * <--Operate--> * [computer4] Computer
-    OS [os6] * <--Control--> * [c2Server1] C2Server
+    Browser [browser7] * <--Communicate--> * [externalNetwork1] ExternalNetwork  
     OS [os7] * <--Contain--> * [windows5] Windows
     OS [os8] * <--Contain--> * [linux3] Linux  
     OS [os9] * <--Contain--> * [macOS3] MacOS
-    OS [os10] * <--Run--> * [service4] Service
     OS [os11] * <--Run--> * [thirdpartySoftware4] ThirdpartySoftware  
     OS [os12] * <--Operate--> * [removableMedia2] RemovableMedia
-
     Computer [computer7] * <--Run--> * [service12] Service 
     Windows [windows6] * <--Run--> * [service5] Service
     Linux [linux4] * <--Run--> * [service6] Service
     MacOS [macOS4] * <--Run--> * [service7] Service
-
     Service [service8] * <--Contain--> * [thirdpartySoftware5] ThirdpartySoftware
-    Service [service9] * <--Control--> * [c2Server2] C2Server
-
     InternalNetwork [internalNetwork2] * <--Communicate--> * [externalNetwork2] ExternalNetwork   
-    InternalNetwork [internalNetwork3] * <--Control--> * [c2Server3] C2Server
     InternalNetwork [internalNetwork4] * <--Communicate--> * [os13] OS
     InternalNetwork [internalNetworkWindows] * <--Communicate--> * [windows9] Windows
-    //InternalNetwork [internalNetworkLinux] * <--Communicate--> * [linuxInNet] Linux
     InternalNetwork [internalNetworkMacOS] * <--Communicate--> * [macOSInNet] MacOS 
-
     InternalNetwork [internalNetwork5] * <--Use--> * [administrator6] Administrator
     InternalNetwork [internalNetwork6] * <--Communicate--> * [computer5] Computer
     InternalNetwork [internalNetwork7] * <--Contain--> * [service10] Service
     InternalNetwork [internalNetwork8] * <--Contain--> * [thirdpartySoftware6] ThirdpartySoftware
     InternalNetwork [internalNetwork9] * <--Communicate--> * [networkSharedDrive0] NetworkSharedDrive
     InternalNetwork [internalNetwork10] * <--Communicate--> * [hardwareAddition] HardwareAddition
-    ExternalNetwork [externalNetwork3] * <--Control--> * [c2Server4] C2Server
     ExternalNetwork [externalNetwork4] * <--Communicate--> * [computer6] Computer
     ExternalNetwork [externalNetwork5] * <--Communicate--> * [os14] OS
     ExternalNetwork [externalNetworkWindows] * <--Communicate--> * [windows10] Windows
@@ -3329,23 +3298,17 @@ associations {
     ExternalNetwork [externalNetwork7] * <--Contain--> * [service11] Service
     NetworkSharedDrive [networkSharedDrive1] * <--Communicate--> * [os15] OS
     NetworkSharedDrive [networkSharedDrive2] * <--Communicate--> * [windows11] Windows
-    OtherNetworkMedium [otherNetworkMedium] * <--Communicate--> * [os16] OS
-    
+    OtherNetworkMedium [otherNetworkMedium] * <--Communicate--> * [os16] OS   
     Firewall [firewall1] 0..1 <--Protect--> * [os17] OS
     Firewall [firewall2] 0..1 <--Protect--> * [windows12] Windows
     Firewall [firewall3] 0..1 <--Protect--> * [linux6] Linux
     Firewall [firewall4] 0..1 <--Protect--> * [macOS7] MacOS
     Firewall [firewall5] 0..1 <--Protect--> * [thirdpartySoftware7] ThirdpartySoftware 
     Firewall [firewall6] 0..1 <--Protect--> * [service13] Service
-    InternalNetwork [internalNetwork11] * <--Protect--> 0..1 [firewall6] Firewall
-    //ExternalNetwork [externalNetwork8] * <--Protect--> 0..1 [firewall7] Firewall
-
     Computer [computer2] * <--Serve--> * [removableMedia1] RemovableMedia  
     Computer [computerWindows] * <--Operate--> * [windows8] Windows
     Computer [computer8] * <--Serve--> * [microphone] Microphone
     VideoCallApplication [videoCallApplication] * <--Serve--> * [computer9] Computer
     Webcam [webcam] * <--Serve--> * [computer10] Computer
-    NTFSPartition [ntfsPartition1] * <--Operate--> * [windows13] Windows
-    NTFSPartition [ntfsPartition2] * <--Operate--> * [windowsComputer] Computer
     HardwareAddition [hardwareAddition] * <--Operate--> * [os18] OS
 }
