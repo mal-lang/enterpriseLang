@@ -1,0 +1,3303 @@
+// enterpriseLang
+// Authors: Wenjun Xiong (wenjx@kth.se), Emeline Legrand, Oscar Åberg
+// Probability distributions: Lina Evensjö 
+
+#id: "org.mal_lang.attacklang"
+#version: "1.0.0"
+
+category Person {
+    asset User {
+        | userRights
+            ->  os.accountAccessRemoval,
+                os.accountDiscovery,
+                os.applicationWindowDiscovery,
+                os._automatedCollection,
+                os.bruteForce,
+                os.compileAfterDelivery,
+                os._credentialsInFiles,
+                os._credentialsInRegistry,
+                os._dataEncoding,
+                os.domainDiscovery,
+                os.domainGenerationAlgorithms,
+                os.executionGuardrails,
+                os.fileDeletion,
+                os.fileAndDirectoryDiscovery,
+                os.fileAndDirectoryPermissionsModification,
+                os.graphicalUserInterface,
+                os.hiddenFilesAndDirectories,
+                os.inhibitSystemRecovery,
+                os.internalSpearphishing,
+                os.installRootCertificate,
+                os.passwordPolicyDiscovery,
+                os.permissionGroupsDiscovery,
+                os.privateKeys,
+                os.processInjection,
+                os.runningProcessDiscovery,
+                os.runtimeDataManipulation,
+                os.redundantAccess,
+                os.remoteSystemDiscovery,
+                os.resourceHijacking,
+                os.rootkit,
+                os.scripting,
+                os.softwareDiscovery,
+                os.systemInformationDiscovery,
+                os.systemNetworkConfigurationDiscovery,
+                os.systemNetworkConnectionsDiscovery,
+                os.systemOwnerOrUserDiscovery,
+                os.systemShutdownOrReboot,
+                os.storedDataManipulation,
+                os.remoteFileCopy, 
+                os.userCommandLineInterface,
+                os.userDataDestruction, 
+                os.userDataEncryptedForImpact,
+                os.userDiskWiped,
+                windows.accountManipulation,
+                windows._bITSJobs,
+                windows.bypassUserAccountControl,
+                windows.changeDefaultFileAssociation,
+                windows.cmstp,
+                windows.compiledHTMLFile,
+                windows._componentObjectModelAndDistributedCOM,
+                windows.componentObjectModelHijacking,
+                windows.controlPanelItems,
+                windows.deobfuscateOrDecodeFilesOrInformation,
+                windows._dLLSearchOrderHijacking,
+                windows.domainTrustDiscovery,
+                windows.dynamicDataExchange,  
+                windows.emailStorageCollection,
+                windows.executeMshta,
+                windows.executionThroughAPI,
+                windows.executionThroughModuleLoad,
+                windows._fileSystemPermissionsWeakness,
+                windows.forcedAuthentication,
+                windows.groupPolicyModification,
+                windows.indirectCommandExecution,
+                windows.inputPrompt,
+                windows.installUtil,
+                windows.kerberoasting,
+                windows.lLMNR_NBT_NS_PoisoningAndRelay,
+                windows.logonScripts,
+                windows.modifyRegistry,
+                windows.networkShareConnectionRemoval,
+                windows.networkShareDiscovery,
+                windows.officeApplicationStartup,
+                windows.parentPIDSpoofing,
+                windows.pathInterception,
+                windows.peripheralDeviceDiscovery,
+                windows.powerShell,
+                windows.powerShellProfile,
+                windows.processDoppelganging,
+                windows.processHollowing,
+                windows.registryRunKeysOrStartupFolder,
+                windows.regsvcsOrRegasm,
+                windows.regsvr32,
+                windows.rundll32,
+                windows.screensaver,
+                windows.shortcutModification,
+                windows.signedBinaryProxyExecution,
+                windows.signedScriptProxyExecution,
+                windows.sIPAndTrustProviderHijacking,
+                windows.systemServiceDiscovery,
+                windows._taintSharedContent,
+                windows.templateInjection,
+                windows.timestomp,
+                windows.trustedDeveloperUtilities,
+                windows.userAccessTokenManipulation,
+                windows.userSecuritySoftwareDiscovery,
+                windows.userServiceStop,
+                windows.videoCapture,
+                windows.windowsManagementInstrumentation,
+                windows.windowsRemoteManagement,
+                windows.xslScriptProcessing,
+                linux._bash_profileAndBashrc,
+                linux._clearCommandHistory,
+                linux.hISTCONTROL,
+                linux.localJobScheduling,
+                linux.portKnocking,
+                linux.setuidAndSetgid,
+                linux.spaceAfterFileName,
+                linux.source,
+                linux.sshHijacking,
+                linux._sudo,
+                linux._sudoCaching,
+                linux._systemdService,
+                linux.timestomp,
+                linux.trap,
+                macOS.appleScript,
+                macOS._bash_profileAndBashrc,
+                macOS._clearCommandHistory,
+                macOS._dylibHijacking,
+                macOS.elevatedExecutionWithPrompt,
+                macOS.gatekeeperBypass,
+                macOS.hiddenWindow,
+                macOS.hISTCONTROL,
+                macOS.inputPrompt,
+                macOS.launchAgent,
+                macOS.launchctl,
+                macOS.lC_LOAD_DYLIB_Addition,
+                macOS.lC_MAINHijacking,
+                macOS.localJobScheduling,
+                macOS.loginItem,
+                macOS.logonScripts,
+                macOS.plistModification,
+                macOS.portKnocking,
+                macOS.spaceAfterFileName,
+                macOS.networkShareDiscovery,
+                macOS.userSecuritySoftwareDiscovery,
+                macOS.videoCapture,
+                macOS.reopenedApplications,
+                macOS.setuidAndSetgid,
+                macOS.source,
+                macOS.sshHijacking,
+                macOS._sudo,
+                macOS._sudoCaching,
+                macOS.trap,
+                computer.collectAudio,
+                service._exploitationForCredentialAccess,
+                service._exploitationForDefenseEvasion,
+                service._exploitationForPrivilegeEscalation,
+                service._exploitationOfRemoteServices,
+                service.externalRemoteServices,
+                service.remoteAccessTools,
+                thirdpartySoftware.stealApplicationAccessToken,
+                thirdpartySoftware._useThirdpartySoftware,
+                browser.credentialsFromWebBrowsers,
+                browser.driveByCompromise,
+                browser.installExtensions,
+                browser.stealWebSessionCookie,
+                internalNetwork.transmittedDataManipulation,
+                externalNetwork.transmittedDataManipulation,
+                externalNetwork.webService
+
+        | userCredentials
+            ->  userRights,
+                os._validAccounts,  
+                windows.outlookEmailCollection,
+                internalNetwork.bypassAccessControl,
+                internalNetwork.exchangeServerCollection,
+                service.userRemoteServicesLogin
+
+        | userInformation    
+
+        & spearphishingLinkClicked
+            ->  attemptUserExecution,
+                thirdpartySoftware.applicationAccessToken
+
+        & spearphishingAttachmentDownload
+            ->  attemptUserExecution
+
+        | attemptUserExecution @hidden
+            ->  userExecution
+
+        & userExecution
+            ->  computer.infectedComputer,
+                computer.infectedWindowsComputer,
+                os.scripting
+
+        | mediaInserted
+            ->  _mediaInserted
+
+        & _mediaInserted @hidden
+            ->  removableMedia.dataExfiltration   
+
+        # userAccountManagement  
+            user info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  os.disablingSecurityTools,
+                windows.adminServiceStop,
+                windows._bITSJobs,
+                windows.fileSystemPermissionsWeakness,
+                windows.indicatorBlocking,
+                windows.manInTheBrowser,
+                windows.modifyExistingService,
+                windows.newService,
+                windows.passTheHash,
+                windows.passTheTicket,
+                windows.pathInterception,
+                windows.remoteDesktopProtocol,
+                windows.sharedWebroot,
+                windows.shortcutModification,
+                windows.userServiceStop,
+                windows.windowsManagementInstrumentation,
+                windows.windowsManagementInstrumentationEventSubscription,
+                windows.winlogonHelperDLL,
+                linux.localJobScheduling,
+                linux.systemdService,
+                macOS._dylibHijacking,
+                macOS.launchAgent,
+                macOS.launchctl,
+                macOS.launchDaemon,
+                macOS.localJobScheduling,
+                macOS.loginItem,
+                macOS.rc_common,
+                macOS._startupItems,
+                service.userRemoteServicesLogin,
+                service.adminRemoteServicesLogin,
+                thirdpartySoftware.stealApplicationAccessToken,
+                thirdpartySoftware._useThirdpartySoftware  
+
+        # userTraining 
+            user info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  browser.stealWebSessionCookie,      
+                spearphishingAttachmentDownload, 
+                spearphishingLinkClicked, 
+                userExecution,
+                _mediaInserted,
+                os._credentialDumping,
+                os.credentialsInFiles,
+                os.twoFactorAuthenticationInterception, // remove smart cards when not in use
+                windows.inputPrompt,
+                windows.manInTheBrowser,
+                windows.templateInjection,
+                macOS.inputPrompt, 
+                macOS.loginItem,
+                macOS.reopenedApplications, 
+                browser.browserExtensions,
+                service.spearphishingViaService,
+                thirdpartySoftware.useThirdpartySoftware,
+                thirdpartySoftware.stealApplicationAccessToken       
+    }
+
+    asset RemoteDesktopUser extends User {
+        | userRights
+            +>  windows1.remoteDesktopProtocol
+
+        # multiFactorAuthentication
+            ->  windows1.remoteDesktopProtocol
+    }     
+
+    asset Administrator {
+        | adminRights
+            user info: "Administrator is an actual account."
+            ->  user9.userRights,
+                createUserAccount, 
+                os1.accountAccessRemoval,   
+                os1._automatedCollection,
+                os1.adminCommandLineInterface,
+                os1.adminDataDestruction,
+                os1.adminDataEncryptedForImpact,
+                os1.adminDiskWiped,
+                os1._credentialDumping,
+                os1._credentialsInFiles,
+                os1._credentialsInRegistry,
+                os1.detailedRunningProcessDiscovery,
+                os1.detailedRemoteSystemDiscovery,
+                os1.diskStructureWipe,
+                os1.fileAndDirectoryDiscovery,
+                os1.fileAndDirectoryPermissionsModification,
+                os1.firmwareCorruption, 
+                os1.graphicalUserInterface,  
+                os1.inhibitSystemRecovery, 
+                os1.inputCapture,
+                os1.installRootCertificate,            
+                os1.networkServiceScan,
+                os1.networkSniffing,
+                os1.redundantAccess,
+                os1.resourceHijacking,
+                os1.runtimeDataManipulation,
+                os1.softwareDiscovery,
+                os1.storedDataManipulation,
+                os1.systemNetworkConnectionsDiscovery,
+                os1.systemOwnerOrUserDiscovery,
+                os1.systemShutdownOrReboot,
+                os1.twoFactorAuthenticationInterception,
+                service1.transmittedDataManipulation,
+                service1.applicationDeploymentSystems,
+                thirdpartySoftware1._useThirdpartySoftware,
+                internalNetwork5.transmittedDataManipulation,
+                internalNetwork5.bypassAccessControl,
+                externalNetwork6.transmittedDataManipulation
+             
+        | adminCredentials
+            ->  adminRights,
+                os1._validAccounts,
+                service1.adminRemoteServicesLogin,
+                internalNetwork5.bypassAccessControl
+            
+        & createUserAccount 
+            ->  os1.persistence          
+        
+        # multiFactorAuthentication
+            user info: "https://attack.mitre.org/mitigations/M1032/"
+            ->  createUserAccount
+
+        # privilegedAccountManagement
+            user info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  createUserAccount,
+                os1._credentialDumping,
+                os1.firmwareCorruption,
+                windows2.accountManipulation,
+                windows2.modifyRegistry,
+                windows2.passTheTicket,
+                windows2.powerShell,
+                windows2.remoteDesktopProtocol,
+                windows2.serviceExecution,
+                windows2.serverSoftwareComponent,
+                windows2.signedBinaryProxyExecution, 
+                windows2.sharedWebroot,  
+                windows2.systemFirmware,
+                windows2.userAccessTokenManipulation,
+                windows2.adminAccessTokenManipulation,
+                windows2.windowsAdminShares,
+                windows2.windowsManagementInstrumentation,
+                windows2.windowsManagementInstrumentationEventSubscription,
+                windows2.windowsRemoteManagement,
+                linux1.kernelModulesAndExtensions,
+                linux1.serverSoftwareComponent,
+                linux1.sudo,
+                linux1.sudoCaching,
+                linux1.systemdService,
+                macOS1.kernelModulesAndExtensions,
+                macOS1.lC_MAINHijacking,
+                macOS1.sudo,
+                macOS1.sudoCaching,
+                service1.applicationDeploymentSystems,
+                service1._exploitationOfRemoteServices,
+                thirdpartySoftware1._useThirdpartySoftware, // grant access to application deployment systems only to a limited number of authorized administrators
+                internalNetwork5.exploitPublicFacingApplication,
+                externalNetwork6.exploitPublicFacingApplication // try (internalNetwork /\ externalNetwork).exploitPublicFacingApplication with higher version of MAL compiler
+    }
+   
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            user info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.accessibilityFeatures,
+                windowsWindowsAdmin.adminAccessTokenManipulation,
+                windowsWindowsAdmin.adminSecuritySoftwareDiscovery,
+                windowsWindowsAdmin.adminServiceStop,
+                windowsWindowsAdmin._appCertDLLs,
+                windowsWindowsAdmin.appInitDLLs,
+                windowsWindowsAdmin._applicationShimming,
+                windowsWindowsAdmin.authenticationPackage,
+                windowsWindowsAdmin._bITSJobs,
+                windowsWindowsAdmin.bootkit,                                          
+                windowsWindowsAdmin.bypassUserAccountControl,
+                windowsWindowsAdmin.changeDefaultFileAssociation,
+                windowsWindowsAdmin.componentObjectModelAndDistributedCOM,
+                windowsWindowsAdmin.controlPanelItems,
+                windowsWindowsAdmin.dCShadow,
+                windowsWindowsAdmin.distributedComponentObjectModel,
+                windowsWindowsAdmin._dLLSearchOrderHijacking,
+                windowsWindowsAdmin.executionThroughAPI,
+                windowsWindowsAdmin.extraWindowMemoryInjection,
+                windowsWindowsAdmin.fileSystemLogicalOffsets,
+                windowsWindowsAdmin._fileSystemPermissionsWeakness,
+                windowsWindowsAdmin.groupPolicyModification,
+                windowsWindowsAdmin.hooking,
+                windowsWindowsAdmin.hypervisor,
+                windowsWindowsAdmin.imageFileExecutionOptionsInjection,
+                windowsWindowsAdmin.lSASS_Driver,
+                windowsWindowsAdmin.manInTheBrowser,
+                windowsWindowsAdmin.modifyExistingService,
+                windowsWindowsAdmin.modifyRegistry,
+                windowsWindowsAdmin.netshHelperDLL,
+                windowsWindowsAdmin.networkShareConnectionRemoval,
+                windowsWindowsAdmin.newService,
+                windowsWindowsAdmin.officeApplicationStartup,
+                windowsWindowsAdmin.parentPIDSpoofing,
+                windowsWindowsAdmin.passwordFilterDLL,
+                windowsWindowsAdmin.pathInterception,
+                windowsWindowsAdmin.portMonitors,
+                windowsWindowsAdmin.powerShell,
+                windowsWindowsAdmin.powerShellProfile,
+                windowsWindowsAdmin.processDoppelganging,
+                windowsWindowsAdmin.queryRegistery,
+                windowsWindowsAdmin.registryRunKeysOrStartupFolder,
+                windowsWindowsAdmin.regsvcsOrRegasm,
+                windowsWindowsAdmin.regsvr32,
+                windowsWindowsAdmin.securitySupportProvider,
+                windowsWindowsAdmin.serverSoftwareComponent,
+                windowsWindowsAdmin.serviceExecution,
+                windowsWindowsAdmin.serviceRegistryPermissionsWeakness,
+                windowsWindowsAdmin.shortcutModification,
+                windowsWindowsAdmin.sIDHistoryInjection,
+                windowsWindowsAdmin.scheduledTask,
+                windowsWindowsAdmin.systemFirmware,
+                windowsWindowsAdmin.systemServiceDiscovery,
+                windowsWindowsAdmin.timeProviders,
+                windowsWindowsAdmin.timestomp,
+                windowsWindowsAdmin.windowsAdminShares,
+                windowsWindowsAdmin.windowsManagementInstrumentation,
+                windowsWindowsAdmin.windowsManagementInstrumentationEventSubscription,
+                windowsWindowsAdmin.windowsRemoteManagement,
+                windowsWindowsAdmin.winlogonHelperDLL
+
+        | adminCredentials
+
+        | bypassWindowsUserAccountControl
+
+        # multiFactorAuthentication
+            +>  windowsWindowsAdmin.accountManipulation       
+    }
+    
+    asset Root extends Administrator {
+        | adminRights
+            user info: "Unix Root account is equivalent to WindowsAdmin account."
+            +>  linux2.kernelModulesAndExtensions,
+                linux2.serverSoftwareComponent,
+                linux2._systemdService,
+                linux2.sshHijacking,
+                linux2.timestomp,
+                linux2.trap,
+                linux2._bash_profileAndBashrc,
+                linux2.bootkit,
+                linux2.localJobScheduling,
+                macOS2.adminSecuritySoftwareDiscovery,
+                macOS2._bash_profileAndBashrc,
+                macOS2.emond,
+                macOS2.keychainCollection,
+                macOS2.localJobScheduling,
+                macOS2.gatekeeperBypass,
+                macOS2.hiddenUsers,
+                macOS2.kernelModulesAndExtensions,
+                macOS2.launchAgent,
+                macOS2.launchctl,
+                macOS2.launchDaemon,
+                macOS2.plistModification,
+                macOS2.rc_common,
+                macOS2.securitydMemory,
+                macOS2.sshHijacking,
+                macOS2._startupItems,
+                macOS2.trap
+    }
+}
+
+category Software {
+    asset Service {
+        & applicationDeploymentSystems
+
+        | applicationVulnerability
+            user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
+            ->  internalNetwork7.exploitPublicFacingApplication,
+                externalNetwork7.exploitPublicFacingApplication
+
+        | blockUserAccess  
+
+        | serviceInformation 
+
+        & userRemoteServicesLogin
+            user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
+            ->  internalNetwork7.c2Connected 
+
+        & adminRemoteServicesLogin
+            user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
+            ->  internalNetwork7.c2Connected 
+
+        & transmittedDataManipulation
+            user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
+
+        | informationRepositories
+            ->  os10.dataCollected
+
+        | remoteAccessTools
+            ->  internalNetwork7.c2Connexion
+
+        | serviceExhaustionFlood
+
+        | attemptSpearphishingViaService @hidden
+            ->  spearphishingViaService
+
+        & spearphishingViaService
+            user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
+            ->  browser4.spearphishingAttachment, 
+                browser4.spearphishingLink
+
+        | attemptSupplyChainCompromise @hidden
+            ->  supplyChainCompromise
+
+        & supplyChainCompromise
+            user info: "Supply chain compromise is the manipulation of products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  os10.compromisedSystems
+
+        & exploitationForClientExecution
+            user info: "Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution."
+            ->  user3.attemptUserExecution            
+
+        | _exploitationForCredentialAccess @hidden
+            ->  exploitationForCredentialAccess
+
+        & exploitationForCredentialAccess
+            user info: "Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Exploitation for credential access may also result in Privilege Escalation depending on the process targeted or credentials obtained."
+            ->  os10.executeCode,
+                _exploitationForPrivilegeEscalation             
+
+        | _exploitationForDefenseEvasion @hidden
+            ->  exploitationForDefenseEvasion
+
+        & exploitationForDefenseEvasion
+            ->  os10.bypassAntivirus,
+                os10.bypassSystemAccessControls
+
+        | _exploitationForPrivilegeEscalation @hidden
+            ->  exploitationForPrivilegeEscalation
+
+        & exploitationForPrivilegeEscalation
+            user info: "This could enable someone to move from unprivileged or user level permissions to SYSTEM or root permissions depending on the component that is vulnerable."
+            ->  administrator4.adminRights,
+                system1.systemRights,
+                thirdpartySoftware5._useThirdpartySoftware
+
+        & _exploitationOfRemoteServices @hidden
+            user info: "An adversary may need to determine if the remote system is in a vulnerable state, which may be done through Network Service Scanning or other Discovery methods."
+            ->  exploitationOfRemoteServices
+
+        & exploitationOfRemoteServices
+            ->  _exploitationForPrivilegeEscalation,
+                computer7.infectedComputer
+     
+        | attemptExternalRemoteServices @hidden 
+            ->  externalRemoteServices
+
+        & externalRemoteServices
+            user info: "Adversaries may use remote services to initially access and/or persist within a network."
+            ->  internalNetwork7.persistence,
+                internalNetwork7.remoteAccess,
+                os10.validAccounts,
+                _exploitationOfRemoteServices
+
+        # applicationIsolationAndSandboxing
+            user info: "https://attack.mitre.org/mitigations/M1048/"
+            ->  exploitationForClientExecution,
+                exploitationForCredentialAccess,
+                exploitationForDefenseEvasion,
+                exploitationForPrivilegeEscalation,
+                exploitationOfRemoteServices,
+                internalNetwork7.exploitPublicFacingApplication,
+                externalNetwork7.exploitPublicFacingApplication
+
+        # applicationVetting
+            user info: "https://attack.mitre.org/mitigations/M1005/"       
+            ->  os10.obfuscatedFilesOrInformation
+
+        # encryptSensitiveInformation
+            user info: "https://attack.mitre.org/mitigations/M1041/"
+            ->  transmittedDataManipulation
+
+        # executionPrevention
+            user info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  remoteAccessTools
+
+        # threatIntelligenceProgram
+            user info: "https://attack.mitre.org/mitigations/M1019/"
+            ->  exploitationForCredentialAccess,
+                exploitationForPrivilegeEscalation,
+                exploitationOfRemoteServices  
+
+        # updateSoftware
+            user info: "https://attack.mitre.org/mitigations/M1051/"
+            ->  exploitationForDefenseEvasion,
+                exploitationForPrivilegeEscalation,
+                supplyChainCompromise,
+                internalNetwork7.remoteAccess,
+                internalNetwork7.exploitPublicFacingApplication,
+                externalNetwork7.exploitPublicFacingApplication,
+                windows6.systemFirmware,
+                windows6.dLLSideLoading          
+    }
+
+    asset ThirdpartySoftware extends Service {  
+        & applicationAccessToken
+            user info: "Adversaries may use application access tokens to bypass the typical authentication process and access restricted accounts, information, or services on remote systems. These tokens are typically stolen from users and used in lieu of login credentials."
+            ->  bypassLogonCredentials,
+                bypassMultiFactorAuthentication
+
+        | bypassLogonCredentials
+
+        | bypassMultiFactorAuthentication  
+
+        & stealApplicationAccessToken
+            user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
+            ->  browser5.spearphishingLink, //  send a link through Spearphishing Link to the target user to entice them to grant access to the application
+                applicationAccessToken
+
+        & trustedRelationship
+            user info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
+            ->  os11._validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
+
+        & _useThirdpartySoftware @hidden
+            user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
+            ->  useThirdpartySoftware
+
+        & useThirdpartySoftware
+            ->  os11.executeCode 
+    }
+
+    asset VideoCallApplication extends Service { 
+        | _collectVideo @hidden
+            ->  computer9.collectVideo
+    }
+    
+    asset Browser {
+        & driveByCompromise
+            user info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
+            ->  thirdpartySoftware3.stealApplicationAccessToken
+
+        | executionThroughMaliciousContent
+
+        & credentialsFromWebBrowsers
+            user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
+            ->  user5.userCredentials
+ 
+        | attemptSpearphishingLink @hidden      
+            ->  spearphishingLink
+
+        & spearphishingLink
+            user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
+            ->  user5.spearphishingLinkClicked
+
+        | attemptSpearhishingAttachment @hidden
+            ->  spearphishingAttachment
+
+        & spearphishingAttachment
+            user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
+            ->  user5.spearphishingAttachmentDownload,
+                windows4.controlPanelItems // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
+
+        | browserBookmark
+            ->  browserBookmarkDiscovery
+
+        | browserBookmarkDiscovery 
+            ->  user5.userInformation,
+                internalNetwork1.internalNetworkResourcesInformation
+
+        | installExtensions
+            ->  browserExtensions
+
+        & browserExtensions
+            user info: "Once the extension is installed, it can browse to websites in the background, steal all information that a user enters into a browser, to include credentials, and be used as an installer for a RAT for persistence." 
+            ->  user5.userInformation,
+                user5.userCredentials,
+                os4.persistence
+
+        | _websiteDefacement @hidden
+            user info: "This is a helper attack step that websites are a common victim of defacement. Website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise."
+            ->  driveByCompromise // Belongs to Drive-by Compromise attack
+
+        & stealWebSessionCookie
+            user info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
+            ->  webSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
+
+        | webSessionCookie
+            user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
+            ->  bypassLogonCredentials,
+                bypassMultiFactorAuthentication
+
+        | bypassLogonCredentials
+
+        | bypassMultiFactorAuthentication   
+
+        # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
+            user info: "https://attack.mitre.org/mitigations/M1021/"
+            ->  spearphishingAttachment, 
+                spearphishingLink,
+                service3.spearphishingViaService,
+                driveByCompromise,
+                os4.domainGenerationAlgorithms,
+                windows4.compiledHTMLFile,
+                externalNetwork1.webService
+    }
+
+    asset OS {   
+        | accountAccessRemoval
+            user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
+
+        | attemptApplicationDeploymentSoftware @hidden
+            ->  applicationDeploymentSoftware
+
+        & applicationDeploymentSoftware
+            user info: "Access to a network-wide or enterprise-wide software deployment system enables an adversary to have remote code execution on all systems that are connected to such a system."
+            ->  executeCode
+
+        | applicationExhaustionFlood
+            ->  service4.blockUserAccess 
+
+        | infectedOS
+            ->  clipboardData,
+                dataFromInformationRepositories,
+                computer4.infectedComputer
+
+        & clipboardData
+            ->  administrator2.adminCredentials,
+                user1.userCredentials
+
+        & accountDiscovery
+            user info: "get account names and information"
+
+        & domainDiscovery
+            user info: "get domain names and information"
+
+        | domainGenerationAlgorithms 
+            user info: "Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination for command and control traffic rather than relying on a list of static IP addresses or domains." 
+            ->  fallbackChannels, // leads to Fallback Channels attack
+                internalNetwork4.communicate,
+                internalNetwork4.generateDomainNames
+
+        | compromisedSystems // with probability
+            ->  privateKeys,
+                systemNetworkConnectionsDiscovery,
+                browser1.installExtensions,
+                removableMedia2.infectedMedia,
+                thirdpartySoftware4.trustedRelationship
+
+        & connectionProxy
+            user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
+            ->  bypassLogAnalysis,
+                internalNetwork4.c2Connected,
+                internalNetwork4.bypassFirewall,
+                externalNetwork5.bypassFirewall
+
+        | attemptBinaryPadding @hidden
+            ->  binaryPadding
+
+        & binaryPadding
+            ->  bypassSignatureBasedDetection,
+                bypassAntivirus
+
+        & applicationWindowDiscovery
+            user info: "get a listing of opened application windows"
+
+        & runningProcessDiscovery
+            user info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
+            ->  processInjection
+
+        & detailedRunningProcessDiscovery
+            user info: "Adversaries with admin rights may get better process ownership details"
+
+        | collectHashInformation
+
+        & commonlyUsedPortsConnection
+            user info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
+            ->  internalNetwork4.c2Connected,
+                internalNetwork4.bypassNetworkIntrusionDetection,
+                firewall1._bypassFirewall,
+                externalNetwork5.bypassNetworkIntrusionDetection
+
+        | compileAfterDelivery     
+            user info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
+            ->  browser1.spearphishingAttachment,
+                bypassStaticFileAnalysis,
+                bypassBinaryAnalysis,
+                bypassAntivirus,
+                bypassHostIntrusionPrevention,
+                bypassSignatureBasedDetection
+
+        & _credentialDumping @hidden
+            ->  credentialDumping,
+                systemOwnerOrUserDiscovery
+
+        & credentialDumping
+            user info: "Credential dumping is the process of obtaining account login and password information, normally in the form of a hash or a clear text password, from the operating system and software."
+            ->  collectHashInformation
+
+        | _credentialsInFiles @hidden
+            ->  credentialsInFiles
+
+        & credentialsInFiles
+            ->  user1.userCredentials,
+                administrator2.adminCredentials,
+                system.systemCredentials   
+
+        | attemptCustomCryptographicProtocol @hidden
+            ->  customCryptographicProtocol   
+
+        & customCryptographicProtocol
+            user info: "Adversaries may use a custom cryptographic protocol or algorithm to hide command and control traffic."
+            ->  internalNetwork4.c2Connected  
+
+        | attemptCustomCommandAndControlProtocol @hidden
+            ->  customCommandAndControlProtocol
+
+        & customCommandAndControlProtocol
+            user info: "Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
+            ->  internalNetwork4.c2Connected
+
+        | _dataEncoding @hidden
+            user info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
+            ->  dataEncoding
+
+        & dataEncoding
+            ->  internalNetwork4.communicate
+          
+        & disablingSecurityTools
+            user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
+            ->  bypassFileMonitoring,
+                bypassHostIntrusionPrevention,
+                bypassSignatureBasedDetection,
+                bypassLogAnalysis,
+                bypassAntivirus
+
+        | domainFronting
+            user info: "Domain fronting takes advantage of routing schemes in Content Delivery Networks (CDNs) and other services which host multiple domains to obfuscate the intended destination of HTTPS traffic or traffic tunneled through HTTPS."
+            ->  internalNetwork4.obfuscateNetworkTraffic,
+                externalNetwork5.obfuscateNetworkTraffic          
+                 
+        | executeCode 
+            ->  computer4.infectedComputer,
+                internalNetwork4.remoteAccess
+
+        | attemptEndpointDenialOfService @hidden
+            ->  endpointDenialOfService
+
+        & endpointDenialOfService
+            user info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
+            ->  applicationExhaustionFlood,
+                osExhaustionFlood,
+                windows5.attemptUserServiceStop
+
+        & executionGuardrails
+            user info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
+            ->  bypassAntivirus, 
+                bypassHostForensicAnalysis, 
+                bypassSignatureBasedDetection,  
+                bypassStaticFileAnalysis       
+
+        | attemptExfiltrationOverOtherNetworkMedium @hidden
+            ->  exfiltrationOverOtherNetworkMedium
+
+        & exfiltrationOverOtherNetworkMedium
+            user info: "Adversaries could choose to do exfiltration over a WiFi connection, modem, cellular data connection, Bluetooth, or another radio frequency (RF) channel if they have sufficient access or proximity, and the connection might not be secured or defended as well as the primary Internet-connected channel because it is not routed through the same enterprise network."     
+            ->  otherNetworkMedium.transmit
+
+        | fallbackChannels  
+            user info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
+            ->  internalNetwork4.communicate  
+
+        & firmwareCorruption
+            user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
+
+        | hiddenFilesAndDirectories
+            user info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a 'hidden' file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
+            ->  bypassHostForensicAnalysis,
+                persistence
+
+        | indicatorRemovalFromTools
+            user info: "An adversary may be able to modify the tool by removing the indicator that is no longer detected by the target's defensive systems."
+            ->  bypassHostIntrusionPrevention,
+                bypassLogAnalysis,
+                bypassAntivirus
+
+        & indicatorRemovalOnHost
+            user info: "Adversaries may delete or alter generated artifacts on a host system, including logs and potentially captured files such as quarantined malware."
+            ->  bypassHostIntrusionPrevention,
+                bypassLogAnalysis,
+                bypassAntivirus    
+
+        | inputCapture
+            user info: "Adversaries can use methods of capturing user input for obtaining credentials for Valid Accounts and information Collection that include keylogging and user input field interception."
+            ->  _validAccounts,
+                user1.userCredentials 
+
+        & installRootCertificate
+            user info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
+            ->  bypassDigitalCertificateValidation  
+
+        | internalSpearphishing
+            user info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
+            ->  browser1.spearphishingLink,
+                browser1.spearphishingAttachment,
+                inputCapture
+
+        & masquerading
+            user info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
+            ->  bypassFileOrPathWhitelisting
+
+        | attemptMultibandCommunication @hidden
+            ->  multibandCommunication
+
+        & multibandCommunication
+            user info: "Some adversaries may split communications between different protocols. There could be one protocol for inbound command and control and another for outbound data, allowing it to bypass certain firewall restrictions."
+            ->  internalNetwork4.c2Connected,
+                internalNetwork4.bypassFirewall,
+                externalNetwork5.bypassFirewall
+
+        | attemptMultiHopProxy @hidden
+            ->  multiHopProxy
+
+        & multiHopProxy
+            user info: "To disguise the source of malicious traffic, adversaries may chain together multiple proxies."
+            ->  internalNetwork4.c2Connected
+
+        | attemptMultilayerEncryption @hidden
+            ->  multilayerEncryption
+
+        & multilayerEncryption
+            user info: "An adversary performs C2 communications using multiple layers of encryption, typically (but not exclusively) tunneling a custom encryption scheme within a protocol encryption scheme such as HTTPS or SMTPS."
+            ->  internalNetwork4.c2Connected
+
+        | attemptMultiStageChannels @hidden
+            ->  multiStageChannels
+
+        & multiStageChannels
+            user info: "Adversaries may create multiple stages for command and control that are employed under different conditions or for certain functions."
+            ->  internalNetwork4.c2Connected,
+                fallbackChannels
+
+        | attemptNetworkDenialOfService @hidden
+            ->  networkDenialOfService
+
+        & networkDenialOfService
+            user info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
+            ->  applicationExhaustionFlood,
+                service4.serviceExhaustionFlood
+ 
+        & networkSniffing
+            user info: "An adversary may place a network interface into promiscuous mode to passively access data in transit over the network, or use span ports to capture a larger amount of data."
+            ->  user1.userCredentials,
+                windows5.lLMNR_NBT_NS_PoisoningAndRelay
+
+        & obfuscatedFilesOrInformation
+            user info: "Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
+            ->  windows5.deobfuscateOrDecodeFilesOrInformation, // leads to Deobfuscate/Decode Files or Information attack
+                bypassHostForensicAnalysis,
+                bypassSignatureBasedDetection,
+                bypassHostIntrusionPrevention,
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassLogAnalysis,
+                bypassFileOrPathWhitelisting      
+
+        & privateKeys
+            user info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
+            ->  service4.userRemoteServicesLogin,
+                inputCapture,
+                bruteForce  
+
+        | resourceHijacking
+            user info: "Adversaries may consume enough system resources to negatively impact and/or cause affected machines to become unresponsive."
+            ->  computer4.unresponsive  
+
+        & communicationThroughRemovableMedia
+
+        & remoteSystemDiscovery
+            user info: "Adversaries will likely attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system."
+
+        & detailedRemoteSystemDiscovery
+            user info: "Adversaries with admin rights may get better details of the hosts enumerated"
+        
+        & adminCommandLineInterface
+            ->  dataCollected, // entrypoints of attacks that can be done with command line interface under admin rights
+                obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface 
+        
+        & userCommandLineInterface
+            ->  dataCollected, // entrypoints of attacks that can be done with command line interface under user rights
+                obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface
+
+        | fileAndDirectoryPermissionsModification
+            user info: "File and directory permissions are commonly managed by discretionary access control lists (DACLs) specified by the file or directory owner."
+            ->  bypassFileSystemAccessControls,
+                windows5.accessibilityFeatures, // leads to Accessibility Features attack
+                windows5.logonScripts, //leads to Logon Scripts attack
+                macOS3.logonScripts // leads to Logon Scripts attack
+
+        | graphicalUserInterface
+            user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
+            ->  windows5.remoteDesktopProtocol, // leads to Remote Desktop Protocol attack on Windows
+                windows5.attemptSystemFirmware
+
+        | softwareDiscovery
+            user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
+
+        | systemAccess
+
+        & systemInformationDiscovery
+            user info: "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+            ->  processInjection,
+                systemNetworkConfigurationDiscovery,
+                systemNetworkConnectionsDiscovery
+
+        | systemNetworkConnectionsDiscovery
+            user info: "Adversaries may attempt to get a listing of network connections to or from the compromised system they are currently accessing or from remote systems by querying for information over the network."
+
+        | systemOwnerOrUserDiscovery
+            user info: "Adversaries may attempt to identify the primary user, currently logged in user, set of users that commonly uses a system, or whether a user is actively using the system."
+            ->  user1.userInformation
+
+        | systemShutdownOrReboot
+            user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."
+
+        | osExhaustionFlood
+
+        & processInjection
+            user info: "Process injection is a method of executing arbitrary code in the address space of a separate live process. It can be used for Defense Evasion and Privilege Escalation."
+            ->  administrator2.adminRights,
+                bypassAntivirus,
+                bypassProcessWhitelisting
+
+        & redundantAccess
+            user info: "Adversaries may use more than one remote access tool with varying command and control protocols as a hedge against detection. Adversaries may also attempt to gain access to Valid Accounts to use External Remote Services such as external VPNs as a way to maintain access despite interruptions to remote access tools deployed within a target network."
+            ->  _validAccounts,
+                bypassAntivirus,
+                externalNetwork5.bypassNetworkIntrusionDetection,
+                internalNetwork4.bypassNetworkIntrusionDetection 
+
+        | rootkit
+            user info: "Adversaries may use rootkits to hide the presence of programs, files, network connections, services, drivers, and other system components."
+            ->  modifyAPICalls, 
+                bypassAntivirus,
+                bypassFileMonitoring,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection, 
+                bypassHostIntrusionPrevention,
+                bypassSystemAccessControls,
+                bypassFileOrPathWhitelisting,
+                windows5.hooking, // leads to hooking attack
+                windows5.hypervisor, // leads to hypervisor attack
+                windows5.attemptSystemFirmware // leads to system firmware attack
+
+        & runtimeDataManipulation
+            user info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
+
+        & standardCryptographicProtocol
+            user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
+            ->  internalNetwork4.c2Connected
+
+        | attemptStandardNonApplicationLayerProtocol
+            ->  standardNonApplicationLayerProtocol    
+
+        & standardNonApplicationLayerProtocol
+            user info: "Use of a standard non-application layer protocol for communication between host and C2 server or among infected hosts within a network."
+            ->  internalNetwork4.communicate        
+
+        | systemNetworkConfigurationDiscovery
+            user info: "Adversaries will likely look for details about the network configuration and settings of systems they access or through information discovery of remote systems."
+
+        & twoFactorAuthenticationInterception
+            user info: "Adversaries may target authentication mechanisms, such as smart cards, to gain access to systems, services, and network resources."
+            ->  connectionProxy
+
+        | modifyAPICalls                
+
+        | bypassAntivirus
+
+        | bypassAutorunsAnalysis
+
+        | bypassApplicationWhitelisting
+
+        | bypassBinaryAnalysis
+
+        | bypassDefensiveNetworkServiceScanning
+
+        | bypassDigitalCertificateValidation   
+
+        | bypassFileMonitoring
+
+        | bypassFileOrPathWhitelisting
+
+        | bypassFileSystemAccessControls
+
+        | bypassHeuristicDetection
+
+        | bypassHostForensicAnalysis
+        
+        | bypassHostIntrusionPrevention
+
+        | bypassProcessWhitelisting
+
+        | bypassSystemAccessControls
+
+        | bypassLogAnalysis        
+        
+        | bypassSignatureBasedDetection
+
+        | bypassStaticFileAnalysis
+
+        | bypassUserModeSignatureValidation
+        
+        | passwordPolicyDiscovery
+            ->  bruteForceWithPasswordPolicy
+
+        & bruteForceWithPasswordPolicy
+            ->  user1.userCredentials // the probability distribution should be so that it has higher chance of success than the bruteforce attack
+
+        & bruteForce
+            user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
+            ->  user1.userCredentials           
+
+        | attemptAntivirusCheck @hidden
+            ->  antivirusCheck    
+
+        & antivirusCheck
+            ->  executeCode,
+                service4.exploitationForClientExecution
+
+        | persistence
+
+        & scripting
+            user info: "Adversaries may use scripts to aid in operations and perform multiple actions that would otherwise be manual."
+            ->  _automatedCollection,
+                browser1.spearphishingAttachment, 
+                service4.exploitationForClientExecution,
+                windows5.virtualizationOrSandboxEvasion,
+                windows5.templateInjection
+
+        | sSHCredentialInterception
+
+        & storedDataManipulation
+            user info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."    
+
+        & uncommonlyUsedPortsConnection
+            user info: "Adversaries may conduct C2 communications over a non-standard port to bypass proxies and firewalls that have been improperly configured."
+            ->  firewall1._bypassFirewall,
+                internalNetwork4.c2Connected,
+                internalNetwork4.bypassProxies 
+
+        | _validAccounts @hidden
+            ->  validAccounts    
+
+        & validAccounts
+            user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
+            ->  service4.userRemoteServicesLogin,
+                service4.adminRemoteServicesLogin,
+                internalNetwork4.bypassFirewall,
+                internalNetwork4.bypassNetworkIntrusionDetection,
+                bypassHostIntrusionPrevention,
+                bypassProcessWhitelisting,
+                bypassSystemAccessControls,
+                bypassAntivirus,
+                graphicalUserInterface 
+
+        | _credentialsInRegistry @hidden
+            ->  credentialsInRegistry
+
+        & credentialsInRegistry
+            ->  user1.userCredentials,
+                administrator2.adminCredentials 
+
+        & fileDeletion
+            user info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
+            ->  bypassHostForensicAnalysis
+
+        | fileAndDirectoryDiscovery
+            user info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system."
+            ->  _automatedCollection
+        
+        & diskStructureWipe
+            user info: "Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources."
+
+        & userDiskWiped
+            user info: "Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
+
+        & adminDiskWiped
+
+        & remoteFileCopy
+            user info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
+            ->  windows5.windowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
+                windows5.remoteDesktopProtocol,
+                user1.attemptUserExecution, // leads to file execution attacks
+                _automatedCollection // combined with Remote File Copy attack
+        
+        & sensitiveDataCollected
+            ->  dataCompressed,
+                computer4.exfiltrationOverPhysicalMedium,
+                dataSizedTransfer,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2,
+                automatedExfiltration,
+                dataEncrypted, 
+                dataStaged    
+
+        & dataCollected
+            ->  dataCompressed,
+                computer4.exfiltrationOverPhysicalMedium,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2,
+                dataEncrypted,
+                dataStaged,
+                automatedExfiltration,
+                dataSizedTransfer
+
+        | dataEncrypted
+            user info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
+            ->  computer4.exfiltrationOverPhysicalMedium,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2,
+                automatedExfiltration
+
+        | dataSizedTransfer
+            user info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
+            ->  internalNetwork4.dataExfiltration
+
+        | dataStaged
+            user info: "Collected data is staged in a central location or directory prior to Exfiltration. Data may be kept in separate files or combined into one file through techniques such as Data Compressed or Data Encrypted."
+            ->  computer4.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2,
+                dataCompressed,
+                dataEncrypted
+        
+        & userDataDestruction
+            ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
+
+        & adminDataDestruction
+            ->  inhibitSystemRecovery  
+
+        & systemDataDestruction
+            ->  inhibitSystemRecovery  
+
+        & userDataEncryptedForImpact
+            user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  _validAccounts,
+                _credentialDumping,
+                inhibitSystemRecovery,
+                windows5.windowsAdminShares
+
+        & adminDataEncryptedForImpact
+            user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  _validAccounts,
+                _credentialDumping,
+                inhibitSystemRecovery,
+                windows5.windowsAdminShares
+
+        & systemDataEncryptedForImpact
+            user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  _validAccounts,
+                _credentialDumping,
+                inhibitSystemRecovery,
+                windows5.windowsAdminShares
+
+        & dataCompressed
+            ->  dataEncrypted,
+                automatedExfiltration,
+                computer4.exfiltrationOverPhysicalMedium,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                exfiltrationOverC2
+
+        & inhibitSystemRecovery
+            user info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."    
+            ->  systemShutdownOrReboot
+
+        | scheduledExfiltration
+            ->  exfiltrationOverC2,
+                exfiltrationOverAternativeProtocol       
+    
+        | exfiltrationOverAternativeProtocol
+            ->  internalNetwork4.dataExfiltration
+
+        | dataFromInformationRepositories 
+            ->  service4.informationRepositories
+          
+        | _automatedCollection @hidden
+            ->  automatedCollection
+
+        & automatedCollection
+            user info: "Once established within a system or network, an adversary may use automated techniques for collecting internal data."
+            ->  dataCollected, 
+                sensitiveDataCollected
+
+        | exfiltrationOverC2
+            ->  internalNetwork4.dataExfiltration
+
+        | automatedExfiltration
+            ->  exfiltrationOverAternativeProtocol,
+                exfiltrationOverC2
+
+        & networkServiceScan
+            user info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
+            ->  service4._exploitationOfRemoteServices
+
+        & permissionGroupsDiscovery
+            user info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
+
+        | persistance
+
+        # antivirus
+            user info: "https://attack.mitre.org/mitigations/M1049/"
+            ->  antivirusCheck,
+                obfuscatedFilesOrInformation,
+                browser1.spearphishingAttachment,
+                browser1.spearphishingLink,
+                service4.spearphishingViaService   
+
+        # restrictFileAndDirectoryPermissions 
+            user info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  credentialsInFiles,
+                disablingSecurityTools,
+                indicatorRemovalOnHost,
+                linux3._clearCommandHistory,
+                macOS3._clearCommandHistory,
+                masquerading,
+                privateKeys,
+                runtimeDataManipulation,
+                storedDataManipulation
+
+        # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
+            user info: "https://attack.mitre.org/mitigations/M1036/" 
+            ->  bruteForce
+
+        # bootIntegrity 
+            user info: "https://attack.mitre.org/mitigations/M1046/"
+            ->  firmwareCorruption
+ 
+        # dataBackup
+            user info: "https://attack.mitre.org/mitigations/M1053/"
+            ->  userDataDestruction,
+                adminDataDestruction,
+                systemDataDestruction,
+                userDataEncryptedForImpact, 
+                adminDataEncryptedForImpact,
+                systemDataEncryptedForImpact,
+                inhibitSystemRecovery,
+                diskStructureWipe,
+                userDiskWiped,
+                adminDiskWiped,
+                internalNetwork4.defacement,
+                externalNetwork5.defacement
+
+        # multiFactorAuthentication
+            user info: "https://attack.mitre.org/mitigations/M1032/" 
+            ->  applicationDeploymentSoftware,
+                bruteForce,
+                networkSniffing,
+                browser1.stealWebSessionCookie,
+                service4.userRemoteServicesLogin,
+                service4.adminRemoteServicesLogin,
+                thirdpartySoftware4.useThirdpartySoftware
+
+        # passwordPolicies 
+            user info: "https://attack.mitre.org/mitigations/M1027/" 
+            ->  bruteForce,
+                credentialDumping,
+                credentialsInFiles,
+                credentialsInRegistry,
+                validAccounts,
+                privateKeys,
+                browser1.credentialsFromWebBrowsers,
+                thirdpartySoftware4.useThirdpartySoftware
+
+        # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
+            user info: "https://attack.mitre.org/mitigations/M1048/"
+            ->  scripting,
+                browser1.driveByCompromise
+
+        # doNotMitigate // Execution Guardrails likely should not be mitigated with preventative controls because it may protect unintended targets from being compromised.
+            user info: "https://attack.mitre.org/mitigations/M1055/"
+            ->  executionGuardrails                
+
+        # disableOrRemoveFeatureOrProgram 
+            user info: "https://attack.mitre.org/techniques/T1064/"
+            ->  scripting,
+                communicationThroughRemovableMedia,
+                service4._exploitationOfRemoteServices,
+                service4.externalRemoteServices 
+
+        # activeDirectoryConfiguration
+            user info: "https://attack.mitre.org/mitigations/M1015/"
+            ->  credentialDumping,
+                credentialsInFiles,
+                windows5.sIDHistoryInjection, 
+                thirdpartySoftware4.useThirdpartySoftware
+
+        # audit 
+            user info: "https://attack.mitre.org/mitigations/M1047/"
+            ->  credentialsInFiles,
+                credentialsInRegistry,
+                browser1.browserExtensions,
+                thirdpartySoftware4.stealApplicationAccessToken,
+                privateKeys  
+
+        # codeSigning
+            user info: "https://attack.mitre.org/mitigations/M1045/" 
+            ->  applicationDeploymentSoftware,
+                masquerading    
+
+        # limitHardwareInstallation
+            user info: "https://attack.mitre.org/mitigations/M1034/"   
+            ->  hardwareAddition.hardwareAdditions     
+
+        # operatingSystemConfiguration 
+            user info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  accountDiscovery, 
+                communicationThroughRemovableMedia,
+                credentialDumping,
+                domainDiscovery,
+                exfiltrationOverOtherNetworkMedium,
+                inhibitSystemRecovery,
+                installRootCertificate,
+                administrator2.createUserAccount
+
+        # softwareConfiguration
+            user info: "https://attack.mitre.org/mitigations/M1054/"
+            ->  installRootCertificate,
+                browser1.stealWebSessionCookie      
+
+        # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
+            user info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  adminCommandLineInterface, 
+                accountDiscovery,
+                adminDiskWiped,
+                applicationWindowDiscovery,
+                binaryPadding,
+                browser1.browserExtensions,
+                computer4.collectAudio,
+                dataCompressed,
+                detailedRemoteSystemDiscovery,
+                detailedRunningProcessDiscovery,
+                domainDiscovery,
+                domainFronting,
+                fileDeletion,
+                masquerading,
+                permissionGroupsDiscovery,  
+                processInjection,
+                remoteSystemDiscovery,     
+                runningProcessDiscovery,
+                systemInformationDiscovery,              
+                userCommandLineInterface,       
+                windows5.compiledHTMLFile            
+             
+        # privilegedAccountManagement  
+            user info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  credentialsInRegistry,
+                validAccounts,
+                internalNetwork4.webShell
+
+        # encryptSensitiveInformation 
+            user info: "https://attack.mitre.org/mitigations/M1041/"
+            ->  sensitiveDataCollected,
+                indicatorRemovalOnHost,
+                networkSniffing,
+                privateKeys,
+                storedDataManipulation  
+
+        # remoteDataStorage 
+            user info: "https://attack.mitre.org/mitigations/M1029/"
+            ->  automatedCollection,
+                indicatorRemovalOnHost,
+                storedDataManipulation,
+                thirdpartySoftware4.useThirdpartySoftware              
+
+        # limitSoftwareInstallation
+            user info: "https://attack.mitre.org/mitigations/M1033/"
+            ->  browser1.browserExtensions
+
+        # updateSoftware
+            user info: "https://attack.mitre.org/mitigations/M1051/"
+            ->  firmwareCorruption,
+                browser1.driveByCompromise,
+                service4.exploitationForCredentialAccess,
+                service4.exploitationForPrivilegeEscalation,
+                service4.exploitationOfRemoteServices,
+                internalNetwork4.webShell  
+
+        # userAccountControl
+            user info: "https://attack.mitre.org/mitigations/M1052/"
+            ->  thirdpartySoftware4.trustedRelationship
+
+        # exploitProtection
+            user info: "https://attack.mitre.org/mitigations/M1050/"
+            ->  browser1.driveByCompromise,
+                service4.exploitationForClientExecution,
+                service4.exploitationForCredentialAccess,
+                service4.exploitationForPrivilegeEscalation,
+                service4.exploitationOfRemoteServices,
+                internalNetwork4.exploitPublicFacingApplication,
+                externalNetwork5.exploitPublicFacingApplication
+    }
+    
+    asset SysAdmin {
+        | systemRights
+            user info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows3._appCertDLLs,
+                windows3._bITSJobs,
+                windows3.changeDefaultFileAssociation,
+                windows3._componentObjectModelAndDistributedCOM,
+                windows3.controlPanelItems,
+                windows3.distributedComponentObjectModel,
+                windows3._dLLSearchOrderHijacking,
+                windows3.executionThroughAPI,
+                windows3.extraWindowMemoryInjection,
+                windows3.hooking,
+                windows3.hypervisor,
+                windows3.imageFileExecutionOptionsInjection,
+                windows3.lSASS_Driver,
+                windows3.manInTheBrowser,
+                windows3.modifyExistingService,
+                windows3.modifyRegistry,
+                windows3.netshHelperDLL,
+                windows3.passwordFilterDLL,
+                windows3.pathInterception,
+                windows3.portMonitors,
+                windows3.processDoppelganging,
+                windows3.serverSoftwareComponent,
+                windows3.serviceExecution,
+                windows3.serviceRegistryPermissionsWeakness,
+                windows3.sIDHistoryInjection,
+                windows3.sIPAndTrustProviderHijacking,
+                windows3.systemServiceDiscovery,
+                windows3.systemServiceStop,
+                windows3.timeProviders,
+                windows3.timestomp,
+                windows3.windowsManagementInstrumentationEventSubscription,
+                windows3.winlogonHelperDLL,
+                os3.accountAccessRemoval,
+                os3._credentialDumping,
+                os3._credentialsInFiles,
+                os3.fileAndDirectoryDiscovery,
+                os3.fileAndDirectoryPermissionsModification,
+                os3.firmwareCorruption,
+                os3.graphicalUserInterface,
+                os3.inhibitSystemRecovery,
+                os3.inputCapture,
+                os3.networkSniffing,
+                os3.redundantAccess,
+                os3.rootkit,
+                os3.runtimeDataManipulation,
+                os3.systemDataDestruction,
+                os3.systemDataEncryptedForImpact,
+                os3.systemShutdownOrReboot,
+                os3.storedDataManipulation,
+                os3.twoFactorAuthenticationInterception,
+                thirdpartySoftware2._useThirdpartySoftware
+
+        | systemCredentials
+            ->  systemRights
+    }
+    
+    asset Windows extends OS {   
+        & accountManipulation
+            user info: "Account manipulation may aid adversaries in maintaining access to credentials and certain permission levels within an environment." 
+            ->  windowsUser.userCredentials,
+                persistence
+
+        | _appCertDLLs @hidden
+            ->  appCertDLLs 
+            
+        & appCertDLLs
+            user info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
+            ->  persistence,
+                systemWindows.systemRights,
+                windowsAdmin.adminRights
+
+        & appInitDLLs
+            ->  persistence 
+
+        & accessibilityFeatures
+            user info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system."
+            ->  executeCode,
+                system.systemRights,
+                _remoteDesktopProtocol 
+
+        & _bITSJobs @hidden
+            ->  bITSJobs
+
+        & bITSJobs
+            user info: "Adversaries may abuse BITS to download, execute, and even clean up after running malicious code."
+            ->  executeCode,
+                bypassHostForensicAnalysis,
+                firewall2.bypassFirewall 
+
+        & cmstp
+            user info: "Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
+            ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
+                bypassApplicationWhitelisting,
+                bypassAntivirus            
+
+        | codeSigningCertificate
+            user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            ->  windowsAdmin.bypassWindowsUserAccountControl
+
+        | collectHashInformation    
+            +>  networkSniffing, // leads to Network Sniffing attack
+                bruteForce, // leads to Brute Force attack   
+                passTheHash // leads to Pass the Hash attack 
+
+        & _componentObjectModelAndDistributedCOM @hidden
+            user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
+            ->  componentObjectModelAndDistributedCOM
+
+        & componentObjectModelAndDistributedCOM
+            user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
+            ->  internalNetworkWindows.remoteCOMExecution
+
+        & controlPanelItems
+            user info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
+            ->  executeCode,
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting
+
+        | componentObjectModelHijacking
+            user info: "Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
+            ->  processInjection,
+                bypassAutorunsAnalysis,
+                _regsvr32             
+
+        | componentFirmware
+            user info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."       
+            ->  bypassFileMonitoring,
+                bypassHostIntrusionPrevention, 
+                bypassAntivirus         
+
+        & compiledHTMLFile
+            user info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
+            ->  windowsUser.attemptUserExecution, // leads to User Execution attack
+                bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation   
+
+        | dCShadow
+            user info: "This technique may bypass system logging and security monitors such as security information and event management (SIEM) products."
+            ->  _sIDHistoryInjection,
+                bypassLogAnalysis
+
+        | deobfuscateOrDecodeFilesOrInformation 
+            ->  bypassAntivirus,
+                bypassHostIntrusionPrevention,
+                bypassSignatureBasedDetection,
+                externalNetworkWindows.bypassNetworkIntrusionDetection,
+                internalNetworkWindows.bypassNetworkIntrusionDetection     
+
+        | _dLLSearchOrderHijacking @hidden
+            ->  dLLSearchOrderHijacking 
+
+        & dLLSearchOrderHijacking
+            user info: "Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence."
+            ->  bypassProcessWhitelisting,
+                systemWindows.systemRights,
+                windowsUser.userRights,
+                windowsAdmin.adminRights                    
+               
+        | dLLSideLoading
+            ->  bypassProcessWhitelisting,
+                bypassAntivirus
+
+        & executeMshta
+            user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
+            ->  executeCode,
+                bypassDigitalCertificateValidation,
+                bypassApplicationWhitelisting    
+               
+        | executeCode 
+            +>  componentFirmware,
+                service5._exploitationForPrivilegeEscalation,
+                computerWindows.infectedWindowsComputer         
+
+        & executionThroughAPI
+            user info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
+
+        & executionThroughModuleLoad
+            user info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
+            ->  executeCode    
+        
+        | extraWindowMemoryInjection
+            user info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
+            ->  processInjection
+
+        | fileSystemLogicalOffsets
+            user info: "Windows allows programs to have direct access to logical volumes. This technique bypasses Windows file access controls as well as file system monitoring tools."
+            ->  bypassFileMonitoring,
+                bypassFileSystemAccessControls
+
+        | _fileSystemPermissionsWeakness @hidden
+            ->  fileSystemPermissionsWeakness      
+
+        & fileSystemPermissionsWeakness
+            user info: "Adversaries may use this technique to replace legitimate binaries with malicious ones as a means of executing code at a higher permissions level."
+            ->  executeCode,
+                windowsAdmin.adminRights,
+                systemWindows.systemRights
+
+        & forcedAuthentication
+            user info: "Adversaries may take advantage of this behavior to gain access to user account hashes through forced SMB authentication."
+            ->  templateInjection,
+                collectHashInformation 
+
+        & groupPolicyModification
+            user info: "Malicious GPO modifications can be used to implement Scheduled Task, Disabling Security Tools, Remote File Copy, Create Account, Service Execution and more."
+            ->  scheduledTask, // leads to Scheduled Task attack
+                disablingSecurityTools, // leads to Disabling Security Tools attack
+                remoteFileCopy, // leads to Remote File Copy attack
+                serviceExecution, // leads to Service Execution attack
+                windowsAdministrator.createUserAccount,
+                bypassSystemAccessControls,
+                bypassFileSystemAccessControls
+
+        | imageFileExecutionOptionsInjection
+            user info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
+            ->  bypassAutorunsAnalysis,
+                persistence,
+                service5._exploitationForPrivilegeEscalation
+
+        | attemptIndicatorBlocking @hidden
+            ->  indicatorBlocking
+
+        & indicatorBlocking
+            user info: "An adversary may attempt to block indicators or events typically captured by sensors from being gathered and analyzed."
+            ->  bypassAntivirus,
+                bypassLogAnalysis,
+                bypassHostIntrusionPrevention     
+
+        | indirectCommandExecution
+            user info: "Adversaries may abuse the Windows system features for Defense Evasion."
+            ->  executeCode,
+                bypassStaticFileAnalysis,
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting     
+
+        & inputPrompt
+            user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
+            ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
+                attemptPowerShell, // leads to PowerShell attack
+                windowsUser.userCredentials       
+
+        & installUtil
+            user info: "Adversaries may use InstallUtil to proxy execution of code through a trusted Windows utility."
+            ->  bypassDigitalCertificateValidation,
+                bypassProcessWhitelisting,
+                signedBinaryProxyExecution,
+                signedScriptProxyExecution    
+
+        & kerberoasting
+            user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
+            ->  bruteForce,
+                persistence,
+                service5._exploitationForPrivilegeEscalation,
+                _validAccounts           
+
+        & lLMNR_NBT_NS_PoisoningAndRelay
+            user info: "AAdversaries can spoof an authoritative source for name resolution on a victim network by responding to LLMNR (UDP 5355)/NBT-NS (UDP 137) traffic. The adversary can then collect the hash information sent over the wire through tools that monitor the ports for traffic or through Network Sniffing and crack the hashes offline through Brute Force to obtain the plaintext passwords."
+            ->  collectHashInformation
+
+        & lSASS_Driver
+            user info: "Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations."
+            ->  executeCode,
+                persistence
+
+        & manInTheBrowser
+            user info: "Adversaries can take advantage of security vulnerabilities and inherent functionality in browser software to change content, modify behavior, and intercept information as part of various man in the browser techniques."
+            ->  browser2.driveByCompromise
+
+        & modifyExistingService
+            user info: "Adversaries can modify an existing service to persist malware on a system by using system utilities or by using custom tools to interact with the Windows API. Adversaries may also intentionally corrupt or kill services to execute malicious recovery programs/commands."
+            ->  persistence,
+                masquerading, // Use of existing services is a type of Masquerading that may make detection analysis more challenging
+                executeCode,
+                serviceExecution
+
+        & modifyRegistry
+            user info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution. An adversary may modify these Registry keys to add new SSPs."
+            ->  persistence,
+                securitySupportProvider,
+                bypassHostForensicAnalysis,
+                distributedComponentObjectModel   
+
+        | netshHelperDLL
+            user info: "Adversaries can use netsh.exe with helper DLLs to proxy execution of arbitrary code in a persistent manner."
+
+        | networkShareConnectionRemoval
+            user info: "Adversaries may remove share connections that are no longer useful in order to clean up traces of their operation."
+            ->  bypassHostForensicAnalysis
+
+        & newService
+            user info: "Adversaries may install a new service that can be configured to execute at startup by using utilities to interact with services or by directly modifying the Registry."
+            ->  service5._exploitationForPrivilegeEscalation, // an adversary may also use a service to escalate privileges from administrator to SYSTEM
+                masquerading // benign software with Masquerading
+
+        | attemptNtfsFileAttributes @hidden
+            ->  ntfsFileAttributes
+
+        & ntfsFileAttributes
+            user info: "Adversaries may store malicious data or binaries in file attribute metadata instead of directly in files, to evade some defenses, such as static indicator scanning tools and anti-virus."
+            ->  bypassSignatureBasedDetection,
+                bypassHostForensicAnalysis,
+                bypassAntivirus
+
+        & officeApplicationStartup
+            user info: "There are multiple mechanisms that can be used with Office for persistence when an Office-based application is started."
+            ->  persistence  
+
+        & passwordFilterDLL
+            user info: "Adversaries can register malicious password filters to harvest credentials from local computers and/or entire domains."
+            ->  systemWindows.systemCredentials,
+                windowsAdmin.adminCredentials
+
+        & passTheHash
+            user info: "This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash."
+            ->  internalNetworkWindows.remoteSystemsConnection // PtH may be used to perform actions on local or remote systems
+
+        | attemptPassTheTicket @hidden
+            ->  passTheTicket
+
+        & passTheTicket
+            user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
+            ->  _credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
+                internalNetworkWindows.c2Connexion // gain remote access 
+
+        & pathInterception
+            user info: "Adversaries may take advantage of performing path interception: unquoted paths, path environment variable misconfigurations, and search order hijacking."
+            ->  unquotedPaths,
+                pathEnvironmentVariableMisconfiguration,
+                searchOrderHijacking
+
+        | parentPIDSpoofing
+            user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
+            ->  bypassHostForensicAnalysis,
+                bypassHeuristicDetection,
+                service5._exploitationForPrivilegeEscalation
+
+        | pathEnvironmentVariableMisconfiguration 
+            user info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
+            ->  executeCode
+
+        | attemptPowerShell @hidden
+            user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
+            ->  powerShell,
+                windowsRemoteManagement, // call with the winrm
+                windowsUser.attemptUserExecution,
+                scripting
+
+        & powerShell
+            user info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
+            ->  internalNetworkWindows.remoteSystemsConnection,
+                externalNetworkWindows.attemptTransmittedDataManipulation,
+                persistence
+
+        & _powerShellProfile @hidden
+            user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
+            ->  powerShellProfile
+
+        | powerShellProfile
+            user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."   
+            ->  service5._exploitationForPrivilegeEscalation,
+                persistence
+
+        | processDoppelganging
+            user info: "Process Doppelgänging involves replacing the memory of a legitimate process, enabling the veiled execution of malicious code that may evade defenses and detection."
+            ->  bypassAntivirus,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection,
+                bypassFileOrPathWhitelisting    
+
+        | processHollowing
+            user info: "Execution of the malicious code is masked under a legitimate process and may evade defenses and detection analysis."
+            ->  bypassAntivirus,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection,
+                bypassFileOrPathWhitelisting   
+
+        & codeProxyExecution
+            ->  persistence
+
+        | rDPSessionHijacking
+            user info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
+
+        | registryRunKeysOrStartupFolder
+            user info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
+            ->  masquerading, // leads to Masquerading attack
+                service5.remoteAccessTools,
+                persistence
+
+        & regsvcsOrRegasm
+            user info: "Adversaries can use Regsvcs and Regasm to proxy execution of code through a trusted Windows utility. Both utilities may be used to bypass process whitelisting."
+            ->  codeProxyExecution, 
+                bypassProcessWhitelisting,
+                bypassDigitalCertificateValidation
+
+        & _regsvr32 @hidden
+            developer info: "This is a helper attack step for Regsvr32.exe to establish Persistence via Component Object Model Hijacking."
+            ->  persistence
+
+        & regsvr32
+            user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
+            ->  bypassProcessWhitelisting,
+                bypassAntivirus,
+                bypassDigitalCertificateValidation,
+                codeProxyExecution,
+                _regsvr32
+
+        & remoteDesktopProtocol
+            user info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
+            ->  _remoteDesktopProtocol,
+                remoteSystemDiscovery,
+                rDPSessionHijacking
+
+        & _remoteDesktopProtocol @hidden
+            developer info: "This is a helper attack step. It requires all its parent attack steps to compromise - Accessibility Features when connected over Remote Desktop Protocol will cause the replaced file to be executed with SYSTEM privileges."
+            ->  persistence,
+                systemWindows.systemRights  
+
+        | replicationThroughRemovableMedia
+            user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
+            ->  communicationThroughRemovableMedia,
+                removableMedia2.infectedMedia
+
+        & rundll32
+            user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Rundll32 can also been used to execute scripts."
+            ->  bypassAntivirus,
+                bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation,
+                executeCode  
+
+        & serverSoftwareComponent
+            user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
+            ->  persistence
+
+        & screensaver
+            user info: "Adversaries can use screensaver settings to maintain persistence by setting the screensaver to run malware after a certain timeframe of user inactivity."
+            ->  persistence
+
+        | searchOrderHijacking
+            user info: "Search order hijacking occurs when an adversary abuses the order in which Windows searches for programs that are not given a path."
+            ->  _dLLSearchOrderHijacking // Search order hijacking is a common practice for DLL Search Order Hijacking   
+
+        & securitySupportProvider
+            user info: "An adversary may modify these Registry keys to add new SSPs."
+            ->  persistence
+
+        & serviceExecution
+            user info: "Adversaries may execute a binary, command, or script via a method that interacts with Windows services, such as the Service Control Manager."
+            ->  newService // Adversaries may also directly start services through Service Execution
+
+        | serviceRegistryPermissionsWeakness
+            ->  _serviceRegistryPermissionsWeakness,
+                persistence
+
+        & _serviceRegistryPermissionsWeakness @hidden
+            user info: "When the service starts or is restarted, then the adversary-controlled program will execute, allowing the adversary to gain persistence and/or privilege escalation to the account context the service is set to execute."
+            ->  service5._exploitationForPrivilegeEscalation
+
+        | attemptSharedWebroot @hidden
+            ->  sharedWebroot
+
+        & sharedWebroot
+            user info: "Adversaries may add malicious content to an internally accessible website through an open network file share that contains the website's webroot or Web content directory and then browse to that content with a Web browser to cause the server to execute the malicious content."
+            ->  browser2.executionThroughMaliciousContent
+
+        & shortcutModification
+            user info: "Adversaries could use shortcuts to execute their tools for persistence. Adversaries could also edit the target path or entirely replace an existing shortcut so their tools will be executed instead of the intended legitimate program."
+            ->  executeCode,
+                persistence,
+                masquerading // create a new shortcut as a means of indirection that may use Masquerading to look like a legitimate program
+
+        & sIDHistoryInjection
+            user info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
+            ->  _sIDHistoryInjection,
+                service5.adminRemoteServicesLogin, // leads to Remote Services attack
+                windowsAdminShares, // leads to Windows Admin Shares attack    
+                windowsRemoteManagement // leads to Windows Remote Management attack 
+
+        & _sIDHistoryInjection @hidden
+            user info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
+            ->  persistence          
+
+        & signedBinaryProxyExecution
+            user info: "Several Microsoft signed binaries that are default on Windows installations can be used to proxy execution of other files. This behavior may be abused by adversaries to execute malicious files that could bypass application whitelisting and signature validation on systems."
+            ->  bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation            
+
+        & signedScriptProxyExecution
+            user info: "Scripts signed with trusted certificates can be used to proxy execution of malicious files."
+            ->  bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation          
+
+        & sIPAndTrustProviderHijacking
+            user info: "Adversaries may abuse this architecture to subvert trust controls and bypass security policies that allow only legitimately signed code to execute on a system."
+            ->  bypassApplicationWhitelisting,
+                bypassAutorunsAnalysis,
+                bypassDigitalCertificateValidation,
+                bypassProcessWhitelisting,
+                bypassUserModeSignatureValidation 
+
+        | attemptSoftwarePacking @hidden
+            ->  softwarePacking
+
+        & softwarePacking
+            user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
+            ->  indicatorRemovalFromTools,
+                bypassSignatureBasedDetection,
+                bypassAntivirus,
+                bypassHeuristicDetection  
+
+        | systemServiceDiscovery
+            user info: "Adversaries may try to get information about registered services."
+            ->  service5.serviceInformation 
+
+        | _taintSharedContent @hidden
+            user info: "This is a helper attack step that requires access to shared folders."
+            ->  networkSharedDrive1.taintSharedContent   
+
+        & templateInjection
+            user info: "Adversaries may abuse this technology to initially conceal malicious code to be executed."
+            ->  bypassStaticFileAnalysis, 
+                forcedAuthentication, // leads to Forced Authentication attack
+                browser2.spearphishingAttachment, // can be delivered via Spearphishing Attachment
+                _taintSharedContent // can be delivered via Taint Shared Content
+
+        & timeProviders
+            user info: "Adversaries may abuse Windows Time service to establish Persistence, specifically by registering and enabling a malicious DLL as a time provider."
+            ->  persistence
+
+        & trustedDeveloperUtilities
+            user info: "An adversary can use tracker.exe to proxy execution of an arbitrary DLL into another process. Since tracker.exe is also signed it can be used to bypass application whitelisting solutions."
+            ->  bypassApplicationWhitelisting,
+                executeCode,
+                signedBinaryProxyExecution,
+                signedScriptProxyExecution    
+
+        | unquotedPaths
+            user info: "An adversary can place an executable in a higher level directory of the path, and Windows will resolve that executable instead of the intended executable."
+            ->  executeCode   
+
+        | attemptUserServiceStop @hidden
+            ->  userServiceStop
+
+        & userServiceStop
+            user info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
+            ->  userDataDestruction,
+                userDataEncryptedForImpact
+
+        & adminServiceStop
+            ->  adminDataDestruction,
+                adminDataEncryptedForImpact
+
+        & systemServiceStop
+            ->  systemDataDestruction,
+                systemDataEncryptedForImpact
+
+        & scheduledTask
+            user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
+            //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
+
+        | attemptSystemTimeDiscovery @hidden
+            ->  systemTimeDiscovery
+
+        & systemTimeDiscovery
+            user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
+            ->  scheduledTask         
+
+        & windowsAdminShares
+            ->  networkShareConnectionRemoval, // leads to Network Share Connection Removal attack
+                windowsManagementInstrumentation // leads to Windows Management Instrumentation attack
+
+        | windowsManagementInstrumentation
+            user info: "An adversary can use WMI to interact with local and remote systems and use it as a means to perform many tactic functions."
+            ->  systemInformationDiscovery, // extract information about the operating system
+                executeCode,
+                inhibitSystemRecovery
+
+        & windowsManagementInstrumentationEventSubscription
+            user info: "Adversaries may use the capabilities of WMI to subscribe to an event and execute arbitrary code when that event occurs, providing persistence on a system."
+            ->  persistence
+
+        & windowsRemoteManagement
+            user info: "WinRM allows a user to interact with a remote system."
+            ->  internalNetworkWindows.remoteExecution,
+                service5.externalRemoteServices // Windows Remote Management can also be used externally  
+
+        & winlogonHelperDLL
+            user info: "Adversaries may take advantage of these features to repeatedly execute malicious code and establish Persistence."
+            ->  persistence
+
+        | commandExecution
+            ->  computerWindows.infectedWindowsComputer
+
+        | attemptRegistryKeysEnabled @hidden
+            ->  registryKeysEnabled
+
+        & registryKeysEnabled
+            ->  dynamicDataExchange
+
+        & distributedComponentObjectModel
+            user info: "Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
+            ->  dynamicDataExchange
+
+        | dynamicDataExchange
+            user info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
+            ->  userCommandLineInterface 
+            
+        | hooking             
+            user info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
+            ->  executeCode,
+                captureAPICalls
+
+        | hypervisor           
+            user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
+            ->  persistance
+
+        | captureAPICalls   
+
+        & logonScripts
+            user info: "An adversary can then create a logon session for the user using the LogonUser function. The function will return a copy of the new session's access token and the adversary can use SetThreadToken to assign the token to a thread."
+            ->  userAccessTokenManipulation,
+                adminAccessTokenManipulation,
+                windowsAdmin.adminRights   
+
+        | attemptSystemFirmware @hidden
+            ->  systemFirmware
+        
+        & systemFirmware
+            user info: "System firmware may be modified by an adversary to perform or assist in malicious activity."
+            ->  systemShutdownOrReboot
+
+        | systemShutdownOrReboot
+            user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."  
+
+        | timestomp
+            user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            ->  bypassHostForensicAnalysis
+
+        & queryRegistery
+            user info: "The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
+            ->  scripting,
+                systemInformationDiscovery
+
+        & networkShareDiscovery
+            ->  internalNetworkWindows.networkShareDiscovery
+
+        & userAccessTokenManipulation
+            user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
+            ->  service5._exploitationForPrivilegeEscalation
+
+        & adminAccessTokenManipulation
+            user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
+            ->  service5._exploitationForPrivilegeEscalation
+        
+        & userSecuritySoftwareDiscovery
+            user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            ->  virtualizationOrSandboxEvasion
+        
+        & adminSecuritySoftwareDiscovery
+            ->  virtualizationOrSandboxEvasion
+
+        & bypassUserAccountControl
+            ->  executeCode
+       
+        | peripheralDeviceDiscovery
+            ->  computerWindows.peripheralDeviceDiscovery
+
+        | portMonitors
+            user info: "Adversaries can use this technique to load malicious code at startup that will persist on system reboot and execute as SYSTEM."
+            ->  executeCode
+
+        & emailStorageCollection
+            user info: "Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
+            ->  dataCollected
+
+        & outlookEmailCollection
+            user info: "Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
+            ->  dataCollected
+        
+        | _applicationShimming @hidden
+            ->  applicationShimming
+            
+        & applicationShimming
+            user info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
+            ->  persistence,
+                windowsUser.userRights,
+                windowsAdministrator.adminRights,
+                bypassUserAccountControl // certain shims can be used to Bypass User Account Control 
+
+        & authenticationPackage
+            user info: "Adversaries can use Windows Authentication Packages for persistence for persistence."
+            ->  persistence   
+
+        | changeDefaultFileAssociation
+            ->  persistence
+
+        | trustedDomainInfo // leads to SID-History Injection, Pass the Ticket, and Kerberoasting attacks
+            user info: "The information discovered may help the adversary conduct SID-History Injection, Pass the Ticket, and Kerberoasting."
+
+        & domainTrustDiscovery
+            ->  trustedDomainInfo
+
+        & bootkit
+            ->  persistance
+            
+        | videoCapture
+            ->  computerWindows.collectVideo
+
+        | virtualizationOrSandboxEvasion
+            user info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
+            ->  bypassAntivirus,
+                bypassHostForensicAnalysis,    
+                bypassSignatureBasedDetection,  
+                bypassStaticFileAnalysis              
+
+        & xslScriptProcessing
+            user info: "Adversaries may abuse this functionality to execute arbitrary files while potentially bypassing application whitelisting defenses."
+            ->  executeCode,
+                windowsManagementInstrumentation, // leads to Windows Management Instrumentation attack
+                bypassAntivirus,
+                bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation
+
+        # activeDirectoryConfiguration
+            user info: "https://attack.mitre.org/mitigations/M1015/"
+            +>  passTheTicket
+
+        # antivirus
+            user info: "https://attack.mitre.org/mitigations/M1049/"
+            +>  softwarePacking,
+                templateInjection
+
+        # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
+            user info: "https://attack.mitre.org/mitigations/M1048/"
+            +>  _componentObjectModelAndDistributedCOM,
+                distributedComponentObjectModel
+
+        # audit 
+            user info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  domainTrustDiscovery,
+                bypassUserAccountControl,
+                dLLSearchOrderHijacking,
+                dLLSideLoading,
+                fileSystemPermissionsWeakness,
+                modifyExistingService,
+                pathInterception,
+                remoteDesktopProtocol,
+                serverSoftwareComponent
+
+        # codeSigning
+            user info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  powerShell,
+                _powerShellProfile,
+                serverSoftwareComponent          
+
+        # credentialAccessProtection
+            user info: "https://attack.mitre.org/mitigations/M1043/"
+            ->  _credentialDumping
+
+        # executionPrevention
+            user info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  accessibilityFeatures,
+                adminSecuritySoftwareDiscovery,
+                appCertDLLs,
+                appInitDLLs,
+                cmstp,
+                controlPanelItems,
+                dLLSearchOrderHijacking,
+                executeMshta,
+                executionThroughAPI,
+                executionThroughModuleLoad,
+                installUtil,
+                networkShareDiscovery,
+                pathInterception,
+                queryRegistery,
+                regsvcsOrRegasm,
+                scheduledTask, 
+                screensaver,
+                signedBinaryProxyExecution,
+                signedScriptProxyExecution,
+                sIPAndTrustProviderHijacking,
+                systemTimeDiscovery,
+                trustedDeveloperUtilities,
+                userSecuritySoftwareDiscovery,
+                winlogonHelperDLL,
+                xslScriptProcessing,
+                networkSharedDrive2.taintSharedContent
+
+        # exploitProtection
+            user info: "https://attack.mitre.org/mitigations/M1050/"
+            +>  regsvr32,
+                rundll32,
+                networkSharedDrive2.taintSharedContent
+
+        # limitHardwareInstallation
+            user info: "https://attack.mitre.org/mitigations/M1034/"   
+            +>  replicationThroughRemovableMedia
+
+        # operatingSystemConfiguration
+            user info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  passwordFilterDLL,
+                bITSJobs,
+                remoteDesktopProtocol   
+
+        # passwordPolicies 
+            user info: "https://attack.mitre.org/mitigations/M1027/" 
+            +>  passTheHash,
+                passTheTicket,
+                windowsAdminShares               
+
+        # privilegedProcessIntegrity  
+            user info: "https://attack.mitre.org/mitigations/M1025/"
+            ->  authenticationPackage,
+                _credentialDumping,
+                securitySupportProvider 
+
+        # privilegedAccountManagement
+            user info: "https://attack.mitre.org/mitigations/M1026/"
+            +>  bootkit,
+                bypassUserAccountControl,
+                componentObjectModelAndDistributedCOM,
+                passTheHash
+
+        # restrictFileAndDirectoryPermissions
+            user info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  controlPanelItems,
+                dLLSideLoading,
+                indicatorBlocking,
+                logonScripts,
+                modifyRegistry,
+                ntfsFileAttributes,
+                pathInterception,
+                sharedWebroot,
+                sIPAndTrustProviderHijacking,
+                userServiceStop,
+                adminServiceStop,
+                systemServiceStop,
+                serviceExecution,
+                _serviceRegistryPermissionsWeakness,
+                timeProviders,
+                networkSharedDrive2.taintSharedContent  
+
+        # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
+            user info: "https://attack.mitre.org/mitigations/M1024/"
+            ->  sIPAndTrustProviderHijacking,
+                _powerShellProfile,
+                userServiceStop,
+                adminServiceStop,
+                systemServiceStop,
+                timeProviders
+
+        # restrictLibraryLoading 
+            user info: "https://attack.mitre.org/mitigations/M1044/"
+            ->  dLLSearchOrderHijacking         
+
+        # softwareConfiguration
+            user info: "https://attack.mitre.org/mitigations/M1054/"
+            +>  indicatorBlocking,
+                officeApplicationStartup,
+                _powerShellProfile  
+
+        # bootIntegrity 
+            user info: "https://attack.mitre.org/mitigations/M1046/"
+            +>  bootkit,
+                systemFirmware      
+
+        # encryptSensitiveInformation
+            user info: "https://attack.mitre.org/mitigations/M1041/"
+            +>  emailStorageCollection,
+                outlookEmailCollection
+
+        # disableOrRemoveFeatureOrProgram
+            user info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  cmstp,
+                _componentObjectModelAndDistributedCOM,
+                distributedComponentObjectModel,
+                installUtil,
+                lLMNR_NBT_NS_PoisoningAndRelay,
+                officeApplicationStartup,
+                powerShell,
+                registryKeysEnabled,
+                regsvcsOrRegasm,
+                remoteDesktopProtocol,
+                replicationThroughRemovableMedia,
+                screensaver,
+                templateInjection,
+                trustedDeveloperUtilities,
+                windowsRemoteManagement
+
+        # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
+            user info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  lLMNR_NBT_NS_PoisoningAndRelay,
+                forcedAuthentication 
+
+        # updateSoftware
+            user info: "https://attack.mitre.org/mitigations/M1051/" 
+            +>  appInitDLLs,
+                applicationShimming,
+                officeApplicationStartup,
+                passTheHash
+        
+        # userAccountControl
+            user info: "https://attack.mitre.org/mitigations/M1052/"
+            +>  applicationShimming, 
+                bypassUserAccountControl,
+                fileSystemPermissionsWeakness,
+                passTheHash   
+    }
+
+    asset Linux extends OS {
+        & bootkit
+            ->  persistance
+
+        & _clearCommandHistory @hidden
+            ->  clearCommandHistory       
+
+        & clearCommandHistory
+            user info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
+            ->  bypassLogAnalysis, 
+                bypassHostForensicAnalysis
+
+        | spaceAfterFileName
+            ->  linuxUser.attemptUserExecution
+
+        | infectedOS
+            +>  bashHistory
+
+        | _bash_profileAndBashrc @hidden
+            ->  bash_profileAndBashrc
+
+        & bash_profileAndBashrc
+            user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
+            ->  persistence
+
+        & bashHistory
+            ->  indicatorRemovalOnHost,
+                linuxAdministrator.adminCredentials,
+                linuxUser.userCredentials
+
+        & hISTCONTROL
+            user info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
+            ->  bypassLogAnalysis,
+                bypassHostForensicAnalysis
+
+        & kernelModulesAndExtensions
+            user info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
+            ->  rootkit        
+
+        & localJobScheduling
+            user info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence, to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
+            ->  persistence,
+                rootLinux.adminRights
+
+        & portKnocking
+            user info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
+            ->  bypassDefensiveNetworkServiceScanning  
+
+        & serverSoftwareComponent
+            user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
+            ->  persistence
+
+        & setuidAndSetgid
+            user info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user's context."
+            ->  service6._exploitationForPrivilegeEscalation,
+                persistence  
+
+        | source
+            user info:"The source command loads functions into the current shell or executes files in the current context."
+            ->  executeCode
+
+        & sshHijacking
+            user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
+            ->  sSHCredentialInterception
+
+        | _sudo @hidden
+            ->  sudo
+
+        & sudo
+            user info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
+            ->  service6._exploitationForPrivilegeEscalation
+
+        | _sudoCaching @hidden
+            ->  sudoCaching
+
+        & sudoCaching
+            user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
+            ->  service6._exploitationForPrivilegeEscalation 
+
+        | _systemdService @hidden
+            ->  systemdService
+
+        & systemdService
+            user info: "Adversaries have used systemd functionality to establish persistent access to victim systems by creating and/or modifying service unit files that cause systemd to execute malicious commands at recurring intervals, such as at system boot."
+            ->  persistence
+
+        | timestomp
+            user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            ->  bypassHostForensicAnalysis
+
+        | trap
+            user info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
+            ->  executeCode,
+                persistence
+
+        | executeCode 
+            +>  computer4.infectedLinuxComputer 
+
+        # antivirus
+            user info: "https://attack.mitre.org/mitigations/M1049/"
+            +>  kernelModulesAndExtensions
+
+        # audit 
+            user info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  serverSoftwareComponent
+
+        # bootIntegrity 
+            user info: "https://attack.mitre.org/mitigations/M1046/"
+            +>  bootkit
+
+        # codeSigning
+            user info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  serverSoftwareComponent
+
+        # disableOrRemoveFeatureOrProgram
+            user info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  sshHijacking
+
+        # executionPrevention
+            +>  kernelModulesAndExtensions
+
+        # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
+            user info: "https://attack.mitre.org/mitigations/M1039/"
+            ->  clearCommandHistory,
+                hISTCONTROL              
+
+        # limitSoftwareInstallation
+            user info: "https://attack.mitre.org/mitigations/M1033/"
+            +>  systemdService
+
+        # operatingSystemConfiguration
+            user info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  bashHistory,
+                hISTCONTROL,
+                setuidAndSetgid,
+                sudoCaching
+
+        # passwordPolicies // Set and enforce secure password policies for accounts 
+            user info: "https://attack.mitre.org/mitigations/M1027/"
+            +>  sshHijacking
+
+        # privilegedAccountManagement
+            user info: "https://attack.mitre.org/mitigations/M1026/"
+            +>  bootkit,
+                sshHijacking   
+
+        # restrictFileAndDirectoryPermissions
+            user info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  bash_profileAndBashrc,
+                sshHijacking,
+                sudo,
+                systemdService   
+
+        # userAccountControl
+            user info: "https://attack.mitre.org/mitigations/M1052/"
+            +>  sshHijacking    
+    }
+
+    asset MacOS extends OS {
+        & bashHistory
+            ->  indicatorRemovalOnHost,
+                macosAdministrator.adminCredentials,
+                macOSUser.userCredentials
+
+        | _bash_profileAndBashrc @hidden
+            ->  bash_profileAndBashrc
+
+        & bash_profileAndBashrc
+            user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
+            ->  persistence
+
+        | codeSigningCertificate
+            user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+
+        & _clearCommandHistory @hidden
+            ->  clearCommandHistory       
+
+        & clearCommandHistory
+            user info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
+            ->  bypassLogAnalysis, 
+                bypassHostForensicAnalysis
+
+        | _dylibHijacking @hidden   
+            ->  dylibHijacking 
+
+        & dylibHijacking 
+            user info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
+            ->  service7._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
+
+        & elevatedExecutionWithPrompt
+            user info: "Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials."
+            ->  rootMac.adminRights,
+                masquerading // combined with Masquerading to trick the user into granting escalated privileges to malicious code
+
+        & emond
+            user info: "Adversaries may use Event Monitor Daemon (emond) to establish persistence by scheduling malicious commands to run on predictable event triggers."
+            ->  persistence,
+                service7._exploitationForPrivilegeEscalation
+
+        | executeCode 
+            +>  computer4.infectedMacOSComputer   
+
+        & gatekeeperBypass
+            user info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won't set this flag. Additionally, other utilities or events like drive-by downloads don't necessarily set it either. This completely bypasses the built-in Gatekeeper check."
+            ->  bypassApplicationWhitelisting,
+                bypassAntivirus 
+
+        & hiddenUsers
+            user info: "By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily."
+            ->  macosAdministrator.createUserAccount
+
+        & hiddenWindow
+            user info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
+
+        & hISTCONTROL
+            user info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
+            ->  bypassLogAnalysis,
+                bypassHostForensicAnalysis
+
+        | infectedOS
+            +>  bashHistory
+
+        & inputPrompt
+            user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
+            ->  appleScript, // leads to AppleScript attack
+                macOSUser.userCredentials
+
+        & kernelModulesAndExtensions
+            user info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
+            ->  rootkit  
+
+        & launchAgent
+            user info: "Adversaries may install a new launch agent that can be configured to execute at login by using launchd or launchctl to load a plist into the appropriate directories."     
+            ->  persistence
+
+        & launchctl
+            user info: "Adversaries can abuse this functionality to execute code or even bypass whitelisting if launchctl is an allowed process."
+            ->  executeCode,
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting  
+
+        & launchDaemon
+            user info: "Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root. Adversary can modify a current Launch Daemon's executable and gain persistence or Privilege Escalation."
+            ->  persistence,
+                service7._exploitationForPrivilegeEscalation         
+
+        & lC_LOAD_DYLIB_Addition
+            user info: "Adversaries can remediate the issue that any changes will invalidate digital signatures on binaries because the binary is being modified by simply removing the LC_CODE_SIGNATURE command from the binary so that the signature isn't checked at load time."
+            ->  persistence
+
+        & lC_MAINHijacking
+            user info: "LC_MAIN that points to the binary's entry point for execution and can be hijacked so that initial execution flows to a malicious addition. By modifying a binary in this way, application whitelisting can be bypassed because the file name or application path is still the same."
+            ->  bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting 
+
+        & localJobScheduling
+            user info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence,  to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
+            ->  persistence,
+                rootMac.adminRights
+
+        & loginItem
+            user info: "If an adversary can register their own login item or modified an existing one, then they can use it to execute their code for a persistence mechanism each time the user logs in."
+            ->  persistence      
+
+        & logonScripts
+            ->  rootMac.adminRights  
+
+        & plistModification
+            user info: "Adversaries can modify these plist files to point to their own code, can use them to execute their code in the context of another user, bypass whitelisting procedures, or even use them as a persistence mechanism."
+            ->  bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting,
+                executeCode,
+                persistence
+
+        & portKnocking
+            user info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
+            ->  bypassDefensiveNetworkServiceScanning
+
+        & rc_common
+            user info: "Adversaries can use the rc.common file as a way to hide code for persistence that will execute on each reboot as the root user."
+            ->  persistence
+
+        & reopenedApplications
+            user info: "An adversary can modify one of these files directly to include a link to their malicious executable to provide a persistence mechanism each time the user reboots their machine."
+            ->  persistence
+
+        | securitydMemory
+            user info: "If an adversary can obtain root access (allowing them to read securityd's memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user's logon keychain."
+            ->  keychainCollection
+
+        & setuidAndSetgid
+            user info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user's context."
+            ->  service7._exploitationForPrivilegeEscalation,
+                persistence
+
+        | source
+            ->  executeCode
+
+        & sshHijacking
+            user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
+            ->  sSHCredentialInterception
+
+        | _sudo @hidden
+            ->  sudo
+            
+        & sudo
+            user info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
+            ->  service7._exploitationForPrivilegeEscalation  
+
+        | _sudoCaching @hidden
+            ->  sudoCaching
+            
+        & sudoCaching
+            user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
+            ->  service7._exploitationForPrivilegeEscalation
+
+        | trap
+            user info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
+            ->  executeCode,
+                persistence
+
+        | videoCapture
+            ->  computer4.collectVideo     
+
+        | spaceAfterFileName
+            ->  macOSUser.attemptUserExecution
+
+        & networkShareDiscovery
+            ->  internalNetworkMacOS.networkShareDiscovery
+
+        & userSecuritySoftwareDiscovery
+            user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            ->  service7._exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
+
+        & adminSecuritySoftwareDiscovery
+            ->  service7._exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
+
+        | windowsManagementInstrumentation
+            ->  scripting  
+
+        & keychainCollection
+            user info: "If an adversary knows the credentials for the login keychain, then they can get access to all the other credentials stored in this vault."
+            ->  macOSUser.userCredentials
+
+        & appleScript
+            ->  executeCode
+
+        & _startupItems @hidden
+            ->  startupItems
+
+        & startupItems
+            user info: "An adversary can create the appropriate folders/files in the StartupItems directory to register their own persistence mechanism."
+            ->  persistence,
+                service7._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack 
+
+        # antivirus
+            user info: "https://attack.mitre.org/mitigations/M1049/"
+            +>  kernelModulesAndExtensions
+
+        # audit 
+            user info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  lC_LOAD_DYLIB_Addition
+
+        # codeSigning
+            user info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  appleScript,
+                lC_LOAD_DYLIB_Addition,
+                lC_MAINHijacking
+
+        # disableOrRemoveFeatureOrProgram
+            user info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  emond,
+                reopenedApplications,
+                sshHijacking
+
+        # executionPrevention
+            +>  adminSecuritySoftwareDiscovery,
+                elevatedExecutionWithPrompt,
+                gatekeeperBypass,
+                hiddenWindow,
+                kernelModulesAndExtensions,
+                lC_LOAD_DYLIB_Addition,
+                networkShareDiscovery,
+                userSecuritySoftwareDiscovery            
+
+        # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
+            user info: "https://attack.mitre.org/mitigations/M1039/"
+            ->  clearCommandHistory,
+                hISTCONTROL   
+
+        # operatingSystemConfiguration
+            user info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  bashHistory,
+                hiddenUsers,
+                hISTCONTROL,
+                setuidAndSetgid,
+                sudoCaching
+
+        # passwordPolicies // Set and enforce secure password policies for accounts 
+            user info: "https://attack.mitre.org/mitigations/M1027/"
+            +>  keychainCollection,
+                sshHijacking
+
+        # privilegedAccountManagement
+            user info: "https://attack.mitre.org/mitigations/M1026/"
+            +>  sshHijacking
+
+        # restrictFileAndDirectoryPermissions
+            user info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  bash_profileAndBashrc,
+                dylibHijacking,
+                logonScripts,
+                plistModification,
+                sshHijacking,
+                startupItems,
+                sudo
+
+        # userAccountControl
+            user info: "https://attack.mitre.org/mitigations/M1052/"
+            +>  sshHijacking
+    }    
+}
+
+category Network {
+    asset InternalNetwork {
+        | obfuscateNetworkTraffic
+
+        # sSLOrTLSInspection
+            user info: "https://attack.mitre.org/mitigations/M1020/"
+            ->  obfuscateNetworkTraffic,
+                os13.standardCryptographicProtocol
+
+        & applicationLayerConnexion
+            ->  c2Connexion,
+                bypassNetworkIntrusionDetection,
+                externalNetwork2.bypassNetworkIntrusionDetection
+
+        & dataExfiltration
+            ->  externalNetwork2.dataExfiltration
+
+        | attemptDefacement @hidden
+            ->  defacement
+
+        & defacement
+            user info: "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users."
+        
+        E firewallExists
+            <-  firewall6
+            ->  firewall6._bypassFirewall
+               
+        | bypassAccessControl
+
+        | bypassFirewall
+
+        | bypassNetworkIntrusionDetection 
+
+        | bypassProxies
+
+        & transmittedDataManipulation
+            user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        & c2Connexion
+            ->  c2Connected
+
+        & exchangeServerCollection
+            user info: "Adversaries may leverage a user's credentials and interact directly with the Exchange server to acquire information from within a network."
+            ->  os13.dataCollected
+
+        & exploitPublicFacingApplication
+            user info: "When exploiting Public-Facing Application, depending on the flaw being exploited it may include Exploitation for Defense Evasion."
+            ->  service10.exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
+                os13.systemAccess
+
+        | networkShareDiscovery
+            user info: "Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. "
+        
+        | internalNetworkResourcesInformation
+
+        | remoteSystemsConnection
+            ->  networkSharedDrive0.dataFromNetworkSharedDrive 
+
+        | webShell
+            user info: "Web shells may serve as Redundant Access or as a persistence mechanism."
+            ->  os13.redundantAccess, // use a Web Shell to maintain access 
+                persistence
+
+        | persistence 
+        
+        | remoteAccess
+
+        | remoteCOMExecution
+            user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) to execute on remote systems as part of lateral movement."
+
+        | remoteExecution
+
+        | c2Connected 
+            ->  communicate,
+                dataObfuscation,
+                packetCapture
+
+        | communicate 
+
+        | generateDomainNames 
+
+        | _dataObfuscation @hidden
+            ->  dataObfuscation
+
+        & dataObfuscation
+            user info: "This encompasses many methods, such as adding junk data to protocol traffic, using steganography, commingling legitimate traffic with C2 communications traffic, or using a non-standard data encoding system."
+            ->  externalNetwork2.bypassNetworkIntrusionDetection,
+                bypassNetworkIntrusionDetection
+
+        | packetCapture
+
+        # encryptSensitiveInformation
+            user info:"https://attack.mitre.org/mitigations/M1041/"   
+            ->  transmittedDataManipulation,
+                exchangeServerCollection
+
+        # executionPrevention             
+            user info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  os13.networkServiceScan
+
+        # filterNetworkTraffic
+            user info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  os13.customCommandAndControlProtocol,
+                os13.endpointDenialOfService,
+                os13.multiHopProxy,
+                os13.networkDenialOfService,
+                os13.standardNonApplicationLayerProtocol,
+                windows9.bITSJobs 
+
+        # limitAccessToResourceOverNetwork
+            user info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  windows9.remoteDesktopProtocol,
+                windows9.sharedWebroot,
+                hardwareAddition.hardwareAdditions,
+                service10.externalRemoteServices
+
+        # multiFactorAuthentication
+            user info: "https://attack.mitre.org/mitigations/M1032/"
+            ->  exchangeServerCollection,
+                service10.externalRemoteServices
+
+        # networkIntrusionPrevention
+            user info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  applicationLayerConnexion,
+                c2Connexion,
+                dataExfiltration,
+                generateDomainNames,
+                browser6.spearphishingAttachment,
+                os13.commonlyUsedPortsConnection,
+                os13.connectionProxy,
+                os13.customCommandAndControlProtocol,
+                os13.customCryptographicProtocol,
+                os13.dataCompressed,
+                os13.dataEncoding,
+                os13.fallbackChannels,
+                os13.multibandCommunication,
+                os13.multilayerEncryption,
+                os13.multiStageChannels,
+                os13.networkServiceScan,
+                os13.redundantAccess,
+                os13.remoteFileCopy,
+                os13.standardCryptographicProtocol,
+                os13.standardNonApplicationLayerProtocol,
+                os13.uncommonlyUsedPortsConnection,
+                windows9.templateInjection
+
+        # networkSegmentation
+            user info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  exploitPublicFacingApplication,
+                remoteAccess,
+                administrator6.createUserAccount,
+                os13.commonlyUsedPortsConnection,
+                os13.uncommonlyUsedPortsConnection,
+                os13.customCommandAndControlProtocol,
+                os13.privateKeys,
+                os13.runtimeDataManipulation,
+                os13.standardNonApplicationLayerProtocol,
+                windows9.accountManipulation,
+                windows9.componentObjectModelAndDistributedCOM,
+                windows9.domainTrustDiscovery,
+                windows9.userServiceStop,
+                windows9.adminServiceStop,
+                windows9.sharedWebroot,
+                windows9.systemServiceStop,
+                service10._exploitationOfRemoteServices,
+                service10.externalRemoteServices,
+                thirdpartySoftware6.trustedRelationship
+
+        # vulnerabilityScanning // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
+            user info: "https://attack.mitre.org/mitigations/M1016/"
+            ->  exploitPublicFacingApplication,
+                service10._exploitationOfRemoteServices,
+                service10.supplyChainCompromise
+    }
+
+    asset NetworkSharedDrive extends InternalNetwork {
+        & taintSharedContent
+            user info: "Once a user opens the shared tainted content, tfhe malicious portion can be executed to run the adversary's code on a remote system."
+            ->  windows9.executeCode
+
+        | dataFromNetworkSharedDrive
+            user info: "Adversaries may search network shares on computers they have compromised to find files of interest."
+            ->  os13.sensitiveDataCollected
+    }
+
+    asset ExternalNetwork {
+        | obfuscateNetworkTraffic
+
+        | bypassFirewall
+
+        | bypassNetworkIntrusionDetection
+
+        | dataExfiltration
+
+        | attemptDefacement @hidden
+            ->  defacement
+
+        & defacement
+            user info: "Websites are a common victim of defacement that often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda."
+            ->  browser7._websiteDefacement
+
+        & exploitPublicFacingApplication
+            user info: "When exploiting Public-Facing Application, depending on the flaw being exploited it may include Exploitation for Defense Evasion."
+            ->  service11.exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
+                os14.systemAccess
+
+        & webService
+            user info: "Adversaries may use an existing, legitimate external Web service as a means for relaying commands to a compromised system."
+            ->  os14.bypassBinaryAnalysis,
+                os14.bypassLogAnalysis,
+                bypassFirewall,
+                internalNetwork2.bypassFirewall,
+                internalNetwork2.c2Connected
+
+        | attemptTransmittedDataManipulation @hidden
+            ->  transmittedDataManipulation
+
+        & transmittedDataManipulation
+            user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+            
+        # encryptSensitiveInformation
+            user info:"https://attack.mitre.org/mitigations/M1041/"   
+            ->  transmittedDataManipulation
+
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            user info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  os14.endpointDenialOfService,
+                os14.multiHopProxy,
+                os14.networkDenialOfService,
+                os14.standardNonApplicationLayerProtocol,
+                windows10.bITSJobs  
+
+        # networkIntrusionPrevention
+            user info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  webService,
+                browser7.spearphishingAttachment,
+                internalNetwork2.dataObfuscation,
+                internalNetwork2.generateDomainNames,
+                os14.commonlyUsedPortsConnection,
+                os14.uncommonlyUsedPortsConnection,
+                os14.connectionProxy,
+                os14.dataEncoding,
+                os14.fallbackChannels,
+                os14.multibandCommunication,
+                os14.multilayerEncryption,
+                os14.multiStageChannels,
+                os14.redundantAccess,
+                os14.remoteFileCopy,
+                os14.standardCryptographicProtocol,
+                os14.standardNonApplicationLayerProtocol
+
+        # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
+            user info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  exploitPublicFacingApplication,
+                service11._exploitationOfRemoteServices,
+                os14.commonlyUsedPortsConnection,
+                os14.uncommonlyUsedPortsConnection,
+                os14.privateKeys,
+                os14.runtimeDataManipulation,
+                os14.standardNonApplicationLayerProtocol,
+                windows10.accountManipulation,
+                windows10.adminServiceStop,
+                windows10.userServiceStop,
+                windows10.systemServiceStop          
+
+        # sSLOrTLSInspection
+            user info: "https://attack.mitre.org/mitigations/M1020/"
+            ->  obfuscateNetworkTraffic,
+                os14.standardCryptographicProtocol
+    }
+
+    asset OtherNetworkMedium {
+        | transmit
+    }
+
+    asset Firewall {
+        & _bypassFirewall @hidden
+            ->  bypassFirewall,
+                internalNetwork11.dataExfiltration,
+                internalNetwork11.c2Connexion
+
+        | bypassFirewall
+
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            user info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  windows12.bITSJobs,
+                linux6.portKnocking,
+                macOS7.portKnocking
+
+        # limitAccessToResourceOverNetwork
+            user info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  service13.externalRemoteServices
+
+        # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
+            user info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os17.commonlyUsedPortsConnection,
+                os17.uncommonlyUsedPortsConnection,
+                service13.externalRemoteServices,
+                windows12.distributedComponentObjectModel,
+                windows12.remoteDesktopProtocol,
+                windows12.windowsRemoteManagement,
+                thirdpartySoftware7.useThirdpartySoftware
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedComputer
+            ->  removableMedia1.infectedMedia,
+                internalNetwork6.applicationLayerConnexion,
+                os5.commonlyUsedPortsConnection,
+                os5.uncommonlyUsedPortsConnection,
+                os5.fileDeletion,
+                windows8.attemptPowerShell,
+                windows8.accountManipulation,
+                service12.attemptExternalRemoteServices,
+                removableMedia1.dataFromRemovableMedia
+
+        | infectedWindowsComputer
+            ->  windows8.dynamicDataExchange
+                
+        | infectedLinuxComputer
+
+        | infectedMacOSComputer 
+
+        | unresponsive
+
+        | exfiltrationOverPhysicalMedium
+            ->  removableMedia1.dataExfiltration
+
+        E microphoneExists
+            <-  microphone
+            ->  microphone.collectAudio
+
+        & collectAudio
+            ->  os5.dataCollected
+        
+        | peripheralDeviceDiscovery
+            user info: "Adversaries may attempt to gather information about attached peripheral devices and components connected to a computer system. The information may be used to enhance their awareness of the system and network environment or may be used for further actions."
+
+        E webcamExists
+            <-  webcam
+            ->  webcam._collectVideo
+
+        E videoCallApplicationExists
+            <-  videoCallApplication
+            ->  videoCallApplication._collectVideo
+
+        | collectVideo
+            ->  os5.dataCollected
+    }
+
+    asset HardwareAddition extends Computer {
+        & hardwareAdditions
+            user info: "Computer accessories, computers, or networking hardware may be introduced into a system as a vector to gain execution." 
+            ->  os18.executeCode  
+    }
+
+    asset PeripheralDevice {
+
+    }
+
+    asset Webcam extends PeripheralDevice {
+        | _collectVideo @hidden
+            -> computer10.collectVideo
+    }
+
+    asset RemovableMedia extends PeripheralDevice {
+        | dataFromRemovableMedia
+            ->  os12.sensitiveDataCollected
+
+        | infectedMedia
+
+        | dataExfiltration
+    }
+    
+    asset Microphone extends PeripheralDevice {
+        | collectAudio
+            ->  computer8.collectAudio
+    }
+}
+
+associations {    
+//main asset associations
+    User [user2] * <--Use--> * [computer] Computer
+    Computer [computerPeripheral] * <--Serve--> * [reripheralDevice] PeripheralDevice
+    Administrator [administrator1] * <--Manage--> * [user9] User
+    OS [os5] * <--Operate--> * [computer4] Computer
+    OS [os10] * <--Run--> * [service4] Service
+    Browser [browser4] * <--Access--> * [service3] Service
+    SysAdmin [systemWindows] * <--Operate--> * [windows3] Windows
+    Firewall [firewall7] 0..1 <--Protect--> * [computer12] Computer
+    InternalNetwork [internalNetwork11] * <--Protect--> 0..1 [firewall6] Firewall
+    ExternalNetwork [externalNetwork8] * <--Protect--> 0..1 [firewall7] Firewall
+
+//other associations used for connecting attack steps
+    User [user1] * <--Operate--> * [os] OS
+    User [windowsUser] * <--Operate--> * [windows] Windows
+    User [linuxUser] * <--Operate--> * [linux] Linux   
+    User [macOSUser] * <--Operate--> * [macOS] MacOS
+    User [user3] * <--Run--> * [service] Service
+    User [user4] * <--Run--> * [thirdpartySoftware] ThirdpartySoftware
+    User [user5] * <--Access--> * [browser] Browser
+    User [user6] * <--Communicate--> * [internalNetwork] InternalNetwork
+    User [user7] * <--Communicate--> * [externalNetwork] ExternalNetwork
+    User [user8] * <--Use--> * [removableMedia] RemovableMedia
+    RemoteDesktopUser [windowsRemoteDestopUser] * <--Use--> * [windows1] Windows
+    Administrator [administrator2] * <--Operate--> * [os1] OS
+    Administrator [windowsAdministrator] * <--Operate--> * [windows2] Windows
+    Administrator [linuxAdministrator] * <--Operate--> * [linux1] Linux
+    Administrator [macosAdministrator] * <--Operate--> * [macOS1] MacOS
+    Administrator [administrator4] * <--Run--> * [service1] Service
+    Administrator [administrator5] * <--Run--> * [thirdpartySoftware1] ThirdpartySoftware  
+    WindowsAdmin [windowsAdmin] * <--Use--> * [windowsWindowsAdmin] Windows
+    Root [rootLinux] * <--Use--> * [linux2] Linux
+    Root [rootMac] * <--Use--> * [macOS2] MacOS
+    SysAdmin [system] * <--Operate--> * [os3] OS 
+    SysAdmin [system1] * <--Run--> * [service2] Service
+    SysAdmin [system2] * <--Run--> * [thirdpartySoftware2] ThirdpartySoftware
+    Browser [browser1] * <--Run--> * [os4] OS
+    Browser [browser2] * <--Run--> * [windows4] Windows
+    Browser [browser11] * <--Access--> * [computer11] Computer  
+    Browser [browser5] * <--Access--> * [thirdpartySoftware3] ThirdpartySoftware 
+    Browser [browser6] * <--Communicate--> * [internalNetwork1] InternalNetwork
+    Browser [browser7] * <--Communicate--> * [externalNetwork1] ExternalNetwork  
+    OS [os7] * <--Contain--> * [windows5] Windows
+    OS [os8] * <--Contain--> * [linux3] Linux  
+    OS [os9] * <--Contain--> * [macOS3] MacOS
+    OS [os11] * <--Run--> * [thirdpartySoftware4] ThirdpartySoftware  
+    OS [os12] * <--Operate--> * [removableMedia2] RemovableMedia
+    Computer [computer7] * <--Run--> * [service12] Service 
+    Windows [windows6] * <--Run--> * [service5] Service
+    Linux [linux4] * <--Run--> * [service6] Service
+    MacOS [macOS4] * <--Run--> * [service7] Service
+    Service [service8] * <--Contain--> * [thirdpartySoftware5] ThirdpartySoftware
+    InternalNetwork [internalNetwork2] * <--Communicate--> * [externalNetwork2] ExternalNetwork   
+    InternalNetwork [internalNetwork4] * <--Communicate--> * [os13] OS
+    InternalNetwork [internalNetworkWindows] * <--Communicate--> * [windows9] Windows
+    InternalNetwork [internalNetworkMacOS] * <--Communicate--> * [macOSInNet] MacOS 
+    InternalNetwork [internalNetwork5] * <--Use--> * [administrator6] Administrator
+    InternalNetwork [internalNetwork6] * <--Communicate--> * [computer5] Computer
+    InternalNetwork [internalNetwork7] * <--Contain--> * [service10] Service
+    InternalNetwork [internalNetwork8] * <--Contain--> * [thirdpartySoftware6] ThirdpartySoftware
+    InternalNetwork [internalNetwork9] * <--Communicate--> * [networkSharedDrive0] NetworkSharedDrive
+    InternalNetwork [internalNetwork10] * <--Communicate--> * [hardwareAddition] HardwareAddition
+    ExternalNetwork [externalNetwork4] * <--Communicate--> * [computer6] Computer
+    ExternalNetwork [externalNetwork5] * <--Communicate--> * [os14] OS
+    ExternalNetwork [externalNetworkWindows] * <--Communicate--> * [windows10] Windows
+    ExternalNetwork [externalNetwork6] * <--Use--> * [administrator7] Administrator
+    ExternalNetwork [externalNetwork7] * <--Contain--> * [service11] Service
+    NetworkSharedDrive [networkSharedDrive1] * <--Communicate--> * [os15] OS
+    NetworkSharedDrive [networkSharedDrive2] * <--Communicate--> * [windows11] Windows
+    OtherNetworkMedium [otherNetworkMedium] * <--Communicate--> * [os16] OS   
+    Firewall [firewall1] 0..1 <--Protect--> * [os17] OS
+    Firewall [firewall2] 0..1 <--Protect--> * [windows12] Windows
+    Firewall [firewall3] 0..1 <--Protect--> * [linux6] Linux
+    Firewall [firewall4] 0..1 <--Protect--> * [macOS7] MacOS
+    Firewall [firewall5] 0..1 <--Protect--> * [thirdpartySoftware7] ThirdpartySoftware 
+    Firewall [firewall6] 0..1 <--Protect--> * [service13] Service
+    Computer [computer2] * <--Serve--> * [removableMedia1] RemovableMedia  
+    Computer [computerWindows] * <--Operate--> * [windows8] Windows
+    Computer [computer8] * <--Serve--> * [microphone] Microphone
+    VideoCallApplication [videoCallApplication] * <--Serve--> * [computer9] Computer
+    Webcam [webcam] * <--Serve--> * [computer10] Computer
+    HardwareAddition [hardwareAddition] * <--Operate--> * [os18] OS
+}
