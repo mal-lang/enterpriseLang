@@ -1,6 +1,6 @@
 // enterpriseLang
 // Authors: Wenjun Xiong (wenjx@kth.se), Emeline Legrand, Oscar Åberg
-// Probability distributions: Lina Evensjö 
+// Probability distributions: Lina Evensjö, Quentin Biharé
 
 #id: "org.mal_lang.attacklang"
 #version: "1.0.0"
@@ -511,7 +511,7 @@ category Software {
         | attemptSpearphishingViaService @hidden
             ->  spearphishingViaService
 
-        & spearphishingViaService [0.5*(TruncatedNormal(0.712,0.0606)+TruncatedNormal(0.4475,0.2425))]
+        & spearphishingViaService [TruncatedNormal(0.57975,0.1249)]
             user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797
                                                                https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460
