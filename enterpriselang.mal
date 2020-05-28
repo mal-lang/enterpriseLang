@@ -8,9 +8,7 @@
 category Person {
     asset User {
         & spearphishingLinkClicked [TruncatedNormal(0.712,0.0606)]
-            developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887
-                                                               https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968"
-
+            developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887; https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968"
             ->  attemptUserExecution,
                 computer.os.service.thirdpartySoftware.applicationAccessToken
 
@@ -29,9 +27,7 @@ category Person {
 
         # userTraining [Bernoulli(0.22)]
             user info: "https://attack.mitre.org/mitigations/M1017/"
-            developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745
-                                                               https://doi.org/10.1145/1572532.1572536
-                                                               https://ieeexplore.ieee.org/abstract/document/6585241" 
+            developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241" 
             ->  spearphishingAttachmentDownload, 
                 spearphishingLinkClicked, 
                 userAccount.userExecution,
@@ -220,9 +216,7 @@ category Software {
 
         # userTraining [Bernoulli(0.22)]
             user info: "https://attack.mitre.org/mitigations/M1017/"
-            developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745
-                                                               https://doi.org/10.1145/1572532.1572536
-                                                               https://ieeexplore.ieee.org/abstract/document/6585241"      
+            developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241"      
             ->  os.service.browser.stealWebSessionCookie,
                 os._credentialDumping,
                 os.credentialsInFiles,
@@ -513,11 +507,7 @@ category Software {
 
         & spearphishingViaService
             user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
-            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797
-                                                               https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460
-                                                               https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average
-                                                               https://academic.oup.com/jcmc/article/20/1/83/4067561
-                                                               https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  spearphishingViaPersonalEmail,
                 spearphishingViaSocialMedia
         
@@ -1333,9 +1323,7 @@ category Software {
 
         # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
-            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797
-                                                               https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460
-                                                               https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             ->  antivirusCheck,
                 obfuscatedFilesOrInformation,
                 service.browser.spearphishingAttachment,
