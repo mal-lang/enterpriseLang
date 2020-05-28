@@ -100,7 +100,7 @@ limitations under the License.
       </resource>
     </resources>
     <plugins>
-      <plugin>
+      <!--plugin>
         <groupId>org.mal-lang</groupId>
         <artifactId>mal-maven-plugin</artifactId>
         <version>${malcompiler.version}</version>
@@ -112,7 +112,7 @@ limitations under the License.
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
