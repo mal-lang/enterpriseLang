@@ -7,7 +7,7 @@
 
 category Person {
     asset User {
-        & spearphishingLinkClicked [TruncatedNormal(0.712,0.0606)]
+        & spearphishingLinkClicked [Bernoulli(0.712)*Exponential(1)]
             developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887; https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968"
             ->  attemptUserExecution,
                 computer.os.service.thirdpartySoftware.applicationAccessToken
@@ -507,15 +507,16 @@ category Software {
 
         & spearphishingViaService
             user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
-            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  spearphishingViaPersonalEmail,
                 spearphishingViaSocialMedia
         
         | spearphishingViaPersonalEmail [Bernoulli(0.712)*Exponential(1)]
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  browser.spearphishingAttachment,
                 browser.spearphishingLink
         
         | spearphishingViaSocialMedia [Bernoulli(0.4475)*Exponential(0.286)]
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  browser.spearphishingAttachment,
                 browser.spearphishingLink
 
@@ -647,7 +648,21 @@ category Software {
     asset Browser {
         & driveByCompromise
             user info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
+            -> malvertising
+            -> crossSiteScripting
+
+        | malvertising [Gamma(9,0.167)]
+            dev info: "Sources for distribution result: https://www.adstage.io/resources/q1-2020-ppc-benchmark-report/,
+                                                        https://www.youtube.com/watch?v=rTg9l4d8MU4,
+                                                        https://www.facebook.com/business/help/204798856225114?id=649869995454285"
             ->  service.thirdpartySoftware.stealApplicationAccessToken
+
+        | crossSiteScripting [Bernoulli(0.32)*Exponential(1)]
+            dev info: "Sources for distribution result: https://books.google.fr/books?id=biGsBwAAQBAJ&pg=PA104&lpg=PA104&dq=forum+posts,+comments+compromise+browser+malware&source=bl&ots=rzJQ6XY73h&sig=ACfU3U2wC6Muu7MfakP6MHJLk7IXJ76C0A&hl=fr&sa=X&ved=2ahUKEwiomdS20dbpAhV65OAKHaD4Dz8Q6AEwAHoECAoQAQ#v=onepage&q=forum%20posts%2C%20comments%20compromise%20browser%20malware&f=false,
+                                                        http://www.ijiser.com/paper/2017/vol4issue8/Aug2017p101.1.pdf,
+                                                        https://www.acunetix.com/acunetix-web-application-vulnerability-report-2019/#xss"
+            ->  service.thirdpartySoftware.stealApplicationAccessToken
+
 
         | executionThroughMaliciousContent
 
@@ -686,7 +701,7 @@ category Software {
                 service.os.userAccount.userCredentials,
                 service.os.persistence
 
-        | _websiteDefacement @hidden
+        | _websiteDefacement @hidden 
             user info: "This is a helper attack step that websites are a common victim of defacement. Website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise."
             ->  driveByCompromise // Belongs to Drive-by Compromise attack
 
