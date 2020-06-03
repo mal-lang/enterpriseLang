@@ -474,6 +474,21 @@ category Software {
     asset Service {
         & applicationDeploymentSystems
 
+        | applicationHighVulnerability [Bernoulli(0.5)*(Exponential(24)+Exponential(2))]
+            dev info :"Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
+                                                          https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"
+            -> applicationVulnerability
+
+        | applicationMediumVulnerability [Exponential(24)+Bernoulli(0.87)*(Exponential(2)+Exponential(0.5))]
+            dev info :"Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
+                                                          https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"
+            -> applicationVulnerability
+
+        | applicationLowVulnerability [Exponential(2)+Exponential(24)+Bernoulli(0.89)*(Exponential(1)+Exponential(0.143))]
+            dev info :"Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
+                                                          https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
+            -> applicationVulnerability
+
         | applicationVulnerability
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
             ->  os.computer.router.internalNetwork.exploitPublicFacingApplication,
