@@ -1,6 +1,6 @@
 // enterpriseLang
 // Authors: Wenjun Xiong (wenjx@kth.se), Emeline Legrand, Oscar Åberg
-// Probability distributions: Lina Evensjö, Quentin Biharé
+// Probability distributions: Quentin Biharé, Lina Evensjö
 
 #id: "org.mal_lang.attacklang"
 #version: "1.0.0"
@@ -364,8 +364,7 @@ category Software {
                 os.service.applicationDeploymentSystems,
                 os.service._exploitationOfRemoteServices,
                 os.service.thirdpartySoftware._useThirdpartySoftware, // grant access to application deployment systems only to a limited number of authorized administrators
-                os.computer.router.internalNetwork.exploitPublicFacingApplication,
-                os.computer.router.externalNetwork.exploitPublicFacingApplication
+                os.service.exploitPublicFacingApplication
     }
    
     asset WindowsAdmin extends AdminAccount {
@@ -474,26 +473,39 @@ category Software {
     asset Service {
         & applicationDeploymentSystems
 
-        | applicationHighVulnerability [Bernoulli(0.5)*(Exponential(24)+Exponential(2))]
-            dev info :"Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
+        | applicationHighVulnerability [Exponential(24)]
+            developer info:"Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
                                                           https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"
-            -> applicationVulnerability
+            ->  exploitPublicFacingApplication
 
-        | applicationMediumVulnerability [Exponential(24)+Bernoulli(0.87)*(Exponential(2)+Exponential(0.5))]
-            dev info :"Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
+        | applicationMediumVulnerability 
+            developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
                                                           https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"
-            -> applicationVulnerability
+            ->  exploitPublicFacingApplication
 
-        | applicationLowVulnerability [Exponential(2)+Exponential(24)+Bernoulli(0.89)*(Exponential(1)+Exponential(0.143))]
-            dev info :"Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
+        | applicationLowVulnerability 
+            developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf
                                                           https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
-            -> applicationVulnerability
+            ->  exploitPublicFacingApplication
 
-        | applicationVulnerability
+        & exploitPublicFacingApplication
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
-            ->  os.computer.router.internalNetwork.exploitPublicFacingApplication,
-                os.computer.router.externalNetwork.exploitPublicFacingApplication
+            ->  exploitHighVulnerabilityPublicFacingApplication,
+                exploitMediumVulnerabilityPublicFacingApplication,
+                exploitLowVulnerabilityPublicFacingApplication,
 
+        | exploitHighVulnerabilityPublicFacingApplication [Bernoulli(0.5)*Exponential(2)]
+            ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
+                os.systemAccess
+                
+        | exploitMediumVulnerabilityPublicFacingApplication 
+            ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
+                os.systemAccess
+                
+        | exploitLowVulnerabilityPublicFacingApplication
+            ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
+                os.systemAccess
+                
         | blockUserAccess  
 
         | serviceInformation 
@@ -595,8 +607,7 @@ category Software {
                 exploitationForDefenseEvasion,
                 exploitationForPrivilegeEscalation,
                 exploitationOfRemoteServices,
-                os.computer.router.internalNetwork.exploitPublicFacingApplication,
-                os.computer.router.externalNetwork.exploitPublicFacingApplication
+                exploitPublicFacingApplication
 
         # applicationVetting
             user info: "https://attack.mitre.org/mitigations/M1005/"       
@@ -620,10 +631,9 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  exploitationForDefenseEvasion,
                 exploitationForPrivilegeEscalation,
+                exploitPublicFacingApplication,
                 supplyChainCompromise,
-                os.computer.router.internalNetwork.remoteAccess,
-                os.computer.router.internalNetwork.exploitPublicFacingApplication,
-                os.computer.router.externalNetwork.exploitPublicFacingApplication,
+                os.computer.router.internalNetwork.remoteAccess,              
                 os.windows.systemFirmware,
                 os.windows.dLLSideLoading          
     }
@@ -667,13 +677,13 @@ category Software {
             -> crossSiteScripting
 
         | malvertising [Gamma(9,0.167)]
-            dev info: "Sources for distribution result: https://www.adstage.io/resources/q1-2020-ppc-benchmark-report/,
+            developer info: "Sources for distribution result: https://www.adstage.io/resources/q1-2020-ppc-benchmark-report/,
                                                         https://www.youtube.com/watch?v=rTg9l4d8MU4,
                                                         https://www.facebook.com/business/help/204798856225114?id=649869995454285"
             ->  service.thirdpartySoftware.stealApplicationAccessToken
 
         | crossSiteScripting [Bernoulli(0.32)*Exponential(1)]
-            dev info: "Sources for distribution result: https://books.google.fr/books?id=biGsBwAAQBAJ&pg=PA104&lpg=PA104&dq=forum+posts,+comments+compromise+browser+malware&source=bl&ots=rzJQ6XY73h&sig=ACfU3U2wC6Muu7MfakP6MHJLk7IXJ76C0A&hl=fr&sa=X&ved=2ahUKEwiomdS20dbpAhV65OAKHaD4Dz8Q6AEwAHoECAoQAQ#v=onepage&q=forum%20posts%2C%20comments%20compromise%20browser%20malware&f=false,
+            developer info: "Sources for distribution result: https://books.google.fr/books?id=biGsBwAAQBAJ&pg=PA104&lpg=PA104&dq=forum+posts,+comments+compromise+browser+malware&source=bl&ots=rzJQ6XY73h&sig=ACfU3U2wC6Muu7MfakP6MHJLk7IXJ76C0A&hl=fr&sa=X&ved=2ahUKEwiomdS20dbpAhV65OAKHaD4Dz8Q6AEwAHoECAoQAQ#v=onepage&q=forum%20posts%2C%20comments%20compromise%20browser%20malware&f=false,
                                                         http://www.ijiser.com/paper/2017/vol4issue8/Aug2017p101.1.pdf,
                                                         https://www.acunetix.com/acunetix-web-application-vulnerability-report-2019/#xss"
             ->  service.thirdpartySoftware.stealApplicationAccessToken
@@ -1541,8 +1551,7 @@ category Software {
                 service.exploitationForCredentialAccess,
                 service.exploitationForPrivilegeEscalation,
                 service.exploitationOfRemoteServices,
-                computer.router.internalNetwork.exploitPublicFacingApplication,
-                computer.router.externalNetwork.exploitPublicFacingApplication
+                service.exploitPublicFacingApplication
     }
     
     asset SysAdmin {
@@ -2932,11 +2941,6 @@ category Network {
             user info: "Adversaries may leverage a user's credentials and interact directly with the Exchange server to acquire information from within a network."
             ->  router.computer.os.dataCollected
 
-        & exploitPublicFacingApplication
-            user info: "When exploiting Public-Facing Application, depending on the flaw being exploited it may include Exploitation for Defense Evasion."
-            ->  router.computer.os.service.exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
-                router.computer.os.systemAccess
-
         | networkShareDiscovery
             user info: "Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. "
         
@@ -3035,8 +3039,7 @@ category Network {
 
         # networkSegmentation
             user info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  exploitPublicFacingApplication,
-                remoteAccess,
+            ->  remoteAccess,
                 router.computer.os.adminAccount.createUserAccount,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.uncommonlyUsedPortsConnection,
@@ -3052,12 +3055,13 @@ category Network {
                 router.computer.os.windows.sharedWebroot,
                 router.computer.os.windows.systemServiceStop,
                 router.computer.os.service.exploitationOfRemoteServices,
+                router.computer.os.windows.service.exploitPublicFacingApplication,
                 router.computer.os.windows.service.externalRemoteServices,
                 router.computer.os.windows.service.thirdpartySoftware.trustedRelationship
 
         # vulnerabilityScanning // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
             user info: "https://attack.mitre.org/mitigations/M1016/"
-            ->  exploitPublicFacingApplication,
+            ->  router.computer.os.windows.service.exploitPublicFacingApplication,
                 router.computer.os.windows.service.exploitationOfRemoteServices,
                 router.computer.os.windows.service.supplyChainCompromise
     }
@@ -3087,11 +3091,6 @@ category Network {
         & defacement
             user info: "Websites are a common victim of defacement that often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda."
             ->  router.computer.os.service.browser._websiteDefacement
-
-        & exploitPublicFacingApplication
-            user info: "When exploiting Public-Facing Application, depending on the flaw being exploited it may include Exploitation for Defense Evasion."
-            ->  router.computer.os.service.exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
-                router.computer.os.systemAccess
 
         & webService
             user info: "Adversaries may use an existing, legitimate external Web service as a means for relaying commands to a compromised system."
@@ -3140,7 +3139,7 @@ category Network {
 
         # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
             user info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  exploitPublicFacingApplication,
+            ->  router.computer.os.windows.service.exploitPublicFacingApplication,
                 router.computer.os.service.exploitationOfRemoteServices,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.uncommonlyUsedPortsConnection,
