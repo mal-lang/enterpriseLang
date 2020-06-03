@@ -479,11 +479,11 @@ category Software {
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitHighVulnerabilityPublicFacingApplication
 
-        | applicationMediumVulnerability
+        | applicationMediumVulnerability [Exponential(2)]
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitMediumVulnerabilityPublicFacingApplication
 
-        | applicationLowVulnerability 
+        | applicationLowVulnerability [Exponential(1)]
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitLowVulnerabilityPublicFacingApplication
 
@@ -492,12 +492,12 @@ category Software {
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
                 os.systemAccess
                 
-        & exploitMediumVulnerabilityPublicFacingApplication
+        & exploitMediumVulnerabilityPublicFacingApplication [Bernoulli(0.87)*Exponential(0.5)]
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
                 os.systemAccess
                 
-        & exploitLowVulnerabilityPublicFacingApplication
+        & exploitLowVulnerabilityPublicFacingApplication [Bernoulli(0.89)*Exponential(0.143)]
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
                 os.systemAccess
