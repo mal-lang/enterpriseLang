@@ -489,16 +489,19 @@ category Software {
 
         & exploitHighVulnerabilityPublicFacingApplication [Bernoulli(0.5)*Exponential(2)]
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
+            developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
                 os.systemAccess
                 
         & exploitMediumVulnerabilityPublicFacingApplication [Bernoulli(0.87)*Exponential(0.5)]
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
+            developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
                 os.systemAccess
                 
         & exploitLowVulnerabilityPublicFacingApplication [Bernoulli(0.89)*Exponential(0.143)]
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
+            developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
                 os.systemAccess
                 
@@ -589,8 +592,9 @@ category Software {
         | attemptExternalRemoteServices @hidden 
             ->  externalRemoteServices
 
-        & externalRemoteServices
+        & externalRemoteServices [Bernoulli(0.19)*Exponential(3)]
             user info: "Adversaries may use remote services to initially access and/or persist within a network."
+            developer info: "Sources for distribution result: https://www.securitymetrics.com/blog/remote-access-attacks-how-protect-against-malware, https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://securitybrief.com.au/story/15-000-companies-still-critically-vulnerable-from-citrix-security-flaws-report"
             ->  os.computer.router.internalNetwork.persistence,
                 os.computer.router.internalNetwork.remoteAccess,
                 os.validAccounts,
