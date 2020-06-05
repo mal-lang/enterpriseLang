@@ -3249,7 +3249,7 @@ category Hardware {
     }
 
     asset HardwareAddition extends Computer {
-        & hardwareAdditions [Uniform(0.45, 0.98)]
+        & hardwareAdditions [Uniform(0.45, 0.98)*Exponential(240)]
             user info: "Computer accessories, computers, or networking hardware may be introduced into a system as a vector to gain execution." 
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/7546509"
             ->  os.executeCode  
