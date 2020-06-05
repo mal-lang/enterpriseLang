@@ -675,8 +675,9 @@ category Software {
     }
     
     asset Browser {
-        & driveByCompromise
+        & driveByCompromise [Bernoulli(0.37)]
             user info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/6657123"
             ->  malvertising,
                 crossSiteScripting
 
@@ -1164,8 +1165,9 @@ category Software {
         & bruteForceWithPasswordPolicy
             ->  userAccount.userCredentials // the probability distribution should be so that it has higher chance of success than the bruteforce attack
 
-        & bruteForce
+        & bruteForce [Exponential(0.3)]
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
+            developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper."
             ->  userAccount.userCredentials           
 
         | attemptAntivirusCheck @hidden
@@ -1383,6 +1385,7 @@ category Software {
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             user info: "https://attack.mitre.org/mitigations/M1036/" 
+            developer info: "Binary probability relation."
             ->  bruteForce
 
         # bootIntegrity 
@@ -1462,7 +1465,8 @@ category Software {
                 masquerading    
 
         # limitHardwareInstallation
-            user info: "https://attack.mitre.org/mitigations/M1034/"   
+            user info: "https://attack.mitre.org/mitigations/M1034/"
+            developer info: "Binary probability relation."
             ->  computer.hardwareAddition.hardwareAdditions     
 
         # operatingSystemConfiguration 
@@ -2285,8 +2289,9 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1015/"
             +>  passTheTicket
 
-        # antivirus
+        # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             +>  softwarePacking,
                 templateInjection
 
@@ -2353,7 +2358,8 @@ category Software {
                 computer.router.internalNetwork.networkSharedDrive.taintSharedContent
 
         # limitHardwareInstallation
-            user info: "https://attack.mitre.org/mitigations/M1034/"   
+            user info: "https://attack.mitre.org/mitigations/M1034/"
+            developer info: "Binary probability relation."
             +>  replicationThroughRemovableMedia
 
         # operatingSystemConfiguration
@@ -2565,8 +2571,9 @@ category Software {
         | executeCode 
             +>  computer.infectedLinuxComputer 
 
-        # antivirus
+        # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             +>  kernelModulesAndExtensions
 
         # audit 
@@ -2825,8 +2832,9 @@ category Software {
             ->  persistence,
                 service._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack 
 
-        # antivirus
+        # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             +>  kernelModulesAndExtensions
 
         # audit 
@@ -3241,8 +3249,9 @@ category Hardware {
     }
 
     asset HardwareAddition extends Computer {
-        & hardwareAdditions
+        & hardwareAdditions [Uniform(0.45, 0.98)]
             user info: "Computer accessories, computers, or networking hardware may be introduced into a system as a vector to gain execution." 
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/7546509"
             ->  os.executeCode  
     }
 
