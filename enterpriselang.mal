@@ -1980,8 +1980,9 @@ category Software {
             ->  persistence,
                 sysAdmin.systemRights  
 
-        | replicationThroughRemovableMedia
+        | replicationThroughRemovableMedia [Bernoulli(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
+            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/7546509, https://threatpost.com/never-trust-a-found-usb-drive-black-hat-demo-shows-why/119653/"
             ->  communicationThroughRemovableMedia,
                 computer.peripheralDevice.removableMedia.infectedMedia
 
@@ -3249,9 +3250,8 @@ category Hardware {
     }
 
     asset HardwareAddition extends Computer {
-        & hardwareAdditions [Uniform(0.45, 0.98)*Exponential(240)]
+        & hardwareAdditions 
             user info: "Computer accessories, computers, or networking hardware may be introduced into a system as a vector to gain execution." 
-            developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/7546509"
             ->  os.executeCode  
     }
 
