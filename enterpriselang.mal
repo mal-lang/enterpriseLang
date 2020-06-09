@@ -3072,7 +3072,7 @@ category Network {
 
         # vulnerabilityScanning [Bernoulli(0.41)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
             user info: "https://attack.mitre.org/mitigations/M1016/"
-            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations_fr.pdf"
+            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf"
             ->  router.computer.os.windows.service.exploitHighVulnerabilityPublicFacingApplication,
                 router.computer.os.windows.service.exploitMediumVulnerabilityPublicFacingApplication,
                 router.computer.os.windows.service.exploitLowVulnerabilityPublicFacingApplication,
