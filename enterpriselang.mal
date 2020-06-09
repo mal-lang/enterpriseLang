@@ -19,19 +19,18 @@ category Person {
         | attemptUserExecution @hidden
             ->  userAccount.userExecution
 
-        | mediaInserted
-            ->  _mediaInserted
-
-        & _mediaInserted @hidden
-            ->  computer.peripheralDevice.removableMedia.dataExfiltration
+        | mediaInserted [Bernoulli(0.3)*Exponential(48)]
+            user info: "People work in the targeted entreprise carry out 30% of attacks, who have physical access to the network and can thus easily use an infected USB device for the adversary to get initial compromise."
+            developer info: "https://www.supplychaindive.com/news/internal-actors-cyberattacks-manufacturing/572832/#:~:text=External%20actors%20account%20for%20the,2019%20Data%20Breach%20Investigations%20Report"
+            ->  computer.os.windows.replicationThroughRemovableMedia,
+                computer.peripheralDevice.removableMedia.dataExfiltration
 
         # userTraining [Bernoulli(0.22)]
             user info: "https://attack.mitre.org/mitigations/M1017/"
             developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241" 
             ->  spearphishingAttachmentDownload, 
                 spearphishingLinkClicked, 
-                userAccount.userExecution,
-                _mediaInserted
+                userAccount.userExecution
     }
 }
 
@@ -1980,7 +1979,7 @@ category Software {
             ->  persistence,
                 sysAdmin.systemRights  
 
-        | replicationThroughRemovableMedia [Bernoulli(0.45)*Exponential(3.429)]
+        & replicationThroughRemovableMedia [Bernoulli(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/7546509, https://threatpost.com/never-trust-a-found-usb-drive-black-hat-demo-shows-why/119653/"
             ->  communicationThroughRemovableMedia,
