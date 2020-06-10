@@ -311,7 +311,7 @@ category Software {
                 os.systemShutdownOrReboot,
                 os.twoFactorAuthenticationInterception,
                 os.service.transmittedDataManipulation,
-                os.service.applicationDeploymentSystems,
+                os.service.applicationDeploymentSoftware,
                 os.service.thirdpartySoftware._useThirdpartySoftware,
                 os.computer.router.internalNetwork.transmittedDataManipulation,
                 os.computer.router.internalNetwork.bypassAccessControl,
@@ -360,7 +360,7 @@ category Software {
                 os.macOS.lC_MAINHijacking,
                 os.macOS.sudo,
                 os.macOS.sudoCaching,
-                os.service.applicationDeploymentSystems,
+                os.service.applicationDeploymentSoftware,
                 os.service._exploitationOfRemoteServices,
                 os.service.thirdpartySoftware._useThirdpartySoftware, // grant access to application deployment systems only to a limited number of authorized administrators
                 os.service.exploitHighVulnerabilityPublicFacingApplication,
@@ -472,7 +472,9 @@ category Software {
     }
 
     asset Service {
-        & applicationDeploymentSystems
+        & applicationDeploymentSoftware
+            user info: "Adversaries may deploy malicious software to systems within a network using application deployment systems employed by enterprise administrators."
+            ->  os.executeCode
 
         | applicationHighVulnerability [Exponential(24)]
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
@@ -632,7 +634,8 @@ category Software {
         # updateSoftware [Bernoulli(0.34)]
             developer info: "Sources for distribution result: https://www.usenix.org/system/files/conference/soups2015/soups15-paper-ion.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture"
             user info: "https://attack.mitre.org/mitigations/M1051/"
-            ->  exploitationForDefenseEvasion,
+            ->  applicationDeploymentSoftware,
+                exploitationForDefenseEvasion,
                 exploitationForPrivilegeEscalation,
                 exploitHighVulnerabilityPublicFacingApplication,
                 exploitMediumVulnerabilityPublicFacingApplication,
@@ -758,13 +761,6 @@ category Software {
     asset OS {   
         | accountAccessRemoval {A}
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
-
-        | attemptApplicationDeploymentSoftware @hidden
-            ->  applicationDeploymentSoftware
-
-        & applicationDeploymentSoftware
-            user info: "Access to a network-wide or enterprise-wide software deployment system enables an adversary to have remote code execution on all systems that are connected to such a system."
-            ->  executeCode
 
         | applicationExhaustionFlood
             ->  service.blockUserAccess 
@@ -1410,10 +1406,10 @@ category Software {
 
         # multiFactorAuthentication
             user info: "https://attack.mitre.org/mitigations/M1032/" 
-            ->  applicationDeploymentSoftware,
-                bruteForce,
+            ->  bruteForce,
                 networkSniffing,
                 service.browser.stealWebSessionCookie,
+                service.applicationDeploymentSoftware,
                 service.userRemoteServicesLogin,
                 service.adminRemoteServicesLogin,
                 service.thirdpartySoftware.useThirdpartySoftware
@@ -1462,7 +1458,7 @@ category Software {
 
         # codeSigning
             user info: "https://attack.mitre.org/mitigations/M1045/" 
-            ->  applicationDeploymentSoftware,
+            ->  service.applicationDeploymentSoftware,
                 masquerading    
 
         # limitHardwareInstallation
@@ -3051,6 +3047,7 @@ category Network {
         # networkSegmentation
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  remoteAccess,
+                router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.adminAccount.createUserAccount,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.uncommonlyUsedPortsConnection,
@@ -3158,6 +3155,7 @@ category Network {
             ->  router.computer.os.windows.service.exploitHighVulnerabilityPublicFacingApplication,
                 router.computer.os.windows.service.exploitMediumVulnerabilityPublicFacingApplication,
                 router.computer.os.windows.service.exploitLowVulnerabilityPublicFacingApplication,
+                router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.service.exploitationOfRemoteServices,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.uncommonlyUsedPortsConnection,
