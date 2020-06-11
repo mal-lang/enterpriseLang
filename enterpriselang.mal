@@ -564,10 +564,18 @@ category Software {
 
         & exploitationForCredentialAccess
             user info: "Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Exploitation for credential access may also result in Privilege Escalation depending on the process targeted or credentials obtained."
-            ->  os.executeCode,
-                _exploitationForPrivilegeEscalation,
-                exploitationOfSQLInjection,
+            ->  exploitationOfSQLInjection,
                 exploitationOfNTLMAuthentication         
+
+        | exploitationOfSQLInjection [Bernoulli(0.14)*Exponential(0.746)]   
+            developer info: "Sources used for distribution result: https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://www.akamai.com/us/en/multimedia/documents/state-of-the-internet/soti-security-web-attacks-and-gaming-abuse-report-2019.pdf, https://trends.builtwith.com/websitelist/Akamai/Historical, https://www.imperva.com/docs/HII_Web_Application_Attack_Report_Ed6.pdf, https://www.cc.gatech.edu/fac/Alex.Orso/papers/halfond.viegas.orso.ISSSE06.pdf"
+            ->  os.executeCode,
+                _exploitationForPrivilegeEscalation
+                
+        | exploitationOfNTLMAuthentication [Bernoulli(0.23346)*TruncatedNormal(0.011,0.00214)]
+            developer info: "Sources used for distribution result: https://www.csoonline.com/article/3333916/i-can-get-and-crack-your-password-hashes-from-email.html, https://netmarketshare.com/operating-system-market-share.aspx?, https://resources.infosecinstitute.com/beyond-password-length-complexity/, https://spycloud.com/how-long-would-it-take-to-crack-your-password/, https://spycloud.com/2020-annual-credential-exposure-report/"
+            ->  os.executeCode,
+                _exploitationForPrivilegeEscalation
 
         | _exploitationForDefenseEvasion @hidden
             ->  exploitationForDefenseEvasion
@@ -585,9 +593,6 @@ category Software {
                 os.windows.sysAdmin.systemRights,
                 thirdpartySoftware._useThirdpartySoftware
 
-        | exploitationOfNTLMAuthentication [Bernoulli(0.23346)*TruncatedNormal(0,011,0,00214)]
-            developer info: "Sources used for distribution result: "https://www.csoonline.com/article/3333916/i-can-get-and-crack-your-password-hashes-from-email.html, https://netmarketshare.com/operating-system-market-share.aspx?, https://resources.infosecinstitute.com/beyond-password-length-complexity/, https://spycloud.com/how-long-would-it-take-to-crack-your-password/, https://spycloud.com/2020-annual-credential-exposure-report/"
-
         | _exploitationOfRemoteServices
             user info: "An adversary may need to determine if the remote system is in a vulnerable state, which may be done through Network Service Scanning or other Discovery methods."
             ->  exploitationOfRemoteServices
@@ -595,10 +600,7 @@ category Software {
         & exploitationOfRemoteServices
             ->  _exploitationForPrivilegeEscalation,
                 os.computer.infectedComputer
-
-        | exploitationOfSQLInjection [Bernoulli(0.14)*Exponential(0.746)]   
-            developer info: "Sources used for distribution result: "https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://www.akamai.com/us/en/multimedia/documents/state-of-the-internet/soti-security-web-attacks-and-gaming-abuse-report-2019.pdf, https://trends.builtwith.com/websitelist/Akamai/Historical, https://www.imperva.com/docs/HII_Web_Application_Attack_Report_Ed6.pdf, https://www.cc.gatech.edu/fac/Alex.Orso/papers/halfond.viegas.orso.ISSSE06.pdf"
-
+                
         | attemptExternalRemoteServices @hidden 
             ->  externalRemoteServices
 
