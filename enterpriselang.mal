@@ -3260,7 +3260,8 @@ category Hardware {
     }
 
     asset HardwareAddition extends Computer {
-        | physicalAccess
+        | physicalAccess [Bernoulli(0.11)*Exponential(8)]
+            developer info: "Sources for distribution result: https://www.if-insurance.com/large-enterprises/insight/risk-consulting-magazine/risk-consulting-2019-1/physical-security-controls-of-it-and-ics, https://go.crowdstrike.com/rs/281-OBQ-266/images/Report2020CrowdStrikeGlobalThreatReport.pdf"
             ->  hardwareAdditions
             
         & hardwareAdditions 
