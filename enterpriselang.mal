@@ -3250,8 +3250,11 @@ category Hardware {
     }
 
     asset HardwareAddition extends Computer {
+        | physicalAccess
+            ->  hardwareAdditions
+            
         & hardwareAdditions 
-            user info: "Computer accessories, computers, or networking hardware may be introduced into a system as a vector to gain execution." 
+            user info: "Adversaries may introduce computer accessories, computers, or networking hardware into a system or network that can be used as a vector to gain access." 
             ->  os.executeCode  
     }
 
