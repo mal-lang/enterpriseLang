@@ -46,6 +46,7 @@ category Software {
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
                 os._dataEncoding,
+                os.diskContentWipe,
                 os.domainDiscovery,
                 os.domainGenerationAlgorithms,
                 os.executionGuardrails,
@@ -79,7 +80,6 @@ category Software {
                 os.userCommandLineInterface,
                 os.userDataDestruction, 
                 os.userDataEncryptedForImpact,
-                os.userDiskWiped,
                 os.windows.accountManipulation,
                 os.windows._bITSJobs,
                 os.windows.bypassUserAccountControl,
@@ -286,12 +286,12 @@ category Software {
                 os.adminCommandLineInterface,
                 os.adminDataDestruction,
                 os.adminDataEncryptedForImpact,
-                os.adminDiskWiped,
                 os._credentialDumping,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
                 os.detailedRunningProcessDiscovery,
                 os.detailedRemoteSystemDiscovery,
+                os.diskContentWipe,
                 os.diskStructureWipe,
                 os.fileAndDirectoryDiscovery,
                 os.fileAndDirectoryPermissionsModification,
@@ -1000,7 +1000,7 @@ category Software {
         | attemptNetworkDenialOfService @hidden {A}
             ->  networkDenialOfService
 
-        & networkDenialOfService [Bernoulli(0.4863)*Exponential(6.6)] {A}
+        & networkDenialOfService {A} [Bernoulli(0.4863)*Exponential(6.6)]
             user info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
             developer info: "Sources used for probability distribution: https://www.netscout.com/news/press-release/complexity-ddos-attacks, https://securelist.com/ddos-attacks-in-q4-2018/89565/, European Application and Network Security Report 2016-17, https://www.globaldots.com/ddos-distributed-denial-of-service-explained"
             ->  applicationExhaustionFlood,
@@ -1237,14 +1237,12 @@ category Software {
         | fileAndDirectoryDiscovery
             user info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system."
             ->  _automatedCollection
-        
+
+        & diskContentWipe {A}
+            user info: "Adversaries may erase the contents of storage devices on specific systems as well as large numbers of systems in a network to interrupt availability to system and network resources."
+       
         & diskStructureWipe {A}
             user info: "Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources."
-
-        & userDiskWiped {A}
-            user info: "Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
-
-        & adminDiskWiped {A}
 
         & remoteFileCopy
             user info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
@@ -1411,9 +1409,8 @@ category Software {
                 adminDataEncryptedForImpact,
                 systemDataEncryptedForImpact,
                 inhibitSystemRecovery,
+                diskContentWipe,
                 diskStructureWipe,
-                userDiskWiped,
-                adminDiskWiped,
                 computer.router.internalNetwork.defacement,
                 computer.router.externalNetwork.defacement
 
@@ -1509,7 +1506,6 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1038/"
             ->  adminCommandLineInterface, 
                 accountDiscovery,
-                adminDiskWiped,
                 applicationWindowDiscovery,
                 binaryPadding,
                 service.browser.browserExtensions,
