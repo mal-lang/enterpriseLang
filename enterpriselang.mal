@@ -672,8 +672,9 @@ category Software {
             ->  browser.spearphishingLink, //  send a link through Spearphishing Link to the target user to entice them to grant access to the application
                 applicationAccessToken
 
-        & trustedRelationship
+        & trustedRelationship [Bernoulli(0.40)*TruncatedNormal(0.042,0.021)]
             user info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
+            developer info: "Sources for distribution result: accenture.com/_acnmedia/PDF-116/Accenture-Cybersecurity-Report-2020.pdf, https://enterprise.verizon.com/resources/reports/DBIR_2018_Report_execsummary.pdf" 
             ->  os._validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
 
         & _useThirdpartySoftware @hidden
