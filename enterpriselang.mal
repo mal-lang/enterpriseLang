@@ -234,6 +234,7 @@ category Software {
         # userAccountManagement  
             user info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  os.disablingSecurityTools,
+                os.validAccounts,
                 os.windows.adminServiceStop,
                 os.windows._bITSJobs,
                 os.windows.fileSystemPermissionsWeakness,
@@ -1418,6 +1419,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1032/" 
             ->  bruteForce,
                 networkSniffing,
+                validAccounts,
                 service.browser.stealWebSessionCookie,
                 service.applicationDeploymentSoftware,
                 service.userRemoteServicesLogin,
@@ -1464,7 +1466,16 @@ category Software {
                 credentialsInRegistry,
                 service.browser.browserExtensions,
                 service.thirdpartySoftware.stealApplicationAccessToken,
-                privateKeys  
+                privateKeys,
+                validAccounts 
+
+        # filterNetworkTraffic
+            user info: "https://attack.mitre.org/mitigations/M1037/"
+            ->  validAccounts
+
+        # applicationDeveloperGuidance
+            user info: "https://attack.mitre.org/mitigations/M1013/"
+            ->  validAccounts
 
         # codeSigning
             user info: "https://attack.mitre.org/mitigations/M1045/" 
