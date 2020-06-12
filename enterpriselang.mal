@@ -996,11 +996,13 @@ category Software {
             ->  computer.router.internalNetwork.c2Connected,
                 fallbackChannels
 
-        | attemptNetworkDenialOfService @hidden {A}
+        | attemptNetworkDenialOfService [Exponential(0.03)] @hidden {A}
+            developer info: "Sources used for probability distribution: Macroscopic Characterization of the DoS Ecosystem, https://www.caida.org/publications/papers/2017/millions_targets_under_attack/millions_targets_under_attack.pdf"
             ->  networkDenialOfService
 
-        & networkDenialOfService {A}
+        & networkDenialOfService [Bernoulli(0.4863)] {A}
             user info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
+            developer info: "Sources used for probability distribution: https://www.netscout.com/news/press-release/complexity-ddos-attacks, https://www.statista.com/statistics/500458/worldwide-datacenter-and-it-sites/, European Application and Network Security Report 2016-17, https://www.globaldots.com/ddos-distributed-denial-of-service-explained"
             ->  applicationExhaustionFlood,
                 service.serviceExhaustionFlood
  
