@@ -1,6 +1,6 @@
 // enterpriseLang
 // Authors: Wenjun Xiong (wenjx@kth.se), Emeline Legrand, Oscar Åberg
-// Probability distributions: Quentin Biharé, Lina Evensjö
+// Probability distributions: Quentin Biharé, Lina Evensjö, Love Wessman
 
 #id: "org.mal_lang.attacklang"
 #version: "1.0.0"
