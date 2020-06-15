@@ -884,9 +884,9 @@ category Software {
         & dataEncoding
             ->  computer.router.internalNetwork.communicate
           
-        & disablingSecurityTools [Bernoulli(0.23)*Exponential(113.45)]
+        & disablingSecurityTools [Bernoulli(0.23)*Exponential(111.55)]
             user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
-            developer info: "Sources for probability distribution: https://redcanary.com/threat-detection-report/techniques/disabling-security-tools/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf"
+            developer info: "Sources for probability distribution: https://redcanary.com/threat-detection-report/techniques/disabling-security-tools/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  bypassFileMonitoring,
                 bypassHostIntrusionPrevention,
                 bypassSignatureBasedDetection,
@@ -2150,7 +2150,8 @@ category Software {
             user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
             ->  scheduledTask         
 
-        & windowsAdminShares
+        & windowsAdminShares [Bernoulli(0.28)*Exponential(4114)]
+            developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/windows-admin-shares/, https://www.contextis.com/us/blog/lateral-movement-a-deep-look-into-psexec"
             ->  networkShareConnectionRemoval, // leads to Network Share Connection Removal attack
                 windowsManagementInstrumentation // leads to Windows Management Instrumentation attack
 
