@@ -884,8 +884,9 @@ category Software {
         & dataEncoding
             ->  computer.router.internalNetwork.communicate
           
-        & disablingSecurityTools
+        & disablingSecurityTools [Bernoulli(0.23)*Exponential(113.45)]
             user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
+            developer info: "Sources for probability distribution: https://redcanary.com/threat-detection-report/techniques/disabling-security-tools/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf"
             ->  bypassFileMonitoring,
                 bypassHostIntrusionPrevention,
                 bypassSignatureBasedDetection,
