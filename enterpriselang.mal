@@ -1927,8 +1927,9 @@ category Software {
                 computer.user.attemptUserExecution,
                 scripting
 
-        & powerShell
-            user info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
+        & powerShell [Bernoulli(0.55)]
+            user info: "Administrator permissions are required to use PowerShell to connect to remote systems."    
+            developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/powershell/"  
             ->  computer.router.internalNetwork.remoteSystemsConnection,
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
                 persistence
