@@ -1239,7 +1239,7 @@ category Software {
             user info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system."
             ->  _automatedCollection
 
-        & diskContentWipe [Bernoulli(0.5433)*Exponential(126.437)] {A}
+        & diskContentWipe {A} [Bernoulli(0.5433)*Exponential(126.437)]
             user info: "Adversaries may erase the contents of storage devices on specific systems as well as large numbers of systems in a network to interrupt availability to system and network resources."
             developer info: "Sources used for probability distribution: https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://threatpost.com/secrets-of-the-wiper-inside-the-worlds-most-destructive-malware/131836/, https://www.statista.com/statistics/795748/worldwide-seagate-average-hard-disk-drive-capacity/, https://hdd.userbenchmark.com/"
        
@@ -2718,8 +2718,7 @@ category Software {
 
         & inputPrompt
             user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
-            ->  appleScript, // leads to AppleScript attack
-                userAccount.userCredentials
+            ->  userAccount.userCredentials
 
         & kernelModulesAndExtensions
             user info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
@@ -2842,8 +2841,9 @@ category Software {
             ->  userAccount.userCredentials
 
         & appleScript
-            ->  executeCode
-
+            ->  executeCode,
+                inputPrompt // leads to Input Prompt attack
+                
         & _startupItems @hidden
             ->  startupItems
 
