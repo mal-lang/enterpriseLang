@@ -962,8 +962,9 @@ category Software {
                 service.browser.spearphishingAttachment,
                 inputCapture
 
-        & masquerading
+        & masquerading [Bernoulli(0.34)*Exponential(1)]
             user info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
+            developer info: "TTC is time until attack is over, which is time until masquerading file is discovered. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/masquerading/, https://www.tripwire.com/state-of-security/security-data-protection/security-controls/file-integrity-monitoring/, https://www.cm-alliance.com/cybersecurity-blog/understanding-how-file-integrity-monitoring-works, https://en.wikipedia.org/wiki/System_File_Checker"
             ->  bypassFileOrPathWhitelisting
 
         | attemptMultibandCommunication @hidden
