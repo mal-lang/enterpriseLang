@@ -1085,8 +1085,9 @@ category Software {
 
         | osExhaustionFlood
 
-        & processInjection
+        & processInjection [Bernoulli(0.35)*Exponential(127.1)] 
             user info: "Process injection is a method of executing arbitrary code in the address space of a separate live process. It can be used for Defense Evasion and Privilege Escalation."
+            developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/process-injection/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  adminAccount.adminRights,
                 bypassAntivirus,
                 bypassProcessWhitelisting
@@ -1931,7 +1932,7 @@ category Software {
 
         & powerShell [Bernoulli(0.55)]
             user info: "Administrator permissions are required to use PowerShell to connect to remote systems."    
-            developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/powershell/"  
+            developer info: "The process takes a few seconds to complete, so the TTC has excluded. It would be [Exponential(28800)] if included. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/powershell/"  
             ->  computer.router.internalNetwork.remoteSystemsConnection,
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
                 persistence
