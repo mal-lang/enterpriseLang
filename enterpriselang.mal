@@ -1248,8 +1248,9 @@ category Software {
         & diskStructureWipe {A}
             user info: "Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources."
 
-        & remoteFileCopy
+        & remoteFileCopy [Bernoulli(0.29)]
             user info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
+            developer info: "TTC is very low (10-20 seconds) and is excluded. Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/remote-file-copy/. For estimates on TTC please see remoteFileCopy.md in the Dropbox\MAL work\enterpriselang probability findings\ folder."
             ->  windows.windowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
                 windows.remoteDesktopProtocol,
                 computer.user.attemptUserExecution, // leads to file execution attacks
