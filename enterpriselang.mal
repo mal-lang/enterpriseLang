@@ -1,6 +1,6 @@
 // enterpriseLang
 // Authors: Wenjun Xiong (wenjx@kth.se), Emeline Legrand, Oscar Åberg
-// Probability distributions: Quentin Biharé, Lina Evensjö, Love Wessman
+// Probability distributions: Quentin Biharé, Love Wessman, Lina Evensjö
 
 #id: "org.mal_lang.attacklang"
 #version: "1.0.0"
@@ -121,6 +121,7 @@ category Software {
                 os.windows.regsvcsOrRegasm,
                 os.windows.regsvr32,
                 os.windows.rundll32,
+                os.windows.scheduledTask,
                 os.windows.screensaver,
                 os.windows.shortcutModification,
                 os.windows.signedBinaryProxyExecution,
@@ -247,6 +248,7 @@ category Software {
                 os.windows.passTheTicket,
                 os.windows.pathInterception,
                 os.windows.remoteDesktopProtocol,
+                os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
                 os.windows.shortcutModification,
                 os.windows.userServiceStop,
@@ -414,6 +416,7 @@ category Software {
                 os.windows.powerShellProfile,
                 os.windows.processDoppelganging,
                 os.windows.queryRegistery,
+                os.windows.remoteScheduleTask,
                 os.windows.registryRunKeysOrStartupFolder,
                 os.windows.regsvcsOrRegasm,
                 os.windows.regsvr32,
@@ -1254,7 +1257,7 @@ category Software {
 
         & remoteFileCopy [Bernoulli(0.29)]
             user info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
-            developer info: "TTC is very low (10-20 seconds) and is excluded. Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/remote-file-copy/. For estimates on TTC please see remoteFileCopy.md in the Dropbox\MAL work\enterpriselang probability findings\ folder."
+            developer info: "TTC is very low (10-20 seconds) and is excluded. Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/remote-file-copy/. For estimates on TTC please see remoteFileCopy.md in the Dropbox/MAL work/enterpriselang probability findings/folder."
             ->  windows.windowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
                 windows.remoteDesktopProtocol,
                 computer.user.attemptUserExecution, // leads to file execution attacks
@@ -1404,6 +1407,10 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1036/" 
             developer info: "Binary probability relation."
             ->  bruteForce
+
+        # behaviorPreventionOnEndpoint
+            user info: "https://attack.mitre.org/mitigations/M1040/"
+            ->  processInjection
 
         # bootIntegrity 
             user info: "https://attack.mitre.org/mitigations/M1046/"
@@ -2150,7 +2157,11 @@ category Software {
         & scheduledTask [Bernoulli(0.33)*Exponential(54.3)]
             user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
             developer info: "Sources used for probability results: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-xp/bb490866(v=technet.10)?redirectedfrom=MSDN, https://redcanary.com/threat-detection-report/techniques/scheduled-task/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://blog.malwarebytes.com/cybercrime/2015/03/scheduled-tasks/, https://www.zdnet.com/article/microsoft-says-new-dexphot-malware-infected-more-than-80000-computers/"
-            //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
+            ->  executeCode,
+                persistence
+
+        & remoteScheduleTask
+            ->  computer.router.internalNetwork.remoteExecution
 
         | attemptSystemTimeDiscovery @hidden
             ->  systemTimeDiscovery
@@ -2507,8 +2518,7 @@ category Software {
             +>  appInitDLLs,
                 applicationShimming,
                 officeApplicationStartup,
-                passTheHash,
-                
+                passTheHash
         
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
