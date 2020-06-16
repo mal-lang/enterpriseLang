@@ -239,6 +239,7 @@ category Software {
                 os.windows._bITSJobs,
                 os.windows.fileSystemPermissionsWeakness,
                 os.windows.indicatorBlocking,
+                os.windows.scheduledTask,
                 os.windows.manInTheBrowser,
                 os.windows.modifyExistingService,
                 os.windows.newService,
@@ -654,7 +655,8 @@ category Software {
                 supplyChainCompromise,
                 os.computer.router.internalNetwork.remoteAccess,              
                 os.windows.systemFirmware,
-                os.windows.dLLSideLoading          
+                os.windows.dLLSideLoading,
+                os.service.thirdpartySoftware._useThirdpartySoftware                      
     }
 
     asset ThirdpartySoftware extends Service {  
@@ -2324,7 +2326,8 @@ category Software {
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             user info: "https://attack.mitre.org/mitigations/M1048/"
             +>  _componentObjectModelAndDistributedCOM,
-                distributedComponentObjectModel
+                distributedComponentObjectModel,
+                dynamicDataExchange
 
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
@@ -2336,17 +2339,24 @@ category Software {
                 modifyExistingService,
                 pathInterception,
                 remoteDesktopProtocol,
-                serverSoftwareComponent
+                serverSoftwareComponent,
+                scheduledTask
 
+        # behaviorPreventionOnEndpoint
+            user info : "https://attack.mitre.org/mitigations/M1040/"
+            +>  dynamicDataExchange
+        
         # codeSigning
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  powerShell,
                 _powerShellProfile,
-                serverSoftwareComponent          
+                serverSoftwareComponent,
+                lSASS_Driver         
 
         # credentialAccessProtection
             user info: "https://attack.mitre.org/mitigations/M1043/"
-            ->  _credentialDumping
+            ->  _credentialDumping,
+                lSASS_Driver
 
         # executionPrevention
             user info: "https://attack.mitre.org/mitigations/M1038/"
@@ -2364,8 +2374,7 @@ category Software {
                 networkShareDiscovery,
                 pathInterception,
                 queryRegistery,
-                regsvcsOrRegasm,
-                scheduledTask, 
+                regsvcsOrRegasm, 
                 screensaver,
                 signedBinaryProxyExecution,
                 signedScriptProxyExecution,
@@ -2392,7 +2401,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1028/" 
             +>  passwordFilterDLL,
                 bITSJobs,
-                remoteDesktopProtocol   
+                remoteDesktopProtocol,
+                scheduledTask   
 
         # passwordPolicies 
             user info: "https://attack.mitre.org/mitigations/M1027/" 
@@ -2411,7 +2421,8 @@ category Software {
             +>  bootkit,
                 bypassUserAccountControl,
                 componentObjectModelAndDistributedCOM,
-                passTheHash
+                passTheHash,
+                scheduledTask
 
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
@@ -2443,13 +2454,15 @@ category Software {
 
         # restrictLibraryLoading 
             user info: "https://attack.mitre.org/mitigations/M1044/"
-            ->  dLLSearchOrderHijacking         
+            ->  dLLSearchOrderHijacking,
+                lSASS_Driver       
 
         # softwareConfiguration
             user info: "https://attack.mitre.org/mitigations/M1054/"
             +>  indicatorBlocking,
                 officeApplicationStartup,
-                _powerShellProfile  
+                _powerShellProfile,
+                dynamicDataExchange
 
         # bootIntegrity 
             user info: "https://attack.mitre.org/mitigations/M1046/"
@@ -2477,7 +2490,9 @@ category Software {
                 screensaver,
                 templateInjection,
                 trustedDeveloperUtilities,
-                windowsRemoteManagement
+                windowsRemoteManagement,
+                dynamicDataExchange,
+                executeMshta
 
         # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
             user info: "https://attack.mitre.org/mitigations/M1037/"   
@@ -2489,7 +2504,8 @@ category Software {
             +>  appInitDLLs,
                 applicationShimming,
                 officeApplicationStartup,
-                passTheHash
+                passTheHash,
+                
         
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -3095,7 +3111,8 @@ category Network {
                 router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitLowVulnerabilityPublicFacingApplication,
                 router.computer.os.service.externalRemoteServices,
-                router.computer.os.service.thirdpartySoftware.trustedRelationship
+                router.computer.os.service.thirdpartySoftware.trustedRelationship,
+                router.computer.os.service.thirdpartySoftware._useThirdpartySoftware
 
         # vulnerabilityScanning [Bernoulli(0.41)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
             user info: "https://attack.mitre.org/mitigations/M1016/"
