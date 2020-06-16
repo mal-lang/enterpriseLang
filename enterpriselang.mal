@@ -2301,7 +2301,8 @@ category Software {
         | trustedDomainInfo // leads to SID-History Injection, Pass the Ticket, and Kerberoasting attacks
             user info: "The information discovered may help the adversary conduct SID-History Injection, Pass the Ticket, and Kerberoasting."
 
-        & domainTrustDiscovery
+        & domainTrustDiscovery [Bernoulli(0.13)*Exponential(127.1)]
+            developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/domain-trust-discovery/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  trustedDomainInfo
 
         & bootkit
