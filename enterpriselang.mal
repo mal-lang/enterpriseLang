@@ -2175,8 +2175,9 @@ category Software {
             ->  networkShareConnectionRemoval, // leads to Network Share Connection Removal attack
                 windowsManagementInstrumentation // leads to Windows Management Instrumentation attack
 
-        | windowsManagementInstrumentation
+        | windowsManagementInstrumentation [Bernoulli(0.26)*Exponential(43.49)]
             user info: "An adversary can use WMI to interact with local and remote systems and use it as a means to perform many tactic functions."
+            developer info: "TTC is upper bound of likely time needed. Sources used for probability distribution result: https://redcanary.com/threat-detection-report/techniques/windows-management-instrumentation/, https://www.fireeye.com/content/dam/fireeye-www/global/en/current-threats/pdfs/wp-windows-management-instrumentation.pdf, https://www.microsoft.com/security/blog/2017/06/27/new-ransomware-old-techniques-petya-adds-worm-capabilities/, https://securelist.com/olympicdestroyer-is-here-to-trick-the-industry/84295/"
             ->  systemInformationDiscovery, // extract information about the operating system
                 executeCode,
                 inhibitSystemRecovery
