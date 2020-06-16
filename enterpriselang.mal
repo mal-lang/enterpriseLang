@@ -1221,6 +1221,7 @@ category Software {
             ->  validAccounts    
 
         & validAccounts
+            developer info: "Binary probability relation."
             user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
             ->  service.userRemoteServicesLogin,
                 service.adminRemoteServicesLogin,
@@ -1491,7 +1492,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1013/"
             ->  validAccounts
 
-        # codeSigning
+        # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/" 
             ->  service.applicationDeploymentSoftware,
                 masquerading    
@@ -1688,7 +1689,7 @@ category Software {
                 bypassApplicationWhitelisting,
                 bypassAntivirus            
 
-        | codeSigningCertificate
+        | codeSigningCertificate [Bernoulli(0.72)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             ->  adminAccount.windowsAdmin.bypassWindowsUserAccountControl
 
@@ -1832,6 +1833,7 @@ category Software {
 
         & inputPrompt
             user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
+            developer info: "Binary probability distribution."
             ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
                 powerShell, // leads to PowerShell attack
                 userAccount.userCredentials       
@@ -2359,7 +2361,7 @@ category Software {
             user info : "https://attack.mitre.org/mitigations/M1040/"
             +>  dynamicDataExchange
         
-        # codeSigning
+        # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  powerShell,
                 _powerShellProfile,
@@ -2638,7 +2640,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1046/"
             +>  bootkit
 
-        # codeSigning
+        # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  serverSoftwareComponent
 
@@ -2699,7 +2701,7 @@ category Software {
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
 
-        | codeSigningCertificate
+        | codeSigningCertificate [Bernoulli(0.72)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
 
         & _clearCommandHistory @hidden
@@ -2875,6 +2877,7 @@ category Software {
             ->  userAccount.userCredentials
 
         & appleScript
+            developer info: "Binary probability distribution."
             ->  executeCode,
                 inputPrompt // leads to Input Prompt attack
                 
@@ -2895,7 +2898,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1047/"
             +>  lC_LOAD_DYLIB_Addition
 
-        # codeSigning
+        # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  appleScript,
                 lC_LOAD_DYLIB_Addition,
