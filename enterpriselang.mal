@@ -2140,8 +2140,9 @@ category Software {
             ->  systemDataDestruction,
                 systemDataEncryptedForImpact
 
-        & scheduledTask
+        & scheduledTask [Bernoulli(0.33)*Exponential(54.3)]
             user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
+            developer info: "Sources used for probability results: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-xp/bb490866(v=technet.10)?redirectedfrom=MSDN, https://redcanary.com/threat-detection-report/techniques/scheduled-task/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://blog.malwarebytes.com/cybercrime/2015/03/scheduled-tasks/, https://www.zdnet.com/article/microsoft-says-new-dexphot-malware-infected-more-than-80000-computers/"
             //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
 
         | attemptSystemTimeDiscovery @hidden
