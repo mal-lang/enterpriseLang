@@ -1192,8 +1192,9 @@ category Software {
 
         | persistence
 
-        & scripting
+        & scripting [Bernoulli(0.38)*Exponential(1097)]
             user info: "Adversaries may use scripts to aid in operations and perform multiple actions that would otherwise be manual."
+            developer info: "Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/scripting/, https://www.labnol.org/code/20016-maximum-execution-time-limit, https://www.php.net/manual/en/function.set-time-limit.php, https://www.sitepoint.com/javascript-execution-browser-limits/"
             ->  _automatedCollection,
                 service.browser.spearphishingAttachment, 
                 service.exploitationForClientExecution,
