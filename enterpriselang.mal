@@ -1735,8 +1735,9 @@ category Software {
         | _dLLSearchOrderHijacking @hidden
             ->  dLLSearchOrderHijacking 
 
-        & dLLSearchOrderHijacking
+        & dLLSearchOrderHijacking [Bernoulli(0.16)]
             user info: "Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence."
+            developer info: "TTC is extremely low (< 0.00001 seconds) and is excluded. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  bypassProcessWhitelisting,
                 sysAdmin.systemRights,
                 userAccount.userRights,
