@@ -742,8 +742,9 @@ category Software {
         | installExtensions
             ->  browserExtensions
 
-        & browserExtensions
+        & browserExtensions [Bernoulli(0.85)]
             user info: "Once the extension is installed, it can browse to websites in the background, steal all information that a user enters into a browser, to include credentials, and be used as an installer for a RAT for persistence." 
+            developer info: "Source used for distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjQuta00ojqAhVGUZoKHT9YAygQFjAAegQIARAB&url=http%3A%2F%2Fmkto.cisco.com%2Frs%2F564-whv-323%2Fimages%2Fcisco-asr-2016.pdf&usg=AOvVaw1nLayTNlhdlV3tF_LfCxLf (Cisco 2016 Annual Security Report)"
             ->  service.os.userAccount.userInformation,
                 service.os.userAccount.userCredentials,
                 service.os.persistence
