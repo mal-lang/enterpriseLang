@@ -232,7 +232,8 @@ category Software {
                 os.service.thirdpartySoftware.useThirdpartySoftware,
                 os.service.thirdpartySoftware.stealApplicationAccessToken   
 
-        # userAccountManagement  
+        # userAccountManagement [Bernoulli(0.30)] 
+            developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  os.disablingSecurityTools,
                 os.validAccounts,
@@ -334,7 +335,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1032/"
             ->  createUserAccount
 
-        # privilegedAccountManagement
+        # privilegedAccountManagement [Bernoulli(0.30)]
+            "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  createUserAccount,
                 os._credentialDumping,
@@ -561,6 +563,7 @@ category Software {
             ->  os.compromisedSystems
 
         & exploitationForClientExecution
+            developer info: "Binary probability distribution."
             user info: "Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution."
             ->  os.computer.user.attemptUserExecution            
 
@@ -1065,6 +1068,7 @@ category Software {
                 macOS.logonScripts // leads to Logon Scripts attack
 
         | graphicalUserInterface
+            developer info: "Binary probability distribution."
             user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
             ->  windows.remoteDesktopProtocol, // leads to Remote Desktop Protocol attack on Windows
                 windows.attemptSystemFirmware
@@ -1543,7 +1547,8 @@ category Software {
                 userCommandLineInterface,       
                 windows.compiledHTMLFile            
              
-        # privilegedAccountManagement  
+        # privilegedAccountManagement [Bernoulli(0.30)]
+            "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  credentialsInRegistry,
                 validAccounts,
@@ -1687,6 +1692,7 @@ category Software {
 
         & cmstp
             user info: "Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
+            developer info: "Binary probability distribution."
             ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
                 bypassApplicationWhitelisting,
                 bypassAntivirus            
@@ -1728,6 +1734,7 @@ category Software {
 
         & compiledHTMLFile
             user info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
+            developer info: "Binary probability distribution."
             ->  computer.user.attemptUserExecution, // leads to User Execution attack
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation   
@@ -1841,6 +1848,7 @@ category Software {
                 userAccount.userCredentials       
 
         & installUtil
+            developer info: "Binary probability distribution."
             user info: "Adversaries may use InstallUtil to proxy execution of code through a trusted Windows utility."
             ->  bypassDigitalCertificateValidation,
                 bypassProcessWhitelisting,
@@ -1989,6 +1997,7 @@ category Software {
                 persistence
 
         & regsvcsOrRegasm
+            developer info: "Binary probability distribution."
             user info: "Adversaries can use Regsvcs and Regasm to proxy execution of code through a trusted Windows utility. Both utilities may be used to bypass process whitelisting."
             ->  codeProxyExecution, 
                 bypassProcessWhitelisting,
@@ -1999,6 +2008,7 @@ category Software {
             ->  persistence
 
         & regsvr32
+            developer info: "Binary probability distribution."
             user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
             ->  bypassProcessWhitelisting,
                 bypassAntivirus,
@@ -2024,6 +2034,7 @@ category Software {
                 computer.peripheralDevice.removableMedia.infectedMedia
 
         & rundll32
+            developer info: "Binary probability distribution."
             user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Rundll32 can also been used to execute scripts."
             ->  bypassAntivirus,
                 bypassApplicationWhitelisting,
@@ -2047,6 +2058,7 @@ category Software {
             ->  persistence
 
         & serviceExecution
+            developer info: "Binary probability distribution."
             user info: "Adversaries may execute a binary, command, or script via a method that interacts with Windows services, such as the Service Control Manager."
             ->  newService // Adversaries may also directly start services through Service Execution
 
@@ -2434,7 +2446,8 @@ category Software {
                 _credentialDumping,
                 securitySupportProvider 
 
-        # privilegedAccountManagement
+        # privilegedAccountManagement [Bernoulli(0.30)]
+            "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
                 bypassUserAccountControl,
@@ -2674,7 +2687,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1027/"
             +>  sshHijacking
 
-        # privilegedAccountManagement
+        # privilegedAccountManagement [Bernoulli(0.30)]
+            "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
                 sshHijacking   
@@ -2768,6 +2782,7 @@ category Software {
             ->  persistence
 
         & launchctl
+            developer info: "Binary probability distribution."
             user info: "Adversaries can abuse this functionality to execute code or even bypass whitelisting if launchctl is an allowed process."
             ->  executeCode,
                 bypassApplicationWhitelisting,
@@ -2790,6 +2805,7 @@ category Software {
                 bypassFileOrPathWhitelisting 
 
         & localJobScheduling
+            developer info: "Binary probability distribution."
             user info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence,  to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
             ->  persistence,
                 adminAccount.rootAdmin.adminRights
@@ -2941,7 +2957,8 @@ category Software {
             +>  keychainCollection,
                 sshHijacking
 
-        # privilegedAccountManagement
+        # privilegedAccountManagement [Bernoulli(0.30)]
+            "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  sshHijacking
 
