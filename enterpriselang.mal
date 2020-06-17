@@ -712,8 +712,9 @@ category Software {
 
         | executionThroughMaliciousContent
 
-        & credentialsFromWebBrowsers
+        & credentialsFromWebBrowsers [Bernoulli(0.18)]
             user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
+            developer info: "Sources for distribution result: https://www.pewresearch.org/internet/2017/01/26/2-password-management-and-mobile-security/, https://attack.mitre.org/techniques/T1503/, https://www.proofpoint.com/us/threat-insight/post/new-vega-stealer-shines-brightly-targeted-campaign"
             ->  service.os.userAccount.userCredentials
  
         | attemptSpearphishingLink @hidden      
