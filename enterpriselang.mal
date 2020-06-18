@@ -1771,8 +1771,9 @@ category Software {
             ->  bypassProcessWhitelisting,
                 bypassAntivirus
 
-        & mshta
+        & mshta [Bernoulli(0.3329)*Exponential(491)]
             user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
+            developer info: "Sources used for distribution: https://lolbas-project.github.io/lolbas/Binaries/Mshta/, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/blog/microsoft-html-application-hta-abuse-part-deux/"
             ->  executeCode,
                 bypassDigitalCertificateValidation,
                 bypassApplicationWhitelisting    
