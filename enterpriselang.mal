@@ -3202,8 +3202,9 @@ category Network {
         | attemptTransmittedDataManipulation @hidden {I}
             ->  transmittedDataManipulation
  
-        & transmittedDataManipulation {I}
+        & transmittedDataManipulation {I} [Bernoulli(0.65833)*Exponential(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+            developer info: "Sources used for distribution: "https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiW28Dmk4vqAhXS4KYKHZvADy4QFjABegQIAhAB&url=https%3A%2F%2Fgo.thalesesecurity.com%2Frs%2F480-LWA-970%2Fimages%2F2019-DTR-Global-USL-Web.pdf&usg=AOvVaw2rKeGVWQgkIV7M0vjnCo1g, https://secure2.sophos.com/en-us/medialibrary/Gated%20Assets/white%20papers/the-state-of-encryption-today-wpna.pdf?cmp=701j0000001WskZAAS, www.businesswire.com/news/home/20190221005061/en/Survey-83-Percent-U.S.-Organizations-Accidentally-Exposed, https://content.fireeye.com/apt/rpt-apt38"
             
         # encryptSensitiveInformation
             user info:"https://attack.mitre.org/mitigations/M1041/"   
