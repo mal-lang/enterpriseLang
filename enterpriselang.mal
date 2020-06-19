@@ -945,7 +945,7 @@ category Software {
 
         & firmwareCorruption {A} [Bernoulli(0.2)]
             user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
-            developer info: "Sources used for probability distribution result: http://www.baselinemag.com/c/a/Security/Disaster-Recovery-Weaknesses-Are-Pervasive-480167, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
+            developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: http://www.baselinemag.com/c/a/Security/Disaster-Recovery-Weaknesses-Are-Pervasive-480167, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
 
         | hiddenFilesAndDirectories
             user info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a 'hidden' file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
@@ -3009,8 +3009,9 @@ category Network {
         | attemptDefacement @hidden
             ->  defacement
 
-        & defacement {I}
+        & defacement {I} [Bernoulli(0.31)*Exponential(10.67)]
             user info: "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users."
+            developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi5m_fWpY7qAhUaxMQBHU6yBxoQFjAKegQIMhAB&url=https%3A%2F%2Fdocuments.trendmicro.com%2Fassets%2Fwhite_papers%2Fwp-a-deep-dive-into-defacement.pdf&usg=AOvVaw2zOWHBoWsMXdfxK_fLTP_G, https://www.internetlivestats.com/total-number-of-websites/, https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://books.google.se/books?id=c7CpBAAAQBAJ&printsec=frontcover&dq=Cyber+Blockades&hl=en&sa=X&ved=0ahUKEwj4qsnGq47qAhVRXpoKHWACBqkQ6AEIKDAA#v=onepage&q=Cyber%20Blockades&f=false"
         
         E firewallExists
             <-  router.firewall
