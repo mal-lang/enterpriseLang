@@ -1743,9 +1743,9 @@ category Software {
                 bypassHostIntrusionPrevention, 
                 bypassAntivirus         
 
-        & compiledHTMLFile
+        & compiledHTMLFile [Bernoulli(0.712)*Exponential(1)]
             user info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
-            developer info: "Binary probability distribution."
+            developer info: "Sources for distribution results : https://blog.rootshell.be/2017/12/19/malware-delivered-via-compiled-html-help-file/"
             ->  computer.user.attemptUserExecution, // leads to User Execution attack
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation   
@@ -2162,6 +2162,7 @@ category Software {
             ->  persistence
 
         & trustedDeveloperUtilities
+            developer info: "Binary probability distribution."
             user info: "An adversary can use tracker.exe to proxy execution of an arbitrary DLL into another process. Since tracker.exe is also signed it can be used to bypass application whitelisting solutions."
             ->  bypassApplicationWhitelisting,
                 executeCode,
@@ -2624,6 +2625,7 @@ category Software {
                 persistence  
 
         | source
+            developer info: "Binary probability distribution."
             user info:"The source command loads functions into the current shell or executes files in the current context."
             ->  executeCode
 
@@ -2868,6 +2870,7 @@ category Software {
                 persistence
 
         | source
+            developer info: "Binary probability distribution."
             ->  executeCode
 
         & sshHijacking
