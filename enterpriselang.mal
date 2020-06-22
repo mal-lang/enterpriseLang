@@ -10,7 +10,8 @@ category Person {
         & spearphishingLinkClicked [Bernoulli(0.712)*Exponential(1)]
             developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887; https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968"
             ->  attemptUserExecution,
-                computer.os.service.thirdpartySoftware.applicationAccessToken
+                computer.os.service.thirdpartySoftware.applicationAccessToken,
+                computer.os.service.exploitationForClientExecution
 
         & spearphishingAttachmentDownload [Bernoulli(0.93)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
@@ -211,7 +212,7 @@ category Software {
             developer info: "Binary probability relation."
             ->  os.computer.infectedComputer,
                 os.computer.infectedWindowsComputer,
-                os.scripting
+                os.executeCode
 
         | userInformation
 
@@ -547,7 +548,8 @@ category Software {
         & spearphishingViaService
             user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
             ->  spearphishingViaPersonalEmail,
-                spearphishingViaSocialMedia
+                spearphishingViaSocialMedia,
+                os.computer.user.attemptUserExecution
         
         | spearphishingViaPersonalEmail [Bernoulli(0.712)*Exponential(1)]
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
@@ -570,7 +572,7 @@ category Software {
         & exploitationForClientExecution
             developer info: "Binary probability distribution."
             user info: "Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution."
-            ->  os.computer.user.attemptUserExecution            
+            ->  os.computer.user.attemptUserExecution
 
         | _exploitationForCredentialAccess @hidden
             ->  exploitationForCredentialAccess
@@ -709,7 +711,9 @@ category Software {
             user info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/6657123"
             ->  malvertising,
-                crossSiteScripting
+                crossSiteScripting,
+                service.os.computer.user.attemptUserExecution,
+                service.exploitationForClientExecution
 
         | malvertising [Gamma(9,0.167)]
             developer info: "Sources for distribution result: https://www.adstage.io/resources/q1-2020-ppc-benchmark-report/; https://www.youtube.com/watch?v=rTg9l4d8MU4; https://www.facebook.com/business/help/204798856225114?id=649869995454285"
@@ -1077,8 +1081,7 @@ category Software {
         | graphicalUserInterface
             developer info: "Binary probability distribution."
             user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
-            ->  windows.remoteDesktopProtocol, // leads to Remote Desktop Protocol attack on Windows
-                windows.attemptSystemFirmware
+            ->  windows.attemptSystemFirmware
 
         | softwareDiscovery
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
@@ -1551,8 +1554,9 @@ category Software {
                 remoteSystemDiscovery,     
                 runningProcessDiscovery,
                 systemInformationDiscovery,              
-                userCommandLineInterface,       
-                windows.compiledHTMLFile            
+                userCommandLineInterface,
+                userAccount.userExecution,      
+                windows.compiledHTMLFile           
              
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
@@ -1691,8 +1695,9 @@ category Software {
         & _bITSJobs @hidden
             ->  bITSJobs
 
-        & bITSJobs
+        & bITSJobs [Bernoulli(0.264)]
             user info: "Adversaries may abuse BITS to download, execute, and even clean up after running malicious code."
+            developer info: "TTC assumed instant. Sources used for probability distribution: https://blog.trendmicro.com/trendlabs-security-intelligence/tropic-trooper-new-strategy/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://en.wikipedia.org/wiki/Windows_Desktop_Gadgets, https://www.fireeye.com/blog/threat-research/2018/03/suspected-chinese-espionage-group-targeting-maritime-and-engineering-industries.html" 
             ->  executeCode,
                 bypassHostForensicAnalysis,
                 computer.router.firewall.bypassFirewall 
@@ -1767,11 +1772,16 @@ category Software {
             ->  bypassProcessWhitelisting,
                 sysAdmin.systemRights,
                 userAccount.userRights,
-                adminAccount.windowsAdmin.adminRights                    
+                adminAccount.windowsAdmin.adminRights,
+                attemptlSASS_Driver                    
                
         | dLLSideLoading
             ->  bypassProcessWhitelisting,
-                bypassAntivirus
+                bypassAntivirus,
+                attemptlSASS_Driver
+
+        | attemptlSASS_Driver @hidden
+            -> lSASS_Driver
 
         & mshta [Bernoulli(0.3329)*Exponential(491)]
             user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
@@ -1787,6 +1797,8 @@ category Software {
 
         & executionThroughAPI
             user info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
+            ->  executeCode,
+                processInjection
 
         & executionThroughModuleLoad
             user info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
@@ -2028,7 +2040,8 @@ category Software {
             user info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
             ->  _remoteDesktopProtocol,
                 remoteSystemDiscovery,
-                rDPSessionHijacking
+                rDPSessionHijacking,
+                graphicalUserInterface
 
         & _remoteDesktopProtocol @hidden
             developer info: "This is a helper attack step. It requires all its parent attack steps to compromise - Accessibility Features when connected over Remote Desktop Protocol will cause the replaced file to be executed with SYSTEM privileges."
@@ -2289,7 +2302,8 @@ category Software {
         & adminSecuritySoftwareDiscovery
             ->  virtualizationOrSandboxEvasion
 
-        & bypassUserAccountControl
+        & bypassUserAccountControl [Bernoulli(0.2968)]
+            developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
             ->  executeCode
        
         | peripheralDeviceDiscovery
@@ -3210,8 +3224,8 @@ category Network {
             ->  transmittedDataManipulation
  
         & transmittedDataManipulation {I} [Bernoulli(0.65833)*Exponential(24)]
-            user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
-            developer info: "Sources used for distribution: "https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiW28Dmk4vqAhXS4KYKHZvADy4QFjABegQIAhAB&url=https%3A%2F%2Fgo.thalesesecurity.com%2Frs%2F480-LWA-970%2Fimages%2F2019-DTR-Global-USL-Web.pdf&usg=AOvVaw2rKeGVWQgkIV7M0vjnCo1g, https://secure2.sophos.com/en-us/medialibrary/Gated%20Assets/white%20papers/the-state-of-encryption-today-wpna.pdf?cmp=701j0000001WskZAAS, www.businesswire.com/news/home/20190221005061/en/Survey-83-Percent-U.S.-Organizations-Accidentally-Exposed, https://content.fireeye.com/apt/rpt-apt38"
+            user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
+            developer info: "Sources used for distribution: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiW28Dmk4vqAhXS4KYKHZvADy4QFjABegQIAhAB&url=https%3A%2F%2Fgo.thalesesecurity.com%2Frs%2F480-LWA-970%2Fimages%2F2019-DTR-Global-USL-Web.pdf&usg=AOvVaw2rKeGVWQgkIV7M0vjnCo1g, https://secure2.sophos.com/en-us/medialibrary/Gated%20Assets/white%20papers/the-state-of-encryption-today-wpna.pdf?cmp=701j0000001WskZAAS, www.businesswire.com/news/home/20190221005061/en/Survey-83-Percent-U.S.-Organizations-Accidentally-Exposed, https://content.fireeye.com/apt/rpt-apt38"
             
         # encryptSensitiveInformation
             user info:"https://attack.mitre.org/mitigations/M1041/"   
