@@ -1,0 +1,14 @@
+# [Defacement](https://attack.mitre.org/techniques/T1491/)
+
+## Findings
+According to one study, up until 2016, [there were a total of 13 million](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi5m_fWpY7qAhUaxMQBHU6yBxoQFjAKegQIMhAB&url=https%3A%2F%2Fdocuments.trendmicro.com%2Fassets%2Fwhite_papers%2Fwp-a-deep-dive-into-defacement.pdf&usg=AOvVaw2zOWHBoWsMXdfxK_fLTP_G) web defacements recorded. At the same time, in 2016 there were [170 million active websites](https://www.internetlivestats.com/total-number-of-websites/). This corresponds to 7.647% of websites being affected by defacements. (Of course some might have been defaced several times). Since this only includes websites that have been defaced, there may be websites out there vulnerable to defacement but that haven't been defaced yet. Because of this I will combine the prevalence of the mitigation, ["Data Backup"](https://attack.mitre.org/mitigations/M1053/). This was previously investigated regarding the data backup mitigation and can be found in the dropbox folder under the name "[Mitigation] dataBackup.md". For convenience the findings are pasted below. 
+
+>An annual survey conducted by [helpnetsecurity](https://www.helpnetsecurity.com/2020/04/03/back-up-data/) suggests that nearly 90% of companies back up data. Out of all companies, 15% back up data multiple times per day, 26% daily, 28% weekly, 20% monthly, and 10% are not at all backing up data. I will assume that backing up data at least once per day is good enough to prevent a loss of data from occuring. Thus 15+26=41%. However, if the attack occurs on the same day as the weekly or monthly back ups occur, then they are also safe. So, we add (28/7=4) + (20/30=2/3) + 41 = ~45.67%.
+
+To make a rough estimate, I will combine the percentage of those affected by defacement attacks with those not backing up their data to get an estimate on how many are vulnerable to defacement attacks in total. This becomes ((1-0.4567) + 7.647)/2 = 0.309885 ~> ```Bernoulli(0.31)```.
+
+## Time to compromise
+I'm using the average time that defacements usually last. One study puts the average time that defacements lasted at [2 hours and 15 minutes](https://books.google.se/books?id=c7CpBAAAQBAJ&printsec=frontcover&dq=Cyber+Blockades&hl=en&sa=X&ved=0ahUKEwj4qsnGq47qAhVRXpoKHWACBqkQ6AEIKDAA#v=onepage&q=Cyber%20Blockades&f=false), specifically looking at some defacements that occured with Georgian (the country) government sites. This corresponds to ```Exponential(10.67)```. 
+
+## Result
+If you combine the estimate on the prevalence of defacement vulnerabilities and time to compromise, you get -> ```Bernoulli(0.31)*Exponential(10.67)```.
