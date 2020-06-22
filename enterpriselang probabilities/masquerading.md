@@ -1,0 +1,14 @@
+# [Masquerading](https://attack.mitre.org/techniques/T1036/)
+Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation. Several different variations of this technique have been observed.
+
+An example of how this threat is used from [Red Canary's Threat Detection Report](https://redcanary.com/threat-detection-report/techniques/masquerading/): "Masquerading allows adversaries to manipulate expected names and file paths to circumvent security controls, especially when they are reliant on filenames and process paths to observe, detect, or otherwise prevent threats. For example, it’s trivial to detect an adversary executing a binary named “mimikatz.exe.” As such, when adversaries want to dump credentials with Mimikatz, renaming the tool is essentially a prerequisite for successful credential theft."
+
+## Prevalence 
+Also according to [Red Canary's Threat Detection Report 2020](https://redcanary.com/threat-detection-report/techniques/masquerading/), 34% of organizations are affected by Masquerading. This corresponds to ```Bernoulli(0.34)```. 
+
+## Time to compromise
+This particular attack step depends on how long it takes for an unsuspecting victim to discover that a masquerading malicious file can stay on the computer. One of the mitigation techniques stated by the MITRE ATT&CK matrix, is to perform file monitoring. File integrity monitoring is, according to [Tripwire.com](https://www.tripwire.com/state-of-security/security-data-protection/security-controls/file-integrity-monitoring/), a process "that monitors and detects changes in files that may indicate a cyberattack." According to a source from [Cyber Management Alliance](https://www.cm-alliance.com/cybersecurity-blog/understanding-how-file-integrity-monitoring-works), file integrity monitoring is a process that is usually performed once per day, because of how computationally intensive it can be. This means that a masquerading file can remain undetected for up to one day in most cases. Apparently this is included in all current versions of windows, in a system known as [System File Checker](https://en.wikipedia.org/wiki/System_File_Checker). So I expect that most computers include some kind of File Integrity Monitoring. 
+
+## Result
+
+The findings indicate that the prevalence of this threat is ```Bernoulli(0.34)```, and the TTC is to be interpreted as how long an attack can be expected to last (which is how long the masquerading file is expected to go undetected), which is ```Exponential(1)``` (one day). Combining these, you get ```Bernoulli(0.34)*Exponential(1)```.
