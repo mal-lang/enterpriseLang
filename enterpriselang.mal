@@ -690,8 +690,9 @@ category Software {
             developer info: "Sources for distribution result: accenture.com/_acnmedia/PDF-116/Accenture-Cybersecurity-Report-2020.pdf, https://enterprise.verizon.com/resources/reports/DBIR_2018_Report_execsummary.pdf" 
             ->  os._validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
 
-        & _useThirdpartySoftware @hidden
+        & _useThirdpartySoftware @hidden [Bernoulli(0.757)]
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
+            developer info: "Sources for distribution result: https://www.infoworld.com/article/2626167/third-party-code-putting-companies-at-risk.html, https://threatpost.com/third-party-applications-blame-87-percent-vulnerabilities-last-year-031513/77633/, https://www.helpnetsecurity.com/2018/11/20/third-party-risks/"
             ->  useThirdpartySoftware
 
         & useThirdpartySoftware
@@ -1579,7 +1580,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1033/"
             ->  service.browser.browserExtensions
 
-        # updateSoftware
+        # updateSoftware [Bernoulli(0.34)]
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  firmwareCorruption,
                 service.browser.driveByCompromise,
@@ -2539,7 +2540,7 @@ category Software {
             ->  lLMNR_NBT_NS_PoisoningAndRelay,
                 forcedAuthentication 
 
-        # updateSoftware
+        # updateSoftware [Bernoulli(0.34)]
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
                 applicationShimming,
