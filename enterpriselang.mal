@@ -1738,9 +1738,9 @@ category Software {
                 bypassHostIntrusionPrevention, 
                 bypassAntivirus         
 
-        & compiledHTMLFile
+        & compiledHTMLFile [Bernoulli(0.712)*Exponential(1)]
             user info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
-            developer info: "Binary probability distribution."
+            developer info: "Sources for distribution results : https://blog.rootshell.be/2017/12/19/malware-delivered-via-compiled-html-help-file/"
             ->  computer.user.attemptUserExecution, // leads to User Execution attack
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation   
