@@ -1690,8 +1690,9 @@ category Software {
         & _bITSJobs @hidden
             ->  bITSJobs
 
-        & bITSJobs
+        & bITSJobs [Bernoulli(0.264)]
             user info: "Adversaries may abuse BITS to download, execute, and even clean up after running malicious code."
+            developer info: "Sources used for probability distribution: https://blog.trendmicro.com/trendlabs-security-intelligence/tropic-trooper-new-strategy/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://en.wikipedia.org/wiki/Windows_Desktop_Gadgets, https://www.fireeye.com/blog/threat-research/2018/03/suspected-chinese-espionage-group-targeting-maritime-and-engineering-industries.html" 
             ->  executeCode,
                 bypassHostForensicAnalysis,
                 computer.router.firewall.bypassFirewall 
