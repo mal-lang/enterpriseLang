@@ -32,7 +32,7 @@ Organizations aren’t adequately prepared and feel vulnerable: Almost 90 percen
 https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf
 But according to the Phonemon report (2018), 59% of the surveyed companies weren't scanning or had no specific plan for vulnerbility scanning 
 
-We can thus assess that the probability for vulnerabilityScanning is [Bernoulli(0.41)]
+(We can thus assess that the probability for vulnerabilityScanning is [Bernoulli(0.41)])
 
 #### Update Software
 (https://www.eweek.com/security/software-patches-could-prevent-most-breaches-study-finds
@@ -44,22 +44,23 @@ https://www.usenix.org/system/files/conference/soups2015/soups15-paper-ion.pdf
 This paper suggests that 36% of experts and 66% of standard users don't update software quickly enough.
 Smaller companies don't have security experts as IT managers.
 
-We can thus assess that the probability for updateSoftware mitigation to be enabled is [Bernoulli(0.34)]
+(We can thus assess that the probability for updateSoftware mitigation to be enabled is [Bernoulli(0.34)])
 
 #### Comparison 
 The results for both mitigations is similar to the overall vulnerability to supply chain compromise.
 https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture
 Seven in 10 businesses may be particularly vulnerable to cyber attacks through their supply chains, according to research commissioned by Accenture (meaning that ~30% have proper defenses/mitigation for this attack)
+We can thus assess that the prevalence for Supply Chain Compromise is given by [Bernoulli(0.70)].
+
 ### Supply Chain Compromise
 
 Assuming that the professsional adversary has previously done some research, they know which devices/software are used by the target, they can then try to compromise those in order to perform a supply chain compromise. Thus, the TTC we are looking for depends on the time it would take for the adversary to compromise and the time before an update is published.
 
 https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases.
-Most popular apps are updated 1-4 times a month, that is to say once every 8-30 days. We can thus assess that the distribution for the TTC will be [Uniform(8,30)]
+Most popular apps are updated 1-4 times a month, that is to say once every 8-30 days. We can thus assess that the distribution for the TTC will be [Uniform(8,30)], to which we add the standard TTC assessed in trustedRelationship.md [TruncatedNormal(0.042,0.021)].
 
+Thus the distribution law for supplyChainCompromise is [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
 
-
-Thus the distribution law for supplyChainCompromise is [Uniform(8,30)]
 ## Discussion 
 
 I couldn't find relevant data to assess the time to compromise a software maker in order to add malicious code to the software before an update so at this time, it is still considered as instantenious.  

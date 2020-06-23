@@ -561,11 +561,11 @@ category Software {
             ->  browser.spearphishingAttachment,
                 browser.spearphishingLink
 
-        | attemptSupplyChainCompromise @hidden
+        | attemptSupplyChainCompromise @hidden [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
+            developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
             ->  supplyChainCompromise
 
-        & supplyChainCompromise [Uniform(8,30)]
-            developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
+        & supplyChainCompromise 
             user info: "Supply chain compromise is the manipulation of products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
             ->  os.compromisedSystems
 
@@ -692,7 +692,7 @@ category Software {
             developer info: "Sources for distribution result: accenture.com/_acnmedia/PDF-116/Accenture-Cybersecurity-Report-2020.pdf, https://enterprise.verizon.com/resources/reports/DBIR_2018_Report_execsummary.pdf" 
             ->  os._validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
 
-        & _useThirdpartySoftware @hidden [Bernoulli(0.757)]
+        & _useThirdpartySoftware @hidden [Bernoulli(0.70)]
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
             developer info: "Sources for distribution result: https://www.infoworld.com/article/2626167/third-party-code-putting-companies-at-risk.html, https://threatpost.com/third-party-applications-blame-87-percent-vulnerabilities-last-year-031513/77633/, https://www.helpnetsecurity.com/2018/11/20/third-party-risks/"
             ->  useThirdpartySoftware
@@ -1709,8 +1709,9 @@ category Software {
                 bypassApplicationWhitelisting,
                 bypassAntivirus            
 
-        | codeSigningCertificate [Bernoulli(0.72)]
+        | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
             ->  adminAccount.windowsAdmin.bypassWindowsUserAccountControl
 
         | collectHashInformation    
@@ -2743,8 +2744,9 @@ category Software {
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
 
-        | codeSigningCertificate [Bernoulli(0.72)]
+        | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
 
         & _clearCommandHistory @hidden
             ->  clearCommandHistory       

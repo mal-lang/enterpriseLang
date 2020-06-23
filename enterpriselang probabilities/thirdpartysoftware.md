@@ -14,20 +14,21 @@ Insecure Third-Party software may allow the adversary to perform lateral movemen
 
 https://www.infoworld.com/article/2626167/third-party-code-putting-companies-at-risk.html
 Between 30 percent to 70 percent of the code in applications come from third parties, which fail to achieve an acceptable level of security up to 81 percent of the time, according to the study. In general, third-party applications are less secure than internally developed ones on the first submission.
-This source suggests that 81% of third party software aren't secure enough. 
+This source suggests that 81% of third party software aren't secure enough. Companies using them are thus vulnerable to Third Party software attacks. We can thus assume this data to be a good approxiamation of the percentage of companies vulerable to Third Party Software attacks.
 
 
+
+https://www.helpnetsecurity.com/2018/11/20/third-party-risks/
+According to the findings, 59 percent of companies said they have experienced a data breach caused by one of their vendors or third parties. Only 37 percent indicate that they have sufficient resources to manage third-party relationships and only 35 percent rate their third-party risk management program as highly effective.
+Since Third-Party Software attacks are common and relatively easy to perform, we can assume that adversaries used them whenever possible and thus assume this data as a good approximation of the percentage of companies vulnerable to Third Party Software attacks.
+
+## Unused but interesting findings
+### About third party vs internal and OS software vulnerability
 https://threatpost.com/third-party-applications-blame-87-percent-vulnerabilities-last-year-031513/77633/
 Eighty-seven percent of the vulnerabilities found in the top 50 programs affected third-party programs such as Adobe Flash and Reader, Java, Skype, various media players and others outside the Microsoft ecosystem. That means the remaining 13 percent “stem from operating systems and Microsoft programs,” according to Secunia’s Vulnerability Review report, released yesterday.
 The firm detected nearly 10,000 vulnerabilities during the last year across 421 vendors, a fifth of which Secunia deemed “highly critical.”
-This report suggests that third-party programs are accountable for 87% of software vulnerabilities which supports the previous result.
-
-https://www.helpnetsecurity.com/2018/11/20/third-party-risks/
-According to the findings, 59 percent of companies said they have experienced a data breach caused by one of their vendors or third parties.  Only 37 percent indicate that they have sufficient resources to manage third-party relationships and only 35 percent rate their third-party risk management program as highly effective.
-This survey suggests that at least 59% of companies are vulnerable to third-party software attacks. 
-
-## Unused but interesting findings
-
+This report suggests that third-party programs are accountable for 87% of software vulnerabilities in companies which supports the previous result.
+This data relates to the share of software vulnerabilities that come from third party programs.  
 ### About Software Update
 
 https://threatpost.com/third-party-applications-blame-87-percent-vulnerabilities-last-year-031513/77633/
@@ -42,7 +43,7 @@ If the Third-Party Software is available in the current session, it can instantl
 
 ## Result
 
-The 3 findings we found suggest that overall, the probability distribution for this attack step is [Bernoulli(0.757)]
+The 2 findings we found suggest that overall, the probability distribution for this attack step is [Bernoulli(0.70)]
 
 ## Discussion
 
