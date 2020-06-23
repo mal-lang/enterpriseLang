@@ -197,6 +197,7 @@ category Software {
                 os.service.browser.installExtensions,
                 os.service.browser.stealWebSessionCookie,
                 os.computer.router.internalNetwork.transmittedDataManipulation,
+                os.computer.router.externalNetwork.dataFromCloudStorageObject,
                 os.computer.router.externalNetwork.transmittedDataManipulation,
                 os.computer.router.externalNetwork.webService
 
@@ -239,6 +240,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  os.disablingSecurityTools,
                 os.validAccounts,
+                os.computer.router.externalNetwork.dataFromCloudStorageObject,
                 os.windows.adminServiceStop,
                 os.windows._bITSJobs,
                 os.windows.fileSystemPermissionsWeakness,
@@ -444,6 +446,10 @@ category Software {
         | adminCredentials
 
         | bypassWindowsUserAccountControl
+            ->  os.windows.applicationShimming,
+                os.windows.fileSystemPermissionsWeakness,
+                os.windows.passTheHash,
+                os.service.thirdpartySoftware.trustedRelationship
 
         # multiFactorAuthentication
             +>  os.windows.accountManipulation       
@@ -680,7 +686,7 @@ category Software {
 
         | bypassLogonCredentials
 
-        | bypassMultiFactorAuthentication  
+        | bypassMultiFactorAuthentication
 
         & stealApplicationAccessToken
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
@@ -778,6 +784,18 @@ category Software {
         | bypassLogonCredentials
 
         | bypassMultiFactorAuthentication   
+            ->  service.externalRemoteServices,
+                service.applicationDeploymentSoftware,
+                service.userRemoteServicesLogin,
+                service.adminRemoteServicesLogin,
+                service.thirdpartySoftware.useThirdpartySoftware,
+                service.os.windows.accountManipulation,
+                service.os.bruteForce,
+                service.os.adminAccount.createUserAccount,
+                service.os.networkSniffing,
+                service.os.validAccounts,
+                service.os.windows.emailStorageCollection,
+                service.os.windows.remoteDesktopProtocol
 
         # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
             user info: "https://attack.mitre.org/mitigations/M1021/"
@@ -1417,7 +1435,8 @@ category Software {
                 masquerading,
                 privateKeys,
                 runtimeDataManipulation,
-                storedDataManipulation
+                storedDataManipulation,
+                computer.router.externalNetwork.dataFromCloudStorageObject
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             user info: "https://attack.mitre.org/mitigations/M1036/" 
@@ -1497,6 +1516,7 @@ category Software {
                 credentialsInRegistry,
                 service.browser.browserExtensions,
                 service.thirdpartySoftware.stealApplicationAccessToken,
+                computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
                 validAccounts 
 
@@ -1571,7 +1591,8 @@ category Software {
                 indicatorRemovalOnHost,
                 networkSniffing,
                 privateKeys,
-                storedDataManipulation  
+                storedDataManipulation,
+                computer.router.externalNetwork.dataFromCloudStorageObject  
 
         # remoteDataStorage 
             user info: "https://attack.mitre.org/mitigations/M1029/"
@@ -3124,7 +3145,8 @@ category Network {
         # multiFactorAuthentication
             user info: "https://attack.mitre.org/mitigations/M1032/"
             ->  exchangeServerCollection,
-                router.computer.os.service.externalRemoteServices
+                router.computer.os.service.externalRemoteServices,
+                router.externalNetwork.dataFromCloudStorageObject
 
         # networkIntrusionPrevention
             user info: "https://attack.mitre.org/mitigations/M1031/"
@@ -3206,6 +3228,9 @@ category Network {
 
         | dataExfiltration
 
+        & dataFromCloudStorageObject
+            user info: "Adversaries may access data objects from improperly secured cloud storage."
+
         | attemptDefacement @hidden
             ->  defacement
 
@@ -3234,7 +3259,8 @@ category Network {
 
         # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
             user info: "https://attack.mitre.org/mitigations/M1037/"   
-            ->  router.computer.os.endpointDenialOfService,
+            ->  dataFromCloudStorageObject,
+                router.computer.os.endpointDenialOfService,
                 router.computer.os.multiHopProxy,
                 router.computer.os.networkDenialOfService,
                 router.computer.os.standardNonApplicationLayerProtocol,
