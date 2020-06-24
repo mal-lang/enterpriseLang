@@ -26,7 +26,7 @@ vulnerable to SSH-related vulnerabilities
 
 https://securitybrief.com.au/story/15-000-companies-still-critically-vulnerable-from-citrix-security-flaws-report
 Overall, the vulnerability is being fixed relatively quickly, but 19% of companies are still at risk. 
-
+This article collected data related to 80000 companies that use the Citrix Application as an External Remote Service. The Citrix Application had a critical security vulnerability (CVE-2019-19781) that was patched. However, not all of the companies observed patched instantly and overtime, 19% of companies were still at risk. This data can be assumed to be the average percentage of companies which don't have a proper update policy regarding External Remote Services and are vulnerable to this type of attack.
 
 ## Unused data
 https://www.ptsecurity.com/ww-en/analytics/network-traffic-analysis-2020/#id8
@@ -41,4 +41,4 @@ https://blog.reposify.com/127-increase-in-exposed-rdps-due-to-surge-in-remote-wo
 
 ## Results
 
-According to the data we collected, it would take on average 8 hours for an adversary to find and exploit a vulnerability on an external remote service. On average 19% of companies are vulnerable to an attack on external remote service. Considering those companies wouldn't be vulnerable with a fully updated network and well configured, we assess that the probability distribution for this attack step (without taking into account any mitigation) is ``` Bernoulli(0.19)*Exponential(3) ``` 
+According to the data we collected, it would take on average 8 hours for an adversary to find and exploit a vulnerability on an external remote service. On average 19% of companies are vulnerable to an attack on external remote service. Considering those companies wouldn't be vulnerable with a fully updated network and well configured, we assess that the probability distribution for this attack step is ``` Bernoulli(0.19)*Exponential(3) ``` 

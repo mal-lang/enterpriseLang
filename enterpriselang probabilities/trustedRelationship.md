@@ -25,10 +25,13 @@ their organizations need to think beyond securing
 their enterprises and take steps to secure their
 ecosystems to be effective. 
 
+This study suggests that 40% of a company's business ecosystem is vulnerable. We assume the business ecosystem to be a number of trusted relationships that have access in some way to the company's network.
+
 ### TTC
 In order to find an average time to compromise for entire company networks (which we assume to be weaker than the target's, causing the adversary to use them to get access to the target's network), we can try and assess a "standard TTC" for weaker companies using the 2018 Verizon Report.
 https://enterprise.verizon.com/resources/reports/DBIR_2018_Report_execsummary.pdf
 This report suggest that most (87%) compromises take minutes or less, while others are rather equally distributed between hours, days, weeks and months. Based on that we can assess a "standard TTC" represented by the ``[TruncatedNormal(0.042,0.021)]`` (average of 1 hour, 95% of values between 0 and 2 hours)
+
 ## Additional findings 
 
 About overall mitigation efficiency and overall attack success rate: 

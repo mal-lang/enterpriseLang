@@ -10,12 +10,14 @@ https://www.if-insurance.com/large-enterprises/insight/risk-consulting-magazine/
 According to Verizon’s 2018 Data Breach Investigations Report (DBIR), about 11% of the breaches reported involved physical actions.
 This result matches the crowdstrike report that suggests that Hardware Additions are observed in 5-20% of breaches. https://go.crowdstrike.com/rs/281-OBQ-266/images/Report2020CrowdStrikeGlobalThreatReport.pdf
 
+This data was collected on the reported breaches, considreing the risk, how hard it is for the adversary to get physical access to the network and how rewarding it is, we'll assume that the adversaries will use these techniques whenever possible, on the most vulnerable companies. Therefore, we assume that this data can approximate the percentage of companies that are vulnerable to Hardware Additions.
+
 ## Result
 We can then assess the probability distribution for Hardware Additions is ``[Bernoulli(0.11)]``
 Taking into consideration the time it would take for the attacker to get the physical access, we assess an arbitrary average of 3 hours to get there, resulting in a ``[Bernoulli(0.11)*Exponential(8)]`` distribution.
 
 ## Discussion
 
-The papers we found only give the % of breaches in which this physical access was used to perform the attack. However we may think that physical access was not leveraged every time it was possible which would result in a higher probability of success for HardwareAdditions. We may also assume that adversaries use physical access to get initial access only when it's possible considering the higher risk this implies.
+The papers we found only give the % of breaches in which this physical access was used to perform the attack. However we may think that physical access was not leveraged every time it was possible which would result in a higher probability of success for HardwareAdditions.
 The time to get physical access assessed isn't based on any scientific paper and is only a rough arbitrary estimation that has no reliable scientific basis to support it.
-Research on this specific topic seems quite shallow and thus the results are up to discussion.
+Research on this specific topic (Hardware Additions) seems quite shallow and thus the results are up to discussion.

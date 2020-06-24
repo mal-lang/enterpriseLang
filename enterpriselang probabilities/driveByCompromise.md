@@ -31,7 +31,6 @@ https://www.youtube.com/watch?v=rTg9l4d8MU4 > However ads are served if a campai
 
 Based on what we found, ads are usually reviewed within 24 hours before being served (for facebook : https://www.facebook.com/business/help/204798856225114?id=649869995454285). With enough investment from the attacker, and a well targeted ad, the ad will be 100% sure to be displayed the next time the target visits the website. We can thus assume, based on the time before the ad is served and the average time before checking most visited websites, that the ad will be seen between 1 to 2 days after being submitted to the ad provider. We can represent that with either a `` Uniform(1,2) `` or a `` Gamma(9,0.167) `` probability distribution.
 
-Maybe this attack can fail if the ad provider is able to filter malicious ads, in which case we should research for the probability that a malicious ad is successfully displayed by the provider and maybe add it as a Bernoulli distribution. So maybe we could add a probability for the adversary to compromise/fool the ad provider.
 
 ## Built-in interface compromise
 
@@ -39,22 +38,10 @@ If the website uses unmoderated interactive forum or comment interface (look for
 
 The probability distribution for this depends on the likelihood of the user seeing the post and the time it will take for him to do so. Assuming that the user sees the post as soon as he visits the website we only have to worry about a visit time. (We assume that since this is their most visited website, the target will load the post) So the probability will be the same as for injected code on legitimate website `` [Exponential(1)] ``
 
-It might be the same probability for both of these (XSS)
-
-## Results
+This technique is performed via cross-site scripting (XSS), just like legitimate code injection. We can thus asses the probability to be the same as in the first point :   `` [Bernoulli(0.32)*Exponential(1)] `` 
 
 
 
 ## Discussion 
 
-[1] : 
-
-[2] :
-
-[3] :
-
-[4] :
-
-[5] : 
-
-[6] : 
+Maybe the malvertising attack can fail if the ad provider is able to filter malicious ads, in which case we should research for the probability that a malicious ad is successfully displayed by the provider and maybe add it as a Bernoulli distribution. So maybe we could add a probability for the adversary to compromise/fool the ad provider.

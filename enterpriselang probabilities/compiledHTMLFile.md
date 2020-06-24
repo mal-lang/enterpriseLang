@@ -10,7 +10,7 @@ Adversaries may abuse this technology to conceal malicious code. A custom CHM fi
 ## Time To Compromise
 
 https://blog.rootshell.be/2017/12/19/malware-delivered-via-compiled-html-help-file/
-Phishing is a way of delivering the malicious file to the victim. Therefore, we'll use the same probability distribution as for the Spearphishing Link technique.  
+Phishing is a way of delivering the malicious file to the victim. Assuming this as the most common and efficient way of delivering malicious file, we'll use the same probability distribution as for the Spearphishing Link technique.    
 
 ## Result 
 
