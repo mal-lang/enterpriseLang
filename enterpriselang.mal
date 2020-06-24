@@ -843,8 +843,9 @@ category Software {
                 computer.peripheralDevice.removableMedia.infectedMedia,
                 service.thirdpartySoftware.trustedRelationship
 
-        & connectionProxy
+        & connectionProxy [Bernoulli(0.507)]
             user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
+            developer info: "Sources used for probability distribution: https://jpcertcc.github.io/ToolAnalysisResultSheet/details/Htran.htm#ExecCondition, https://gs.statcounter.com/os-market-share/desktop/worldwide/#monthly-201905-202005, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/threat-detection-report/techniques/powershell/, https://www.scribd.com/document/406643981/Threat-Detection-Report, https://s3.eu-west-1.amazonaws.com/ncsc-content/files/Joint%20report%20on%20publicly%20available%20hacking%20tools%20%28NCSC%29.pdf)"
             ->  bypassLogAnalysis,
                 computer.router.internalNetwork.c2Connected,
                 computer.router.internalNetwork.bypassFirewall,
