@@ -920,7 +920,8 @@ category Software {
             user info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
             ->  dataEncoding
 
-        & dataEncoding
+        & dataEncoding [Bernoulli(0.0614)]
+            developer info: "TTC instant/not applicable. Sources used for probability distribution result: https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/powershell-threats-grow-further-and-operate-plain-sight, https://docs.broadcom.com/docs/increased-use-of-powershell-in-attacks-16-en"
             ->  computer.router.internalNetwork.communicate
           
         & disablingSecurityTools [Bernoulli(0.23)*Exponential(111.55)]
@@ -2326,7 +2327,7 @@ category Software {
         & adminSecuritySoftwareDiscovery
             ->  virtualizationOrSandboxEvasion
 
-        & bypassUserAccountControl [Bernoulli(0.2968)]
+        & bypassUserAccountControl [Bernoulli(0.277)]
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
             ->  executeCode
        
