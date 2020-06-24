@@ -47,6 +47,8 @@ category Software {
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
                 os._dataEncoding,
+                os.dataEncryptedForImpact,
+                os.dataDestruction, 
                 os.diskContentWipe,
                 os.domainDiscovery,
                 os.domainGenerationAlgorithms,
@@ -79,8 +81,6 @@ category Software {
                 os.storedDataManipulation,
                 os.remoteFileCopy, 
                 os.userCommandLineInterface,
-                os.userDataDestruction, 
-                os.userDataEncryptedForImpact,
                 os.windows.accountManipulation,
                 os.windows._bITSJobs,
                 os.windows.bypassUserAccountControl,
@@ -135,7 +135,7 @@ category Software {
                 os.windows.trustedDeveloperUtilities,
                 os.windows.userAccessTokenManipulation,
                 os.windows.userSecuritySoftwareDiscovery,
-                os.windows.userServiceStop,
+                os.windows.serviceStop,
                 os.windows.videoCapture,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsRemoteManagement,
@@ -241,7 +241,7 @@ category Software {
             ->  os.disablingSecurityTools,
                 os.validAccounts,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
-                os.windows.adminServiceStop,
+                os.windows.serviceStop,
                 os.windows._bITSJobs,
                 os.windows.fileSystemPermissionsWeakness,
                 os.windows.indicatorBlocking,
@@ -256,7 +256,6 @@ category Software {
                 os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
                 os.windows.shortcutModification,
-                os.windows.userServiceStop,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
                 os.windows.winlogonHelperDLL,
@@ -292,8 +291,8 @@ category Software {
                 os.accountAccessRemoval,   
                 os._automatedCollection,
                 os.adminCommandLineInterface,
-                os.adminDataDestruction,
-                os.adminDataEncryptedForImpact,
+                os.dataDestruction,
+                os.dataEncryptedForImpact,
                 os._credentialDumping,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
@@ -384,7 +383,7 @@ category Software {
             +>  os.windows.accessibilityFeatures,
                 os.windows.adminAccessTokenManipulation,
                 os.windows.adminSecuritySoftwareDiscovery,
-                os.windows.adminServiceStop,
+                os.windows.serviceStop,
                 os.windows._appCertDLLs,
                 os.windows.appInitDLLs,
                 os.windows._applicationShimming,
@@ -949,7 +948,7 @@ category Software {
             user info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
             ->  applicationExhaustionFlood,
                 osExhaustionFlood,
-                windows.attemptUserServiceStop
+                windows.attemptServiceStop
 
         & executionGuardrails
             user info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
@@ -1342,32 +1341,10 @@ category Software {
                 dataCompressed,
                 dataEncrypted
         
-        & userDataDestruction {A}
+        & dataDestruction {A}
             ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
 
-        & adminDataDestruction {A}
-            ->  inhibitSystemRecovery  
-
-        & systemDataDestruction {A}
-            ->  inhibitSystemRecovery  
-
-        & userDataEncryptedForImpact {A} [Bernoulli(0.366)*Exponential(12)]
-            user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
-            developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
-            ->  _validAccounts,
-                _credentialDumping,
-                inhibitSystemRecovery,
-                windows.windowsAdminShares
-
-        & adminDataEncryptedForImpact {A} [Bernoulli(0.366)*Exponential(12)]
-            user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
-            developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
-            ->  _validAccounts,
-                _credentialDumping,
-                inhibitSystemRecovery,
-                windows.windowsAdminShares
-
-        & systemDataEncryptedForImpact {A} [Bernoulli(0.366)*Exponential(12)]
+        & dataEncryptedForImpact {A} [Bernoulli(0.366)*Exponential(12)]
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
             ->  _validAccounts,
@@ -1458,12 +1435,8 @@ category Software {
  
         # dataBackup
             user info: "https://attack.mitre.org/mitigations/M1053/"
-            ->  userDataDestruction,
-                adminDataDestruction,
-                systemDataDestruction,
-                userDataEncryptedForImpact, 
-                adminDataEncryptedForImpact,
-                systemDataEncryptedForImpact,
+            ->  dataDestruction,
+                dataEncryptedForImpact,
                 inhibitSystemRecovery,
                 diskContentWipe,
                 diskStructureWipe,
@@ -1665,7 +1638,7 @@ category Software {
                 windows.sIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
                 windows.systemServiceDiscovery,
-                windows.systemServiceStop,
+                windows.serviceStop,
                 windows.timeProviders,
                 windows.timestomp,
                 windows.windowsManagementInstrumentationEventSubscription,
@@ -1673,6 +1646,7 @@ category Software {
                 windows.os.accountAccessRemoval,
                 windows.os._credentialDumping,
                 windows.os._credentialsInFiles,
+                windows.os.dataEncryptedForImpact,
                 windows.os.fileAndDirectoryDiscovery,
                 windows.os.fileAndDirectoryPermissionsModification,
                 windows.os.firmwareCorruption,
@@ -1683,8 +1657,7 @@ category Software {
                 windows.os.redundantAccess,
                 windows.os.rootkit,
                 windows.os.runtimeDataManipulation,
-                windows.os.systemDataDestruction,
-                windows.os.systemDataEncryptedForImpact,
+                windows.os.dataDestruction,
                 windows.os.systemShutdownOrReboot,
                 windows.os.storedDataManipulation,
                 windows.os.twoFactorAuthenticationInterception,
@@ -2202,21 +2175,13 @@ category Software {
             user info: "An adversary can place an executable in a higher level directory of the path, and Windows will resolve that executable instead of the intended executable."
             ->  executeCode   
 
-        | attemptUserServiceStop @hidden {A}
-            ->  userServiceStop
+        | attemptServiceStop @hidden {A}
+            ->  serviceStop
 
-        & userServiceStop {A}
+        & serviceStop {A}
             user info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
-            ->  userDataDestruction,
-                userDataEncryptedForImpact
-
-        & adminServiceStop {A}
-            ->  adminDataDestruction,
-                adminDataEncryptedForImpact
-
-        & systemServiceStop {A}
-            ->  systemDataDestruction,
-                systemDataEncryptedForImpact
+            ->  dataDestruction,
+                dataEncryptedForImpact
 
         & scheduledTask [Bernoulli(0.33)*Exponential(54.3)]
             user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
@@ -2518,9 +2483,7 @@ category Software {
                 pathInterception,
                 sharedWebroot,
                 sIPAndTrustProviderHijacking,
-                userServiceStop,
-                adminServiceStop,
-                systemServiceStop,
+                serviceStop,
                 serviceExecution,
                 _serviceRegistryPermissionsWeakness,
                 timeProviders,
@@ -2530,9 +2493,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1024/"
             ->  sIPAndTrustProviderHijacking,
                 _powerShellProfile,
-                userServiceStop,
-                adminServiceStop,
-                systemServiceStop,
+                serviceStop,
                 timeProviders
 
         # restrictLibraryLoading 
@@ -3196,10 +3157,8 @@ category Network {
                 router.computer.os.windows.accountManipulation,
                 router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.domainTrustDiscovery,
-                router.computer.os.windows.userServiceStop,
-                router.computer.os.windows.adminServiceStop,
+                router.computer.os.windows.serviceStop,
                 router.computer.os.windows.sharedWebroot,
-                router.computer.os.windows.systemServiceStop,
                 router.computer.os.service.exploitationOfRemoteServices,
                 router.computer.os.service.exploitHighVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
@@ -3307,9 +3266,7 @@ category Network {
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.standardNonApplicationLayerProtocol,
                 router.computer.os.windows.accountManipulation,
-                router.computer.os.windows.adminServiceStop,
-                router.computer.os.windows.userServiceStop,
-                router.computer.os.windows.systemServiceStop          
+                router.computer.os.windows.serviceStop         
 
         # sSLOrTLSInspection
             user info: "https://attack.mitre.org/mitigations/M1020/"
