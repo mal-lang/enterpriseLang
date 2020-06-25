@@ -1803,7 +1803,8 @@ category Software {
             ->  executeCode,
                 processInjection
 
-        & executionThroughModuleLoad
+        & executionThroughModuleLoad [Bernoulli(0.93)*Exponential(1)]
+            developer info: "Sources for distribution results: Results on spearphishing and https://community.broadcom.com/symantecenterprise/communities/community-home/librarydocuments/viewdocument?DocumentKey=bc9e2e2e-028c-4ba1-863f-72a4700dbdc2&CommunityKey=1ecf5f55-9545-44d6-b0f4-4e4a7f5f5e68&tab=librarydocuments, https://www.cybereason.com/blog/information-stealing-malware-targeting-brazil-full-research"
             user info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
             ->  executeCode    
         

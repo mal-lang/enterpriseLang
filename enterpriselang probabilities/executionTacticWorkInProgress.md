@@ -89,7 +89,7 @@ However this attack can only be performed if the Control Panel is opened which m
 
 This needs a probability distribution (how often do people open Control Panel). Maybe the adversary can trigger or display something that encourages the user to open Control Panel .
 
-### Dynamic Data Exchange (needs)
+### Dynamic Data Exchange 
 
 Object Linking and Embedding (OLE), or the ability to link data between documents, was originally implemented through DDE. Despite being superseded by COM, DDE may be enabled in Windows 10 and most of Microsoft Office 2016 via Registry keys.
 
@@ -125,7 +125,7 @@ ShellExecuteExA() and ShellExecuteExW()
 
 This one probably doesn't need a probability distribution because processInjection already has one and executeCode is a binary one.
 
-### Execution Through Module Load  (needs)
+### Execution Through Module Load
 
 https://attack.mitre.org/techniques/T1129/
 This functionality resides in NTDLL.dll and is part of the Windows Native API. 
@@ -221,6 +221,8 @@ Regsvr32.exe can also be leveraged to register a COM Object used to establish Pe
 
 https://www.carbonblack.com/2016/04/28/threat-advisory-squiblydoo-continues-trend-of-attackers-using-native-os-tools-to-live-off-the-land/
 This exploit can be performed in seconds with user/adminRights and no restriction, and requires exploitProtection to be mitigated.
+This is performed after a successful spearphihsing campaign.
+
 
 We assessed this probability distribution to be binary.
 
