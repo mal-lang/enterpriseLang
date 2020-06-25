@@ -2384,7 +2384,8 @@ category Software {
                 bypassSignatureBasedDetection,  
                 bypassStaticFileAnalysis              
 
-        & xslScriptProcessing
+        & xslScriptProcessing [Bernoulli(0.712)*Exponential(1)]
+            developer info: "Sources used for probability distribution: https://reaqta.com/2018/03/spear-phishing-campaign-leveraging-msxsl/"
             user info: "Adversaries may abuse this functionality to execute arbitrary files while potentially bypassing application whitelisting defenses."
             ->  executeCode,
                 windowsManagementInstrumentation, // leads to Windows Management Instrumentation attack

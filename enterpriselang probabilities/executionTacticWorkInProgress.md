@@ -59,7 +59,7 @@ A number of exploits can be run in minutes if not seconds according to this rese
 We assessed this probability distribution to be binary.
 
 
-### Command-Line Interface (needs?)
+### Command-Line Interface
 
 This interface can be opened instantly with any rights and no restriction, if the user has access to direct command line interface.
 https://attack.mitre.org/techniques/T1173/ this apparently isn't always the case (as suggested in the DDE attack step) so this might need a probability distribution.
@@ -316,7 +316,7 @@ Probability distribution found by Lina.
 
 Probability found by Love (check mitigations).
 
-### XSL Script Processing (needs)
+### XSL Script Processing
 
 Adversaries may abuse this functionality to execute arbitrary files while potentially bypassing application whitelisting defenses. Similar to Trusted Developer Utilities, the Microsoft common line transformation utility binary (msxsl.exe) can be installed and used to execute malicious JavaScript embedded within local or remote (URL referenced) XSL files. Since msxsl.exe is not installed by default, an adversary will likely need to package it with dropped files.  Msxsl.exe takes two main arguments, an XML source file and an XSL stylesheet. Since the XSL file is valid XML, the adversary may call the same XSL file twice. When using msxsl.exe adversaries may also give the XML/XSL files an arbitrary file extension.
 
