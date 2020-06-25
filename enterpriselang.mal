@@ -2038,8 +2038,9 @@ category Software {
         | rDPSessionHijacking
             user info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
 
-        | registryRunKeysOrStartupFolder
+        | registryRunKeysOrStartupFolder [Bernoulli(0.1175)]
             user info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
+            developer info: "Sources used for distribution result: Unpublished document from Red Canary detailing 13% of organizations are affected by this vulnerability, and https://dsimg.ubm-us.net/envelope/395823/551993/Fileless%20Attack%20Survival%20Guide.pdf"
             ->  masquerading, // leads to Masquerading attack
                 service.remoteAccessTools,
                 persistence
