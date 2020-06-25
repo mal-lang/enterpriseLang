@@ -47,6 +47,8 @@ category Software {
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
                 os._dataEncoding,
+                os.dataEncryptedForImpact,
+                os.dataDestruction, 
                 os.diskContentWipe,
                 os.domainDiscovery,
                 os.domainGenerationAlgorithms,
@@ -79,8 +81,6 @@ category Software {
                 os.storedDataManipulation,
                 os.remoteFileCopy, 
                 os.userCommandLineInterface,
-                os.userDataDestruction, 
-                os.userDataEncryptedForImpact,
                 os.windows.accountManipulation,
                 os.windows._bITSJobs,
                 os.windows.bypassUserAccountControl,
@@ -135,7 +135,7 @@ category Software {
                 os.windows.trustedDeveloperUtilities,
                 os.windows.userAccessTokenManipulation,
                 os.windows.userSecuritySoftwareDiscovery,
-                os.windows.userServiceStop,
+                os.windows.serviceStop,
                 os.windows.videoCapture,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsRemoteManagement,
@@ -241,7 +241,7 @@ category Software {
             ->  os.disablingSecurityTools,
                 os.validAccounts,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
-                os.windows.adminServiceStop,
+                os.windows.serviceStop,
                 os.windows._bITSJobs,
                 os.windows.fileSystemPermissionsWeakness,
                 os.windows.indicatorBlocking,
@@ -256,7 +256,6 @@ category Software {
                 os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
                 os.windows.shortcutModification,
-                os.windows.userServiceStop,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
                 os.windows.winlogonHelperDLL,
@@ -292,8 +291,8 @@ category Software {
                 os.accountAccessRemoval,   
                 os._automatedCollection,
                 os.adminCommandLineInterface,
-                os.adminDataDestruction,
-                os.adminDataEncryptedForImpact,
+                os.dataDestruction,
+                os.dataEncryptedForImpact,
                 os._credentialDumping,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
@@ -384,7 +383,7 @@ category Software {
             +>  os.windows.accessibilityFeatures,
                 os.windows.adminAccessTokenManipulation,
                 os.windows.adminSecuritySoftwareDiscovery,
-                os.windows.adminServiceStop,
+                os.windows.serviceStop,
                 os.windows._appCertDLLs,
                 os.windows.appInitDLLs,
                 os.windows._applicationShimming,
@@ -731,9 +730,9 @@ category Software {
 
         | executionThroughMaliciousContent
 
-        & credentialsFromWebBrowsers [Bernoulli(0.18)]
+        & credentialsFromWebBrowsers [Bernoulli(0.625)]
             user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
-            developer info: "Sources for distribution result: https://www.pewresearch.org/internet/2017/01/26/2-password-management-and-mobile-security/, https://attack.mitre.org/techniques/T1503/, https://www.proofpoint.com/us/threat-insight/post/new-vega-stealer-shines-brightly-targeted-campaign"
+            developer info: "Sources for distribution result: https://link.springer.com/book/10.1007/978-3-319-94376-3, https://attack.mitre.org/techniques/T1503/, https://www.proofpoint.com/us/threat-insight/post/new-vega-stealer-shines-brightly-targeted-campaign"
             ->  service.os.userAccount.userCredentials
  
         | attemptSpearphishingLink @hidden      
@@ -843,8 +842,9 @@ category Software {
                 computer.peripheralDevice.removableMedia.infectedMedia,
                 service.thirdpartySoftware.trustedRelationship
 
-        & connectionProxy
+        & connectionProxy [Bernoulli(0.825)]
             user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
+            developer info: "Sources used for probability distribution: https://jpcertcc.github.io/ToolAnalysisResultSheet/details/Htran.htm#ExecCondition, https://gs.statcounter.com/os-market-share/desktop/worldwide/#monthly-201905-202005, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/threat-detection-report/techniques/powershell/, https://www.scribd.com/document/406643981/Threat-Detection-Report, https://s3.eu-west-1.amazonaws.com/ncsc-content/files/Joint%20report%20on%20publicly%20available%20hacking%20tools%20%28NCSC%29.pdf)"
             ->  bypassLogAnalysis,
                 computer.router.internalNetwork.c2Connected,
                 computer.router.internalNetwork.bypassFirewall,
@@ -919,7 +919,8 @@ category Software {
             user info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
             ->  dataEncoding
 
-        & dataEncoding
+        & dataEncoding [Bernoulli(0.0614)]
+            developer info: "TTC instant/not applicable. Sources used for probability distribution result: https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/powershell-threats-grow-further-and-operate-plain-sight, https://docs.broadcom.com/docs/increased-use-of-powershell-in-attacks-16-en"
             ->  computer.router.internalNetwork.communicate
           
         & disablingSecurityTools [Bernoulli(0.23)*Exponential(111.55)]
@@ -947,7 +948,7 @@ category Software {
             user info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
             ->  applicationExhaustionFlood,
                 osExhaustionFlood,
-                windows.attemptUserServiceStop
+                windows.attemptServiceStop
 
         & executionGuardrails
             user info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
@@ -966,9 +967,9 @@ category Software {
             user info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
             ->  computer.router.internalNetwork.communicate  
 
-        & firmwareCorruption {A} [Bernoulli(0.2)]
+        & firmwareCorruption {A} [Bernoulli(0.8)*Exponential(2880)]
             user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
-            developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: http://www.baselinemag.com/c/a/Security/Disaster-Recovery-Weaknesses-Are-Pervasive-480167, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
+            developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: https://www.wired.com/2015/03/researchers-uncover-way-hack-bios-undermine-secure-operating-systems/, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
 
         | hiddenFilesAndDirectories
             user info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a 'hidden' file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
@@ -1342,31 +1343,12 @@ category Software {
                 dataCompressed,
                 dataEncrypted
         
-        & userDataDestruction {A}
+        & dataDestruction {A}
             ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
 
-        & adminDataDestruction {A}
-            ->  inhibitSystemRecovery  
-
-        & systemDataDestruction {A}
-            ->  inhibitSystemRecovery  
-
-        & userDataEncryptedForImpact {A}
+        & dataEncryptedForImpact {A} [Bernoulli(0.366)*Exponential(12)]
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
-            ->  _validAccounts,
-                _credentialDumping,
-                inhibitSystemRecovery,
-                windows.windowsAdminShares
-
-        & adminDataEncryptedForImpact {A}
-            user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
-            ->  _validAccounts,
-                _credentialDumping,
-                inhibitSystemRecovery,
-                windows.windowsAdminShares
-
-        & systemDataEncryptedForImpact {A}
-            user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
             ->  _validAccounts,
                 _credentialDumping,
                 inhibitSystemRecovery,
@@ -1455,12 +1437,8 @@ category Software {
  
         # dataBackup
             user info: "https://attack.mitre.org/mitigations/M1053/"
-            ->  userDataDestruction,
-                adminDataDestruction,
-                systemDataDestruction,
-                userDataEncryptedForImpact, 
-                adminDataEncryptedForImpact,
-                systemDataEncryptedForImpact,
+            ->  dataDestruction,
+                dataEncryptedForImpact,
                 inhibitSystemRecovery,
                 diskContentWipe,
                 diskStructureWipe,
@@ -1662,7 +1640,7 @@ category Software {
                 windows.sIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
                 windows.systemServiceDiscovery,
-                windows.systemServiceStop,
+                windows.serviceStop,
                 windows.timeProviders,
                 windows.timestomp,
                 windows.windowsManagementInstrumentationEventSubscription,
@@ -1670,6 +1648,7 @@ category Software {
                 windows.os.accountAccessRemoval,
                 windows.os._credentialDumping,
                 windows.os._credentialsInFiles,
+                windows.os.dataEncryptedForImpact,
                 windows.os.fileAndDirectoryDiscovery,
                 windows.os.fileAndDirectoryPermissionsModification,
                 windows.os.firmwareCorruption,
@@ -1680,8 +1659,7 @@ category Software {
                 windows.os.redundantAccess,
                 windows.os.rootkit,
                 windows.os.runtimeDataManipulation,
-                windows.os.systemDataDestruction,
-                windows.os.systemDataEncryptedForImpact,
+                windows.os.dataDestruction,
                 windows.os.systemShutdownOrReboot,
                 windows.os.storedDataManipulation,
                 windows.os.twoFactorAuthenticationInterception,
@@ -2035,8 +2013,9 @@ category Software {
         | rDPSessionHijacking
             user info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
 
-        | registryRunKeysOrStartupFolder
+        | registryRunKeysOrStartupFolder [Bernoulli(0.1925)]
             user info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
+            developer info: "Sources used for distribution result: https://dsimg.ubm-us.net/envelope/395823/551993/Fileless%20Attack%20Survival%20Guide.pdf"
             ->  masquerading, // leads to Masquerading attack
                 service.remoteAccessTools,
                 persistence
@@ -2199,21 +2178,13 @@ category Software {
             user info: "An adversary can place an executable in a higher level directory of the path, and Windows will resolve that executable instead of the intended executable."
             ->  executeCode   
 
-        | attemptUserServiceStop @hidden {A}
-            ->  userServiceStop
+        | attemptServiceStop @hidden {A}
+            ->  serviceStop
 
-        & userServiceStop {A}
+        & serviceStop {A}
             user info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
-            ->  userDataDestruction,
-                userDataEncryptedForImpact
-
-        & adminServiceStop {A}
-            ->  adminDataDestruction,
-                adminDataEncryptedForImpact
-
-        & systemServiceStop {A}
-            ->  systemDataDestruction,
-                systemDataEncryptedForImpact
+            ->  dataDestruction,
+                dataEncryptedForImpact
 
         & scheduledTask [Bernoulli(0.33)*Exponential(54.3)]
             user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
@@ -2327,7 +2298,7 @@ category Software {
         & adminSecuritySoftwareDiscovery
             ->  virtualizationOrSandboxEvasion
 
-        & bypassUserAccountControl [Bernoulli(0.2968)]
+        & bypassUserAccountControl [Bernoulli(0.277)]
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
             ->  executeCode
        
@@ -2516,9 +2487,7 @@ category Software {
                 pathInterception,
                 sharedWebroot,
                 sIPAndTrustProviderHijacking,
-                userServiceStop,
-                adminServiceStop,
-                systemServiceStop,
+                serviceStop,
                 serviceExecution,
                 _serviceRegistryPermissionsWeakness,
                 timeProviders,
@@ -2528,9 +2497,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1024/"
             ->  sIPAndTrustProviderHijacking,
                 _powerShellProfile,
-                userServiceStop,
-                adminServiceStop,
-                systemServiceStop,
+                serviceStop,
                 timeProviders
 
         # restrictLibraryLoading 
@@ -3119,8 +3086,9 @@ category Network {
         | _dataObfuscation @hidden
             ->  dataObfuscation
 
-        & dataObfuscation
+        & dataObfuscation [Bernoulli(0.685)]
             user info: "This encompasses many methods, such as adding junk data to protocol traffic, using steganography, commingling legitimate traffic with C2 communications traffic, or using a non-standard data encoding system."
+            developer info: "TTC instant/not applicable. sources used for probability distribution: https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://books.google.se/books?id=tHK6CAAAQBAJ&pg=PA175&lpg=PA175&dq=percent+of+malware+using+obfuscation&source=bl&ots=uAffxqpZX2&sig=ACfU3U2kkIrqzLLQ8ipOR2RwkRPzc8Jp1A&hl=en&sa=X&ved=2ahUKEwio69vRhZrqAhVMEncKHYwLAwsQ6AEwC3oECGQQAQ#v=onepage&q=percent%20of%20malware%20using%20obfuscation&f=false"
             ->  router.externalNetwork.bypassNetworkIntrusionDetection,
                 bypassNetworkIntrusionDetection
 
@@ -3196,10 +3164,8 @@ category Network {
                 router.computer.os.windows.accountManipulation,
                 router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.domainTrustDiscovery,
-                router.computer.os.windows.userServiceStop,
-                router.computer.os.windows.adminServiceStop,
+                router.computer.os.windows.serviceStop,
                 router.computer.os.windows.sharedWebroot,
-                router.computer.os.windows.systemServiceStop,
                 router.computer.os.service.exploitationOfRemoteServices,
                 router.computer.os.service.exploitHighVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
@@ -3307,9 +3273,7 @@ category Network {
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.standardNonApplicationLayerProtocol,
                 router.computer.os.windows.accountManipulation,
-                router.computer.os.windows.adminServiceStop,
-                router.computer.os.windows.userServiceStop,
-                router.computer.os.windows.systemServiceStop          
+                router.computer.os.windows.serviceStop         
 
         # sSLOrTLSInspection
             user info: "https://attack.mitre.org/mitigations/M1020/"
