@@ -1082,10 +1082,12 @@ category Software {
             user info: "Adversaries with admin rights may get better details of the hosts enumerated"
         
         & adminCommandLineInterface
+            developer info: "Binary probability distribution."
             ->  dataCollected, // entrypoints of attacks that can be done with command line interface under admin rights
                 obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface 
         
-        & userCommandLineInterface
+        & userCommandLineInterface [Bernoulli(0.24)]
+            developer info: "Sources for distribution results: https://www.itjungle.com/2020/06/22/security-gaining-attention-on-ibm-i-but-more-progress-needed/"
             ->  dataCollected, // entrypoints of attacks that can be done with command line interface under user rights
                 obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface
 
