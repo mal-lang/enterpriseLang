@@ -2604,7 +2604,8 @@ category Software {
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
 
-        | spaceAfterFileName
+        | spaceAfterFileName [Exponential(1)]
+            developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
 
         | infectedOS
@@ -2683,8 +2684,9 @@ category Software {
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
             ->  bypassHostForensicAnalysis
 
-        | trap
+        | trap [Exponential(0.1)]
             user info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
+            developer info: "Arbitrary distribution. See trap.md file."
             ->  executeCode,
                 persistence
 
@@ -2917,7 +2919,8 @@ category Software {
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
             ->  service._exploitationForPrivilegeEscalation
 
-        | trap
+        | trap [Exponential(0.1)]
+            developer info: "Arbitrary distribution. See trap.md file."
             user info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
             ->  executeCode,
                 persistence
@@ -2925,7 +2928,7 @@ category Software {
         | videoCapture
             ->  computer.collectVideo     
 
-        | spaceAfterFileName
+        | spaceAfterFileName [Exponential(1)]
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
 

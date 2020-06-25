@@ -23,8 +23,7 @@ https://cqureacademy.com/blog/windows-internals/code-signing
 Hacking a code Signing certificate wouldn't take more than 15 minutes for a professional adversary.
 
 ## Results
-Based on the previous findings, we can assess that the probability of success of the codeSigningCertificate is ``Bernoulli(0.72)*Exponential(96)``
-
+Based on the previous findings, we can assess that the probability of success of the codeSigningCertificate is ``Bernoulli(0.72)*Exponential(96)``  and the probability for the codeSigning mitigation to be enabled is ``Bernoulli(0.28)``
 ## Discussion
 
 The prevalence for this attack was assessed via the results of a survey. The surveyed companies might not have been fully aware of the risks they were undertaking and of the effectiveness of their defense process. The prevalence could thus be discussed. 

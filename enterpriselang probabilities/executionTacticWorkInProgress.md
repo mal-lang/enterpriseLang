@@ -59,10 +59,10 @@ A number of exploits can be run in minutes if not seconds according to this rese
 We assessed this probability distribution to be binary.
 
 
-### Command-Line Interface (needs)
+### Command-Line Interface (needs?)
 
 This interface can be opened instantly with any rights and no restriction, if the user has access to direct command line interface.
-https://attack.mitre.org/techniques/T1173/ this apparently isn't always the case so this might need a probability distribution.
+https://attack.mitre.org/techniques/T1173/ this apparently isn't always the case (as suggested in the DDE attack step) so this might need a probability distribution.
 
 This needs a probability distribution
 
@@ -272,7 +272,7 @@ The dot operator is available to any user, provided they have access to command 
 
 We assessed this probability distribution to be binary.
 
-### Space after filename (needs)
+### Space after filename
 
 Adversaries can hide a program's true filetype by changing the extension of a file. With certain file types (specifically this does not work with .app extensions), appending a space to the end of a filename will change how the file is processed by the operating system. For example, if there is a Mach-O executable file called evil.bin, when it is double clicked by a user, it will launch Terminal.app and execute. If this file is renamed to evil.txt, then when double clicked by a user, it will launch with the default text editing application (not executing the binary). However, if the file is renamed to "evil.txt " (note the space at the end), then when double clicked by a user, the true file type is determined by the OS and handled appropriately and the binary will be executed.
 
@@ -282,7 +282,7 @@ This attack step can be performed by any adversary without specific requirements
 
 This needs a time distribution (time it takes for the user to doubleclick)
 
-### Third Party Software (needs)
+### Third Party Software
 
 Adversaries may gain access to and use third-party systems installed within an enterprise network, such as administration, monitoring, and deployment systems as well as third-party gateways and jump servers used for managing other systems. Access to a third-party network-wide or enterprise-wide software system may enable an adversary to have remote code execution on all systems that are connected to such a system. The access may be used to laterally move to other systems, gather information, or cause a specific effect, such as wiping the hard drives on all endpoints.
 
@@ -290,7 +290,7 @@ The permissions required for this action vary by system configuration; local cre
 
 This needs a probability distribution.
 
-### Trap (needs)
+### Trap 
 
 The trap command allows programs and shells to specify commands that will be executed upon receiving interrupt signals. A common situation is a script allowing for graceful termination and handling of common keyboard interrupts like ctrl+c and ctrl+d. Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism. Trap commands are of the following format trap 'command list' signals where "command list" will be executed when "signals" are received.
 
