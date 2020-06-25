@@ -13,7 +13,7 @@ category Person {
                 computer.os.service.thirdpartySoftware.applicationAccessToken,
                 computer.os.service.exploitationForClientExecution
 
-        & spearphishingAttachmentDownload [Bernoulli(0.93)]
+        & spearphishingAttachmentDownload [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
             ->  attemptUserExecution
 
@@ -1747,7 +1747,7 @@ category Software {
                 bypassHostIntrusionPrevention, 
                 bypassAntivirus         
 
-        & compiledHTMLFile [Bernoulli(0.712)*Exponential(1)]
+        & compiledHTMLFile [Bernoulli(0.93)*Exponential(1)]
             user info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
             developer info: "Sources for distribution results : https://blog.rootshell.be/2017/12/19/malware-delivered-via-compiled-html-help-file/"
             ->  computer.user.attemptUserExecution, // leads to User Execution attack
@@ -2240,9 +2240,10 @@ category Software {
             user info: "Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
             ->  dynamicDataExchange
 
-        | dynamicDataExchange
+        | dynamicDataExchange [Bernoulli(0.93)*Exponential(1)]
             user info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
-            ->  userCommandLineInterface 
+            ->  userCommandLineInterface,
+                executeCode 
             
         | hooking             
             user info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
@@ -2355,7 +2356,7 @@ category Software {
                 bypassSignatureBasedDetection,  
                 bypassStaticFileAnalysis              
 
-        & xslScriptProcessing [Bernoulli(0.712)*Exponential(1)]
+        & xslScriptProcessing [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources used for probability distribution: https://reaqta.com/2018/03/spear-phishing-campaign-leveraging-msxsl/"
             user info: "Adversaries may abuse this functionality to execute arbitrary files while potentially bypassing application whitelisting defenses."
             ->  executeCode,

@@ -75,7 +75,7 @@ According to the MITRE ATT&CK framework, the delivered payload needs to be execu
 
 
 
-### Component Object Model and Distributed COM (needs)
+### Component Object Model and Distributed COM (needs?)
 
 Both need a probability distribution.
 
@@ -89,7 +89,7 @@ However this attack can only be performed if the Control Panel is opened which m
 
 This needs a probability distribution (how often do people open Control Panel). Maybe the adversary can trigger or display something that encourages the user to open Control Panel .
 
-### Dynamic Data Exchange  (needs)
+### Dynamic Data Exchange (needs)
 
 Object Linking and Embedding (OLE), or the ability to link data between documents, was originally implemented through DDE. Despite being superseded by COM, DDE may be enabled in Windows 10 and most of Microsoft Office 2016 via Registry keys.
 

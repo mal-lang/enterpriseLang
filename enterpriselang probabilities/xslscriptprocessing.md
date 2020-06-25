@@ -27,7 +27,7 @@ The main way of delivering the msxsl.exe for installation is via spearphishing.
 
 ## Result 
 
-We assess the probability distribution to be the same as for Spearphishing via Email [Bernoulli(0.712)*Exponential(1)].
+We assess the probability distribution to be the same as for Spearphishing Attachment [Bernoulli(0.93)*Exponential(1)].
 
 ## Discussion
 

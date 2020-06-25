@@ -14,7 +14,7 @@ Phishing is a way of delivering the malicious file to the victim. Assuming this 
 
 ## Result 
 
-We'll use the [Bernoulli(0.712)*Exponential(1)] probability distribution.
+We'll use the [Bernoulli(0.93)*Exponential(1)] probability distribution.
 
 ## Discussion
 
