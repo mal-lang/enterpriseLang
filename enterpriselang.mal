@@ -730,9 +730,9 @@ category Software {
 
         | executionThroughMaliciousContent
 
-        & credentialsFromWebBrowsers [Bernoulli(0.18)]
+        & credentialsFromWebBrowsers [Bernoulli(0.625)]
             user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
-            developer info: "Sources for distribution result: https://www.pewresearch.org/internet/2017/01/26/2-password-management-and-mobile-security/, https://attack.mitre.org/techniques/T1503/, https://www.proofpoint.com/us/threat-insight/post/new-vega-stealer-shines-brightly-targeted-campaign"
+            developer info: "Sources for distribution result: https://link.springer.com/book/10.1007/978-3-319-94376-3, https://attack.mitre.org/techniques/T1503/, https://www.proofpoint.com/us/threat-insight/post/new-vega-stealer-shines-brightly-targeted-campaign"
             ->  service.os.userAccount.userCredentials
  
         | attemptSpearphishingLink @hidden      
@@ -967,9 +967,9 @@ category Software {
             user info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
             ->  computer.router.internalNetwork.communicate  
 
-        & firmwareCorruption {A} [Bernoulli(0.2)]
+        & firmwareCorruption {A} [Bernoulli(0.8)*Exponential(2880)]
             user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
-            developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: http://www.baselinemag.com/c/a/Security/Disaster-Recovery-Weaknesses-Are-Pervasive-480167, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
+            developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: https://www.wired.com/2015/03/researchers-uncover-way-hack-bios-undermine-secure-operating-systems/, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
 
         | hiddenFilesAndDirectories
             user info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a 'hidden' file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
