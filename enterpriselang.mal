@@ -1728,9 +1728,9 @@ category Software {
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
             ->  computer.router.internalNetwork.remoteCOMExecution
 
-        & controlPanelItems [Bernoulli(0.83)]
+        & controlPanelItems [Bernoulli(0.00006)]
             user info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
-            developer info: "TTC assumed instant, see mitreattacklang/enterpriselang probabilities/controlPanelItems.md for details. Sources used for probability distribution result: https://attack.mitre.org/software/S0172/, https://threatvector.cylance.com/en_us/home/reaver-mapping-connections-between-disparate-chinese-apt-groups.html, https://nvd.nist.gov/vuln/detail/CVE-2017-11882#vulnConfigurationsArea, https://unit42.paloaltonetworks.com/unit42-new-malware-with-ties-to-sunorcal-discovered/, https://community.spiceworks.com/software/articles/2873-data-snapshot-the-state-of-productivity-suites-in-the-workplace"
+            developer info: "TTC assumed instant, see mitreattacklang/enterpriselang probabilities/controlPanelItems.md for details. Sources used for probability distribution result: https://attack.mitre.org/software/S0172/, https://threatvector.cylance.com/en_us/home/reaver-mapping-connections-between-disparate-chinese-apt-groups.html, https://unit42.paloaltonetworks.com/unit42-new-malware-with-ties-to-sunorcal-discovered/"
             ->  executeCode,
                 bypassApplicationWhitelisting,
                 bypassProcessWhitelisting
