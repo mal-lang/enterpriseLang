@@ -1554,8 +1554,7 @@ category Software {
                 runningProcessDiscovery,
                 systemInformationDiscovery,              
                 userCommandLineInterface,
-                userAccount.userExecution,      
-                windows.compiledHTMLFile           
+                userAccount.userExecution          
              
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
@@ -2409,6 +2408,7 @@ category Software {
                 appInitDLLs,
                 cmstp,
                 controlPanelItems,
+                compiledHTMLFile,
                 dLLSearchOrderHijacking,
                 executionThroughAPI,
                 executionThroughModuleLoad,
@@ -3316,7 +3316,6 @@ category Hardware {
                 peripheralDevice.removableMedia.dataFromRemovableMedia
 
         | infectedWindowsComputer
-            ->  os.windows.dynamicDataExchange
                 
         | infectedLinuxComputer
 
