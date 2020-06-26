@@ -15,7 +15,7 @@ category Person {
 
         & spearphishingAttachmentDownload [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
-            ->  attemptUserExecution
+            ->  computer.os.windows.dynamicDataExchange
 
         | attemptUserExecution @hidden
             ->  userAccount.userExecution
@@ -395,7 +395,6 @@ category Software {
                 os.windows.componentObjectModelAndDistributedCOM,
                 os.windows.controlPanelItems,
                 os.windows.dCShadow,
-                os.windows.distributedComponentObjectModel,
                 os.windows._dLLSearchOrderHijacking,
                 os.windows.executionThroughAPI,
                 os.windows.extraWindowMemoryInjection,
@@ -1616,9 +1615,8 @@ category Software {
             ->  windows._appCertDLLs,
                 windows._bITSJobs,
                 windows.changeDefaultFileAssociation,
-                windows._componentObjectModelAndDistributedCOM,
+                windows.componentObjectModelAndDistributedCOM,
                 windows.controlPanelItems,
-                windows.distributedComponentObjectModel,
                 windows._dLLSearchOrderHijacking,
                 windows.executionThroughAPI,
                 windows.extraWindowMemoryInjection,
@@ -1726,11 +1724,12 @@ category Software {
 
         & componentObjectModelAndDistributedCOM
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
-            ->  computer.router.internalNetwork.remoteCOMExecution
+            ->  computer.router.internalNetwork.remoteCOMExecution,
+                dynamicDataExchange
 
         & controlPanelItems [Bernoulli(0.00006)]
             user info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
-            developer info: "TTC assumed instant, see mitreattacklang/enterpriselang probabilities/controlPanelItems.md for details. Sources used for probability distribution result: https://attack.mitre.org/software/S0172/, https://threatvector.cylance.com/en_us/home/reaver-mapping-connections-between-disparate-chinese-apt-groups.html, https://unit42.paloaltonetworks.com/unit42-new-malware-with-ties-to-sunorcal-discovered/"
+            developer info: "TTC assumed instant, see mitreattacklang/enterpriselang probabilities/controlPanelItems.md for details. Sources used for probability distribution result: https://attack.mitre.org/software/S0172/, https://threatvector.cylance.com/en_us/home/reaver-mapping-connections-between-disparate-chinese-apt-groups.html, https://nvd.nist.gov/vuln/detail/CVE-2017-11882#vulnConfigurationsArea, https://unit42.paloaltonetworks.com/unit42-new-malware-with-ties-to-sunorcal-discovered/, https://community.spiceworks.com/software/articles/2873-data-snapshot-the-state-of-productivity-suites-in-the-workplace"
             ->  executeCode,
                 bypassApplicationWhitelisting,
                 bypassProcessWhitelisting
@@ -1910,7 +1909,7 @@ category Software {
             ->  persistence,
                 securitySupportProvider,
                 bypassHostForensicAnalysis,
-                distributedComponentObjectModel   
+                componentObjectModelAndDistributedCOM   
 
         | netshHelperDLL
             user info: "Adversaries can use netsh.exe with helper DLLs to proxy execution of arbitrary code in a persistent manner."
@@ -2227,17 +2226,10 @@ category Software {
             user info: "Adversaries may take advantage of these features to repeatedly execute malicious code and establish Persistence."
             ->  persistence
 
-        | commandExecution
-            ->  computer.infectedWindowsComputer
-
         | attemptRegistryKeysEnabled @hidden
             ->  registryKeysEnabled
 
         & registryKeysEnabled
-            ->  dynamicDataExchange
-
-        & distributedComponentObjectModel
-            user info: "Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
             ->  dynamicDataExchange
 
         | dynamicDataExchange [Bernoulli(0.93)*Exponential(1)]
@@ -2378,7 +2370,6 @@ category Software {
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             user info: "https://attack.mitre.org/mitigations/M1048/"
             +>  _componentObjectModelAndDistributedCOM,
-                distributedComponentObjectModel,
                 dynamicDataExchange
 
         # audit 
@@ -2526,8 +2517,7 @@ category Software {
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
             +>  cmstp,
-                _componentObjectModelAndDistributedCOM,
-                distributedComponentObjectModel,
+                componentObjectModelAndDistributedCOM,
                 installUtil,
                 lLMNR_NBT_NS_PoisoningAndRelay,
                 mshta,
@@ -3306,7 +3296,7 @@ category Network {
             ->  router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.service.externalRemoteServices,
-                router.computer.os.windows.distributedComponentObjectModel,
+                router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.remoteDesktopProtocol,
                 router.computer.os.windows.windowsRemoteManagement
     }
