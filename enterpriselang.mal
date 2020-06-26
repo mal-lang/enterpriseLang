@@ -2349,7 +2349,7 @@ category Software {
         | videoCapture
             ->  computer.collectVideo
 
-        | virtualizationOrSandboxEvasion
+        | virtualizationOrSandboxEvasion [Bernoulli(0.18)]
             user info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
             ->  bypassAntivirus,
                 bypassHostForensicAnalysis,    
