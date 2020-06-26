@@ -987,8 +987,9 @@ category Software {
                 bypassLogAnalysis,
                 bypassAntivirus    
 
-        | inputCapture
+        | inputCapture [Bernoulli(0.071)]
             user info: "Adversaries can use methods of capturing user input for obtaining credentials for Valid Accounts and information Collection that include keylogging and user input field interception."
+            developer info: "Sources used for distribution result: https://www.statista.com/statistics/271037/distribution-of-most-common-malware-file-types/, https://www.rsaconference.com/industry-topics/blog/do-malware-authors-dream-of-original-code, http://keyllama.com/KeyLlamaUSB.pdf"
             ->  _validAccounts,
                 userAccount.userCredentials 
 
@@ -2342,6 +2343,7 @@ category Software {
 
         | virtualizationOrSandboxEvasion [Bernoulli(0.18)]
             user info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
+            developer info: "Sources for distribution result: http://www.sharetech-me.com/wp-content/uploads/2015/06/21347932_GA-internet-security-threat-report-volume-20-2015-social_v2.pdf, https://docs.broadcom.com/docs/threats-to-virtual-environments-14-en"
             ->  bypassAntivirus,
                 bypassHostForensicAnalysis,    
                 bypassSignatureBasedDetection,  
