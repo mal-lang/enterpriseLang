@@ -65,7 +65,7 @@ category Software {
                 os.permissionGroupsDiscovery,
                 os.privateKeys,
                 os.processInjection,
-                os.runningProcessDiscovery,
+                os.processDiscovery,
                 os.runtimeDataManipulation,
                 os.redundantAccess,
                 os.remoteSystemDiscovery,
@@ -296,7 +296,7 @@ category Software {
                 os._credentialDumping,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
-                os.detailedRunningProcessDiscovery,
+                os.processDiscovery,
                 os.detailedRemoteSystemDiscovery,
                 os.diskContentWipe,
                 os.diskStructureWipe,
@@ -859,12 +859,9 @@ category Software {
         & applicationWindowDiscovery
             user info: "get a listing of opened application windows"
 
-        & runningProcessDiscovery
+        & processDiscovery
             user info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
             ->  processInjection
-
-        & detailedRunningProcessDiscovery
-            user info: "Adversaries with admin rights may get better process ownership details"
 
         | collectHashInformation
 
@@ -1161,6 +1158,13 @@ category Software {
         & standardCryptographicProtocol
             user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
             ->  computer.router.internalNetwork.c2Connected
+
+        | attemptStandardApplicationLayerProtocol
+            ->  standardApplicationLayerProtocol    
+
+        & standardApplicationLayerProtocol
+            user info: "Adversaries may communicate using a common, standardized application layer protocol such as HTTP, HTTPS, SMTP, or DNS to avoid detection by blending in with existing traffic."
+            ->  computer.router.internalNetwork.communicate
 
         | attemptStandardNonApplicationLayerProtocol
             ->  standardNonApplicationLayerProtocol    
@@ -1544,7 +1548,6 @@ category Software {
                 computer.collectAudio,
                 dataCompressed,
                 detailedRemoteSystemDiscovery,
-                detailedRunningProcessDiscovery,
                 domainDiscovery,
                 domainFronting,
                 fileDeletion,
@@ -1552,7 +1555,6 @@ category Software {
                 permissionGroupsDiscovery,  
                 processInjection,
                 remoteSystemDiscovery,     
-                runningProcessDiscovery,
                 systemInformationDiscovery,              
                 userCommandLineInterface,
                 userAccount.userExecution          
@@ -3141,6 +3143,7 @@ category Network {
                 router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
+                router.computer.os.standardApplicationLayerProtocol,
                 router.computer.os.standardNonApplicationLayerProtocol,
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.windows.templateInjection
@@ -3253,6 +3256,7 @@ category Network {
                 router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
+                router.computer.os.standardApplicationLayerProtocol,
                 router.computer.os.standardNonApplicationLayerProtocol
 
         # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
