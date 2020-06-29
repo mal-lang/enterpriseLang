@@ -1723,7 +1723,7 @@ category Software {
                 bruteForce, // leads to Brute Force attack   
                 passTheHash // leads to Pass the Hash attack 
 
-        & _componentObjectModelAndDistributedCOM @hidden
+        & _componentObjectModelAndDistributedCOM @hidden [Exponential(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
             ->  componentObjectModelAndDistributedCOM
 
@@ -1787,7 +1787,7 @@ category Software {
                 bypassAntivirus,
                 attemptlSASS_Driver
 
-        | attemptlSASS_Driver @hidden
+        | attemptlSASS_Driver @hidden [Bernoulli(0.5)*Exponential(0.1)]
             -> lSASS_Driver
 
         & mshta [Bernoulli(0.3329)*Exponential(491)]
@@ -1807,7 +1807,8 @@ category Software {
             ->  executeCode,
                 processInjection
 
-        & executionThroughModuleLoad
+        & executionThroughModuleLoad [Bernoulli(0.93)*Exponential(1)]
+            developer info: "Sources for distribution results: Results on spearphishing and https://community.broadcom.com/symantecenterprise/communities/community-home/librarydocuments/viewdocument?DocumentKey=bc9e2e2e-028c-4ba1-863f-72a4700dbdc2&CommunityKey=1ecf5f55-9545-44d6-b0f4-4e4a7f5f5e68&tab=librarydocuments, https://www.cybereason.com/blog/information-stealing-malware-targeting-brazil-full-research"
             user info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
             ->  executeCode    
         

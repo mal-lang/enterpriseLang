@@ -18,4 +18,4 @@ We assess the probability distribution to be the same as for Spearphishing Attac
 
 ## Discussion
 
-Once again, this functionality can be exploited thanks to spearphishing, with user execution. (like Compiled HTML File and XSL Script Processing). I couldn't say for sure in the code whether or not the 
+Once again, this functionality can be exploited thanks to spearphishing, with user execution. (like Compiled HTML File and XSL Script Processing). I couldn't say for sure in the code whether or not this attack step was and indirect child of the Spearphishing Attachment one so I gave this time distribution while looking into it.

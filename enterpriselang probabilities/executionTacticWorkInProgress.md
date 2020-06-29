@@ -75,11 +75,11 @@ According to the MITRE ATT&CK framework, the delivered payload needs to be execu
 
 
 
-### Component Object Model and Distributed COM (needs?)
+### Component Object Model and Distributed COM
 
 Both need a probability distribution.
 
-### Control Panel Items (needs)
+### Control Panel Items 
 
 Adversaries can use Control Panel items as execution payloads to execute arbitrary commands. Malicious Control Panel items can be delivered via Spearphishing Attachment campaigns or executed as part of multi-stage malware. Control Panel items, specifically CPL files, may also bypass application and/or file extension whitelisting. The success rate of this attack is based on the success rate of the delivery so this attack step doesn't need a success probability
 
@@ -89,7 +89,7 @@ However this attack can only be performed if the Control Panel is opened which m
 
 This needs a probability distribution (how often do people open Control Panel). Maybe the adversary can trigger or display something that encourages the user to open Control Panel .
 
-### Dynamic Data Exchange (needs)
+### Dynamic Data Exchange 
 
 Object Linking and Embedding (OLE), or the ability to link data between documents, was originally implemented through DDE. Despite being superseded by COM, DDE may be enabled in Windows 10 and most of Microsoft Office 2016 via Registry keys.
 
@@ -125,7 +125,7 @@ ShellExecuteExA() and ShellExecuteExW()
 
 This one probably doesn't need a probability distribution because processInjection already has one and executeCode is a binary one.
 
-### Execution Through Module Load  (needs)
+### Execution Through Module Load
 
 https://attack.mitre.org/techniques/T1129/
 This functionality resides in NTDLL.dll and is part of the Windows Native API. 
@@ -171,7 +171,7 @@ This functionality can be exploited with no restriction and user rights if the u
 
 We could then assess this probability distribution to be binary.
 
-### LSASS_Driver (needs???)
+### LSASS_Driver
 
 Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations.
 
@@ -221,6 +221,8 @@ Regsvr32.exe can also be leveraged to register a COM Object used to establish Pe
 
 https://www.carbonblack.com/2016/04/28/threat-advisory-squiblydoo-continues-trend-of-attackers-using-native-os-tools-to-live-off-the-land/
 This exploit can be performed in seconds with user/adminRights and no restriction, and requires exploitProtection to be mitigated.
+This is performed after a successful spearphihsing campaign.
+
 
 We assessed this probability distribution to be binary.
 
