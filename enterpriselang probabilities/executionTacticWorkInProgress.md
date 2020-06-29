@@ -75,11 +75,11 @@ According to the MITRE ATT&CK framework, the delivered payload needs to be execu
 
 
 
-### Component Object Model and Distributed COM (needs?)
+### Component Object Model and Distributed COM
 
 Both need a probability distribution.
 
-### Control Panel Items (needs)
+### Control Panel Items 
 
 Adversaries can use Control Panel items as execution payloads to execute arbitrary commands. Malicious Control Panel items can be delivered via Spearphishing Attachment campaigns or executed as part of multi-stage malware. Control Panel items, specifically CPL files, may also bypass application and/or file extension whitelisting. The success rate of this attack is based on the success rate of the delivery so this attack step doesn't need a success probability
 
@@ -171,7 +171,7 @@ This functionality can be exploited with no restriction and user rights if the u
 
 We could then assess this probability distribution to be binary.
 
-### LSASS_Driver (needs???)
+### LSASS_Driver
 
 Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations.
 

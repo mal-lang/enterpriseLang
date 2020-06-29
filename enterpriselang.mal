@@ -1720,7 +1720,7 @@ category Software {
                 bruteForce, // leads to Brute Force attack   
                 passTheHash // leads to Pass the Hash attack 
 
-        & _componentObjectModelAndDistributedCOM @hidden
+        & _componentObjectModelAndDistributedCOM @hidden [Exponential(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
             ->  componentObjectModelAndDistributedCOM
 
@@ -1783,7 +1783,7 @@ category Software {
                 bypassAntivirus,
                 attemptlSASS_Driver
 
-        | attemptlSASS_Driver @hidden
+        | attemptlSASS_Driver @hidden [Bernoulli(0.5)*Exponential(0.1)]
             -> lSASS_Driver
 
         & mshta [Bernoulli(0.3329)*Exponential(491)]
