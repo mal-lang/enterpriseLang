@@ -2772,8 +2772,9 @@ category Software {
             user info: "By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily."
             ->  adminAccount.createUserAccount
 
-        & hiddenWindow
+        & hiddenWindow [Bernoulli(0.22)]
             user info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
+            developer info: "Sources for probability distribution: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download"
 
         & hISTCONTROL
             user info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
