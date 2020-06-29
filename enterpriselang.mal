@@ -1090,8 +1090,9 @@ category Software {
             ->  dataCollected, // entrypoints of attacks that can be done with command line interface under user rights
                 obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface
 
-        | fileAndDirectoryPermissionsModification
+        | fileAndDirectoryPermissionsModification [Bernoulli(0.2174)]
             user info: "File and directory permissions are commonly managed by discretionary access control lists (DACLs) specified by the file or directory owner."
+            developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0402, https://securelist.com/threats-to-macos-users/93116/, https://www.carbonblack.com/2019/02/12/tau-threat-intelligence-notification-new-macos-malware-variant-of-shlayer-osx-discovered/"
             ->  bypassFileSystemAccessControls,
                 windows.accessibilityFeatures, // leads to Accessibility Features attack
                 windows.logonScripts, //leads to Logon Scripts attack
@@ -2018,7 +2019,7 @@ category Software {
 
         | registryRunKeysOrStartupFolder [Bernoulli(0.17125)]
             user info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
-            developer info: "Sources used for distribution result: https://dsimg.ubm-us.net/envelope/395823/551993/Fileless%20Attack%20Survival%20Guide.pdf"
+            developer info: "Sources used for distribution result: https://dsimg.ubm-us.net/envelope/395823/551993/Fileless%20Attack%20Survival%20Guide.pdf, https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB"
             ->  masquerading, // leads to Masquerading attack
                 service.remoteAccessTools,
                 persistence
