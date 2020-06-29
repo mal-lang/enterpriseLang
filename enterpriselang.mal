@@ -15,7 +15,8 @@ category Person {
 
         & spearphishingAttachmentDownload [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
-            ->  computer.os.windows.dynamicDataExchange
+            ->  attemptUserExecution,
+                computer.os.windows.dynamicDataExchange
 
         | attemptUserExecution @hidden
             ->  userAccount.userExecution
