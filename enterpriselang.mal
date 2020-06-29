@@ -859,8 +859,9 @@ category Software {
         & applicationWindowDiscovery
             user info: "get a listing of opened application windows"
 
-        & processDiscovery
+        & processDiscovery [Bernoulli(0.17)*Exponential(346)]
             user info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
+            developer info: "Sources used for distribution result: https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB, https://www.researchgate.net/publication/332380784_How_many_words_do_we_read_per_minute_A_review_and_meta-analysis_of_reading_rate, https://attack.mitre.org/techniques/T1057/"
             ->  processInjection
 
         | collectHashInformation
@@ -1162,8 +1163,9 @@ category Software {
         | attemptStandardApplicationLayerProtocol
             ->  standardApplicationLayerProtocol    
 
-        & standardApplicationLayerProtocol
+        & standardApplicationLayerProtocol [Bernoulli(0.20)]
             user info: "Adversaries may communicate using a common, standardized application layer protocol such as HTTP, HTTPS, SMTP, or DNS to avoid detection by blending in with existing traffic."
+            developer info: "Sources used for distribution result: https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB"
             ->  computer.router.internalNetwork.communicate
 
         | attemptStandardNonApplicationLayerProtocol
