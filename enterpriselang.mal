@@ -2139,8 +2139,9 @@ category Software {
         | attemptSoftwarePacking @hidden
             ->  softwarePacking
 
-        & softwarePacking
+        & softwarePacking [Bernoulli(0.26)]
             user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
+            developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf"
             ->  indicatorRemovalFromTools,
                 bypassSignatureBasedDetection,
                 bypassAntivirus,
