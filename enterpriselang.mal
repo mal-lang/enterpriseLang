@@ -15,7 +15,7 @@ category Person {
 
         & spearphishingAttachmentDownload [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
-            ->  attemptUserExecution
+            ->  computer.os.windows.dynamicDataExchange
 
         | attemptUserExecution @hidden
             ->  userAccount.userExecution
@@ -65,7 +65,7 @@ category Software {
                 os.permissionGroupsDiscovery,
                 os.privateKeys,
                 os.processInjection,
-                os.runningProcessDiscovery,
+                os.processDiscovery,
                 os.runtimeDataManipulation,
                 os.redundantAccess,
                 os.remoteSystemDiscovery,
@@ -296,7 +296,7 @@ category Software {
                 os._credentialDumping,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
-                os.detailedRunningProcessDiscovery,
+                os.processDiscovery,
                 os.detailedRemoteSystemDiscovery,
                 os.diskContentWipe,
                 os.diskStructureWipe,
@@ -395,7 +395,6 @@ category Software {
                 os.windows.componentObjectModelAndDistributedCOM,
                 os.windows.controlPanelItems,
                 os.windows.dCShadow,
-                os.windows.distributedComponentObjectModel,
                 os.windows._dLLSearchOrderHijacking,
                 os.windows.executionThroughAPI,
                 os.windows.extraWindowMemoryInjection,
@@ -860,12 +859,10 @@ category Software {
         & applicationWindowDiscovery
             user info: "get a listing of opened application windows"
 
-        & runningProcessDiscovery
+        & processDiscovery [Bernoulli(0.17)*Exponential(346)]
             user info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
+            developer info: "Sources used for distribution result: https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB, https://www.researchgate.net/publication/332380784_How_many_words_do_we_read_per_minute_A_review_and_meta-analysis_of_reading_rate, https://attack.mitre.org/techniques/T1057/"
             ->  processInjection
-
-        & detailedRunningProcessDiscovery
-            user info: "Adversaries with admin rights may get better process ownership details"
 
         | collectHashInformation
 
@@ -988,8 +985,9 @@ category Software {
                 bypassLogAnalysis,
                 bypassAntivirus    
 
-        | inputCapture
+        | inputCapture [Bernoulli(0.071)]
             user info: "Adversaries can use methods of capturing user input for obtaining credentials for Valid Accounts and information Collection that include keylogging and user input field interception."
+            developer info: "Sources used for distribution result: https://www.statista.com/statistics/271037/distribution-of-most-common-malware-file-types/, https://www.rsaconference.com/industry-topics/blog/do-malware-authors-dream-of-original-code, http://keyllama.com/KeyLlamaUSB.pdf"
             ->  _validAccounts,
                 userAccount.userCredentials 
 
@@ -1161,6 +1159,14 @@ category Software {
         & standardCryptographicProtocol
             user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
             ->  computer.router.internalNetwork.c2Connected
+
+        | attemptStandardApplicationLayerProtocol
+            ->  standardApplicationLayerProtocol    
+
+        & standardApplicationLayerProtocol [Bernoulli(0.20)]
+            user info: "Adversaries may communicate using a common, standardized application layer protocol such as HTTP, HTTPS, SMTP, or DNS to avoid detection by blending in with existing traffic."
+            developer info: "Sources used for distribution result: https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB"
+            ->  computer.router.internalNetwork.communicate
 
         | attemptStandardNonApplicationLayerProtocol
             ->  standardNonApplicationLayerProtocol    
@@ -1544,7 +1550,6 @@ category Software {
                 computer.collectAudio,
                 dataCompressed,
                 detailedRemoteSystemDiscovery,
-                detailedRunningProcessDiscovery,
                 domainDiscovery,
                 domainFronting,
                 fileDeletion,
@@ -1552,11 +1557,9 @@ category Software {
                 permissionGroupsDiscovery,  
                 processInjection,
                 remoteSystemDiscovery,     
-                runningProcessDiscovery,
                 systemInformationDiscovery,              
                 userCommandLineInterface,
-                userAccount.userExecution,      
-                windows.compiledHTMLFile           
+                userAccount.userExecution          
              
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
@@ -1616,9 +1619,8 @@ category Software {
             ->  windows._appCertDLLs,
                 windows._bITSJobs,
                 windows.changeDefaultFileAssociation,
-                windows._componentObjectModelAndDistributedCOM,
+                windows.componentObjectModelAndDistributedCOM,
                 windows.controlPanelItems,
-                windows.distributedComponentObjectModel,
                 windows._dLLSearchOrderHijacking,
                 windows.executionThroughAPI,
                 windows.extraWindowMemoryInjection,
@@ -1726,9 +1728,10 @@ category Software {
 
         & componentObjectModelAndDistributedCOM
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
-            ->  computer.router.internalNetwork.remoteCOMExecution
+            ->  computer.router.internalNetwork.remoteCOMExecution,
+                dynamicDataExchange
 
-        & controlPanelItems [Bernoulli(0.83)]
+        & controlPanelItems [Bernoulli(0.00006)]
             user info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
             developer info: "TTC assumed instant, see mitreattacklang/enterpriselang probabilities/controlPanelItems.md for details. Sources used for probability distribution result: https://attack.mitre.org/software/S0172/, https://threatvector.cylance.com/en_us/home/reaver-mapping-connections-between-disparate-chinese-apt-groups.html, https://nvd.nist.gov/vuln/detail/CVE-2017-11882#vulnConfigurationsArea, https://unit42.paloaltonetworks.com/unit42-new-malware-with-ties-to-sunorcal-discovered/, https://community.spiceworks.com/software/articles/2873-data-snapshot-the-state-of-productivity-suites-in-the-workplace"
             ->  executeCode,
@@ -1911,7 +1914,7 @@ category Software {
             ->  persistence,
                 securitySupportProvider,
                 bypassHostForensicAnalysis,
-                distributedComponentObjectModel   
+                componentObjectModelAndDistributedCOM   
 
         | netshHelperDLL
             user info: "Adversaries can use netsh.exe with helper DLLs to proxy execution of arbitrary code in a persistent manner."
@@ -2014,7 +2017,7 @@ category Software {
         | rDPSessionHijacking
             user info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
 
-        | registryRunKeysOrStartupFolder [Bernoulli(0.1925)]
+        | registryRunKeysOrStartupFolder [Bernoulli(0.17125)]
             user info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
             developer info: "Sources used for distribution result: https://dsimg.ubm-us.net/envelope/395823/551993/Fileless%20Attack%20Survival%20Guide.pdf"
             ->  masquerading, // leads to Masquerading attack
@@ -2141,8 +2144,9 @@ category Software {
         | attemptSoftwarePacking @hidden
             ->  softwarePacking
 
-        & softwarePacking
+        & softwarePacking [Bernoulli(0.26)]
             user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
+            developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf"
             ->  indicatorRemovalFromTools,
                 bypassSignatureBasedDetection,
                 bypassAntivirus,
@@ -2228,17 +2232,10 @@ category Software {
             user info: "Adversaries may take advantage of these features to repeatedly execute malicious code and establish Persistence."
             ->  persistence
 
-        | commandExecution
-            ->  computer.infectedWindowsComputer
-
         | attemptRegistryKeysEnabled @hidden
             ->  registryKeysEnabled
 
         & registryKeysEnabled
-            ->  dynamicDataExchange
-
-        & distributedComponentObjectModel
-            user info: "Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
             ->  dynamicDataExchange
 
         | dynamicDataExchange [Bernoulli(0.93)*Exponential(1)]
@@ -2350,8 +2347,9 @@ category Software {
         | videoCapture
             ->  computer.collectVideo
 
-        | virtualizationOrSandboxEvasion
+        | virtualizationOrSandboxEvasion [Bernoulli(0.18)]
             user info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
+            developer info: "Sources for distribution result: http://www.sharetech-me.com/wp-content/uploads/2015/06/21347932_GA-internet-security-threat-report-volume-20-2015-social_v2.pdf, https://docs.broadcom.com/docs/threats-to-virtual-environments-14-en"
             ->  bypassAntivirus,
                 bypassHostForensicAnalysis,    
                 bypassSignatureBasedDetection,  
@@ -2379,7 +2377,6 @@ category Software {
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             user info: "https://attack.mitre.org/mitigations/M1048/"
             +>  _componentObjectModelAndDistributedCOM,
-                distributedComponentObjectModel,
                 dynamicDataExchange
 
         # audit 
@@ -2419,6 +2416,7 @@ category Software {
                 appInitDLLs,
                 cmstp,
                 controlPanelItems,
+                compiledHTMLFile,
                 dLLSearchOrderHijacking,
                 executionThroughAPI,
                 executionThroughModuleLoad,
@@ -2527,8 +2525,7 @@ category Software {
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
             +>  cmstp,
-                _componentObjectModelAndDistributedCOM,
-                distributedComponentObjectModel,
+                componentObjectModelAndDistributedCOM,
                 installUtil,
                 lLMNR_NBT_NS_PoisoningAndRelay,
                 mshta,
@@ -2781,8 +2778,9 @@ category Software {
             user info: "By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily."
             ->  adminAccount.createUserAccount
 
-        & hiddenWindow
+        & hiddenWindow [Bernoulli(0.22)]
             user info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
+            developer info: "Sources for probability distribution: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download"
 
         & hISTCONTROL
             user info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
@@ -3148,6 +3146,7 @@ category Network {
                 router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
+                router.computer.os.standardApplicationLayerProtocol,
                 router.computer.os.standardNonApplicationLayerProtocol,
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.windows.templateInjection
@@ -3260,6 +3259,7 @@ category Network {
                 router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
+                router.computer.os.standardApplicationLayerProtocol,
                 router.computer.os.standardNonApplicationLayerProtocol
 
         # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
@@ -3307,7 +3307,7 @@ category Network {
             ->  router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.service.externalRemoteServices,
-                router.computer.os.windows.distributedComponentObjectModel,
+                router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.remoteDesktopProtocol,
                 router.computer.os.windows.windowsRemoteManagement
     }
@@ -3327,7 +3327,6 @@ category Hardware {
                 peripheralDevice.removableMedia.dataFromRemovableMedia
 
         | infectedWindowsComputer
-            ->  os.windows.dynamicDataExchange
                 
         | infectedLinuxComputer
 
