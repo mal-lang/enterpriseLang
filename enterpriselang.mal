@@ -190,6 +190,7 @@ category Software {
                 os.service._exploitationForPrivilegeEscalation,
                 os.service._exploitationOfRemoteServices,
                 os.service.externalRemoteServices,
+                os.service.implantContainerImage,
                 os.service.remoteAccessTools,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware._useThirdpartySoftware,
@@ -526,6 +527,10 @@ category Software {
             user info: "Adversaries may attempt to access the Cloud Instance Metadata API to collect credentials and other sensitive data."
             ->  os.sensitiveDataCollected
 
+        & implantContainerImage
+            user info: "Amazon Web Service (AWS) Amazon Machine Images (AMI), Google Cloud Platform (GCP) Images, and Azure Images as well as popular container runtimes such as Docker can be implanted or backdoored to include malicious code."
+            ->  os.persistence
+
         | serviceInformation 
 
         & userRemoteServicesLogin
@@ -741,10 +746,7 @@ category Software {
         & spearphishingLink
             user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
             ->  service.os.computer.user.spearphishingLinkClicked
-
-        | attemptSpearhishingAttachment @hidden
-            ->  spearphishingAttachment
-
+      
         & spearphishingAttachment
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
             ->  service.os.computer.user.spearphishingAttachmentDownload,
@@ -1504,6 +1506,7 @@ category Software {
                 credentialsInRegistry,
                 service.browser.browserExtensions,
                 service.thirdpartySoftware.stealApplicationAccessToken,
+                service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
                 validAccounts 
@@ -1519,6 +1522,7 @@ category Software {
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/" 
             ->  service.applicationDeploymentSoftware,
+                service.implantContainerImage,
                 masquerading    
 
         # limitHardwareInstallation
@@ -1568,6 +1572,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  credentialsInRegistry,
                 validAccounts,
+                service.implantContainerImage,
                 computer.router.internalNetwork.webShell
 
         # encryptSensitiveInformation 
