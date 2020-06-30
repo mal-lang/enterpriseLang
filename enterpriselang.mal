@@ -1970,8 +1970,9 @@ category Software {
             ->  _credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
                 computer.router.internalNetwork.c2Connexion // gain remote access 
 
-        & pathInterception
+        & pathInterception [Bernoulli(0.0352)]
             user info: "Adversaries may take advantage of performing path interception: unquoted paths, path environment variable misconfigurations, and search order hijacking."
+            developer info: "Sources used for distribution result: https://content.fireeye.com/m-trends/rpt-m-trends-2020, http://www.hexacorn.com/blog/2016/03/26/beyond-good-ol-run-key-part-37/"
             ->  unquotedPaths,
                 pathEnvironmentVariableMisconfiguration,
                 searchOrderHijacking
