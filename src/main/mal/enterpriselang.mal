@@ -7,13 +7,13 @@
 
 category Person {
     asset User {
-        & spearphishingLinkClicked [Bernoulli(0.712)*Exponential(1)]
+        & spearphishingLinkClicked //(0.712)*Exponential(1)]
             developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887; https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968"
             ->  attemptUserExecution,
                 computer.os.service.thirdpartySoftware.applicationAccessToken,
                 computer.os.service.exploitationForClientExecution
 
-        & spearphishingAttachmentDownload [Bernoulli(0.93)*Exponential(1)]
+        & spearphishingAttachmentDownload [Bernoulli(0.5)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
             ->  attemptUserExecution,
                 computer.os.windows.dynamicDataExchange
@@ -21,13 +21,13 @@ category Person {
         | attemptUserExecution @hidden
             ->  userAccount.userExecution
 
-        | mediaInserted [Bernoulli(0.3)*Exponential(48)]
+        | mediaInserted //(0.3)*Exponential(48)]
             user info: "People work in the targeted entreprise have physical access to the network and can thus easily use an infected USB device for the adversary to get initial compromise."
             developer info: "Sources for distribution result: https://www.supplychaindive.com/news/internal-actors-cyberattacks-manufacturing/572832/#:~:text=External%20actors%20account%20for%20the,2019%20Data%20Breach%20Investigations%20Report"
             ->  computer.os.windows.replicationThroughRemovableMedia,
                 computer.peripheralDevice.removableMedia.dataExfiltration
 
-        # userTraining [Bernoulli(0.22)]
+        # userTraining //(0.22)]
             user info: "https://attack.mitre.org/mitigations/M1017/"
             developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241" 
             ->  spearphishingAttachmentDownload, 
@@ -190,7 +190,6 @@ category Software {
                 os.service._exploitationForPrivilegeEscalation,
                 os.service._exploitationOfRemoteServices,
                 os.service.externalRemoteServices,
-                os.service.implantContainerImage,
                 os.service.remoteAccessTools,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware._useThirdpartySoftware,
@@ -219,7 +218,7 @@ category Software {
 
         | userInformation
 
-        # userTraining [Bernoulli(0.22)]
+        # userTraining //(0.22)]
             user info: "https://attack.mitre.org/mitigations/M1017/"
             developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241"      
             ->  os.service.browser.stealWebSessionCookie,
@@ -237,7 +236,7 @@ category Software {
                 os.service.thirdpartySoftware.useThirdpartySoftware,
                 os.service.thirdpartySoftware.stealApplicationAccessToken   
 
-        # userAccountManagement [Bernoulli(0.30)] 
+        # userAccountManagement //(0.30)] 
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  os.disablingSecurityTools,
@@ -254,7 +253,6 @@ category Software {
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
                 os.windows.pathInterception,
-                os.windows.userAccessTokenManipulation,
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
@@ -341,7 +339,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1032/"
             ->  createUserAccount
 
-        # privilegedAccountManagement [Bernoulli(0.30)]
+        # privilegedAccountManagement //(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  createUserAccount,
@@ -357,6 +355,7 @@ category Software {
                 os.windows.signedBinaryProxyExecution, 
                 os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
+                os.windows.userAccessTokenManipulation,
                 os.windows.adminAccessTokenManipulation,
                 os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
@@ -491,31 +490,31 @@ category Software {
             user info: "Adversaries may deploy malicious software to systems within a network using application deployment systems employed by enterprise administrators."
             ->  os.executeCode
 
-        | applicationHighVulnerability [Exponential(24)]
+        | applicationHighVulnerability //(24)]
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitHighVulnerabilityPublicFacingApplication
 
-        | applicationMediumVulnerability [Exponential(2)]
+        | applicationMediumVulnerability //(2)]
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitMediumVulnerabilityPublicFacingApplication
 
-        | applicationLowVulnerability [Exponential(1)]
+        | applicationLowVulnerability //(1)]
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitLowVulnerabilityPublicFacingApplication
 
-        & exploitHighVulnerabilityPublicFacingApplication [Bernoulli(0.5)*Exponential(2)]
+        & exploitHighVulnerabilityPublicFacingApplication //(0.5)*Exponential(2)]
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
                 os.systemAccess
                 
-        & exploitMediumVulnerabilityPublicFacingApplication [Bernoulli(0.87)*Exponential(0.5)]
+        & exploitMediumVulnerabilityPublicFacingApplication //(0.87)*Exponential(0.5)]
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
                 os.systemAccess
                 
-        & exploitLowVulnerabilityPublicFacingApplication [Bernoulli(0.89)*Exponential(0.143)]
+        & exploitLowVulnerabilityPublicFacingApplication //(0.89)*Exponential(0.143)]
             user info: "The use of software, data, or commands to take advantage of a weakness in an Internet-facing computer system or program in order to cause unintended or unanticipated behavior."
             developer info: "Sources for distribution results : https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf; https://www.ptsecurity.com/ww-en/analytics/web-vulnerabilities-2020/#:~:text=The%20average%20number%20of%20vulnerabilities,five%20vulnerabilities%20has%20high%20severity"              
             ->  exploitationForDefenseEvasion, // leads to exploitation for defense evasion attack
@@ -526,11 +525,6 @@ category Software {
         & cloudInstanceMetadataAPI
             user info: "Adversaries may attempt to access the Cloud Instance Metadata API to collect credentials and other sensitive data."
             ->  os.sensitiveDataCollected
-
-        & implantContainerImage [Bernoulli(0.60)*Exponential(180)]
-            user info: "Amazon Web Service (AWS) Amazon Machine Images (AMI), Google Cloud Platform (GCP) Images, and Azure Images as well as popular container runtimes such as Docker can be implanted or backdoored to include malicious code."
-            developer info: "Sources for distribution result: https://www.eweek.com/security/five-security-defenses-every-containerized-application-needs, https://github.com/RhinoSecurityLabs/ccat, https://www.youtube.com/watch?v=12zEXfCxIrk&feature=youtu.be"
-            ->  os.persistence
 
         | serviceInformation 
 
@@ -553,8 +547,8 @@ category Software {
 
         | serviceExhaustionFlood
 
-        | attemptSpearphishingViaService @hidden
-            ->  spearphishingViaService
+        //| attemptSpearphishingViaService @hidden
+        //    ->  spearphishingViaService
 
         & spearphishingViaService
             user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
@@ -562,17 +556,17 @@ category Software {
                 spearphishingViaSocialMedia,
                 os.computer.user.attemptUserExecution
         
-        | spearphishingViaPersonalEmail [Bernoulli(0.712)*Exponential(1)]
+        | spearphishingViaPersonalEmail //(0.712)*Exponential(1)]
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  browser.attemptSpearphishingAttachment,
                 browser.attemptSpearphishingLink
         
-        | spearphishingViaSocialMedia [Bernoulli(0.4475)*Exponential(0.286)]
+        | spearphishingViaSocialMedia //(0.4475)*Exponential(0.286)]
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  browser.attemptSpearphishingAttachment,
                 browser.attemptSpearphishingLink
 
-        | attemptSupplyChainCompromise @hidden [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
+        | attemptSupplyChainCompromise @hidden //(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
             developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
             ->  supplyChainCompromise
 
@@ -593,12 +587,12 @@ category Software {
             ->  exploitationOfSQLInjection,
                 exploitationOfNTLMAuthentication         
 
-        | exploitationOfSQLInjection [Bernoulli(0.14)*Exponential(0.746)]   
+        | exploitationOfSQLInjection //(0.14)*Exponential(0.746)]   
             developer info: "Sources used for distribution result: https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://www.akamai.com/us/en/multimedia/documents/state-of-the-internet/soti-security-web-attacks-and-gaming-abuse-report-2019.pdf, https://trends.builtwith.com/websitelist/Akamai/Historical, https://www.imperva.com/docs/HII_Web_Application_Attack_Report_Ed6.pdf, https://www.cc.gatech.edu/fac/Alex.Orso/papers/halfond.viegas.orso.ISSSE06.pdf"
             ->  os.executeCode,
                 _exploitationForPrivilegeEscalation
                 
-        | exploitationOfNTLMAuthentication [Bernoulli(0.23346)*TruncatedNormal(0.011,0.00214)]
+        | exploitationOfNTLMAuthentication //(0.23346)*TruncatedNormal(0.011,0.00214)]
             developer info: "Sources used for distribution result: https://www.csoonline.com/article/3333916/i-can-get-and-crack-your-password-hashes-from-email.html, https://netmarketshare.com/operating-system-market-share.aspx?, https://resources.infosecinstitute.com/beyond-password-length-complexity/, https://spycloud.com/how-long-would-it-take-to-crack-your-password/, https://spycloud.com/2020-annual-credential-exposure-report/"
             ->  os.executeCode,
                 _exploitationForPrivilegeEscalation
@@ -630,7 +624,7 @@ category Software {
         | attemptExternalRemoteServices @hidden 
             ->  externalRemoteServices
 
-        & externalRemoteServices [Bernoulli(0.19)*Exponential(3)]
+        & externalRemoteServices //(0.19)*Exponential(3)]
             user info: "Adversaries may use remote services to initially access and/or persist within a network."
             developer info: "Sources for distribution result: https://www.securitymetrics.com/blog/remote-access-attacks-how-protect-against-malware, https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://securitybrief.com.au/story/15-000-companies-still-critically-vulnerable-from-citrix-security-flaws-report"
             ->  os.computer.router.internalNetwork.persistence,
@@ -667,7 +661,7 @@ category Software {
                 exploitationForPrivilegeEscalation,
                 exploitationOfRemoteServices  
 
-        # updateSoftware [Bernoulli(0.34)]
+        # updateSoftware //(0.34)]
             developer info: "Sources for distribution result: https://www.usenix.org/system/files/conference/soups2015/soups15-paper-ion.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture"
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  applicationDeploymentSoftware,
@@ -698,12 +692,12 @@ category Software {
             ->  browser.spearphishingLink, //  send a link through Spearphishing Link to the target user to entice them to grant access to the application
                 applicationAccessToken
 
-        & trustedRelationship [Bernoulli(0.40)*TruncatedNormal(0.042,0.021)]
+        & trustedRelationship //(0.40)*TruncatedNormal(0.042,0.021)]
             user info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
             developer info: "Sources for distribution result: accenture.com/_acnmedia/PDF-116/Accenture-Cybersecurity-Report-2020.pdf, https://enterprise.verizon.com/resources/reports/DBIR_2018_Report_execsummary.pdf" 
             ->  os._validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
 
-        & _useThirdpartySoftware @hidden [Bernoulli(0.70)]
+        & _useThirdpartySoftware @hidden //(0.70)]
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
             developer info: "Sources for distribution result: https://www.infoworld.com/article/2626167/third-party-code-putting-companies-at-risk.html, https://threatpost.com/third-party-applications-blame-87-percent-vulnerabilities-last-year-031513/77633/, https://www.helpnetsecurity.com/2018/11/20/third-party-risks/"
             ->  useThirdpartySoftware
@@ -718,7 +712,7 @@ category Software {
     }
     
     asset Browser {
-        & driveByCompromise [Bernoulli(0.37)]
+        & driveByCompromise //(0.37)]
             user info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/6657123"
             ->  malvertising,
@@ -726,17 +720,17 @@ category Software {
                 service.os.computer.user.attemptUserExecution,
                 service.exploitationForClientExecution
 
-        | malvertising [Gamma(9,0.167)]
+        | malvertising //(9,0.167)]
             developer info: "Sources for distribution result: https://www.adstage.io/resources/q1-2020-ppc-benchmark-report/; https://www.youtube.com/watch?v=rTg9l4d8MU4; https://www.facebook.com/business/help/204798856225114?id=649869995454285"
             ->  service.thirdpartySoftware.stealApplicationAccessToken
 
-        | crossSiteScripting [Bernoulli(0.32)*Exponential(1)]
+        | crossSiteScripting //(0.32)*Exponential(1)]
             developer info: "Sources for distribution result: https://books.google.fr/books?id=biGsBwAAQBAJ&pg=PA104&lpg=PA104&dq=forum+posts,+comments+compromise+browser+malware&source=bl&ots=rzJQ6XY73h&sig=ACfU3U2wC6Muu7MfakP6MHJLk7IXJ76C0A&hl=fr&sa=X&ved=2ahUKEwiomdS20dbpAhV65OAKHaD4Dz8Q6AEwAHoECAoQAQ#v=onepage&q=forum%20posts%2C%20comments%20compromise%20browser%20malware&f=false; http://www.ijiser.com/paper/2017/vol4issue8/Aug2017p101.1.pdf; https://www.acunetix.com/acunetix-web-application-vulnerability-report-2019/#xss"
             ->  service.thirdpartySoftware.stealApplicationAccessToken
 
         | executionThroughMaliciousContent
 
-        & credentialsFromWebBrowsers [Bernoulli(0.625)]
+        & credentialsFromWebBrowsers //(0.625)]
             user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
             developer info: "Sources for distribution result: https://link.springer.com/book/10.1007/978-3-319-94376-3, https://attack.mitre.org/techniques/T1503/, https://www.proofpoint.com/us/threat-insight/post/new-vega-stealer-shines-brightly-targeted-campaign"
             ->  service.os.userAccount.userCredentials
@@ -747,10 +741,10 @@ category Software {
         & spearphishingLink
             user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
             ->  service.os.computer.user.spearphishingLinkClicked
-            
+
         | attemptSpearphishingAttachment @hidden      
             ->  spearphishingAttachment
-      
+
         & spearphishingAttachment
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
             ->  service.os.computer.user.spearphishingAttachmentDownload,
@@ -766,7 +760,7 @@ category Software {
         | installExtensions
             ->  browserExtensions
 
-        & browserExtensions [Bernoulli(0.85)]
+        & browserExtensions //(0.85)]
             user info: "Once the extension is installed, it can browse to websites in the background, steal all information that a user enters into a browser, to include credentials, and be used as an installer for a RAT for persistence." 
             developer info: "Source used for distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjQuta00ojqAhVGUZoKHT9YAygQFjAAegQIARAB&url=http%3A%2F%2Fmkto.cisco.com%2Frs%2F564-whv-323%2Fimages%2Fcisco-asr-2016.pdf&usg=AOvVaw1nLayTNlhdlV3tF_LfCxLf (Cisco 2016 Annual Security Report)"
             ->  service.os.userAccount.userInformation,
@@ -848,7 +842,7 @@ category Software {
                 computer.peripheralDevice.removableMedia.infectedMedia,
                 service.thirdpartySoftware.trustedRelationship
 
-        & connectionProxy [Bernoulli(0.825)]
+        & connectionProxy //(0.825)]
             user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
             developer info: "Sources used for probability distribution: https://jpcertcc.github.io/ToolAnalysisResultSheet/details/Htran.htm#ExecCondition, https://gs.statcounter.com/os-market-share/desktop/worldwide/#monthly-201905-202005, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/threat-detection-report/techniques/powershell/, https://www.scribd.com/document/406643981/Threat-Detection-Report, https://s3.eu-west-1.amazonaws.com/ncsc-content/files/Joint%20report%20on%20publicly%20available%20hacking%20tools%20%28NCSC%29.pdf)"
             ->  bypassLogAnalysis,
@@ -866,7 +860,7 @@ category Software {
         & applicationWindowDiscovery
             user info: "get a listing of opened application windows"
 
-        & processDiscovery [Bernoulli(0.17)*Exponential(346)]
+        & processDiscovery //(0.17)*Exponential(346)]
             user info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
             developer info: "Sources used for distribution result: https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB, https://www.researchgate.net/publication/332380784_How_many_words_do_we_read_per_minute_A_review_and_meta-analysis_of_reading_rate, https://attack.mitre.org/techniques/T1057/"
             ->  processInjection
@@ -923,11 +917,11 @@ category Software {
             user info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
             ->  dataEncoding
 
-        & dataEncoding [Bernoulli(0.0614)]
+        & dataEncoding //(0.0614)]
             developer info: "TTC instant/not applicable. Sources used for probability distribution result: https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/powershell-threats-grow-further-and-operate-plain-sight, https://docs.broadcom.com/docs/increased-use-of-powershell-in-attacks-16-en"
             ->  computer.router.internalNetwork.communicate
           
-        & disablingSecurityTools [Bernoulli(0.23)*Exponential(111.55)]
+        & disablingSecurityTools //(0.23)*Exponential(111.55)]
             user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
             developer info: "Sources for probability distribution: https://redcanary.com/threat-detection-report/techniques/disabling-security-tools/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  bypassFileMonitoring,
@@ -971,7 +965,7 @@ category Software {
             user info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
             ->  computer.router.internalNetwork.communicate  
 
-        & firmwareCorruption {A} [Bernoulli(0.8)*Exponential(2880)]
+        & firmwareCorruption {A} //(0.8)*Exponential(2880)]
             user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
             developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: https://www.wired.com/2015/03/researchers-uncover-way-hack-bios-undermine-secure-operating-systems/, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
 
@@ -992,7 +986,7 @@ category Software {
                 bypassLogAnalysis,
                 bypassAntivirus    
 
-        | inputCapture [Bernoulli(0.071)]
+        | inputCapture //(0.071)]
             user info: "Adversaries can use methods of capturing user input for obtaining credentials for Valid Accounts and information Collection that include keylogging and user input field interception."
             developer info: "Sources used for distribution result: https://www.statista.com/statistics/271037/distribution-of-most-common-malware-file-types/, https://www.rsaconference.com/industry-topics/blog/do-malware-authors-dream-of-original-code, http://keyllama.com/KeyLlamaUSB.pdf"
             ->  _validAccounts,
@@ -1008,7 +1002,7 @@ category Software {
                 service.browser.spearphishingAttachment,
                 inputCapture
 
-        & masquerading [Bernoulli(0.34)*Exponential(1)]
+        & masquerading //(0.34)*Exponential(1)]
             user info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
             developer info: "TTC is time until attack is over, which is time until masquerading file is discovered. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/masquerading/, https://www.tripwire.com/state-of-security/security-data-protection/security-controls/file-integrity-monitoring/, https://www.cm-alliance.com/cybersecurity-blog/understanding-how-file-integrity-monitoring-works, https://en.wikipedia.org/wiki/System_File_Checker"
             ->  bypassFileOrPathWhitelisting
@@ -1047,7 +1041,7 @@ category Software {
         | attemptNetworkDenialOfService @hidden {A}
             ->  networkDenialOfService
 
-        & networkDenialOfService {A} [Bernoulli(0.4863)*Exponential(6.6)]
+        & networkDenialOfService {A} //(0.4863)*Exponential(6.6)]
             user info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
             developer info: "Sources used for probability distribution: https://www.netscout.com/news/press-release/complexity-ddos-attacks, https://securelist.com/ddos-attacks-in-q4-2018/89565/, European Application and Network Security Report 2016-17, https://www.globaldots.com/ddos-distributed-denial-of-service-explained"
             ->  applicationExhaustionFlood,
@@ -1092,12 +1086,12 @@ category Software {
             ->  dataCollected, // entrypoints of attacks that can be done with command line interface under admin rights
                 obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface 
         
-        & userCommandLineInterface [Bernoulli(0.24)]
+        & userCommandLineInterface //(0.24)]
             developer info: "Sources for distribution results: https://www.itjungle.com/2020/06/22/security-gaining-attention-on-ibm-i-but-more-progress-needed/"
             ->  dataCollected, // entrypoints of attacks that can be done with command line interface under user rights
                 obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface
 
-        | fileAndDirectoryPermissionsModification [Bernoulli(0.2174)]
+        | fileAndDirectoryPermissionsModification //(0.2174)]
             user info: "File and directory permissions are commonly managed by discretionary access control lists (DACLs) specified by the file or directory owner."
             developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0402, https://securelist.com/threats-to-macos-users/93116/, https://www.carbonblack.com/2019/02/12/tau-threat-intelligence-notification-new-macos-malware-variant-of-shlayer-osx-discovered/"
             ->  bypassFileSystemAccessControls,
@@ -1133,7 +1127,7 @@ category Software {
 
         | osExhaustionFlood
 
-        & processInjection [Bernoulli(0.35)*Exponential(127.1)] 
+        & processInjection //(0.35)*Exponential(127.1)] 
             user info: "Process injection is a method of executing arbitrary code in the address space of a separate live process. It can be used for Defense Evasion and Privilege Escalation."
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/process-injection/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  adminAccount.adminRights,
@@ -1171,7 +1165,7 @@ category Software {
         | attemptStandardApplicationLayerProtocol
             ->  standardApplicationLayerProtocol    
 
-        & standardApplicationLayerProtocol [Bernoulli(0.20)]
+        & standardApplicationLayerProtocol //(0.20)]
             user info: "Adversaries may communicate using a common, standardized application layer protocol such as HTTP, HTTPS, SMTP, or DNS to avoid detection by blending in with existing traffic."
             developer info: "Sources used for distribution result: https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB"
             ->  computer.router.internalNetwork.communicate
@@ -1234,7 +1228,7 @@ category Software {
         & bruteForceWithPasswordPolicy
             ->  userAccount.userCredentials // the probability distribution should be so that it has higher chance of success than the bruteforce attack
 
-        & bruteForce [Exponential(0.3)]
+        & bruteForce //(0.3)]
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper."
             ->  userAccount.userCredentials           
@@ -1248,7 +1242,7 @@ category Software {
 
         | persistence
 
-        & scripting [Bernoulli(0.38)*Exponential(1097)]
+        & scripting //(0.38)*Exponential(1097)]
             user info: "Adversaries may use scripts to aid in operations and perform multiple actions that would otherwise be manual."
             developer info: "Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/scripting/, https://www.labnol.org/code/20016-maximum-execution-time-limit, https://www.php.net/manual/en/function.set-time-limit.php, https://www.sitepoint.com/javascript-execution-browser-limits/"
             ->  _automatedCollection,
@@ -1299,14 +1293,14 @@ category Software {
             user info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system."
             ->  _automatedCollection
 
-        & diskContentWipe {A} [Bernoulli(0.5433)*Exponential(126.437)]
+        & diskContentWipe {A} //(0.5433)*Exponential(126.437)]
             user info: "Adversaries may erase the contents of storage devices on specific systems as well as large numbers of systems in a network to interrupt availability to system and network resources."
             developer info: "Sources used for probability distribution: https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://threatpost.com/secrets-of-the-wiper-inside-the-worlds-most-destructive-malware/131836/, https://www.statista.com/statistics/795748/worldwide-seagate-average-hard-disk-drive-capacity/, https://hdd.userbenchmark.com/"
        
         & diskStructureWipe {A}
             user info: "Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources."
 
-        & remoteFileCopy [Bernoulli(0.29)]
+        & remoteFileCopy //(0.29)]
             user info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
             developer info: "TTC is very low (10-20 seconds) and is excluded. Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/remote-file-copy/. For estimates on TTC please see remoteFileCopy.md in the Dropbox/MAL work/enterpriselang probability findings/folder."
             ->  windows.windowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
@@ -1360,7 +1354,7 @@ category Software {
         & dataDestruction {A}
             ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
 
-        & dataEncryptedForImpact {A} [Bernoulli(0.366)*Exponential(12)]
+        & dataEncryptedForImpact {A} //(0.366)*Exponential(12)]
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
             ->  _validAccounts,
@@ -1368,8 +1362,7 @@ category Software {
                 inhibitSystemRecovery,
                 windows.windowsAdminShares
 
-        & dataCompressed [Bernoulli(0.75)]
-            developer info: "TTC assumed instant. For more info see "enterpriselang probabilities/dataCompressed.md". Sources used for distribution: https://cloud.google.com/security/data-loss-prevention/preventing-data-exfiltration, https://targetedthreats.net/media/4-Glossary.pdf, https://www.wiley.com/en-se/The+Art+of+Memory+Forensics%3A+Detecting+Malware+and+Threats+in+Windows%2C+Linux%2C+and+Mac+Memory-p-9781118824993 pg. 560"
+        & dataCompressed
             ->  dataEncrypted,
                 automatedExfiltration,
                 computer.exfiltrationOverPhysicalMedium,
@@ -1413,8 +1406,9 @@ category Software {
         & permissionGroupsDiscovery
             user info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
 
+        | persistance
 
-        # antivirus [Bernoulli(0.53)]
+        # antivirus //(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             ->  antivirusCheck,
@@ -1510,7 +1504,6 @@ category Software {
                 credentialsInRegistry,
                 service.browser.browserExtensions,
                 service.thirdpartySoftware.stealApplicationAccessToken,
-                service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
                 validAccounts 
@@ -1523,10 +1516,9 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1013/"
             ->  validAccounts
 
-        # codeSigning [Bernoulli(0.28)]
+        # codeSigning //(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/" 
             ->  service.applicationDeploymentSoftware,
-                service.implantContainerImage,
                 masquerading    
 
         # limitHardwareInstallation
@@ -1571,12 +1563,11 @@ category Software {
                 userCommandLineInterface,
                 userAccount.userExecution          
              
-        # privilegedAccountManagement [Bernoulli(0.30)]
+        # privilegedAccountManagement //(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  credentialsInRegistry,
                 validAccounts,
-                service.implantContainerImage,
                 computer.router.internalNetwork.webShell
 
         # encryptSensitiveInformation 
@@ -1599,7 +1590,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1033/"
             ->  service.browser.browserExtensions
 
-        # updateSoftware [Bernoulli(0.34)]
+        # updateSoftware //(0.34)]
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  firmwareCorruption,
                 service.browser.driveByCompromise,
@@ -1698,8 +1689,7 @@ category Software {
                 os.adminAccount.windowsAdmin.adminRights
 
         & appInitDLLs
-            ->  persistence,
-                sysAdmin.systemRights
+            ->  persistence 
 
         & accessibilityFeatures
             user info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system."
@@ -1710,7 +1700,7 @@ category Software {
         & _bITSJobs @hidden
             ->  bITSJobs
 
-        & bITSJobs [Bernoulli(0.264)]
+        & bITSJobs //(0.264)]
             user info: "Adversaries may abuse BITS to download, execute, and even clean up after running malicious code."
             developer info: "TTC assumed instant. Sources used for probability distribution: https://blog.trendmicro.com/trendlabs-security-intelligence/tropic-trooper-new-strategy/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://en.wikipedia.org/wiki/Windows_Desktop_Gadgets, https://www.fireeye.com/blog/threat-research/2018/03/suspected-chinese-espionage-group-targeting-maritime-and-engineering-industries.html" 
             ->  executeCode,
@@ -1724,7 +1714,7 @@ category Software {
                 bypassApplicationWhitelisting,
                 bypassAntivirus            
 
-        | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
+        | codeSigningCertificate //(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
             ->  adminAccount.windowsAdmin.bypassWindowsUserAccountControl
@@ -1734,7 +1724,7 @@ category Software {
                 bruteForce, // leads to Brute Force attack   
                 passTheHash // leads to Pass the Hash attack 
 
-        & _componentObjectModelAndDistributedCOM @hidden [Exponential(96)]
+        & _componentObjectModelAndDistributedCOM @hidden //(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
             ->  componentObjectModelAndDistributedCOM
 
@@ -1743,7 +1733,7 @@ category Software {
             ->  computer.router.internalNetwork.remoteCOMExecution,
                 dynamicDataExchange
 
-        & controlPanelItems [Bernoulli(0.00006)]
+        & controlPanelItems //(0.00006)]
             user info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
             developer info: "TTC assumed instant, see mitreattacklang/enterpriselang probabilities/controlPanelItems.md for details. Sources used for probability distribution result: https://attack.mitre.org/software/S0172/, https://threatvector.cylance.com/en_us/home/reaver-mapping-connections-between-disparate-chinese-apt-groups.html, https://nvd.nist.gov/vuln/detail/CVE-2017-11882#vulnConfigurationsArea, https://unit42.paloaltonetworks.com/unit42-new-malware-with-ties-to-sunorcal-discovered/, https://community.spiceworks.com/software/articles/2873-data-snapshot-the-state-of-productivity-suites-in-the-workplace"
             ->  executeCode,
@@ -1762,7 +1752,7 @@ category Software {
                 bypassHostIntrusionPrevention, 
                 bypassAntivirus         
 
-        & compiledHTMLFile [Bernoulli(0.93)*Exponential(1)]
+        & compiledHTMLFile //(0.93)*Exponential(1)]
             user info: "Adversaries may abuse this technology to conceal malicious code, can be triggered by User Execution."
             developer info: "Sources for distribution results : https://blog.rootshell.be/2017/12/19/malware-delivered-via-compiled-html-help-file/"
             ->  computer.user.attemptUserExecution, // leads to User Execution attack
@@ -1784,11 +1774,10 @@ category Software {
         | _dLLSearchOrderHijacking @hidden
             ->  dLLSearchOrderHijacking 
 
-        & dLLSearchOrderHijacking [Bernoulli(0.16)]
+        & dLLSearchOrderHijacking //(0.16)]
             user info: "Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence."
             developer info: "TTC is extremely low (< 0.00001 seconds) and is excluded. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  bypassProcessWhitelisting,
-                bypassUserAccountControl,
                 sysAdmin.systemRights,
                 userAccount.userRights,
                 adminAccount.windowsAdmin.adminRights,
@@ -1799,10 +1788,10 @@ category Software {
                 bypassAntivirus,
                 attemptlSASS_Driver
 
-        | attemptlSASS_Driver @hidden [Bernoulli(0.5)*Exponential(0.1)]
+        | attemptlSASS_Driver @hidden //(0.5)*Exponential(0.1)]
             -> lSASS_Driver
 
-        & mshta [Bernoulli(0.3329)*Exponential(491)]
+        & mshta //(0.3329)*Exponential(491)]
             user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
             developer info: "Sources used for distribution: https://lolbas-project.github.io/lolbas/Binaries/Mshta/, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/blog/microsoft-html-application-hta-abuse-part-deux/"
             ->  executeCode,
@@ -1819,7 +1808,7 @@ category Software {
             ->  executeCode,
                 processInjection
 
-        & executionThroughModuleLoad [Bernoulli(0.93)*Exponential(1)]
+        & executionThroughModuleLoad //(0.93)*Exponential(1)]
             developer info: "Sources for distribution results: Results on spearphishing and https://community.broadcom.com/symantecenterprise/communities/community-home/librarydocuments/viewdocument?DocumentKey=bc9e2e2e-028c-4ba1-863f-72a4700dbdc2&CommunityKey=1ecf5f55-9545-44d6-b0f4-4e4a7f5f5e68&tab=librarydocuments, https://www.cybereason.com/blog/information-stealing-malware-targeting-brazil-full-research"
             user info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
             ->  executeCode    
@@ -1994,9 +1983,9 @@ category Software {
                 computer.user.attemptUserExecution,
                 scripting
 
-        & powerShell [Bernoulli(0.55)]
+        & powerShell //(0.55)]
             user info: "Administrator permissions are required to use PowerShell to connect to remote systems."    
-            developer info: "The process takes a few seconds to complete, so the TTC has excluded. It would be [Exponential(28800)] if included. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/powershell/"  
+            developer info: "The process takes a few seconds to complete, so the TTC has excluded. It would be //(28800)] if included. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/powershell/"  
             ->  computer.router.internalNetwork.remoteSystemsConnection,
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
                 persistence
@@ -2030,7 +2019,7 @@ category Software {
         | rDPSessionHijacking
             user info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
 
-        | registryRunKeysOrStartupFolder [Bernoulli(0.17125)]
+        | registryRunKeysOrStartupFolder //(0.17125)]
             user info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
             developer info: "Sources used for distribution result: https://dsimg.ubm-us.net/envelope/395823/551993/Fileless%20Attack%20Survival%20Guide.pdf, https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB"
             ->  masquerading, // leads to Masquerading attack
@@ -2069,7 +2058,7 @@ category Software {
             ->  persistence,
                 sysAdmin.systemRights  
 
-        & replicationThroughRemovableMedia [Bernoulli(0.45)*Exponential(3.429)]
+        & replicationThroughRemovableMedia //(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/7546509, https://threatpost.com/never-trust-a-found-usb-drive-black-hat-demo-shows-why/119653/"
             ->  communicationThroughRemovableMedia,
@@ -2157,7 +2146,7 @@ category Software {
         | attemptSoftwarePacking @hidden
             ->  softwarePacking
 
-        & softwarePacking [Bernoulli(0.26)]
+        & softwarePacking //(0.26)]
             user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
             developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf"
             ->  indicatorRemovalFromTools,
@@ -2204,7 +2193,7 @@ category Software {
             ->  dataDestruction,
                 dataEncryptedForImpact
 
-        & scheduledTask [Bernoulli(0.33)*Exponential(54.3)]
+        & scheduledTask //(0.33)*Exponential(54.3)]
             user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
             developer info: "Sources used for probability results: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-xp/bb490866(v=technet.10)?redirectedfrom=MSDN, https://redcanary.com/threat-detection-report/techniques/scheduled-task/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://blog.malwarebytes.com/cybercrime/2015/03/scheduled-tasks/, https://www.zdnet.com/article/microsoft-says-new-dexphot-malware-infected-more-than-80000-computers/"
             ->  executeCode,
@@ -2220,12 +2209,12 @@ category Software {
             user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
             ->  scheduledTask         
 
-        & windowsAdminShares [Bernoulli(0.28)*Exponential(4114)]
+        & windowsAdminShares //(0.28)*Exponential(4114)]
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/windows-admin-shares/, https://www.contextis.com/us/blog/lateral-movement-a-deep-look-into-psexec"
             ->  networkShareConnectionRemoval, // leads to Network Share Connection Removal attack
                 windowsManagementInstrumentation // leads to Windows Management Instrumentation attack
 
-        | windowsManagementInstrumentation [Bernoulli(0.26)*Exponential(43.49)]
+        | windowsManagementInstrumentation //(0.26)*Exponential(43.49)]
             user info: "An adversary can use WMI to interact with local and remote systems and use it as a means to perform many tactic functions."
             developer info: "TTC is upper bound of likely time needed. Sources used for probability distribution result: https://redcanary.com/threat-detection-report/techniques/windows-management-instrumentation/, https://www.fireeye.com/content/dam/fireeye-www/global/en/current-threats/pdfs/wp-windows-management-instrumentation.pdf, https://www.microsoft.com/security/blog/2017/06/27/new-ransomware-old-techniques-petya-adds-worm-capabilities/, https://securelist.com/olympicdestroyer-is-here-to-trick-the-industry/84295/"
             ->  systemInformationDiscovery, // extract information about the operating system
@@ -2251,7 +2240,7 @@ category Software {
         & registryKeysEnabled
             ->  dynamicDataExchange
 
-        | dynamicDataExchange [Bernoulli(0.93)*Exponential(1)]
+        | dynamicDataExchange //(0.93)*Exponential(1)]
             user info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
             ->  userCommandLineInterface,
                 executeCode 
@@ -2263,13 +2252,12 @@ category Software {
 
         | hypervisor           
             user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
-            ->  persistence
+            ->  persistance
 
         | captureAPICalls   
 
-        & logonScripts [Exponential(288)]
+        & logonScripts
             user info: "An adversary can then create a logon session for the user using the LogonUser function. The function will return a copy of the new session's access token and the adversary can use SetThreadToken to assign the token to a thread."
-            developer info: "Sources for probability distribution: http://www.hexacorn.com/blog/2014/11/14/beyond-good-ol-run-key-part-18/, "
             ->  userAccessTokenManipulation,
                 adminAccessTokenManipulation,
                 adminAccount.windowsAdmin.adminRights   
@@ -2311,11 +2299,9 @@ category Software {
         & adminSecuritySoftwareDiscovery
             ->  virtualizationOrSandboxEvasion
 
-        & bypassUserAccountControl [Bernoulli(0.277)]
+        & bypassUserAccountControl //(0.277)]
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
-            ->  executeCode,
-                adminAccount.adminRights
-
+            ->  executeCode
        
         | peripheralDeviceDiscovery
             ->  computer.peripheralDeviceDiscovery
@@ -2352,18 +2338,18 @@ category Software {
         | trustedDomainInfo // leads to SID-History Injection, Pass the Ticket, and Kerberoasting attacks
             user info: "The information discovered may help the adversary conduct SID-History Injection, Pass the Ticket, and Kerberoasting."
 
-        & domainTrustDiscovery [Bernoulli(0.13)*Exponential(127.1)]
+        & domainTrustDiscovery //(0.13)*Exponential(127.1)]
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/domain-trust-discovery/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  trustedDomainInfo
 
-        & bootkit [Bernoulli(0.46)]
+        & bootkit //(0.46)]
             developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx" 
-            ->  persistence
+            ->  persistance
             
         | videoCapture
             ->  computer.collectVideo
 
-        | virtualizationOrSandboxEvasion [Bernoulli(0.18)]
+        | virtualizationOrSandboxEvasion //(0.18)]
             user info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
             developer info: "Sources for distribution result: http://www.sharetech-me.com/wp-content/uploads/2015/06/21347932_GA-internet-security-threat-report-volume-20-2015-social_v2.pdf, https://docs.broadcom.com/docs/threats-to-virtual-environments-14-en"
             ->  bypassAntivirus,
@@ -2371,7 +2357,7 @@ category Software {
                 bypassSignatureBasedDetection,  
                 bypassStaticFileAnalysis              
 
-        & xslScriptProcessing [Bernoulli(0.93)*Exponential(1)]
+        & xslScriptProcessing //(0.93)*Exponential(1)]
             developer info: "Sources used for probability distribution: https://reaqta.com/2018/03/spear-phishing-campaign-leveraging-msxsl/"
             user info: "Adversaries may abuse this functionality to execute arbitrary files while potentially bypassing application whitelisting defenses."
             ->  executeCode,
@@ -2384,7 +2370,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1015/"
             +>  passTheTicket
 
-        # antivirus [Bernoulli(0.53)]
+        # antivirus //(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             +>  softwarePacking,
@@ -2412,7 +2398,7 @@ category Software {
             user info : "https://attack.mitre.org/mitigations/M1040/"
             +>  dynamicDataExchange
         
-        # codeSigning [Bernoulli(0.28)]
+        # codeSigning //(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  powerShell,
                 _powerShellProfile,
@@ -2483,7 +2469,7 @@ category Software {
                 _credentialDumping,
                 securitySupportProvider 
 
-        # privilegedAccountManagement [Bernoulli(0.30)]
+        # privilegedAccountManagement //(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
@@ -2562,7 +2548,7 @@ category Software {
             ->  lLMNR_NBT_NS_PoisoningAndRelay,
                 forcedAuthentication 
 
-        # updateSoftware [Bernoulli(0.34)]
+        # updateSoftware //(0.34)]
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
                 applicationShimming,
@@ -2574,14 +2560,12 @@ category Software {
             +>  applicationShimming, 
                 bypassUserAccountControl,
                 fileSystemPermissionsWeakness,
-                passTheHash
-
+                passTheHash   
     }
 
     asset Linux extends OS {
-        & bootkit [Bernoulli(0.46)]
-            developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx"
-            ->  persistence
+        & bootkit
+            ->  persistance
 
         & _clearCommandHistory @hidden
             ->  clearCommandHistory       
@@ -2591,7 +2575,7 @@ category Software {
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
 
-        | spaceAfterFileName [Exponential(1)]
+        | spaceAfterFileName //(1)]
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
 
@@ -2671,7 +2655,7 @@ category Software {
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
             ->  bypassHostForensicAnalysis
 
-        | trap [Exponential(0.1)]
+        | trap //(0.1)]
             user info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
             developer info: "Arbitrary distribution. See trap.md file."
             ->  executeCode,
@@ -2680,7 +2664,7 @@ category Software {
         | executeCode 
             +>  computer.infectedLinuxComputer 
 
-        # antivirus [Bernoulli(0.53)]
+        # antivirus //(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             +>  kernelModulesAndExtensions
@@ -2693,7 +2677,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1046/"
             +>  bootkit
 
-        # codeSigning [Bernoulli(0.28)]
+        # codeSigning //(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  serverSoftwareComponent
 
@@ -2724,7 +2708,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1027/"
             +>  sshHijacking
 
-        # privilegedAccountManagement [Bernoulli(0.30)]
+        # privilegedAccountManagement //(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
@@ -2755,7 +2739,7 @@ category Software {
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
 
-        | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
+        | codeSigningCertificate //(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
 
@@ -2770,9 +2754,8 @@ category Software {
         | _dylibHijacking @hidden   
             ->  dylibHijacking 
 
-        & dylibHijacking [Bernoulli(0.16)] 
+        & dylibHijacking 
             user info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
-            developer info: "Based on the results for dLLSearchOrderHijacking.  Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  service._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
 
         & elevatedExecutionWithPrompt
@@ -2797,7 +2780,7 @@ category Software {
             user info: "By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily."
             ->  adminAccount.createUserAccount
 
-        & hiddenWindow [Bernoulli(0.22)]
+        & hiddenWindow //(0.22)]
             user info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
             developer info: "Sources for probability distribution: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download"
 
@@ -2908,7 +2891,7 @@ category Software {
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
             ->  service._exploitationForPrivilegeEscalation
 
-        | trap [Exponential(0.1)]
+        | trap //(0.1)]
             developer info: "Arbitrary distribution. See trap.md file."
             user info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
             ->  executeCode,
@@ -2917,7 +2900,7 @@ category Software {
         | videoCapture
             ->  computer.collectVideo     
 
-        | spaceAfterFileName [Exponential(1)]
+        | spaceAfterFileName //(1)]
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
 
@@ -2951,7 +2934,7 @@ category Software {
             ->  persistence,
                 service._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack 
 
-        # antivirus [Bernoulli(0.53)]
+        # antivirus //(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             +>  kernelModulesAndExtensions
@@ -2960,7 +2943,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1047/"
             +>  lC_LOAD_DYLIB_Addition
 
-        # codeSigning [Bernoulli(0.28)]
+        # codeSigning //(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  appleScript,
                 lC_LOAD_DYLIB_Addition,
@@ -3000,7 +2983,7 @@ category Software {
             +>  keychainCollection,
                 sshHijacking
 
-        # privilegedAccountManagement [Bernoulli(0.30)]
+        # privilegedAccountManagement //(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  sshHijacking
@@ -3045,7 +3028,7 @@ category Network {
         | attemptDefacement @hidden
             ->  defacement
 
-        & defacement {I} [Bernoulli(0.31)*Exponential(10.67)]
+        & defacement {I} //(0.31)*Exponential(10.67)]
             user info: "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users."
             developer info: "Time here is: assumed time defacement will last. Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi5m_fWpY7qAhUaxMQBHU6yBxoQFjAKegQIMhAB&url=https%3A%2F%2Fdocuments.trendmicro.com%2Fassets%2Fwhite_papers%2Fwp-a-deep-dive-into-defacement.pdf&usg=AOvVaw2zOWHBoWsMXdfxK_fLTP_G, https://www.internetlivestats.com/total-number-of-websites/, https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://books.google.se/books?id=c7CpBAAAQBAJ&printsec=frontcover&dq=Cyber+Blockades&hl=en&sa=X&ved=0ahUKEwj4qsnGq47qAhVRXpoKHWACBqkQ6AEIKDAA#v=onepage&q=Cyber%20Blockades&f=false"
         
@@ -3105,7 +3088,7 @@ category Network {
         | _dataObfuscation @hidden
             ->  dataObfuscation
 
-        & dataObfuscation [Bernoulli(0.685)]
+        & dataObfuscation //(0.685)]
             user info: "This encompasses many methods, such as adding junk data to protocol traffic, using steganography, commingling legitimate traffic with C2 communications traffic, or using a non-standard data encoding system."
             developer info: "TTC instant/not applicable. sources used for probability distribution: https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://books.google.se/books?id=tHK6CAAAQBAJ&pg=PA175&lpg=PA175&dq=percent+of+malware+using+obfuscation&source=bl&ots=uAffxqpZX2&sig=ACfU3U2kkIrqzLLQ8ipOR2RwkRPzc8Jp1A&hl=en&sa=X&ved=2ahUKEwio69vRhZrqAhVMEncKHYwLAwsQ6AEwC3oECGQQAQ#v=onepage&q=percent%20of%20malware%20using%20obfuscation&f=false"
             ->  router.externalNetwork.bypassNetworkIntrusionDetection,
@@ -3194,7 +3177,7 @@ category Network {
                 router.computer.os.service.thirdpartySoftware.trustedRelationship,
                 router.computer.os.service.thirdpartySoftware._useThirdpartySoftware
 
-        # vulnerabilityScanning [Bernoulli(0.41)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
+        # vulnerabilityScanning //(0.41)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
             user info: "https://attack.mitre.org/mitigations/M1016/"
             developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture"
             ->  router.computer.os.service.exploitHighVulnerabilityPublicFacingApplication,
@@ -3244,7 +3227,7 @@ category Network {
         | attemptTransmittedDataManipulation @hidden {I}
             ->  transmittedDataManipulation
  
-        & transmittedDataManipulation {I} [Bernoulli(0.65833)*Exponential(24)]
+        & transmittedDataManipulation {I} //(0.65833)*Exponential(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
             developer info: "Sources used for distribution: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiW28Dmk4vqAhXS4KYKHZvADy4QFjABegQIAhAB&url=https%3A%2F%2Fgo.thalesesecurity.com%2Frs%2F480-LWA-970%2Fimages%2F2019-DTR-Global-USL-Web.pdf&usg=AOvVaw2rKeGVWQgkIV7M0vjnCo1g, https://secure2.sophos.com/en-us/medialibrary/Gated%20Assets/white%20papers/the-state-of-encryption-today-wpna.pdf?cmp=701j0000001WskZAAS, www.businesswire.com/news/home/20190221005061/en/Survey-83-Percent-U.S.-Organizations-Accidentally-Exposed, https://content.fireeye.com/apt/rpt-apt38"
             
@@ -3317,6 +3300,10 @@ category Network {
                 router.computer.os.linux.portKnocking,
                 router.computer.os.macOS.portKnocking
 
+        # limitAccessToResourceOverNetwork
+            user info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  router.computer.os.service.externalRemoteServices
+
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  router.computer.os.commonlyUsedPortsConnection,
@@ -3375,7 +3362,7 @@ category Hardware {
     }
 
     asset HardwareAddition extends Computer {
-        | physicalAccess [Bernoulli(0.11)*Exponential(8)]
+        | physicalAccess //(0.11)*Exponential(8)]
             developer info: "Sources for distribution result: https://www.if-insurance.com/large-enterprises/insight/risk-consulting-magazine/risk-consulting-2019-1/physical-security-controls-of-it-and-ics, https://go.crowdstrike.com/rs/281-OBQ-266/images/Report2020CrowdStrikeGlobalThreatReport.pdf"
             ->  hardwareAdditions
             
