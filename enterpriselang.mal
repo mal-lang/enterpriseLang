@@ -527,8 +527,9 @@ category Software {
             user info: "Adversaries may attempt to access the Cloud Instance Metadata API to collect credentials and other sensitive data."
             ->  os.sensitiveDataCollected
 
-        & implantContainerImage
+        & implantContainerImage [Bernoulli(0.60)*Exponential(180)]
             user info: "Amazon Web Service (AWS) Amazon Machine Images (AMI), Google Cloud Platform (GCP) Images, and Azure Images as well as popular container runtimes such as Docker can be implanted or backdoored to include malicious code."
+            developer info: "Sources for distribution result: https://www.eweek.com/security/five-security-defenses-every-containerized-application-needs, https://github.com/RhinoSecurityLabs/ccat, https://www.youtube.com/watch?v=12zEXfCxIrk&feature=youtu.be"
             ->  os.persistence
 
         | serviceInformation 
