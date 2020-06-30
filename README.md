@@ -2,13 +2,12 @@
 
 enterpriselang is a domain-specific MAL language based on the MITRE ATT&CK® Matrix, which intends to assess the cyber security of enterprise systems from a holistic point of view.
 
-* We keep updating the file `enterpriselang.mal` and the folder `securiCAD_models`. The files within the folder `single_attacks` are not up-to-date, please refer to the file `enterpriselang.mal`. The `pom.xml` should be used to support advanced distributions.
-* The test cases can be found in `src/test/jave/org/mal_lang/enterpriselang/test/`, while another `pom.xml` in the folder `src` should be used for testing.
-* Please compile the language with 
+* We keep updating the file `enterpriselang.mal` and the folder `securiCAD_models`. The files within the folder `single_attacks` are not up-to-date, please refer to the file `enterpriselang.mal`. The `pom.xml` shall be used to support advanced distributions.
+* The test cases can be found in `src/test/jave/org/mal_lang/enterpriselang/test/`, while another `pom.xml` in the folder `src` shall be used for testing.
+* Please compile the language with the following command on the command line run in securiCAD:
 ```
 mvn clean package -PsecuriCAD -Dmaven.test.skip
 ```
-to run in securiCAD.
 
 ### This project can be built according to exampleLang (https://github.com/mal-lang/exampleLang)
 
