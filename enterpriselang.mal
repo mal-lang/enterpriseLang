@@ -252,6 +252,7 @@ category Software {
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
                 os.windows.pathInterception,
+                os.windows.userAccessTokenManipulation,
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
@@ -354,7 +355,6 @@ category Software {
                 os.windows.signedBinaryProxyExecution, 
                 os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
-                os.windows.userAccessTokenManipulation,
                 os.windows.adminAccessTokenManipulation,
                 os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
@@ -1404,7 +1404,6 @@ category Software {
         & permissionGroupsDiscovery
             user info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
 
-        | persistance
 
         # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
@@ -1687,7 +1686,8 @@ category Software {
                 os.adminAccount.windowsAdmin.adminRights
 
         & appInitDLLs
-            ->  persistence 
+            ->  persistence,
+                sysAdmin.systemRights
 
         & accessibilityFeatures
             user info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system."
@@ -1776,6 +1776,7 @@ category Software {
             user info: "Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence."
             developer info: "TTC is extremely low (< 0.00001 seconds) and is excluded. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  bypassProcessWhitelisting,
+                bypassUserAccountControl,
                 sysAdmin.systemRights,
                 userAccount.userRights,
                 adminAccount.windowsAdmin.adminRights,
@@ -2250,7 +2251,7 @@ category Software {
 
         | hypervisor           
             user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
-            ->  persistance
+            ->  persistence
 
         | captureAPICalls   
 
@@ -2299,7 +2300,9 @@ category Software {
 
         & bypassUserAccountControl [Bernoulli(0.277)]
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
-            ->  executeCode
+            ->  executeCode,
+                adminAccount.adminRights
+
        
         | peripheralDeviceDiscovery
             ->  computer.peripheralDeviceDiscovery
@@ -2342,7 +2345,7 @@ category Software {
 
         & bootkit [Bernoulli(0.46)]
             developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx" 
-            ->  persistance
+            ->  persistence
             
         | videoCapture
             ->  computer.collectVideo
@@ -2558,12 +2561,14 @@ category Software {
             +>  applicationShimming, 
                 bypassUserAccountControl,
                 fileSystemPermissionsWeakness,
-                passTheHash   
+                passTheHash
+
     }
 
     asset Linux extends OS {
-        & bootkit
-            ->  persistance
+        & bootkit [Bernoulli(0.46)]
+            developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx"
+            ->  persistence
 
         & _clearCommandHistory @hidden
             ->  clearCommandHistory       
@@ -2752,8 +2757,9 @@ category Software {
         | _dylibHijacking @hidden   
             ->  dylibHijacking 
 
-        & dylibHijacking 
+        & dylibHijacking [Bernoulli(0.16)] 
             user info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
+            developer info: "Based on the results for dLLSearchOrderHijacking.  Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  service._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
 
         & elevatedExecutionWithPrompt
@@ -3297,10 +3303,6 @@ category Network {
                 router.computer.os.windows.bITSJobs,
                 router.computer.os.linux.portKnocking,
                 router.computer.os.macOS.portKnocking
-
-        # limitAccessToResourceOverNetwork
-            user info: "https://attack.mitre.org/mitigations/M1035/"   
-            ->  router.computer.os.service.externalRemoteServices
 
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             user info: "https://attack.mitre.org/mitigations/M1030/"
