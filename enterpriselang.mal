@@ -564,13 +564,13 @@ category Software {
         
         | spearphishingViaPersonalEmail [Bernoulli(0.712)*Exponential(1)]
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
-            ->  browser.attemptSpearphishingAttachment,
-                browser.attemptSpearphishingLink
+            ->  browser.spearphishingAttachment,
+                browser.spearphishingLink
         
         | spearphishingViaSocialMedia [Bernoulli(0.4475)*Exponential(0.286)]
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
-            ->  browser.attemptSpearphishingAttachment,
-                browser.attemptSpearphishingLink
+            ->  browser.spearphishingAttachment,
+                browser.spearphishingLink
 
         | attemptSupplyChainCompromise @hidden [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
             developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
@@ -748,9 +748,6 @@ category Software {
             user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
             ->  service.os.computer.user.spearphishingLinkClicked
       
-        | attemptSpearphishingAttachment @hidden      
-            ->  spearphishingAttachment
-            
         & spearphishingAttachment
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
             ->  service.os.computer.user.spearphishingAttachmentDownload,
@@ -1368,7 +1365,8 @@ category Software {
                 inhibitSystemRecovery,
                 windows.windowsAdminShares
 
-        & dataCompressed
+        & dataCompressed [Bernoulli(0.75)]
+            developer info: "TTC assumed instant. For more info see "enterpriselang probabilities/dataCompressed.md". Sources used for distribution: https://cloud.google.com/security/data-loss-prevention/preventing-data-exfiltration, https://targetedthreats.net/media/4-Glossary.pdf, https://www.wiley.com/en-se/The+Art+of+Memory+Forensics%3A+Detecting+Malware+and+Threats+in+Windows%2C+Linux%2C+and+Mac+Memory-p-9781118824993 pg. 560"
             ->  dataEncrypted,
                 automatedExfiltration,
                 computer.exfiltrationOverPhysicalMedium,
@@ -2265,8 +2263,9 @@ category Software {
 
         | captureAPICalls   
 
-        & logonScripts
+        & logonScripts [Exponential(288)]
             user info: "An adversary can then create a logon session for the user using the LogonUser function. The function will return a copy of the new session's access token and the adversary can use SetThreadToken to assign the token to a thread."
+            developer info: "Sources for probability distribution: http://www.hexacorn.com/blog/2014/11/14/beyond-good-ol-run-key-part-18/, "
             ->  userAccessTokenManipulation,
                 adminAccessTokenManipulation,
                 adminAccount.windowsAdmin.adminRights   
