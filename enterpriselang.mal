@@ -2262,8 +2262,9 @@ category Software {
 
         | captureAPICalls   
 
-        & logonScripts
+        & logonScripts [Exponential(288)]
             user info: "An adversary can then create a logon session for the user using the LogonUser function. The function will return a copy of the new session's access token and the adversary can use SetThreadToken to assign the token to a thread."
+            developer info: "Source used for probability distribution: http://www.hexacorn.com/blog/2014/11/14/beyond-good-ol-run-key-part-18/, "
             ->  userAccessTokenManipulation,
                 adminAccessTokenManipulation,
                 adminAccount.windowsAdmin.adminRights   
