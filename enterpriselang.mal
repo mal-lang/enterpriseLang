@@ -1411,8 +1411,9 @@ category Software {
             user info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
             ->  service._exploitationOfRemoteServices
 
-        & permissionGroupsDiscovery
+        & permissionGroupsDiscovery [Bernoulli(0.0526)]
             user info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
+            developer info: "Sources for probability result: Red Canary ATT&CK technique percentages (Top 50), https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1069/"
 
 
         # antivirus [Bernoulli(0.53)]
