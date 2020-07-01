@@ -43,7 +43,7 @@ category Software {
                 os.accountDiscovery,
                 os.applicationWindowDiscovery,
                 os._automatedCollection,
-                os.bruteForce,
+                os.attemptBruteForce,
                 os.compileAfterDelivery,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
@@ -187,7 +187,7 @@ category Software {
                 os.service.cloudInstanceMetadataAPI,
                 os.service._exploitationForCredentialAccess,
                 os.service._exploitationForDefenseEvasion,
-                os.service._exploitationForPrivilegeEscalation,
+                os.service.attemptExploitationForPrivilegeEscalation,
                 os.service._exploitationOfRemoteServices,
                 os.service.externalRemoteServices,
                 os.service.implantContainerImage,
@@ -223,7 +223,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1017/"
             developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241"      
             ->  os.service.browser.stealWebSessionCookie,
-                os._credentialDumping,
+                os.credentialDumping,
                 os.credentialsInFiles,
                 os.twoFactorAuthenticationInterception, // remove smart cards when not in use
                 os.windows.inputPrompt,
@@ -296,7 +296,7 @@ category Software {
                 os.adminCommandLineInterface,
                 os.dataDestruction,
                 os.dataEncryptedForImpact,
-                os._credentialDumping,
+                os.attemptCredentialDumping,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
                 os.processDiscovery,
@@ -345,7 +345,7 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  createUserAccount,
-                os._credentialDumping,
+                os.credentialDumping,
                 os.firmwareCorruption,
                 os.windows.accountManipulation,
                 os.windows.modifyRegistry,
@@ -596,12 +596,12 @@ category Software {
         | exploitationOfSQLInjection [Bernoulli(0.14)*Exponential(0.746)]   
             developer info: "Sources used for distribution result: https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://www.akamai.com/us/en/multimedia/documents/state-of-the-internet/soti-security-web-attacks-and-gaming-abuse-report-2019.pdf, https://trends.builtwith.com/websitelist/Akamai/Historical, https://www.imperva.com/docs/HII_Web_Application_Attack_Report_Ed6.pdf, https://www.cc.gatech.edu/fac/Alex.Orso/papers/halfond.viegas.orso.ISSSE06.pdf"
             ->  os.executeCode,
-                _exploitationForPrivilegeEscalation
+                exploitationForPrivilegeEscalation
                 
         | exploitationOfNTLMAuthentication [Bernoulli(0.23346)*TruncatedNormal(0.011,0.00214)]
             developer info: "Sources used for distribution result: https://www.csoonline.com/article/3333916/i-can-get-and-crack-your-password-hashes-from-email.html, https://netmarketshare.com/operating-system-market-share.aspx?, https://resources.infosecinstitute.com/beyond-password-length-complexity/, https://spycloud.com/how-long-would-it-take-to-crack-your-password/, https://spycloud.com/2020-annual-credential-exposure-report/"
             ->  os.executeCode,
-                _exploitationForPrivilegeEscalation
+                exploitationForPrivilegeEscalation
 
         | _exploitationForDefenseEvasion @hidden
             ->  exploitationForDefenseEvasion
@@ -610,10 +610,10 @@ category Software {
             ->  os.bypassAntivirus,
                 os.bypassSystemAccessControls
 
-        | _exploitationForPrivilegeEscalation @hidden
+        & attemptExploitationForPrivilegeEscalation @hidden
             ->  exploitationForPrivilegeEscalation
 
-        & exploitationForPrivilegeEscalation
+        | exploitationForPrivilegeEscalation
             user info: "This could enable someone to move from unprivileged or user level permissions to SYSTEM or root permissions depending on the component that is vulnerable."
             ->  os.adminAccount.adminRights,
                 os.windows.sysAdmin.systemRights,
@@ -624,7 +624,7 @@ category Software {
             ->  exploitationOfRemoteServices
 
         & exploitationOfRemoteServices
-            ->  _exploitationForPrivilegeEscalation,
+            ->  exploitationForPrivilegeEscalation,
                 os.computer.infectedComputer
                 
         | attemptExternalRemoteServices @hidden 
@@ -643,7 +643,7 @@ category Software {
             ->  exploitationForClientExecution,
                 exploitationForCredentialAccess,
                 exploitationForDefenseEvasion,
-                exploitationForPrivilegeEscalation,
+                attemptExploitationForPrivilegeEscalation,
                 exploitationOfRemoteServices,
                 exploitHighVulnerabilityPublicFacingApplication,
                 exploitMediumVulnerabilityPublicFacingApplication,
@@ -664,7 +664,7 @@ category Software {
         # threatIntelligenceProgram
             user info: "https://attack.mitre.org/mitigations/M1019/"
             ->  exploitationForCredentialAccess,
-                exploitationForPrivilegeEscalation,
+                attemptExploitationForPrivilegeEscalation,
                 exploitationOfRemoteServices  
 
         # updateSoftware [Bernoulli(0.34)]
@@ -672,7 +672,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  applicationDeploymentSoftware,
                 exploitationForDefenseEvasion,
-                exploitationForPrivilegeEscalation,
+                attemptExploitationForPrivilegeEscalation,
                 exploitHighVulnerabilityPublicFacingApplication,
                 exploitMediumVulnerabilityPublicFacingApplication,
                 exploitLowVulnerabilityPublicFacingApplication,
@@ -872,6 +872,9 @@ category Software {
             ->  processInjection
 
         | collectHashInformation
+            ->  attemptBruteForce, // leads to Brute Force attack  
+                windows.passTheHash, // leads to Pass the Hash attack
+                windows.networkSniffing // leads to Network Sniffing attack
 
         & commonlyUsedPortsConnection
             user info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
@@ -889,7 +892,7 @@ category Software {
                 bypassHostIntrusionPrevention,
                 bypassSignatureBasedDetection
 
-        & _credentialDumping @hidden
+        | attemptCredentialDumping @hidden
             ->  credentialDumping,
                 systemOwnerOrUserDiscovery
 
@@ -1235,7 +1238,10 @@ category Software {
         & bruteForceWithPasswordPolicy
             ->  userAccount.userCredentials // the probability distribution should be so that it has higher chance of success than the bruteforce attack
 
-        & bruteForce [Exponential(0.3)]
+        & attemptBruteForce @hidden
+            ->  bruteForce
+
+        | bruteForce [Exponential(0.3)]
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper."
             ->  userAccount.userCredentials           
@@ -1365,12 +1371,12 @@ category Software {
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
             ->  _validAccounts,
-                _credentialDumping,
+                attemptCredentialDumping,
                 inhibitSystemRecovery,
                 windows.windowsAdminShares
 
         & dataCompressed [Bernoulli(0.75)]
-            developer info: "TTC assumed instant. For more info see "enterpriselang probabilities/dataCompressed.md". Sources used for distribution: https://cloud.google.com/security/data-loss-prevention/preventing-data-exfiltration, https://targetedthreats.net/media/4-Glossary.pdf, https://www.wiley.com/en-se/The+Art+of+Memory+Forensics%3A+Detecting+Malware+and+Threats+in+Windows%2C+Linux%2C+and+Mac+Memory-p-9781118824993 pg. 560"
+            developer info: "TTC assumed instant. For more info see enterpriselang probabilities/dataCompressed.md. Sources used for distribution: https://cloud.google.com/security/data-loss-prevention/preventing-data-exfiltration, https://targetedthreats.net/media/4-Glossary.pdf, https://www.wiley.com/en-se/The+Art+of+Memory+Forensics%3A+Detecting+Malware+and+Threats+in+Windows%2C+Linux%2C+and+Mac+Memory-p-9781118824993 pg. 560"
             ->  dataEncrypted,
                 automatedExfiltration,
                 computer.exfiltrationOverPhysicalMedium,
@@ -1441,7 +1447,7 @@ category Software {
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             user info: "https://attack.mitre.org/mitigations/M1036/" 
             developer info: "Binary probability relation."
-            ->  bruteForce
+            ->  attemptBruteForce
 
         # behaviorPreventionOnEndpoint
             user info: "https://attack.mitre.org/mitigations/M1040/"
@@ -1463,7 +1469,7 @@ category Software {
 
         # multiFactorAuthentication
             user info: "https://attack.mitre.org/mitigations/M1032/" 
-            ->  bruteForce,
+            ->  attemptBruteForce,
                 networkSniffing,
                 validAccounts,
                 service.browser.stealWebSessionCookie,
@@ -1474,7 +1480,7 @@ category Software {
 
         # passwordPolicies 
             user info: "https://attack.mitre.org/mitigations/M1027/" 
-            ->  bruteForce,
+            ->  attemptBruteForce,
                 credentialDumping,
                 credentialsInFiles,
                 credentialsInRegistry,
@@ -1606,7 +1612,7 @@ category Software {
             ->  firmwareCorruption,
                 service.browser.driveByCompromise,
                 service.exploitationForCredentialAccess,
-                service.exploitationForPrivilegeEscalation,
+                service.attemptExploitationForPrivilegeEscalation,
                 service.exploitationOfRemoteServices,
                 computer.router.internalNetwork.webShell  
 
@@ -1619,7 +1625,7 @@ category Software {
             ->  service.browser.driveByCompromise,
                 service.exploitationForClientExecution,
                 service.exploitationForCredentialAccess,
-                service.exploitationForPrivilegeEscalation,
+                service.attemptExploitationForPrivilegeEscalation,
                 service.exploitationOfRemoteServices,
                 service.exploitHighVulnerabilityPublicFacingApplication,
                 service.exploitMediumVulnerabilityPublicFacingApplication,
@@ -1661,7 +1667,7 @@ category Software {
                 windows.windowsManagementInstrumentationEventSubscription,
                 windows.winlogonHelperDLL,
                 windows.os.accountAccessRemoval,
-                windows.os._credentialDumping,
+                windows.os.attemptCredentialDumping,
                 windows.os._credentialsInFiles,
                 windows.os.dataEncryptedForImpact,
                 windows.os.fileAndDirectoryDiscovery,
@@ -1730,11 +1736,6 @@ category Software {
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
             ->  adminAccount.windowsAdmin.bypassWindowsUserAccountControl
-
-        | collectHashInformation    
-            +>  networkSniffing, // leads to Network Sniffing attack
-                bruteForce, // leads to Brute Force attack   
-                passTheHash // leads to Pass the Hash attack 
 
         & _componentObjectModelAndDistributedCOM @hidden [Exponential(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
@@ -1813,7 +1814,7 @@ category Software {
                
         | executeCode 
             +>  componentFirmware,
-                service._exploitationForPrivilegeEscalation,
+                service.exploitationForPrivilegeEscalation,
                 computer.infectedWindowsComputer         
 
         & executionThroughAPI
@@ -1863,7 +1864,7 @@ category Software {
             user info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
             ->  bypassAutorunsAnalysis,
                 persistence,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         | attemptIndicatorBlocking @hidden
             ->  indicatorBlocking
@@ -1901,7 +1902,7 @@ category Software {
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
             ->  bruteForce,
                 persistence,
-                service._exploitationForPrivilegeEscalation,
+                service.exploitationForPrivilegeEscalation,
                 _validAccounts           
 
         & lLMNR_NBT_NS_PoisoningAndRelay
@@ -1940,7 +1941,7 @@ category Software {
 
         & newService
             user info: "Adversaries may install a new service that can be configured to execute at startup by using utilities to interact with services or by directly modifying the Registry."
-            ->  service._exploitationForPrivilegeEscalation, // an adversary may also use a service to escalate privileges from administrator to SYSTEM
+            ->  service.exploitationForPrivilegeEscalation, // an adversary may also use a service to escalate privileges from administrator to SYSTEM
                 masquerading // benign software with Masquerading
 
         | attemptNtfsFileAttributes @hidden
@@ -1970,7 +1971,7 @@ category Software {
 
         & passTheTicket
             user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
-            ->  _credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
+            ->  attemptCredentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
                 computer.router.internalNetwork.c2Connexion // gain remote access 
 
         & pathInterception [Bernoulli(0.0352)]
@@ -1984,7 +1985,7 @@ category Software {
             user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
             ->  bypassHostForensicAnalysis,
                 bypassHeuristicDetection,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         | pathEnvironmentVariableMisconfiguration 
             user info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
@@ -2010,7 +2011,7 @@ category Software {
 
         | powerShellProfile
             user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."   
-            ->  service._exploitationForPrivilegeEscalation,
+            ->  service.exploitationForPrivilegeEscalation,
                 persistence
 
         | processDoppelganging
@@ -2113,7 +2114,7 @@ category Software {
 
         & _serviceRegistryPermissionsWeakness @hidden
             user info: "When the service starts or is restarted, then the adversary-controlled program will execute, allowing the adversary to gain persistence and/or privilege escalation to the account context the service is set to execute."
-            ->  service._exploitationForPrivilegeEscalation
+            ->  service.exploitationForPrivilegeEscalation
 
         | attemptSharedWebroot @hidden
             ->  sharedWebroot
@@ -2301,11 +2302,11 @@ category Software {
 
         & userAccessTokenManipulation
             user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
-            ->  service._exploitationForPrivilegeEscalation
+            ->  service.exploitationForPrivilegeEscalation
 
         & adminAccessTokenManipulation
             user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
-            ->  service._exploitationForPrivilegeEscalation
+            ->  service.exploitationForPrivilegeEscalation
         
         & userSecuritySoftwareDiscovery
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
@@ -2424,7 +2425,7 @@ category Software {
 
         # credentialAccessProtection
             user info: "https://attack.mitre.org/mitigations/M1043/"
-            ->  _credentialDumping,
+            ->  credentialDumping,
                 lSASS_Driver
 
         # executionPrevention
@@ -2483,7 +2484,7 @@ category Software {
         # privilegedProcessIntegrity  
             user info: "https://attack.mitre.org/mitigations/M1025/"
             ->  authenticationPackage,
-                _credentialDumping,
+                credentialDumping,
                 securitySupportProvider 
 
         # privilegedAccountManagement [Bernoulli(0.30)]
@@ -2637,7 +2638,7 @@ category Software {
 
         & setuidAndSetgid
             user info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user's context."
-            ->  service._exploitationForPrivilegeEscalation,
+            ->  service.exploitationForPrivilegeEscalation,
                 persistence  
 
         | source
@@ -2654,14 +2655,14 @@ category Software {
 
         & sudo
             user info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
-            ->  service._exploitationForPrivilegeEscalation
+            ->  service.exploitationForPrivilegeEscalation
 
         | _sudoCaching @hidden
             ->  sudoCaching
 
         & sudoCaching
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
-            ->  service._exploitationForPrivilegeEscalation 
+            ->  service.exploitationForPrivilegeEscalation 
 
         | _systemdService @hidden
             ->  systemdService
@@ -2776,7 +2777,7 @@ category Software {
         & dylibHijacking [Bernoulli(0.16)] 
             user info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
             developer info: "Based on the results for dLLSearchOrderHijacking.  Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
-            ->  service._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
+            ->  service.exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
 
         & elevatedExecutionWithPrompt
             user info: "Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials."
@@ -2786,7 +2787,7 @@ category Software {
         & emond
             user info: "Adversaries may use Event Monitor Daemon (emond) to establish persistence by scheduling malicious commands to run on predictable event triggers."
             ->  persistence,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         | executeCode 
             +>  computer.infectedMacOSComputer   
@@ -2835,7 +2836,7 @@ category Software {
         & launchDaemon
             user info: "Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root. Adversary can modify a current Launch Daemon's executable and gain persistence or Privilege Escalation."
             ->  persistence,
-                service._exploitationForPrivilegeEscalation         
+                service.exploitationForPrivilegeEscalation         
 
         & lC_LOAD_DYLIB_Addition
             user info: "Adversaries can remediate the issue that any changes will invalidate digital signatures on binaries because the binary is being modified by simply removing the LC_CODE_SIGNATURE command from the binary so that the signature isn't checked at load time."
@@ -2886,7 +2887,7 @@ category Software {
 
         & setuidAndSetgid
             user info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user's context."
-            ->  service._exploitationForPrivilegeEscalation,
+            ->  service.exploitationForPrivilegeEscalation,
                 persistence
 
         | source
@@ -2902,14 +2903,14 @@ category Software {
             
         & sudo
             user info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
-            ->  service._exploitationForPrivilegeEscalation  
+            ->  service.exploitationForPrivilegeEscalation  
 
         | _sudoCaching @hidden
             ->  sudoCaching
             
         & sudoCaching
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
-            ->  service._exploitationForPrivilegeEscalation
+            ->  service.exploitationForPrivilegeEscalation
 
         | trap [Exponential(0.1)]
             developer info: "Arbitrary distribution. See trap.md file."
@@ -2952,7 +2953,7 @@ category Software {
         & startupItems
             user info: "An adversary can create the appropriate folders/files in the StartupItems directory to register their own persistence mechanism."
             ->  persistence,
-                service._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack 
+                service.exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack 
 
         # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
