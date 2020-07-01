@@ -2160,9 +2160,9 @@ category Software {
         | attemptSoftwarePacking @hidden
             ->  softwarePacking
 
-        & softwarePacking [Bernoulli(0.26)]
+        & softwarePacking [TruncatedNormal(0.56784,0.25219)]
             user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
-            developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf"
+            developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf, https://www.researchgate.net/publication/301902892_Entropy_analysis_to_classify_unknown_packing_algorithms_for_malware_detection, https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://www.lastline.com/labsblog/malware-packing/, www.blackhat.com/presentations/bh-usa-06/BH-US-06-Morgenstern.pdf"
             ->  indicatorRemovalFromTools,
                 bypassSignatureBasedDetection,
                 bypassAntivirus,
