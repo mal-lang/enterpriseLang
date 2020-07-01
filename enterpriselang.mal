@@ -2061,8 +2061,9 @@ category Software {
                 codeProxyExecution,
                 _regsvr32
 
-        & remoteDesktopProtocol
+        & remoteDesktopProtocol [Bernoulli(0.5561)*Exponential(480)]
             user info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
+            developer info: "Sources used for distribution result: https://www.fireeye.com/blog/threat-research/2020/02/mtrends-2020-insights-from-the-front-lines.html, https://duo.com/decipher/attackers-combine-attacks-against-rdp-with-ransomware, https://www.securitymagazine.com/articles/90983-percent-of-organizations-exhibit-malicious-remote-desktop-protocol-rdp-behaviors, https://medium.com/enterprise-nxt/2020-ransomware-attacks-still-mostly-through-unsecured-rdp-b167fefcd490, https://www.youtube.com/watch?v=Olgso_oXQa8"
             ->  _remoteDesktopProtocol,
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
