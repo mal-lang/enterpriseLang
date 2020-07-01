@@ -35,7 +35,7 @@ public class TestSpearphishing extends EnterpriseLangTest {
         }
     }
 
-    @Test
+    @Test // Test an adversary can compromise a computer by spearphishingAttachment.
     public void testwithSpearphishingAttachment() {
             var model = new SpearphishingAttachmentModel();
 
@@ -80,7 +80,7 @@ public class TestSpearphishing extends EnterpriseLangTest {
         }
     }
 
-    @Test
+    @Test // Test an adversary can compromise a computer by spearphishingLink.
     public void testwithSpearphishingLink() {
             var model = new SpearphishingLinkModel();
 
@@ -127,7 +127,7 @@ public class TestSpearphishing extends EnterpriseLangTest {
         }
     }
 
-    @Test
+    @Test // Test an adversary can compromise a computer by spearphishingViaService.
     public void testwithSpearphishingViaService() {
             var model = new SpearphishingViaServiceModel();
 
