@@ -13,7 +13,7 @@ category Person {
                 computer.os.service.thirdpartySoftware.applicationAccessToken,
                 computer.os.service.exploitationForClientExecution
 
-        & spearphishingAttachmentDownload [Bernoulli(0.5)]
+        & spearphishingAttachmentDownload //(0.93)*Exponential(1)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
             ->  attemptUserExecution,
                 computer.os.windows.dynamicDataExchange
@@ -190,6 +190,7 @@ category Software {
                 os.service.attemptExploitationForPrivilegeEscalation,
                 os.service._exploitationOfRemoteServices,
                 os.service.externalRemoteServices,
+                os.service.implantContainerImage,
                 os.service.remoteAccessTools,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware._useThirdpartySoftware,
@@ -253,6 +254,7 @@ category Software {
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
                 os.windows.pathInterception,
+                os.windows.userAccessTokenManipulation,
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
@@ -355,7 +357,6 @@ category Software {
                 os.windows.signedBinaryProxyExecution, 
                 os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
-                os.windows.userAccessTokenManipulation,
                 os.windows.adminAccessTokenManipulation,
                 os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
@@ -526,6 +527,11 @@ category Software {
             user info: "Adversaries may attempt to access the Cloud Instance Metadata API to collect credentials and other sensitive data."
             ->  os.sensitiveDataCollected
 
+        & implantContainerImage //(0.60)*Exponential(180)]
+            user info: "Amazon Web Service (AWS) Amazon Machine Images (AMI), Google Cloud Platform (GCP) Images, and Azure Images as well as popular container runtimes such as Docker can be implanted or backdoored to include malicious code."
+            developer info: "Sources for distribution result: https://www.eweek.com/security/five-security-defenses-every-containerized-application-needs, https://github.com/RhinoSecurityLabs/ccat, https://www.youtube.com/watch?v=12zEXfCxIrk&feature=youtu.be"
+            ->  os.persistence
+
         | serviceInformation 
 
         & userRemoteServicesLogin
@@ -547,8 +553,8 @@ category Software {
 
         | serviceExhaustionFlood
 
-        //| attemptSpearphishingViaService @hidden
-        //    ->  spearphishingViaService
+        | attemptSpearphishingViaService @hidden
+            ->  spearphishingViaService
 
         & spearphishingViaService
             user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
@@ -741,10 +747,10 @@ category Software {
         & spearphishingLink
             user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
             ->  service.os.computer.user.spearphishingLinkClicked
-
+            
         | attemptSpearphishingAttachment @hidden      
             ->  spearphishingAttachment
-
+      
         & spearphishingAttachment
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
             ->  service.os.computer.user.spearphishingAttachmentDownload,
@@ -1144,8 +1150,9 @@ category Software {
                 computer.router.externalNetwork.bypassNetworkIntrusionDetection,
                 computer.router.internalNetwork.bypassNetworkIntrusionDetection 
 
-        | rootkit
+        | rootkit //(0.01255)]
             user info: "Adversaries may use rootkits to hide the presence of programs, files, network connections, services, drivers, and other system components."
+            developer info: "Sources used for distribution: https://www.csoonline.com/article/3222066/how-to-detect-and-remove-a-rootkit-in-windows-10.html, https://investors.fireeye.com/static-files/56c2c6ec-3cdc-4fd2-967e-29205d2e982e, https://intezer.com/blog/linux/hiddenwasp-malware-targeting-linux-systems/"
             ->  modifyAPICalls, 
                 bypassAntivirus,
                 bypassFileMonitoring,
@@ -1368,7 +1375,8 @@ category Software {
                 inhibitSystemRecovery,
                 windows.windowsAdminShares
 
-        & dataCompressed
+        & dataCompressed //(0.75)]
+            developer info: "TTC assumed instant. For more info see enterpriselang probabilities/dataCompressed.md. Sources used for distribution: https://cloud.google.com/security/data-loss-prevention/preventing-data-exfiltration, https://targetedthreats.net/media/4-Glossary.pdf, https://www.wiley.com/en-se/The+Art+of+Memory+Forensics%3A+Detecting+Malware+and+Threats+in+Windows%2C+Linux%2C+and+Mac+Memory-p-9781118824993 pg. 560"
             ->  dataEncrypted,
                 automatedExfiltration,
                 computer.exfiltrationOverPhysicalMedium,
@@ -1409,10 +1417,10 @@ category Software {
             user info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
             ->  service._exploitationOfRemoteServices
 
-        & permissionGroupsDiscovery
+        & permissionGroupsDiscovery //(0.0526)]
             user info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
+            developer info: "Sources for probability result: Red Canary ATT&CK technique percentages (Top 50), https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1069/"
 
-        | persistance
 
         # antivirus //(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
@@ -1510,6 +1518,7 @@ category Software {
                 credentialsInRegistry,
                 service.browser.browserExtensions,
                 service.thirdpartySoftware.stealApplicationAccessToken,
+                service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
                 validAccounts 
@@ -1525,6 +1534,7 @@ category Software {
         # codeSigning //(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/" 
             ->  service.applicationDeploymentSoftware,
+                service.implantContainerImage,
                 masquerading    
 
         # limitHardwareInstallation
@@ -1574,6 +1584,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  credentialsInRegistry,
                 validAccounts,
+                service.implantContainerImage,
                 computer.router.internalNetwork.webShell
 
         # encryptSensitiveInformation 
@@ -1695,7 +1706,8 @@ category Software {
                 os.adminAccount.windowsAdmin.adminRights
 
         & appInitDLLs
-            ->  persistence 
+            ->  persistence,
+                sysAdmin.systemRights
 
         & accessibilityFeatures
             user info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system."
@@ -1723,7 +1735,7 @@ category Software {
         | codeSigningCertificate //(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
-            ->  adminAccount.windowsAdmin.bypassWindowsUserAccountControl 
+            ->  adminAccount.windowsAdmin.bypassWindowsUserAccountControl
 
         & _componentObjectModelAndDistributedCOM @hidden //(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
@@ -1779,6 +1791,7 @@ category Software {
             user info: "Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence."
             developer info: "TTC is extremely low (< 0.00001 seconds) and is excluded. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  bypassProcessWhitelisting,
+                bypassUserAccountControl,
                 sysAdmin.systemRights,
                 userAccount.userRights,
                 adminAccount.windowsAdmin.adminRights,
@@ -1961,8 +1974,9 @@ category Software {
             ->  attemptCredentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
                 computer.router.internalNetwork.c2Connexion // gain remote access 
 
-        & pathInterception
+        & pathInterception //(0.0352)]
             user info: "Adversaries may take advantage of performing path interception: unquoted paths, path environment variable misconfigurations, and search order hijacking."
+            developer info: "Sources used for distribution result: https://content.fireeye.com/m-trends/rpt-m-trends-2020, http://www.hexacorn.com/blog/2016/03/26/beyond-good-ol-run-key-part-37/"
             ->  unquotedPaths,
                 pathEnvironmentVariableMisconfiguration,
                 searchOrderHijacking
@@ -2253,12 +2267,13 @@ category Software {
 
         | hypervisor           
             user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
-            ->  persistance
+            ->  persistence
 
         | captureAPICalls   
 
-        & logonScripts
+        & logonScripts //(288)]
             user info: "An adversary can then create a logon session for the user using the LogonUser function. The function will return a copy of the new session's access token and the adversary can use SetThreadToken to assign the token to a thread."
+            developer info: "Sources for probability distribution: http://www.hexacorn.com/blog/2014/11/14/beyond-good-ol-run-key-part-18/, "
             ->  userAccessTokenManipulation,
                 adminAccessTokenManipulation,
                 adminAccount.windowsAdmin.adminRights   
@@ -2302,7 +2317,9 @@ category Software {
 
         & bypassUserAccountControl //(0.277)]
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
-            ->  executeCode
+            ->  executeCode,
+                adminAccount.adminRights
+
        
         | peripheralDeviceDiscovery
             ->  computer.peripheralDeviceDiscovery
@@ -2345,7 +2362,7 @@ category Software {
 
         & bootkit //(0.46)]
             developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx" 
-            ->  persistance
+            ->  persistence
             
         | videoCapture
             ->  computer.collectVideo
@@ -2561,12 +2578,14 @@ category Software {
             +>  applicationShimming, 
                 bypassUserAccountControl,
                 fileSystemPermissionsWeakness,
-                passTheHash   
+                passTheHash
+
     }
 
     asset Linux extends OS {
-        & bootkit
-            ->  persistance
+        & bootkit //(0.46)]
+            developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx"
+            ->  persistence
 
         & _clearCommandHistory @hidden
             ->  clearCommandHistory       
@@ -2755,8 +2774,9 @@ category Software {
         | _dylibHijacking @hidden   
             ->  dylibHijacking 
 
-        & dylibHijacking 
+        & dylibHijacking //(0.16)] 
             user info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
+            developer info: "Based on the results for dLLSearchOrderHijacking.  Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  service.exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
 
         & elevatedExecutionWithPrompt
@@ -3300,10 +3320,6 @@ category Network {
                 router.computer.os.windows.bITSJobs,
                 router.computer.os.linux.portKnocking,
                 router.computer.os.macOS.portKnocking
-
-        # limitAccessToResourceOverNetwork
-            user info: "https://attack.mitre.org/mitigations/M1035/"   
-            ->  router.computer.os.service.externalRemoteServices
 
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             user info: "https://attack.mitre.org/mitigations/M1030/"
