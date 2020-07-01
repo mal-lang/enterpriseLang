@@ -223,7 +223,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1017/"
             developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241"      
             ->  os.service.browser.stealWebSessionCookie,
-                os._credentialDumping,
+                os.credentialDumping,
                 os.credentialsInFiles,
                 os.twoFactorAuthenticationInterception, // remove smart cards when not in use
                 os.windows.inputPrompt,
@@ -296,7 +296,7 @@ category Software {
                 os.adminCommandLineInterface,
                 os.dataDestruction,
                 os.dataEncryptedForImpact,
-                os._credentialDumping,
+                os.attemptCredentialDumping,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
                 os.processDiscovery,
@@ -345,7 +345,7 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  createUserAccount,
-                os._credentialDumping,
+                os.credentialDumping,
                 os.firmwareCorruption,
                 os.windows.accountManipulation,
                 os.windows.modifyRegistry,
@@ -892,7 +892,7 @@ category Software {
                 bypassHostIntrusionPrevention,
                 bypassSignatureBasedDetection
 
-        & _credentialDumping @hidden
+        | attemptCredentialDumping @hidden
             ->  credentialDumping,
                 systemOwnerOrUserDiscovery
 
@@ -1371,7 +1371,7 @@ category Software {
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
             ->  _validAccounts,
-                _credentialDumping,
+                attemptCredentialDumping,
                 inhibitSystemRecovery,
                 windows.windowsAdminShares
 
@@ -1667,7 +1667,7 @@ category Software {
                 windows.windowsManagementInstrumentationEventSubscription,
                 windows.winlogonHelperDLL,
                 windows.os.accountAccessRemoval,
-                windows.os._credentialDumping,
+                windows.os.attemptCredentialDumping,
                 windows.os._credentialsInFiles,
                 windows.os.dataEncryptedForImpact,
                 windows.os.fileAndDirectoryDiscovery,
@@ -1971,7 +1971,7 @@ category Software {
 
         & passTheTicket
             user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
-            ->  _credentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
+            ->  attemptCredentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
                 computer.router.internalNetwork.c2Connexion // gain remote access 
 
         & pathInterception [Bernoulli(0.0352)]
@@ -2425,7 +2425,7 @@ category Software {
 
         # credentialAccessProtection
             user info: "https://attack.mitre.org/mitigations/M1043/"
-            ->  _credentialDumping,
+            ->  credentialDumping,
                 lSASS_Driver
 
         # executionPrevention
@@ -2484,7 +2484,7 @@ category Software {
         # privilegedProcessIntegrity  
             user info: "https://attack.mitre.org/mitigations/M1025/"
             ->  authenticationPackage,
-                _credentialDumping,
+                credentialDumping,
                 securitySupportProvider 
 
         # privilegedAccountManagement [Bernoulli(0.30)]
