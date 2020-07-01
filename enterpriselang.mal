@@ -134,7 +134,7 @@ category Software {
                 os.windows.templateInjection,
                 os.windows.timestomp,
                 os.windows.trustedDeveloperUtilities,
-                os.windows.userAccessTokenManipulation,
+                os.windows.accessTokenManipulation,
                 os.windows.userSecuritySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows.videoCapture,
@@ -254,7 +254,7 @@ category Software {
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
                 os.windows.pathInterception,
-                os.windows.userAccessTokenManipulation,
+                os.windows.accessTokenManipulation,
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
@@ -357,7 +357,7 @@ category Software {
                 os.windows.signedBinaryProxyExecution, 
                 os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
-                os.windows.adminAccessTokenManipulation,
+                os.windows.accessTokenManipulation,
                 os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
@@ -383,7 +383,7 @@ category Software {
         | adminRights
             user info: "WindowsAdmin account is equivalent to Unix Root account."
             +>  os.windows.accessibilityFeatures,
-                os.windows.adminAccessTokenManipulation,
+                os.windows.accessTokenManipulation,
                 os.windows.adminSecuritySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows._appCertDLLs,
@@ -2275,8 +2275,7 @@ category Software {
         & logonScripts [Exponential(288)]
             user info: "An adversary can then create a logon session for the user using the LogonUser function. The function will return a copy of the new session's access token and the adversary can use SetThreadToken to assign the token to a thread."
             developer info: "Sources for probability distribution: http://www.hexacorn.com/blog/2014/11/14/beyond-good-ol-run-key-part-18/, "
-            ->  userAccessTokenManipulation,
-                adminAccessTokenManipulation,
+            ->  accessTokenManipulation,
                 adminAccount.windowsAdmin.adminRights   
 
         | attemptSystemFirmware @hidden
@@ -2301,12 +2300,9 @@ category Software {
         & networkShareDiscovery
             ->  computer.router.internalNetwork.networkShareDiscovery
 
-        & userAccessTokenManipulation
+        & accessTokenManipulation [Bernoulli(0.20715)]
             user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
-            ->  service.exploitationForPrivilegeEscalation
-
-        & adminAccessTokenManipulation
-            user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
+            developer info: "Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://pentestlab.blog/2017/04/03/token-manipulation/"
             ->  service.exploitationForPrivilegeEscalation
         
         & userSecuritySoftwareDiscovery
