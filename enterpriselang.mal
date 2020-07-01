@@ -1147,8 +1147,9 @@ category Software {
                 computer.router.externalNetwork.bypassNetworkIntrusionDetection,
                 computer.router.internalNetwork.bypassNetworkIntrusionDetection 
 
-        | rootkit
+        | rootkit [Bernoulli(0.01255)]
             user info: "Adversaries may use rootkits to hide the presence of programs, files, network connections, services, drivers, and other system components."
+            developer info: "Sources used for distribution: https://www.csoonline.com/article/3222066/how-to-detect-and-remove-a-rootkit-in-windows-10.html, https://investors.fireeye.com/static-files/56c2c6ec-3cdc-4fd2-967e-29205d2e982e, https://intezer.com/blog/linux/hiddenwasp-malware-targeting-linux-systems/"
             ->  modifyAPICalls, 
                 bypassAntivirus,
                 bypassFileMonitoring,
