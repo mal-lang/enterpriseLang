@@ -17,37 +17,17 @@ Privilege Escalation consists of techniques that adversaries use to gain higher-
 | T1138	|Application Shimming	| The Microsoft Windows Application Compatibility Infrastructure/Framework (Application Shim) was created to allow for backward compatibility of software as the operating system codebase changes over time. For example, the application shimming feature allows developers to apply fixes to applications (without rewriting code) that were created for Windows XP so that it will work with Windows 10. Within the framework, shims are created to act as a buffer between the program (or more specifically, the Import Address Table) and the Windows OS. When a program is executed, the shim cache is referenced to determine if the program requires the use of the shim database (.sdb). If so, the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS.|REVIEW|REVIEW|REVIEW|REVIEW|
 |T1088|	Bypass User Account Control	|Windows User Account Control (UAC) allows a program to elevate its privileges to perform a task under administrator-level permissions by prompting the user for confirmation. The impact to the user ranges from denying the operation under high enforcement to allowing the user to perform the action if they are in the local administrators group and click through the prompt or allowing them to enter an administrator password to complete the action. | REVIEW|REVIEW|User Account Control, privilege account management, audit |Yes|
 | T1038|	DLL Search Order Hijacking| Windows systems use a common method to look for required DLLs to load into a program. Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence. |user/admin/systemRights, searchOrderHijacking|bypassProcessWhitelisting, bypassUserAccountControl, sysAdmin.systemRights, userAccount.userRights, adminAccount.windowsAdmin.adminRights, attemptlSASS_Driver |Audit, executionPrevention, Restrict Library Loading|Yes|
-| T1157	| Dylib Hijacking | macOS and OS X use a common method to look for required dynamic libraries (dylib) to load into a program based on search paths. Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence.|||| 
-
-T1514	Elevated Execution with Prompt	
-Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials. The purpose of this API is to give application developers an easy way to perform operations with root privileges, such as for application installation or updating. This API does not validate that the program requesting root privileges comes from a reputable source or has been maliciously modified. Although this API is deprecated, it still fully functions in the latest releases of macOS. When calling this API, the user will be prompted to enter their credentials but no checks on the origin or integrity of the program are made. The program calling the API may also load world writable files which can be modified to perform malicious behavior with elevated privileges.
-
-T1519	Emond	
-Adversaries may use Event Monitor Daemon (emond) to establish persistence by scheduling malicious commands to run on predictable event triggers. Emond is a Launch Daemon that accepts events from various services, runs them through a simple rules engine, and takes action. The emond binary at /sbin/emond will load any rules from the /etc/emond.d/rules/ directory and take action once an explicitly defined event takes place. The rule files are in the plist format and define the name, event type, and action to take. Some examples of event types include system startup and user authentication. Examples of actions are to run a system command or send an email. The emond service will not launch if there is no file present in the QueueDirectories path /private/var/db/emondClients, specified in the Launch Daemon configuration file at/System/Library/LaunchDaemons/com.apple.emond.plist.
-
-T1068	Exploitation for Privilege Escalation	
-Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Security constructs such as permission levels will often hinder access to information and use of certain techniques, so adversaries will likely need to perform Privilege Escalation to include use of software exploitation to circumvent those restrictions.
-
-T1181	Extra Window Memory Injection	
-Before creating a window, graphical Windows-based processes must prescribe to or register a windows class, which stipulate appearance and behavior (via windows procedures, which are functions that handle input/output of data). Registration of new windows classes can include a request for up to 40 bytes of extra window memory (EWM) to be appended to the allocated memory of each instance of that class. This EWM is intended to store data specific to that window and has specific application programming interface (API) functions to set and get its value.
-
-T1044	File System Permissions Weakness	
-Processes may automatically execute specific binaries as part of their functionality or to perform other actions. If the permissions on the file system directory containing a target binary, or permissions on the binary itself, are improperly set, then the target binary may be overwritten with another binary using user-level permissions and executed by the original process. If the original process and thread are running under a higher permissions level, then the replaced binary will also execute under higher-level permissions, which could include SYSTEM.
-
-T1179	Hooking	
-Windows processes often leverage application programming interface (API) functions to perform tasks that require reusable system resources. Windows API functions are typically stored in dynamic-link libraries (DLLs) as exported functions.
-
-T1183	Image File Execution Options Injection	
-Image File Execution Options (IFEO) enable a developer to attach a debugger to an application. When a process is created, a debugger present in an application’s IFEO will be prepended to the application’s name, effectively launching the new process under the debugger (e.g., “C:\dbg\ntsd.exe -g notepad.exe”).
-
-T1160	Launch Daemon	
-Per Apple’s developer documentation, when macOS and OS X boot up, launchd is run to finish system initialization. This process loads the parameters for each launch-on-demand system-level daemon from the property list (plist) files found in /System/Library/LaunchDaemons and /Library/LaunchDaemons . These LaunchDaemons have property list files which point to the executables that will be launched .
-
-T1050	New Service	
-When operating systems boot up, they can start programs or applications called services that perform background system functions. A service's configuration information, including the file path to the service's executable, is stored in the Windows Registry.
-
-T1502	Parent PID Spoofing	
-Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges. New processes are typically spawned directly from their parent, or calling, process unless explicitly specified. One way of explicitly assigning the PPID of a new process is via the CreateProcess API call, which supports a parameter that defines the PPID to use. This functionality is used by Windows features such as User Account Control (UAC) to correctly set the PPID after a requested elevated process is spawned by SYSTEM (typically via svchost.exe or consent.exe) rather than the current user context.
+| T1157	| Dylib Hijacking | macOS and OS X use a common method to look for required dynamic libraries (dylib) to load into a program based on search paths. Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence.|userRights|exploitation for privilege escalation|restrictFileAndDirectoryPermissions, userAccountManagement|Yes| 
+|T1514	|Elevated Execution with Prompt| Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials. The purpose of this API is to give application developers an easy way to perform operations with root privileges, such as for application installation or updating. This API does not validate that the program requesting root privileges comes from a reputable source or has been maliciously modified. Although this API is deprecated, it still fully functions in the latest releases of macOS. When calling this API, the user will be prompted to enter their credentials but no checks on the origin or integrity of the program are made. The program calling the API may also load world writable files which can be modified to perform malicious behavior with elevated privileges. |userRights|adminRights|executionPrevention|Maybe not (REVIEW)|
+|T1519|	Emond	| Adversaries may use Event Monitor Daemon (emond) to establish persistence by scheduling malicious commands to run on predictable event triggers. Emond is a Launch Daemon that accepts events from various services, runs them through a simple rules engine, and takes action. The emond binary at /sbin/emond will load any rules from the /etc/emond.d/rules/ directory and take action once an explicitly defined event takes place. The rule files are in the plist format and define the name, event type, and action to take. Some examples of event types include system startup and user authentication. Examples of actions are to run a system command or send an email. The emond service will not launch if there is no file present in the QueueDirectories path /private/var/db/emondClients, specified in the Launch Daemon configuration file at/System/Library/LaunchDaemons/com.apple.emond.plist.|adminRights|persistence, exploitation for privilege escalation |diableorRemoveFeatureOrProgram|Yes|
+| T1068|	Exploitation for Privilege Escalation |Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Security constructs such as permission levels will often hinder access to information and use of certain techniques, so adversaries will likely need to perform Privilege Escalation to include use of software exploitation to circumvent those restrictions. |many parents|admin/systemRights, useThirdPartySoftware|Application Isolation and Sandboxing, Exploit Protection, Threat Intelligence Program, Update Software|Yes|
+|T1181	|Extra Window Memory Injection| Before creating a window, graphical Windows-based processes must prescribe to or register a windows class, which stipulate appearance and behavior (via windows procedures, which are functions that handle input/output of data). Registration of new windows classes can include a request for up to 40 bytes of extra window memory (EWM) to be appended to the allocated memory of each instance of that class. This EWM is intended to store data specific to that window and has specific application programming interface (API) functions to set and get its value.|admin/systemRights|processInjection|none|REVIEW|
+|T1044|	File System Permissions Weakness	| Processes may automatically execute specific binaries as part of their functionality or to perform other actions. If the permissions on the file system directory containing a target binary, or permissions on the binary itself, are improperly set, then the target binary may be overwritten with another binary using user-level permissions and executed by the original process. If the original process and thread are running under a higher permissions level, then the replaced binary will also execute under higher-level permissions, which could include SYSTEM. |userRights, adminRights, bypassUAC??|executeCode, admin/systemRights|audit, UAC, User Account Management|Yes|
+| T1179	|Hooking| Windows processes often leverage application programming interface (API) functions to perform tasks that require reusable system resources. Windows API functions are typically stored in dynamic-link libraries (DLLs) as exported functions.|admin/systemRights, rootkit|executeCode, captureAPICalls|none|Yes|
+| T1183	| Image File Execution Options Injection| Image File Execution Options (IFEO) enable a developer to attach a debugger to an application. When a process is created, a debugger present in an application’s IFEO will be prepended to the application’s name, effectively launching the new process under the debugger (e.g., “C:\dbg\ntsd.exe -g notepad.exe”).|admin/systemRights|bypassAutorunsAnalysis, persistence, service._exploitationForPrivilegeEscalation|none|Yes|
+| T1160	 | Launch Daemon | Per Apple’s developer documentation, when macOS and OS X boot up, launchd is run to finish system initialization. This process loads the parameters for each launch-on-demand system-level daemon from the property list (plist) files found in /System/Library/LaunchDaemons and /Library/LaunchDaemons . These LaunchDaemons have property list files which point to the executables that will be launched. |adminrights|presistence, ecploitationforprivilegeescalation |User Account Management|Yes|
+| T1050|	New Service| When operating systems boot up, they can start programs or applications called services that perform background system functions. A service's configuration information, including the file path to the service's executable, is stored in the Windows Registry. |adminRights, serviceexecution|masquerading, exploitationforPrivilegeEscalation|user Account Management|Yes|
+| T1502	| Parent PID Spoofing	| Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges. New processes are typically spawned directly from their parent, or calling, process unless explicitly specified. One way of explicitly assigning the PPID of a new process is via the CreateProcess API call, which supports a parameter that defines the PPID to use. This functionality is used by Windows features such as User Account Control (UAC) to correctly set the PPID after a requested elevated process is spawned by SYSTEM (typically via svchost.exe or consent.exe) rather than the current user context. |adminRights|bypassHostForensicAnalysis,   bypassHeuristicDetection, service._exploitationForPrivilegeEscalation|none|REVIEW|
 
 T1034	Path Interception	
 Path interception occurs when an executable is placed in a specific path so that it is executed by an application instead of the intended target. One example of this was the use of a copy of cmd in the current working directory of a vulnerable application that loads a CMD or BAT file with the CreateProcess function.
@@ -152,7 +132,7 @@ This then needs a probability distribution.
 
 To keep shims secure, Windows designed them to run in user mode so they cannot modify the kernel and you must have administrator privileges to install a shim. However, certain shims can be used to Bypass User Account Control (UAC) (RedirectEXE), inject DLLs into processes (InjectDLL), disable Data Execution Prevention (DisableNX) and Structure Exception Handling (DisableSEH), and intercept memory addresses (GetProcAddress). *Similar to Hooking*, utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc.
 
-This one looks much more complex than it currently is in the entreprise.mal and needs to be reviewed.
+This one looks much more complex than it currently is in the entreprise.mal and needs to be reviewed. BypassExecutionPrevention?
 
 ## Bypass user Account Control (needs review)
 
@@ -173,3 +153,102 @@ A common method is to see what dylibs an application uses, then plant a maliciou
 If the program is configured to run at a higher privilege level than the current user, then when the dylib is loaded into the application, the dylib will also run at that elevated level. This can be used by adversaries as a privilege escalation technique.
 
 This technique is similar to *DLL Search Order Hijacking*, on macOS and OS X. We'll assume that the probability distribution for dylibHijacking is the same as the one for DLL Search Order Hijacking.
+
+## Elevated Execution with Prompt (needs review)
+
+Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials.The purpose of this API is to give application developers an easy way to perform operations with root privileges, such as for application installation or updating. This API does not validate that the program requesting root privileges comes from a reputable source or has been maliciously modified. Although this API is deprecated, it still fully functions in the latest releases of macOS. *When calling this API, the user will be prompted to enter their credentials* but no checks on the origin or integrity of the program are made. The program calling the API may also load world writable files which can be modified to perform malicious behavior with elevated privileges.
+
+Adversaries may abuse AuthorizationExecuteWithPrivileges to obtain root privileges in order to install malicious software on victims and install *persistence* mechanisms. This technique may be combined with *Masquerading* to trick the user into granting escalated privileges to malicious code. This technique has also been shown to work by modifying legitimate programs present on the machine that make use of this API.
+
+This suggests that the masquerading technique may be used before calling the API in order to execute malicious code with privilege. Masquerading should then be a parent for this technique. Persistence might be a child too.
+
+This needs review.
+
+## Emond (needs)
+
+Adversaries may abuse this service by writing a rule to execute commands when a defined event occurs, such as system start up or user authentication. Adversaries may also be able to escalate privileges from administrator to root as the emond service is executed with root privileges by the Launch Daemon service.
+
+This at least needs a time distribution. 
+
+## Exploitation For Privilege Escalation 
+
+*Exploitation of a software vulnerability* occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Security constructs such as permission levels will often hinder access to information and use of certain techniques, so adversaries will likely need to perform Privilege Escalation to include use of software exploitation to circumvent those restrictions.
+
+When initially gaining access to a system, an adversary may be operating within a lower privileged process which will prevent them from accessing certain resources on the system. Vulnerabilities may exist, usually in operating system components and software commonly running at higher permissions, that can be exploited to gain higher levels of access on the system. This could enable someone to move from unprivileged or user level permissions to SYSTEM or root permissions depending on the component that is vulnerable. This may be a necessary step for an adversary compromising a endpoint system that has been properly configured and limits other privilege escalation methods.
+
+This is the general technique that is the final goal of this tactic. This doesn't need a probability distribution, all the techniques leading to it do however.
+
+## Extra Window Memory Injection (needs review)
+
+Although small, the EWM is large enough to store a 32-bit pointer and is often used to point to a windows procedure. Malware may possibly utilize this memory location in part of an attack chain that includes writing code to shared sections of the process’s memory, placing a pointer to the code in EWM, then invoking execution by returning execution control to the address in the process’s EWM.
+
+Execution granted through EWM injection may take place in the address space of a separate live process. *Similar to Process Injection*, this may allow access to both the target process's memory and possibly elevated privileges. Writing payloads to shared sections also avoids the use of highly monitored API calls such as WriteProcessMemory and CreateRemoteThread. More sophisticated malware samples may also potentially bypass protection mechanisms such as data execution prevention (DEP) by triggering a combination of windows procedures and other system functions that will rewrite the malicious payload inside an executable portion of the target process.
+
+Process Injection is the only child but according to the mitre description it's not and there are others.
+
+This needs review.
+
+## File System Permission Weakness
+
+persistence might be a child.
+
+This needs a probability distribution (TTC too if persistence) and maybe some review.
+
+About Executable Installers
+
+*This behavior is related to and may take advantage of DLL Search Order Hijacking*. Some installers may also require elevated privileges that will result in privilege escalation when executing adversary controlled code. *This behavior is related to Bypass User Account Control*. Several examples of this weakness in existing common installers have been reported to software vendors.
+
+## Hooking
+
+Hooking involves redirecting calls to these functions and can be implemented via:
+
+Hooks procedures, which intercept and execute designated code in response to events such as messages, keystrokes, and mouse inputs.
+Import address table (IAT) hooking, which use modifications to a process’s IAT, where pointers to imported API functions are stored.
+Inline hooking, which overwrites the first bytes in an API function to redirect code flow. 
+*Similar to Process Injection*, adversaries may use hooking to load and execute malicious code within the context of another process, masking the execution while also allowing access to the process's memory and *possibly elevated privileges*. Installing hooking mechanisms *may also provide Persistence via continuous invocation when the functions are called through normal use*.
+
+Malicious hooking mechanisms may also *capture API calls* that include parameters that reveal user authentication credentials for Credential Access. 
+
+Hooking is commonly *utilized by Rootkits* to conceal files, processes, Registry keys, and other objects in order *to hide* malware and associated behaviors
+
+This needs a probability distribution, might need a small review too.
+
+## IFEO injection
+
+*Similar to Process Injection*, these values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer. Installing IFEO mechanisms may also provide Persistence via continuous invocation.
+
+Malware may also use IFEO for Defense Evasion by registering invalid debuggers that redirect and effectively disable various system and security applications.
+
+This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
+
+This needs a probability distribution.
+
+This is the third technique I believe that is "similar to process injection". Maybe we could assume that all those techniques have the same probability (at least as a first approximation).
+
+## Launch Daemon
+
+Adversaries may install a new launch daemon that can be configured to execute at startup by using launchd or launchctl to load a plist into the appropriate directories. The daemon name may be disguised by using a name from a related operating system or benign software. Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root.
+
+The plist file permissions must be root:wheel, but the script or program that it points to has no such requirement. So, it is possible for poor configurations to allow an adversary to modify a current Launch Daemon’s executable and gain persistence or Privilege Escalation.
+
+This should have a TTC (persistence) and prevalence (rather low according to the MITRE description)
+
+REVIEW link with lanchd and launchctl
+
+## New Service  
+
+Masquerading might be a parent rather than a child. serviceExecution might be a child rather than a parent.
+
+This needs a probability distribution.
+
+Link with Launch Daemon and Launch ctl? (CAPEC)
+
+## Parent PID spoofing 
+
+This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
+
+Adversaries may abuse these mechanisms to evade defenses, such as those blocking processes spawning directly from Office documents, and analysis targeting unusual/potentially malicious parent-child process relationships, such as spoofing the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment. *This spoofing could be executed via VBA Scripting within a malicious Office document or any code that can perform Execution through API.*
+
+Explicitly assigning the PPID may also enable Privilege Escalation (given appropriate access rights to the parent process). For example, an adversary in a privileged user context (i.e. administrator) may spawn a new process and assign the parent as a process running as SYSTEM (such as lsass.exe), causing the new process to be elevated via the inherited access token.
+
+This needs REVIEW.
