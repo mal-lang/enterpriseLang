@@ -134,7 +134,7 @@ category Software {
                 os.windows.templateInjection,
                 os.windows.timestomp,
                 os.windows.trustedDeveloperUtilities,
-                os.windows.accessTokenManipulation,
+                os.windows.attemptAccessTokenManipulation,
                 os.windows.securitySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows.videoCapture,
@@ -253,7 +253,7 @@ category Software {
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
                 os.windows.pathInterception,
-                os.windows.accessTokenManipulation,
+                os.windows.attemptAccessTokenManipulation,
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
@@ -356,7 +356,7 @@ category Software {
                 os.windows.signedBinaryProxyExecution, 
                 os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
-                os.windows.accessTokenManipulation,
+                os.windows.attemptAccessTokenManipulation,
                 os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
@@ -381,13 +381,13 @@ category Software {
     asset WindowsAdmin extends AdminAccount {
         | adminRights
             user info: "WindowsAdmin account is equivalent to Unix Root account."
-            +>  os.windows.accessibilityFeatures,
-                os.windows.accessTokenManipulation,
+            +>  os.windows.attemptAccessibilityFeatures,
+                os.windows.attemptAccessTokenManipulation,
                 os.windows.securitySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows._appCertDLLs,
                 os.windows.appInitDLLs,
-                os.windows._applicationShimming,
+                os.windows.attemptApplicationShimming,
                 os.windows.authenticationPackage,
                 os.windows._bITSJobs,
                 os.windows.bootkit,                                          
@@ -443,12 +443,6 @@ category Software {
                 os.windows.winlogonHelperDLL
 
         | adminCredentials
-
-        | bypassWindowsUserAccountControl
-            ->  os.windows.applicationShimming,
-                os.windows.fileSystemPermissionsWeakness,
-                os.windows.passTheHash,
-                os.service.thirdpartySoftware.trustedRelationship
 
         # multiFactorAuthentication
             +>  os.windows.accountManipulation       
@@ -1707,11 +1701,13 @@ category Software {
             ->  persistence,
                 sysAdmin.systemRights
 
-        & accessibilityFeatures
+        & attemptAccessibilityFeatures @hidden
+            ->  accessibilityFeatures
+
+        | accessibilityFeatures
             user info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system."
-            ->  executeCode,
-                sysAdmin.systemRights,
-                _remoteDesktopProtocol 
+            ->  persistence,
+                sysAdmin.systemRights
 
         & _bITSJobs @hidden
             ->  bITSJobs
@@ -1733,7 +1729,7 @@ category Software {
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
-            ->  adminAccount.windowsAdmin.bypassWindowsUserAccountControl
+            ->  bypassUserAccountControl
 
         & _componentObjectModelAndDistributedCOM @hidden [Exponential(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
@@ -2060,15 +2056,10 @@ category Software {
         & remoteDesktopProtocol [Bernoulli(0.5561)*Exponential(480)]
             user info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
             developer info: "Sources used for distribution result: https://www.fireeye.com/blog/threat-research/2020/02/mtrends-2020-insights-from-the-front-lines.html, https://duo.com/decipher/attackers-combine-attacks-against-rdp-with-ransomware, https://www.securitymagazine.com/articles/90983-percent-of-organizations-exhibit-malicious-remote-desktop-protocol-rdp-behaviors, https://medium.com/enterprise-nxt/2020-ransomware-attacks-still-mostly-through-unsecured-rdp-b167fefcd490, https://www.youtube.com/watch?v=Olgso_oXQa8"
-            ->  _remoteDesktopProtocol,
+            ->  accessibilityFeatures,
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
                 graphicalUserInterface
-
-        & _remoteDesktopProtocol @hidden
-            developer info: "This is a helper attack step. It requires all its parent attack steps to compromise - Accessibility Features when connected over Remote Desktop Protocol will cause the replaced file to be executed with SYSTEM privileges."
-            ->  persistence,
-                sysAdmin.systemRights  
 
         & replicationThroughRemovableMedia [Bernoulli(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
@@ -2299,11 +2290,25 @@ category Software {
         & networkShareDiscovery
             ->  computer.router.internalNetwork.networkShareDiscovery
 
-        & accessTokenManipulation [Bernoulli(0.20715)]
+        & attemptAccessTokenManipulation @hidden
+            ->  accessTokenManipulation
+
+        | accessTokenManipulation [Bernoulli(0.20715)]
             user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
             developer info: "Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://pentestlab.blog/2017/04/03/token-manipulation/"
+            ->  tokenImpersonationOrTheft,
+                createProcessWithAToken,
+                makeAndImpersonateToken
+
+        | tokenImpersonationOrTheft
             ->  service.exploitationForPrivilegeEscalation
         
+        | createProcessWithAToken 
+            ->  service.exploitationForPrivilegeEscalation
+
+        | makeAndImpersonateToken
+            ->  service.exploitationForPrivilegeEscalation
+
         & securitySoftwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
             developer info: "TTC assumed instant. Sources used for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
@@ -2311,9 +2316,7 @@ category Software {
 
         & bypassUserAccountControl [Bernoulli(0.277)]
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
-            ->  executeCode,
-                adminAccount.adminRights
-
+            ->  service.exploitationForPrivilegeEscalation
        
         | peripheralDeviceDiscovery
             ->  computer.peripheralDeviceDiscovery
@@ -2330,15 +2333,14 @@ category Software {
             user info: "Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
             ->  dataCollected
         
-        | _applicationShimming @hidden
+        & attemptApplicationShimming @hidden
             ->  applicationShimming
             
-        & applicationShimming
+        | applicationShimming
             user info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
-            ->  persistence,
-                userAccount.userRights,
-                adminAccount.adminRights,
-                bypassUserAccountControl // certain shims can be used to Bypass User Account Control 
+            ->  persistence, // use application shim databases for persistence
+                hooking, // the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS
+                bypassUserAccountControl // certain shims can be used to Bypass User Account Control (UAC)
 
         & authenticationPackage
             user info: "Adversaries can use Windows Authentication Packages for persistence for persistence."
@@ -2424,7 +2426,7 @@ category Software {
 
         # executionPrevention
             user info: "https://attack.mitre.org/mitigations/M1038/"
-            +>  accessibilityFeatures,
+            +>  attemptAccessibilityFeatures,
                 securitySoftwareDiscovery,
                 appCertDLLs,
                 appInitDLLs,
@@ -2562,13 +2564,13 @@ category Software {
         # updateSoftware [Bernoulli(0.34)]
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
-                applicationShimming,
+                attemptApplicationShimming,
                 officeApplicationStartup,
                 passTheHash
         
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
-            +>  applicationShimming, 
+            +>  attemptApplicationShimming, 
                 bypassUserAccountControl,
                 fileSystemPermissionsWeakness,
                 passTheHash
