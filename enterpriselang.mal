@@ -135,7 +135,7 @@ category Software {
                 os.windows.timestomp,
                 os.windows.trustedDeveloperUtilities,
                 os.windows.accessTokenManipulation,
-                os.windows.userSecuritySoftwareDiscovery,
+                os.windows.securitySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows.videoCapture,
                 os.windows.windowsManagementInstrumentation,
@@ -175,7 +175,6 @@ category Software {
                 os.macOS.portKnocking,
                 os.macOS.spaceAfterFileName,
                 os.macOS.networkShareDiscovery,
-                os.macOS.userSecuritySoftwareDiscovery,
                 os.macOS.videoCapture,
                 os.macOS.reopenedApplications,
                 os.macOS.setuidAndSetgid,
@@ -384,7 +383,7 @@ category Software {
             user info: "WindowsAdmin account is equivalent to Unix Root account."
             +>  os.windows.accessibilityFeatures,
                 os.windows.accessTokenManipulation,
-                os.windows.adminSecuritySoftwareDiscovery,
+                os.windows.securitySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows._appCertDLLs,
                 os.windows.appInitDLLs,
@@ -467,7 +466,7 @@ category Software {
                 os.linux._bash_profileAndBashrc,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
-                os.macOS.adminSecuritySoftwareDiscovery,
+                os.macOS.securitySoftwareDiscovery,
                 os.macOS._bash_profileAndBashrc,
                 os.macOS.emond,
                 os.macOS.keychainCollection,
@@ -2305,11 +2304,9 @@ category Software {
             developer info: "Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://pentestlab.blog/2017/04/03/token-manipulation/"
             ->  service.exploitationForPrivilegeEscalation
         
-        & userSecuritySoftwareDiscovery
+        & securitySoftwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            ->  virtualizationOrSandboxEvasion
-        
-        & adminSecuritySoftwareDiscovery
+            developer info: "TTC assumed instant. Sources used for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
             ->  virtualizationOrSandboxEvasion
 
         & bypassUserAccountControl [Bernoulli(0.277)]
@@ -2428,7 +2425,7 @@ category Software {
         # executionPrevention
             user info: "https://attack.mitre.org/mitigations/M1038/"
             +>  accessibilityFeatures,
-                adminSecuritySoftwareDiscovery,
+                securitySoftwareDiscovery,
                 appCertDLLs,
                 appInitDLLs,
                 cmstp,
@@ -2449,7 +2446,6 @@ category Software {
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
                 trustedDeveloperUtilities,
-                userSecuritySoftwareDiscovery,
                 winlogonHelperDLL,
                 xslScriptProcessing,
                 computer.router.internalNetwork.networkSharedDrive.taintSharedContent
@@ -2925,11 +2921,9 @@ category Software {
         & networkShareDiscovery
             ->  computer.router.internalNetwork.networkShareDiscovery
 
-        & userSecuritySoftwareDiscovery
+        & securitySoftwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            ->  service._exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
-
-        & adminSecuritySoftwareDiscovery
+            developer info: "TTC Assumed instant. Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
             ->  service._exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
         | windowsManagementInstrumentation
@@ -2974,14 +2968,13 @@ category Software {
                 sshHijacking
 
         # executionPrevention
-            +>  adminSecuritySoftwareDiscovery,
+            +>  securitySoftwareDiscovery,
                 elevatedExecutionWithPrompt,
                 gatekeeperBypass,
                 hiddenWindow,
                 kernelModulesAndExtensions,
                 lC_LOAD_DYLIB_Addition,
-                networkShareDiscovery,
-                userSecuritySoftwareDiscovery            
+                networkShareDiscovery         
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             user info: "https://attack.mitre.org/mitigations/M1039/"
