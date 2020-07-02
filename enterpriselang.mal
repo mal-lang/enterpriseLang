@@ -44,6 +44,7 @@ category Software {
                 os.applicationWindowDiscovery,
                 os._automatedCollection,
                 os.attemptBruteForce,
+                os.commandLineInterface,
                 os.compileAfterDelivery,
                 os._credentialsInFiles,
                 os._credentialsInRegistry,
@@ -81,7 +82,6 @@ category Software {
                 os.systemShutdownOrReboot,
                 os.storedDataManipulation,
                 os.remoteFileCopy, 
-                os.userCommandLineInterface,
                 os.windows.accountManipulation,
                 os.windows._bITSJobs,
                 os.windows.bypassUserAccountControl,
@@ -134,8 +134,8 @@ category Software {
                 os.windows.templateInjection,
                 os.windows.timestomp,
                 os.windows.trustedDeveloperUtilities,
-                os.windows.userAccessTokenManipulation,
-                os.windows.userSecuritySoftwareDiscovery,
+                os.windows.attemptAccessTokenManipulation,
+                os.windows.securitySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows.videoCapture,
                 os.windows.windowsManagementInstrumentation,
@@ -175,7 +175,6 @@ category Software {
                 os.macOS.portKnocking,
                 os.macOS.spaceAfterFileName,
                 os.macOS.networkShareDiscovery,
-                os.macOS.userSecuritySoftwareDiscovery,
                 os.macOS.videoCapture,
                 os.macOS.reopenedApplications,
                 os.macOS.setuidAndSetgid,
@@ -186,7 +185,7 @@ category Software {
                 os.macOS.trap,
                 os.service.cloudInstanceMetadataAPI,
                 os.service._exploitationForCredentialAccess,
-                os.service._exploitationForDefenseEvasion,
+                os.service.attemptExploitationForDefenseEvasion,
                 os.service.attemptExploitationForPrivilegeEscalation,
                 os.service._exploitationOfRemoteServices,
                 os.service.externalRemoteServices,
@@ -207,7 +206,6 @@ category Software {
             ->  userRights,
                 os._validAccounts,  
                 os.windows.outlookEmailCollection,
-                os.computer.router.internalNetwork.bypassAccessControl,
                 os.computer.router.internalNetwork.exchangeServerCollection,
                 os.service.userRemoteServicesLogin
 
@@ -254,7 +252,7 @@ category Software {
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
                 os.windows.pathInterception,
-                os.windows.userAccessTokenManipulation,
+                os.windows.attemptAccessTokenManipulation,
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduleTask,
                 os.windows.sharedWebroot,
@@ -293,7 +291,7 @@ category Software {
                 createUserAccount, 
                 os.accountAccessRemoval,   
                 os._automatedCollection,
-                os.adminCommandLineInterface,
+                os.commandLineInterface,
                 os.dataDestruction,
                 os.dataEncryptedForImpact,
                 os.attemptCredentialDumping,
@@ -325,14 +323,12 @@ category Software {
                 os.service.applicationDeploymentSoftware,
                 os.service.thirdpartySoftware._useThirdpartySoftware,
                 os.computer.router.internalNetwork.transmittedDataManipulation,
-                os.computer.router.internalNetwork.bypassAccessControl,
                 os.computer.router.externalNetwork.transmittedDataManipulation
              
         | adminCredentials
             ->  adminRights,
                 os._validAccounts,
-                os.service.adminRemoteServicesLogin,
-                os.computer.router.internalNetwork.bypassAccessControl
+                os.service.adminRemoteServicesLogin
             
         & createUserAccount 
             ->  os.persistence          
@@ -357,7 +353,7 @@ category Software {
                 os.windows.signedBinaryProxyExecution, 
                 os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
-                os.windows.adminAccessTokenManipulation,
+                os.windows.attemptAccessTokenManipulation,
                 os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
@@ -382,13 +378,13 @@ category Software {
     asset WindowsAdmin extends AdminAccount {
         | adminRights
             user info: "WindowsAdmin account is equivalent to Unix Root account."
-            +>  os.windows.accessibilityFeatures,
-                os.windows.adminAccessTokenManipulation,
-                os.windows.adminSecuritySoftwareDiscovery,
+            +>  os.windows.attemptAccessibilityFeatures,
+                os.windows.attemptAccessTokenManipulation,
+                os.windows.securitySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows._appCertDLLs,
                 os.windows.appInitDLLs,
-                os.windows._applicationShimming,
+                os.windows.attemptApplicationShimming,
                 os.windows.authenticationPackage,
                 os.windows._bITSJobs,
                 os.windows.bootkit,                                          
@@ -445,12 +441,6 @@ category Software {
 
         | adminCredentials
 
-        | bypassWindowsUserAccountControl
-            ->  os.windows.applicationShimming,
-                os.windows.fileSystemPermissionsWeakness,
-                os.windows.passTheHash,
-                os.service.thirdpartySoftware.trustedRelationship
-
         # multiFactorAuthentication
             +>  os.windows.accountManipulation       
     }
@@ -467,7 +457,7 @@ category Software {
                 os.linux._bash_profileAndBashrc,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
-                os.macOS.adminSecuritySoftwareDiscovery,
+                os.macOS.securitySoftwareDiscovery,
                 os.macOS._bash_profileAndBashrc,
                 os.macOS.emond,
                 os.macOS.keychainCollection,
@@ -603,12 +593,10 @@ category Software {
             ->  os.executeCode,
                 exploitationForPrivilegeEscalation
 
-        | _exploitationForDefenseEvasion @hidden
+        & attemptExploitationForDefenseEvasion @hidden
             ->  exploitationForDefenseEvasion
 
         & exploitationForDefenseEvasion
-            ->  os.bypassAntivirus,
-                os.bypassSystemAccessControls
 
         & attemptExploitationForPrivilegeEscalation @hidden
             ->  exploitationForPrivilegeEscalation
@@ -642,7 +630,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1048/"
             ->  exploitationForClientExecution,
                 exploitationForCredentialAccess,
-                exploitationForDefenseEvasion,
+                attemptExploitationForDefenseEvasion,
                 attemptExploitationForPrivilegeEscalation,
                 exploitationOfRemoteServices,
                 exploitHighVulnerabilityPublicFacingApplication,
@@ -665,13 +653,14 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1019/"
             ->  exploitationForCredentialAccess,
                 attemptExploitationForPrivilegeEscalation,
+                attemptExploitationForDefenseEvasion,
                 exploitationOfRemoteServices  
 
         # updateSoftware [Bernoulli(0.34)]
             developer info: "Sources for distribution result: https://www.usenix.org/system/files/conference/soups2015/soups15-paper-ion.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture"
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  applicationDeploymentSoftware,
-                exploitationForDefenseEvasion,
+                attemptExploitationForDefenseEvasion,
                 attemptExploitationForPrivilegeEscalation,
                 exploitHighVulnerabilityPublicFacingApplication,
                 exploitMediumVulnerabilityPublicFacingApplication,
@@ -686,12 +675,9 @@ category Software {
     asset ThirdpartySoftware extends Service {  
         & applicationAccessToken
             user info: "Adversaries may use application access tokens to bypass the typical authentication process and access restricted accounts, information, or services on remote systems. These tokens are typically stolen from users and used in lieu of login credentials."
-            ->  bypassLogonCredentials,
-                bypassMultiFactorAuthentication
+            ->  accessCloudBasedServiceResources
 
-        | bypassLogonCredentials
-
-        | bypassMultiFactorAuthentication
+        | accessCloudBasedServiceResources
 
         & stealApplicationAccessToken
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
@@ -783,24 +769,7 @@ category Software {
 
         | webSessionCookie
             user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
-            ->  bypassLogonCredentials,
-                bypassMultiFactorAuthentication
-
-        | bypassLogonCredentials
-
-        | bypassMultiFactorAuthentication   
-            ->  service.externalRemoteServices,
-                service.applicationDeploymentSoftware,
-                service.userRemoteServicesLogin,
-                service.adminRemoteServicesLogin,
-                service.thirdpartySoftware.useThirdpartySoftware,
-                service.os.windows.accountManipulation,
-                service.os.bruteForce,
-                service.os.adminAccount.createUserAccount,
-                service.os.networkSniffing,
-                service.os.validAccounts,
-                service.os.windows.emailStorageCollection,
-                service.os.windows.remoteDesktopProtocol
+            ->  service.os.sensitiveDataCollected
 
         # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
             user info: "https://attack.mitre.org/mitigations/M1021/"
@@ -851,10 +820,7 @@ category Software {
         & connectionProxy [Bernoulli(0.825)]
             user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
             developer info: "Sources used for probability distribution: https://jpcertcc.github.io/ToolAnalysisResultSheet/details/Htran.htm#ExecCondition, https://gs.statcounter.com/os-market-share/desktop/worldwide/#monthly-201905-202005, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/threat-detection-report/techniques/powershell/, https://www.scribd.com/document/406643981/Threat-Detection-Report, https://s3.eu-west-1.amazonaws.com/ncsc-content/files/Joint%20report%20on%20publicly%20available%20hacking%20tools%20%28NCSC%29.pdf)"
-            ->  bypassLogAnalysis,
-                computer.router.internalNetwork.c2Connected,
-                computer.router.internalNetwork.bypassFirewall,
-                computer.router.externalNetwork.bypassFirewall
+            ->  computer.router.internalNetwork.c2Connected
 
         | attemptBinaryPadding @hidden
             ->  binaryPadding
@@ -878,10 +844,7 @@ category Software {
 
         & commonlyUsedPortsConnection
             user info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
-            ->  computer.router.internalNetwork.c2Connected,
-                computer.router.internalNetwork.bypassNetworkIntrusionDetection,
-                computer.router.firewall._bypassFirewall,
-                computer.router.externalNetwork.bypassNetworkIntrusionDetection
+            ->  computer.router.internalNetwork.c2Connected
 
         | compileAfterDelivery     
             user info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
@@ -1021,9 +984,7 @@ category Software {
 
         & multibandCommunication
             user info: "Some adversaries may split communications between different protocols. There could be one protocol for inbound command and control and another for outbound data, allowing it to bypass certain firewall restrictions."
-            ->  computer.router.internalNetwork.c2Connected,
-                computer.router.internalNetwork.bypassFirewall,
-                computer.router.externalNetwork.bypassFirewall
+            ->  computer.router.internalNetwork.c2Connected
 
         | attemptMultiHopProxy @hidden
             ->  multiHopProxy
@@ -1061,8 +1022,9 @@ category Software {
             ->  userAccount.userCredentials,
                 windows.lLMNR_NBT_NS_PoisoningAndRelay
 
-        & obfuscatedFilesOrInformation
+        & obfuscatedFilesOrInformation [Bernoulli(0.7395)]
             user info: "Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
+            developer info: "TTC assumed instant. Sources for distribution result: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf, https://nakedsecurity.sophos.com/2010/07/27/large-piece-malware/"
             ->  windows.deobfuscateOrDecodeFilesOrInformation, // leads to Deobfuscate/Decode Files or Information attack
                 bypassHostForensicAnalysis,
                 bypassSignatureBasedDetection,
@@ -1089,13 +1051,8 @@ category Software {
 
         & detailedRemoteSystemDiscovery
             user info: "Adversaries with admin rights may get better details of the hosts enumerated"
-        
-        & adminCommandLineInterface
-            developer info: "Binary probability distribution."
-            ->  dataCollected, // entrypoints of attacks that can be done with command line interface under admin rights
-                obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface 
-        
-        & userCommandLineInterface [Bernoulli(0.24)]
+               
+        & commandLineInterface [Bernoulli(0.24)]
             developer info: "Sources for distribution results: https://www.itjungle.com/2020/06/22/security-gaining-attention-on-ibm-i-but-more-progress-needed/"
             ->  dataCollected, // entrypoints of attacks that can be done with command line interface under user rights
                 obfuscatedFilesOrInformation // obfuscate commands executed from payloads or directly via a Command-Line Interface
@@ -1168,8 +1125,9 @@ category Software {
         & runtimeDataManipulation {I}
             user info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
-        & standardCryptographicProtocol
+        & standardCryptographicProtocol [TruncatedNormal(26.82,15.913)]
             user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
+            developer info: "TTC assumed instant. Sources for distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://blogs.cisco.com/security/malwares-use-of-tls-and-encryption, https://news.sophos.com/en-us/2020/02/18/nearly-a-quarter-of-malware-now-communicates-using-tls/, https://www.cyren.com/blog/articles/over-one-third-of-malware-uses-https, https://istlsfastyet.com/, https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/"
             ->  computer.router.internalNetwork.c2Connected
 
         | attemptStandardApplicationLayerProtocol
@@ -1271,9 +1229,7 @@ category Software {
 
         & uncommonlyUsedPortsConnection
             user info: "Adversaries may conduct C2 communications over a non-standard port to bypass proxies and firewalls that have been improperly configured."
-            ->  computer.router.firewall._bypassFirewall,
-                computer.router.internalNetwork.c2Connected,
-                computer.router.internalNetwork.bypassProxies 
+            ->  computer.router.internalNetwork.c2Connected
 
         | _validAccounts @hidden
             ->  validAccounts    
@@ -1283,7 +1239,6 @@ category Software {
             user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
             ->  service.userRemoteServicesLogin,
                 service.adminRemoteServicesLogin,
-                computer.router.internalNetwork.bypassFirewall,
                 computer.router.internalNetwork.bypassNetworkIntrusionDetection,
                 bypassHostIntrusionPrevention,
                 bypassProcessWhitelisting,
@@ -1560,7 +1515,7 @@ category Software {
 
         # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
             user info: "https://attack.mitre.org/mitigations/M1038/"
-            ->  adminCommandLineInterface, 
+            ->  commandLineInterface, 
                 accountDiscovery,
                 applicationWindowDiscovery,
                 binaryPadding,
@@ -1572,11 +1527,9 @@ category Software {
                 domainFronting,
                 fileDeletion,
                 masquerading,
-                permissionGroupsDiscovery,  
-                processInjection,
+                permissionGroupsDiscovery,
                 remoteSystemDiscovery,     
-                systemInformationDiscovery,              
-                userCommandLineInterface,
+                systemInformationDiscovery,
                 userAccount.userExecution          
              
         # privilegedAccountManagement [Bernoulli(0.30)]
@@ -1625,6 +1578,7 @@ category Software {
             ->  service.browser.driveByCompromise,
                 service.exploitationForClientExecution,
                 service.exploitationForCredentialAccess,
+                service.attemptExploitationForDefenseEvasion,
                 service.attemptExploitationForPrivilegeEscalation,
                 service.exploitationOfRemoteServices,
                 service.exploitHighVulnerabilityPublicFacingApplication,
@@ -1669,6 +1623,7 @@ category Software {
                 windows.os.accountAccessRemoval,
                 windows.os.attemptCredentialDumping,
                 windows.os._credentialsInFiles,
+                windows.os.commandLineInterface,
                 windows.os.dataEncryptedForImpact,
                 windows.os.fileAndDirectoryDiscovery,
                 windows.os.fileAndDirectoryPermissionsModification,
@@ -1708,11 +1663,13 @@ category Software {
             ->  persistence,
                 sysAdmin.systemRights
 
-        & accessibilityFeatures
+        & attemptAccessibilityFeatures @hidden
+            ->  accessibilityFeatures
+
+        | accessibilityFeatures
             user info: "This helps attackers to open a System-level command shell, where the attackers can execute arbitrary Windows commands, including adding or modifying accounts on the system."
-            ->  executeCode,
-                sysAdmin.systemRights,
-                _remoteDesktopProtocol 
+            ->  persistence,
+                sysAdmin.systemRights
 
         & _bITSJobs @hidden
             ->  bITSJobs
@@ -1721,20 +1678,18 @@ category Software {
             user info: "Adversaries may abuse BITS to download, execute, and even clean up after running malicious code."
             developer info: "TTC assumed instant. Sources used for probability distribution: https://blog.trendmicro.com/trendlabs-security-intelligence/tropic-trooper-new-strategy/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://en.wikipedia.org/wiki/Windows_Desktop_Gadgets, https://www.fireeye.com/blog/threat-research/2018/03/suspected-chinese-espionage-group-targeting-maritime-and-engineering-industries.html" 
             ->  executeCode,
-                bypassHostForensicAnalysis,
-                computer.router.firewall.bypassFirewall 
+                persistence,
+                exfiltrationOverAternativeProtocol // BITS upload functionalities can be used to perform Exfiltration Over Alternative Protocol
 
         & cmstp
             user info: "Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
             developer info: "Binary probability distribution."
-            ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
-                bypassApplicationWhitelisting,
-                bypassAntivirus            
+            ->  bypassUserAccountControl // leads to Bypass User Account Control attack          
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
-            ->  adminAccount.windowsAdmin.bypassWindowsUserAccountControl
+            ->  bypassUserAccountControl
 
         & _componentObjectModelAndDistributedCOM @hidden [Exponential(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
@@ -1749,14 +1704,12 @@ category Software {
             user info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
             developer info: "TTC assumed instant, see mitreattacklang/enterpriselang probabilities/controlPanelItems.md for details. Sources used for probability distribution result: https://attack.mitre.org/software/S0172/, https://threatvector.cylance.com/en_us/home/reaver-mapping-connections-between-disparate-chinese-apt-groups.html, https://nvd.nist.gov/vuln/detail/CVE-2017-11882#vulnConfigurationsArea, https://unit42.paloaltonetworks.com/unit42-new-malware-with-ties-to-sunorcal-discovered/, https://community.spiceworks.com/software/articles/2873-data-snapshot-the-state-of-productivity-suites-in-the-workplace"
             ->  executeCode,
-                bypassApplicationWhitelisting,
-                bypassProcessWhitelisting
+                service.browser.spearphishingAttachment // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
 
         | componentObjectModelHijacking
             user info: "Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
             ->  processInjection,
-                bypassAutorunsAnalysis,
-                _regsvr32             
+                persistence            
 
         | componentFirmware
             user info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."       
@@ -1815,8 +1768,9 @@ category Software {
                 service.exploitationForPrivilegeEscalation,
                 computer.infectedWindowsComputer         
 
-        & executionThroughAPI
+        & executionThroughAPI [Bernoulli(0.56)]
             user info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
+            developer info: "TTC assumed instant. Sources for probability distribution: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1106/"
             ->  executeCode,
                 processInjection
 
@@ -2045,10 +1999,6 @@ category Software {
                 bypassProcessWhitelisting,
                 bypassDigitalCertificateValidation
 
-        & _regsvr32 @hidden
-            developer info: "This is a helper attack step for Regsvr32.exe to establish Persistence via Component Object Model Hijacking."
-            ->  persistence
-
         & regsvr32
             developer info: "Binary probability distribution."
             user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
@@ -2056,20 +2006,15 @@ category Software {
                 bypassAntivirus,
                 bypassDigitalCertificateValidation,
                 codeProxyExecution,
-                _regsvr32
+                componentObjectModelHijacking // establish Persistence via Component Object Model Hijacking
 
         & remoteDesktopProtocol [Bernoulli(0.5561)*Exponential(480)]
             user info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
             developer info: "Sources used for distribution result: https://www.fireeye.com/blog/threat-research/2020/02/mtrends-2020-insights-from-the-front-lines.html, https://duo.com/decipher/attackers-combine-attacks-against-rdp-with-ransomware, https://www.securitymagazine.com/articles/90983-percent-of-organizations-exhibit-malicious-remote-desktop-protocol-rdp-behaviors, https://medium.com/enterprise-nxt/2020-ransomware-attacks-still-mostly-through-unsecured-rdp-b167fefcd490, https://www.youtube.com/watch?v=Olgso_oXQa8"
-            ->  _remoteDesktopProtocol,
+            ->  accessibilityFeatures,
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
                 graphicalUserInterface
-
-        & _remoteDesktopProtocol @hidden
-            developer info: "This is a helper attack step. It requires all its parent attack steps to compromise - Accessibility Features when connected over Remote Desktop Protocol will cause the replaced file to be executed with SYSTEM privileges."
-            ->  persistence,
-                sysAdmin.systemRights  
 
         & replicationThroughRemovableMedia [Bernoulli(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
@@ -2256,7 +2201,7 @@ category Software {
 
         | dynamicDataExchange [Bernoulli(0.93)*Exponential(1)]
             user info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
-            ->  userCommandLineInterface,
+            ->  commandLineInterface,
                 executeCode 
             
         | hooking             
@@ -2276,8 +2221,7 @@ category Software {
         & logonScripts [Exponential(288)]
             user info: "An adversary can then create a logon session for the user using the LogonUser function. The function will return a copy of the new session's access token and the adversary can use SetThreadToken to assign the token to a thread."
             developer info: "Sources for probability distribution: http://www.hexacorn.com/blog/2014/11/14/beyond-good-ol-run-key-part-18/, "
-            ->  userAccessTokenManipulation,
-                adminAccessTokenManipulation,
+            ->  accessTokenManipulation,
                 adminAccount.windowsAdmin.adminRights   
 
         | attemptSystemFirmware @hidden
@@ -2302,26 +2246,33 @@ category Software {
         & networkShareDiscovery
             ->  computer.router.internalNetwork.networkShareDiscovery
 
-        & userAccessTokenManipulation
+        & attemptAccessTokenManipulation @hidden
+            ->  accessTokenManipulation
+
+        | accessTokenManipulation [Bernoulli(0.20715)]
             user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
+            developer info: "Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://pentestlab.blog/2017/04/03/token-manipulation/"
+            ->  tokenImpersonationOrTheft,
+                createProcessWithAToken,
+                makeAndImpersonateToken
+
+        | tokenImpersonationOrTheft
+            ->  service.exploitationForPrivilegeEscalation
+        
+        | createProcessWithAToken 
             ->  service.exploitationForPrivilegeEscalation
 
-        & adminAccessTokenManipulation
-            user info: "Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection."
+        | makeAndImpersonateToken
             ->  service.exploitationForPrivilegeEscalation
-        
-        & userSecuritySoftwareDiscovery
+
+        & securitySoftwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            ->  virtualizationOrSandboxEvasion
-        
-        & adminSecuritySoftwareDiscovery
+            developer info: "TTC assumed instant. Sources used for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
             ->  virtualizationOrSandboxEvasion
 
         & bypassUserAccountControl [Bernoulli(0.277)]
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
-            ->  executeCode,
-                adminAccount.adminRights
-
+            ->  service.exploitationForPrivilegeEscalation
        
         | peripheralDeviceDiscovery
             ->  computer.peripheralDeviceDiscovery
@@ -2340,15 +2291,14 @@ category Software {
             user info: "Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
             ->  dataCollected
         
-        | _applicationShimming @hidden
+        & attemptApplicationShimming @hidden
             ->  applicationShimming
             
-        & applicationShimming
+        | applicationShimming
             user info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
-            ->  persistence,
-                userAccount.userRights,
-                adminAccount.adminRights,
-                bypassUserAccountControl // certain shims can be used to Bypass User Account Control 
+            ->  persistence, // use application shim databases for persistence
+                hooking, // the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS
+                bypassUserAccountControl // certain shims can be used to Bypass User Account Control (UAC)
 
         & authenticationPackage
             user info: "Adversaries can use Windows Authentication Packages for persistence for persistence."
@@ -2434,8 +2384,8 @@ category Software {
 
         # executionPrevention
             user info: "https://attack.mitre.org/mitigations/M1038/"
-            +>  accessibilityFeatures,
-                adminSecuritySoftwareDiscovery,
+            +>  attemptAccessibilityFeatures,
+                securitySoftwareDiscovery,
                 appCertDLLs,
                 appInitDLLs,
                 cmstp,
@@ -2456,7 +2406,6 @@ category Software {
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
                 trustedDeveloperUtilities,
-                userSecuritySoftwareDiscovery,
                 winlogonHelperDLL,
                 xslScriptProcessing,
                 computer.router.internalNetwork.networkSharedDrive.taintSharedContent
@@ -2573,13 +2522,13 @@ category Software {
         # updateSoftware [Bernoulli(0.34)]
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
-                applicationShimming,
+                attemptApplicationShimming,
                 officeApplicationStartup,
                 passTheHash
         
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
-            +>  applicationShimming, 
+            +>  attemptApplicationShimming, 
                 bypassUserAccountControl,
                 fileSystemPermissionsWeakness,
                 passTheHash
@@ -2634,7 +2583,7 @@ category Software {
 
         & portKnocking
             user info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
-            ->  bypassDefensiveNetworkServiceScanning  
+            ->  bypassDefensiveNetworkServiceScanning
 
         & serverSoftwareComponent
             user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
@@ -2736,7 +2685,8 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
-                sshHijacking   
+                sshHijacking,
+                processInjection
 
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
@@ -2933,12 +2883,10 @@ category Software {
         & networkShareDiscovery
             ->  computer.router.internalNetwork.networkShareDiscovery
 
-        & userSecuritySoftwareDiscovery
+        & securitySoftwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            ->  service._exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
-
-        & adminSecuritySoftwareDiscovery
-            ->  service._exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
+            developer info: "TTC Assumed instant. Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
+            ->  service.exploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
         | windowsManagementInstrumentation
             ->  scripting  
@@ -2982,14 +2930,13 @@ category Software {
                 sshHijacking
 
         # executionPrevention
-            +>  adminSecuritySoftwareDiscovery,
+            +>  securitySoftwareDiscovery,
                 elevatedExecutionWithPrompt,
                 gatekeeperBypass,
                 hiddenWindow,
                 kernelModulesAndExtensions,
                 lC_LOAD_DYLIB_Addition,
-                networkShareDiscovery,
-                userSecuritySoftwareDiscovery            
+                networkShareDiscovery         
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             user info: "https://attack.mitre.org/mitigations/M1039/"
@@ -3061,8 +3008,6 @@ category Network {
         E firewallExists
             <-  router.firewall
             ->  router.firewall._bypassFirewall
-               
-        | bypassAccessControl
 
         | bypassFirewall
 
@@ -3226,8 +3171,6 @@ category Network {
     asset ExternalNetwork {
         | obfuscateNetworkTraffic
 
-        | bypassFirewall
-
         | bypassNetworkIntrusionDetection
 
         | dataExfiltration
@@ -3246,8 +3189,6 @@ category Network {
             user info: "Adversaries may use an existing, legitimate external Web service as a means for relaying commands to a compromised system."
             ->  router.computer.os.bypassBinaryAnalysis,
                 router.computer.os.bypassLogAnalysis,
-                bypassFirewall,
-                router.internalNetwork.bypassFirewall,
                 router.internalNetwork.c2Connected
 
         | attemptTransmittedDataManipulation @hidden {I}
