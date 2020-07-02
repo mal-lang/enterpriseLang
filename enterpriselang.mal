@@ -1138,7 +1138,7 @@ category Software {
         & processInjection [Bernoulli(0.35)*Exponential(127.1)] 
             user info: "Process injection is a method of executing arbitrary code in the address space of a separate live process. It can be used for Defense Evasion and Privilege Escalation."
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/process-injection/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
-            ->  service._exploitationForPrivilegeEscalation,
+            ->  service.exploitationForPrivilegeEscalation,
                 bypassAntivirus,
                 bypassProcessWhitelisting
 
@@ -1701,7 +1701,7 @@ category Software {
         & appCertDLLs
             user info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
             ->  persistence,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         & appInitDLLs
             ->  persistence,
@@ -1792,7 +1792,7 @@ category Software {
                 bypassUserAccountControl,
                 userAccount.userRights,
                 attemptlSASS_Driver,
-                _exploitationForPrivilegeEscalation                   
+                service.exploitationForPrivilegeEscalation                   
                
         | dLLSideLoading
             ->  bypassProcessWhitelisting,
@@ -1839,7 +1839,7 @@ category Software {
         & fileSystemPermissionsWeakness
             user info: "Adversaries may use this technique to replace legitimate binaries with malicious ones as a means of executing code at a higher permissions level."
             ->  executeCode,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         & forcedAuthentication
             user info: "Adversaries may take advantage of this behavior to gain access to user account hashes through forced SMB authentication."
@@ -2261,7 +2261,7 @@ category Software {
             user info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
             ->  executeCode,
                 captureAPICalls,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         | hypervisor           
             user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
@@ -2774,7 +2774,7 @@ category Software {
 
         & elevatedExecutionWithPrompt
             user info: "Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials."
-            ->  service._exploitationForPrivilegeEscalation,
+            ->  service.exploitationForPrivilegeEscalation,
                 masquerading // combined with Masquerading to trick the user into granting escalated privileges to malicious code
 
         & emond
