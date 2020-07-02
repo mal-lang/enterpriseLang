@@ -1161,8 +1161,9 @@ category Software {
         & runtimeDataManipulation {I}
             user info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
-        & standardCryptographicProtocol
+        & standardCryptographicProtocol [TruncatedNormal(26.82,15.913)]
             user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
+            developer info: "TTC assumed instant. Sources for distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://blogs.cisco.com/security/malwares-use-of-tls-and-encryption, https://news.sophos.com/en-us/2020/02/18/nearly-a-quarter-of-malware-now-communicates-using-tls/, https://www.cyren.com/blog/articles/over-one-third-of-malware-uses-https, https://istlsfastyet.com/, https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/"
             ->  computer.router.internalNetwork.c2Connected
 
         | attemptStandardApplicationLayerProtocol
