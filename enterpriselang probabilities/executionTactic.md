@@ -123,7 +123,7 @@ WinExec(),
 ShellExecuteA() and ShellExecuteW(),
 ShellExecuteExA() and ShellExecuteExW()
 
-This one probably doesn't need a probability distribution because processInjection already has one and executeCode is a binary one.
+Probability found by Love
 
 ### Execution Through Module Load
 
