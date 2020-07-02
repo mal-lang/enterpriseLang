@@ -1054,8 +1054,9 @@ category Software {
             ->  userAccount.userCredentials,
                 windows.lLMNR_NBT_NS_PoisoningAndRelay
 
-        & obfuscatedFilesOrInformation
+        & obfuscatedFilesOrInformation [Bernoulli(0.7395)]
             user info: "Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
+            developer info: "TTC assumed instant. Sources for distribution result: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf, https://nakedsecurity.sophos.com/2010/07/27/large-piece-malware/"
             ->  windows.deobfuscateOrDecodeFilesOrInformation, // leads to Deobfuscate/Decode Files or Information attack
                 bypassHostForensicAnalysis,
                 bypassSignatureBasedDetection,
