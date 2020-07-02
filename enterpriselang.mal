@@ -1112,8 +1112,9 @@ category Software {
 
         | systemAccess
 
-        & systemInformationDiscovery
+        & systemInformationDiscovery [Bernoulli(0.7133)]
             user info: "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+            developer info: "TTC assumed instant. sources used for distribution result: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf, https://attack.mitre.org/techniques/T1082/"
             ->  processInjection,
                 systemNetworkConfigurationDiscovery,
                 systemNetworkConnectionsDiscovery
