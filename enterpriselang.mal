@@ -1814,8 +1814,9 @@ category Software {
                 service.exploitationForPrivilegeEscalation,
                 computer.infectedWindowsComputer         
 
-        & executionThroughAPI
+        & executionThroughAPI [Bernoulli(0.56)]
             user info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
+            developer info: "TTC assumed instant. Sources for probability distribution: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1106/"
             ->  executeCode,
                 processInjection
 
