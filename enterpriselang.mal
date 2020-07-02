@@ -1139,7 +1139,7 @@ category Software {
         & processInjection [Bernoulli(0.35)*Exponential(127.1)] 
             user info: "Process injection is a method of executing arbitrary code in the address space of a separate live process. It can be used for Defense Evasion and Privilege Escalation."
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/process-injection/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
-            ->  service._exploitationForPrivilegeEscalation,
+            ->  service.exploitationForPrivilegeEscalation,
                 bypassAntivirus,
                 bypassProcessWhitelisting
 
@@ -1702,7 +1702,7 @@ category Software {
         & appCertDLLs
             user info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
             ->  persistence,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         & appInitDLLs
             ->  persistence,
@@ -1793,7 +1793,7 @@ category Software {
                 bypassUserAccountControl,
                 userAccount.userRights,
                 attemptlSASS_Driver,
-                _exploitationForPrivilegeEscalation                   
+                service.exploitationForPrivilegeEscalation                   
                
         | dLLSideLoading
             ->  bypassProcessWhitelisting,
@@ -1840,7 +1840,7 @@ category Software {
         & fileSystemPermissionsWeakness
             user info: "Adversaries may use this technique to replace legitimate binaries with malicious ones as a means of executing code at a higher permissions level."
             ->  executeCode,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         & forcedAuthentication
             user info: "Adversaries may take advantage of this behavior to gain access to user account hashes through forced SMB authentication."
@@ -2210,6 +2210,7 @@ category Software {
             user info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
             developer info: "Sources used for probability results: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-xp/bb490866(v=technet.10)?redirectedfrom=MSDN, https://redcanary.com/threat-detection-report/techniques/scheduled-task/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://blog.malwarebytes.com/cybercrime/2015/03/scheduled-tasks/, https://www.zdnet.com/article/microsoft-says-new-dexphot-malware-infected-more-than-80000-computers/"
             ->  executeCode,
+                service.exploitationForPrivilegeEscalation,
                 persistence
 
         & remoteScheduleTask
@@ -2262,7 +2263,7 @@ category Software {
             user info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
             ->  executeCode,
                 captureAPICalls,
-                service._exploitationForPrivilegeEscalation
+                service.exploitationForPrivilegeEscalation
 
         | hypervisor           
             user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
@@ -2327,7 +2328,9 @@ category Software {
 
         | portMonitors
             user info: "Adversaries can use this technique to load malicious code at startup that will persist on system reboot and execute as SYSTEM."
-            ->  executeCode
+            ->  executeCode,
+                service.exploitationForPrivilegeEscalation,
+                persistence
 
         & emailStorageCollection
             user info: "Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
@@ -2782,7 +2785,7 @@ category Software {
 
         & elevatedExecutionWithPrompt
             user info: "Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials."
-            ->  service._exploitationForPrivilegeEscalation,
+            ->  service.exploitationForPrivilegeEscalation,
                 masquerading // combined with Masquerading to trick the user into granting escalated privileges to malicious code
 
         & emond
@@ -2868,6 +2871,7 @@ category Software {
                 bypassProcessWhitelisting,
                 bypassFileOrPathWhitelisting,
                 executeCode,
+                service.exploitationForPrivilegeEscalation,
                 persistence
 
         & portKnocking
