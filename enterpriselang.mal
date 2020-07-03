@@ -1299,8 +1299,9 @@ category Software {
                 automatedExfiltration,
                 dataSizedTransfer
 
-        | dataEncrypted
+        | dataEncrypted [Bernoulli(0.567)*Exponential(3.25)]
             user info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
+            developer info: "Sources for TTC too many to list, please see 'enterpriselang probabilities/dataEncrypted.md'. Other sources: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf "
             ->  computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
