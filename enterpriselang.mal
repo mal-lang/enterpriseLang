@@ -1751,7 +1751,8 @@ category Software {
                 attemptlSASS_Driver,
                 service.exploitationForPrivilegeEscalation                   
                
-        | dLLSideLoading
+        | dLLSideLoading [Bernoulli(0.0755)]
+            developer info: "Sources used for probability result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf"
             ->  bypassProcessWhitelisting,
                 bypassAntivirus,
                 attemptlSASS_Driver
