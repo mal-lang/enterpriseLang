@@ -602,6 +602,7 @@ category Software {
             ->  exploitationForPrivilegeEscalation
 
         | exploitationForPrivilegeEscalation
+            developer info: "Binary probability distribution."
             user info: "This could enable someone to move from unprivileged or user level permissions to SYSTEM or root permissions depending on the component that is vulnerable."
             ->  os.adminAccount.adminRights,
                 os.windows.sysAdmin.systemRights,
@@ -2744,7 +2745,8 @@ category Software {
             ->  service.exploitationForPrivilegeEscalation,
                 masquerading // combined with Masquerading to trick the user into granting escalated privileges to malicious code
 
-        & emond
+        & emond [Exponential(2)]
+            developer info: "Source for distribution result : https://www.xorrior.com/emond-persistence/"
             user info: "Adversaries may use Event Monitor Daemon (emond) to establish persistence by scheduling malicious commands to run on predictable event triggers."
             ->  persistence,
                 service.exploitationForPrivilegeEscalation
