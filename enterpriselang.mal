@@ -3043,8 +3043,9 @@ category Network {
         | remoteSystemsConnection
             ->  router.computer.router.internalNetwork.networkSharedDrive.dataFromNetworkSharedDrive 
 
-        | webShell
+        | webShell [Bernoulli(0.1586)*Exponential(1)]
             user info: "Web shells may serve as Redundant Access or as a persistence mechanism."
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://media.defense.gov/2020/Jun/09/2002313081/-1/-1/0/CSI-DETECT-AND-PREVENT-WEB-SHELL-MALWARE-20200422.PDF"
             ->  router.computer.os.redundantAccess, // use a Web Shell to maintain access 
                 persistence
 
