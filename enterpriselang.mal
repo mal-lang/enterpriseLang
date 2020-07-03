@@ -1663,7 +1663,8 @@ category Software {
             ->  persistence,
                 service.exploitationForPrivilegeEscalation
 
-        & appInitDLLs
+        & appInitDLLs [Bernoulli(0.79)*Exponential(127.1)]
+            developer info: "Sources for distribution results: Work on processInjection and https://www.spiceworks.com/marketing/network-security/pdf-report/"
             ->  persistence,
                 sysAdmin.systemRights
 
