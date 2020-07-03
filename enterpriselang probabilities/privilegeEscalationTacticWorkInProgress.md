@@ -141,11 +141,15 @@ This suggests that the masquerading technique may be used before calling the API
 
 This needs review.
 
-### Emond (needs)
+### Emond
 
 Adversaries may abuse this service by writing a rule to execute commands when a defined event occurs, such as system start up or user authentication. Adversaries may also be able to escalate privileges from administrator to root as the emond service is executed with root privileges by the Launch Daemon service.
 
-This at least needs a time distribution. 
+This at least needs a time distribution. Probability could be the probability for the feature to be enabled (it's the mitigation).  
+
+Note:  - The Launch Daemon attack consists in creating/installing a new Launch Daemon or modifying the executable file of a Launch Daemon
+       - The plist Modification attack consists in directly modifying the plist (with admin rights) so that is points to the adversary's malicious executable
+       - The Emond attack consists in writing a new rule in Emond's rules directory so that it's executed
 
 ### Exploitation For Privilege Escalation 
 
