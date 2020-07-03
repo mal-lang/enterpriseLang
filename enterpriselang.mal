@@ -1650,8 +1650,9 @@ category Software {
     }
     
     asset Windows extends OS {   
-        & accountManipulation
+        & accountManipulation [Bernoulli(0.101)]
             user info: "Account manipulation may aid adversaries in maintaining access to credentials and certain permission levels within an environment." 
+            developer info: "Sources used for probability distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1098/, https://www.us-cert.gov/ncas/alerts/TA18-074A" 
             ->  userAccount.userCredentials,
                 persistence
 
