@@ -51,7 +51,7 @@ Privilege Escalation consists of techniques that adversaries use to gain higher-
 
 ## Probability Assessment
 
-### User & Admin Access Token Manipulation (needs)
+### User & Admin Access Token Manipulation (needs review)
 
 Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection. An adversary can use built-in Windows API functions to copy access tokens from existing processes; this is known as token stealing. An adversary must already be in a privileged user context (i.e. administrator) to steal a token. However, adversaries commonly use token stealing to elevate their security context from the administrator level to the SYSTEM level. An adversary can use a token to authenticate to a remote system as the account for that token if the account has appropriate permissions on the remote system.
 
@@ -89,9 +89,9 @@ Narrator: C:\Windows\System32\Narrator.exe
 Display Switcher: C:\Windows\System32\DisplaySwitch.exe
 App Switcher: C:\Windows\System32\AtBroker.exe
 
-Remote Desktop Protcol seems to be a | parent (Having remote access to execute) and not a child. *CHECK THAT*
+Remote Desktop Protcol seems to be a | parent (Having remote access to execute feature) and not a child. *CHECK THAT*
 
-This technique (once you have RDP or physical access) takes no time to pull out. However, since the outcome depends on the version of Windows, it will need a probability distribution.
+This technique (once you have RDP or physical access) takes no time to pull out. However, since the outcome depends on the version of Windows, it might need a probability distribution.
  
 ### AppCert DLLs (probably needs)
 
