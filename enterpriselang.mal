@@ -859,8 +859,9 @@ category Software {
             ->  credentialDumping,
                 systemOwnerOrUserDiscovery
 
-        & credentialDumping
+        & credentialDumping [Bernoulli(0.08785)]
             user info: "Credential dumping is the process of obtaining account login and password information, normally in the form of a hash or a clear text password, from the operating system and software."
+            developer info: "Sources for distribution result: https://www.picussecurity.com/picus-10-critical-mitre-attck-techniques, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf, https://redcanary.com/threat-detection-report/techniques/credential-dumping/, https://github.com/gentilkiwi/mimikatz" 
             ->  collectHashInformation
 
         | _credentialsInFiles @hidden
