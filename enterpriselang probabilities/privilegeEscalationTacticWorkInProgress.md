@@ -71,7 +71,7 @@ This might need to be *split into 3* and given a probability distribution for ea
 
 You might also wanna *change* the children for admin vs user access token manipulation since an adversary must already have administrator level access on the local system to make full use of this technique.
 
-### Accessibility Features (needs prevalence)
+### Accessibility Features
 
 Two common accessibility programs are C:\Windows\System32\sethc.exe, launched when the shift key is pressed five times and C:\Windows\System32\utilman.exe, launched when the Windows + U key combination is pressed. The sethc.exe program is often referred to as "sticky keys", and has been used by adversaries for unauthenticated access through a remote desktop login screen. 
 
@@ -99,7 +99,7 @@ This is based on the execution of malicious DLLs via CreateProcess API.
 
 *Similar to Process Injection*, this value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer.
 
-### AppInit DLL (needs)
+### AppInit DLL 
 
 The AppInit DLL functionality is disabled in Windows 8 and later versions when secure boot is enabled.
 
