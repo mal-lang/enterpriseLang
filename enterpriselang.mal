@@ -859,8 +859,9 @@ category Software {
             ->  credentialDumping,
                 systemOwnerOrUserDiscovery
 
-        & credentialDumping
+        & credentialDumping [Bernoulli(0.08785)]
             user info: "Credential dumping is the process of obtaining account login and password information, normally in the form of a hash or a clear text password, from the operating system and software."
+            developer info: "Sources for distribution result: https://www.picussecurity.com/picus-10-critical-mitre-attck-techniques, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf, https://redcanary.com/threat-detection-report/techniques/credential-dumping/, https://github.com/gentilkiwi/mimikatz" 
             ->  collectHashInformation
 
         | _credentialsInFiles @hidden
@@ -1075,8 +1076,9 @@ category Software {
 
         | systemAccess
 
-        & systemInformationDiscovery
+        & systemInformationDiscovery [Bernoulli(0.7133)]
             user info: "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+            developer info: "TTC assumed instant. sources used for distribution result: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf, https://attack.mitre.org/techniques/T1082/"
             ->  processInjection,
                 systemNetworkConfigurationDiscovery,
                 systemNetworkConnectionsDiscovery
@@ -1298,8 +1300,9 @@ category Software {
                 automatedExfiltration,
                 dataSizedTransfer
 
-        | dataEncrypted
+        | dataEncrypted [Bernoulli(0.567)*Exponential(3.25)]
             user info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
+            developer info: "Sources for TTC too many to list, please see 'enterpriselang probabilities/dataEncrypted.md'. Other sources: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf "
             ->  computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
