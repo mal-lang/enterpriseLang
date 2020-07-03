@@ -1255,8 +1255,9 @@ category Software {
             ->  userAccount.userCredentials,
                 adminAccount.adminCredentials 
 
-        & fileDeletion
+        & fileDeletion [Bernoulli(0.1238)]
             user info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf, https://docs.microsoft.com/en-us/sysinternals/downloads/sdelete"
             ->  bypassHostForensicAnalysis
 
         | fileAndDirectoryDiscovery
