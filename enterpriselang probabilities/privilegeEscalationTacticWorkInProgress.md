@@ -93,7 +93,7 @@ Remote Desktop Protcol seems to be a | parent (Having remote access to execute f
 
 This technique (once you have RDP or physical access) takes no time to pull out. However, since the outcome depends on the version of Windows, it might need a probability distribution.
  
-### AppCert DLLs (probably needs)
+### AppCert DLLs
 
 This is based on the execution of malicious DLLs via CreateProcess API.
 
@@ -159,15 +159,14 @@ When initially gaining access to a system, an adversary may be operating within 
 
 This is the general technique that is the final goal of this tactic. This doesn't need a probability distribution, all the techniques leading to it do however.
 
-### Extra Window Memory Injection (needs review)
+### Extra Window Memory Injection 
 
 Although small, the EWM is large enough to store a 32-bit pointer and is often used to point to a windows procedure. Malware may possibly utilize this memory location in part of an attack chain that includes writing code to shared sections of the process’s memory, placing a pointer to the code in EWM, then invoking execution by returning execution control to the address in the process’s EWM.
 
 Execution granted through EWM injection may take place in the address space of a separate live process. *Similar to Process Injection*, this may allow access to both the target process's memory and possibly elevated privileges. Writing payloads to shared sections also avoids the use of highly monitored API calls such as WriteProcessMemory and CreateRemoteThread. More sophisticated malware samples may also potentially bypass protection mechanisms such as data execution prevention (DEP) by triggering a combination of windows procedures and other system functions that will rewrite the malicious payload inside an executable portion of the target process.
 
-Process Injection is the only child but according to the mitre description it's not and there are others.
-
-This needs review.
+~~Process Injection is the only child but according to the mitre description it's not and there are others.~~ I was wrong, process injection is a child because this technique is a Procee Injection sub technique .
+https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process
 
 ### File System Permission Weakness
 
@@ -204,7 +203,7 @@ This type of attack technique cannot be easily mitigated with preventive control
 
 This needs a probability distribution.
 
-This is the third technique I believe that is "similar to process injection". Maybe we could assume that all those techniques have the same probability (at least as a first approximation).
+Note : This is the third technique I believe that is "similar to process injection". Maybe we could assume that all those techniques have the same probability (at least as a first approximation).
 
 ### Launch Daemon
 
