@@ -1806,10 +1806,10 @@ category Software {
             ->  executeCode    
         
         | extraWindowMemoryInjection
+            developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
-            ->  bypassAntivirus,
-                bypassHostIntrusionPrevention,
-                service.attemptExploitationForPrivilegeEscalation
+            ->  bypassHostIntrusionPrevention,
+                attemptProcessInjection
 
         | fileSystemLogicalOffsets
             user info: "Windows allows programs to have direct access to logical volumes. This technique bypasses Windows file access controls as well as file system monitoring tools."
