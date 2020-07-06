@@ -803,8 +803,9 @@ category Software {
             ->  adminAccount.adminCredentials,
                 userAccount.userCredentials
 
-        & accountDiscovery
+        & accountDiscovery [Bernoulli(0.01967)]
             user info: "get account names and information"
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, Red Canary's ATT&CK technique percentages Top 50 Google Sheets Document, https://krisk.io/post/sok-attack-securecomm19.pdf, https://attack.mitre.org/techniques/T1087/"
 
         & domainDiscovery
             user info: "get domain names and information"
