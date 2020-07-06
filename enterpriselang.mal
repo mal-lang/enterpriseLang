@@ -1922,8 +1922,9 @@ category Software {
             ->  sysAdmin.systemCredentials,
                 adminAccount.windowsAdmin.adminCredentials
 
-        & passTheHash
+        & passTheHash [Bernoulli(0.16)*Exponential(480)]
             user info: "This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash."
+            developer info: "Sources used for distribution result: https://www.securityweek.com/pass-hash-remains-poorly-defended-threat-vector, https://www.youtube.com/watch?v=6em5TUASfHM, https://www.youtube.com/watch?v=bTYR_xYSDIk"
             ->  computer.router.internalNetwork.remoteSystemsConnection // PtH may be used to perform actions on local or remote systems
 
         | attemptPassTheTicket @hidden
