@@ -1841,10 +1841,10 @@ category Software {
                 bypassFileSystemAccessControls
 
         | imageFileExecutionOptionsInjection
+            developer info: "Binary probability distribution. Soucres for distribution results: process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
             ->  bypassAutorunsAnalysis,
-                persistence,
-                service.attemptExploitationForPrivilegeEscalation
+                attemptProcessInjection
 
         | attemptIndicatorBlocking @hidden
             ->  indicatorBlocking
