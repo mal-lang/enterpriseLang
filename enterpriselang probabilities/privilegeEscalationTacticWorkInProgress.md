@@ -204,7 +204,7 @@ This type of attack technique cannot be easily mitigated with preventive control
 
 This needs a probability distribution.
 
-This is the third technique I believe that is "similar to process injection". Maybe we could assume that all those techniques have the same probability (at least as a first approximation).
+Note : This is the third technique I believe that is "similar to process injection". Maybe we could assume that all those techniques have the same probability (at least as a first approximation).
 
 ### Launch Daemon
 

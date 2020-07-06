@@ -1109,6 +1109,7 @@ category Software {
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/process-injection/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  service.attemptExploitationForPrivilegeEscalation,
                 bypassAntivirus,
+                persistence,
                 bypassProcessWhitelisting
 
         & redundantAccess
@@ -1674,9 +1675,9 @@ category Software {
             ->  appCertDLLs 
             
         & appCertDLLs
+            developer info: "Binaries probability distribution. Source for distribution results : Process Injection result and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
-            ->  persistence,
-                service.attemptExploitationForPrivilegeEscalation
+            ->  attemptProcessInjection
 
         & appInitDLLs [Bernoulli(0.79)*Exponential(127.1)]
             developer info: "Sources for distribution results: Work on processInjection and https://www.spiceworks.com/marketing/network-security/pdf-report/"
