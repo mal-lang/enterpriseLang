@@ -323,17 +323,17 @@ If the adversary has permission to modify existing files in this directory, they
 
 This needs a probability distribution.
 
-### Sudo  (needs)
+### Sudo 
 
 Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges. You must have elevated privileges to edit this file though.
 
-With proper management, this attack can be blocked.
+With proper management, this attack technique can be blocked.
 
 We could assess this probability distribution to be binary if we find one for the mitigations.
 
 Many exploits of commands that can be executed via sudo can be found and performed in no time.
 
-### Sudo Caching (needs)
+### Sudo Caching
 
 Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password. /var/db/sudo's timestamp can be monitored to see if it falls within the timestamp_timeout range. If it does, then malware can execute sudo commands without needing to supply the user's password. When tty_tickets is disabled, adversaries can do this from any tty for that user.
 
@@ -351,7 +351,7 @@ Note 2 : Some of the mitigations listed in the MITRE framework only aim at mitig
 
 ### Web Shell
 
-A Web shell is a Web script that is placed on an openly accessible Web server to allow an adversary to use the Web server as a gateway into a network. A Web shell may provide a set of functions to execute or a command-line interface on the system that hosts the Web server. In addition to a server-side script, a Web shell may have a client interface program that is used to talk to the Web server (see, for example, China Chopper Web shell client). [1]
+A Web shell is a Web script that is placed on an openly accessible Web server to allow an adversary to use the Web server as a gateway into a network. A Web shell may provide a set of functions to execute or a command-line interface on the system that hosts the Web server. In addition to a server-side script, a Web shell may have a client interface program that is used to talk to the Web server (see, for example, China Chopper Web shell client).
 
 Web shells may serve as Redundant Access or as a persistence mechanism in case an adversary's primary access methods are detected and removed.
 

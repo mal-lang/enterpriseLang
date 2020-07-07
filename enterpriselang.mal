@@ -2655,13 +2655,15 @@ category Software {
             ->  sudo
 
         & sudo
+            developer info: "Binary probability distribution."
             user info: "Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges."
             ->  service.attemptExploitationForPrivilegeEscalation
 
         | _sudoCaching @hidden
             ->  sudoCaching
 
-        & sudoCaching
+        & sudoCaching [Exponential(288)]
+            developer info: "Sources for distribution results: https://www.sudo.ws/man/1.8.15/sudoers.man.html"
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
             ->  service.attemptExploitationForPrivilegeEscalation
 
