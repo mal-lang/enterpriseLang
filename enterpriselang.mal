@@ -661,8 +661,8 @@ category Software {
                 exploitationForDefenseEvasion,
                 exploitationOfRemoteServices  
 
-        # updateSoftware [Bernoulli(0.34)]
-            developer info: "Sources for distribution result: https://www.usenix.org/system/files/conference/soups2015/soups15-paper-ion.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture"
+        # updateSoftware [Bernoulli(0.567125)]
+            developer info: "Sources for distribution result: https://www.usenix.org/system/files/conference/soups2015/soups15-paper-ion.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture, https://www.bitsight.com/press-releases/thousands-organizations-run-majority-of-computers-onoutdated-operating-systems, https://cdn2.hubspot.net/hubfs/486579/Avast_PC_Trends_Report_2019.pdf, https://netmarketshare.com/operating-system-market-share.aspx?, https://gs.statcounter.com/windows-version-market-share/desktop/worldwide/#monthly-201906-202006, https://www.darkreading.com/mobile/more-than-half-of-android-devices-run-outdated-browsers/d/d-id/1327483, https://www.pcworld.com/article/2013737/out-of-date-vulnerable-browsers-put-users-at-risk.html"
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  applicationDeploymentSoftware,
                 exploitationForDefenseEvasion,
@@ -1580,7 +1580,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1033/"
             ->  service.browser.browserExtensions
 
-        # updateSoftware [Bernoulli(0.34)]
+        # updateSoftware [Bernoulli(0.567125)]
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  firmwareCorruption,
                 service.browser.driveByCompromise,
@@ -2565,7 +2565,7 @@ category Software {
             ->  lLMNR_NBT_NS_PoisoningAndRelay,
                 forcedAuthentication 
 
-        # updateSoftware [Bernoulli(0.34)]
+        # updateSoftware [Bernoulli(0.567125)]
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
                 applicationShimming,
