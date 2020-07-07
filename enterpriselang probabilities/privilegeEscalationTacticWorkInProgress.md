@@ -105,7 +105,7 @@ The AppInit DLL functionality is disabled in Windows 8 and later versions when s
 
 This then needs a probability distribution.
 
-### Application Shimming (needs review)
+### Application Shimming 
 
 To keep shims secure, Windows designed them to run in user mode so they cannot modify the kernel and you must have administrator privileges to install a shim. However, certain shims can be used to Bypass User Account Control (UAC) (RedirectEXE), inject DLLs into processes (InjectDLL), disable Data Execution Prevention (DisableNX) and Structure Exception Handling (DisableSEH), and intercept memory addresses (GetProcAddress). *Similar to Hooking*, utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc.
 

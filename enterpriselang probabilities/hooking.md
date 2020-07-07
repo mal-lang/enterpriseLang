@@ -1,6 +1,6 @@
 # Hooking
 
-## Context (https://attack.mitre.org/techniques/T1181/)
+## Context (https://attack.mitre.org/techniques/T1179/)
 
 Windows processes often leverage application programming interface (API) functions to perform tasks that require reusable system resources. Windows API functions are typically stored in dynamic-link libraries (DLLs) as exported functions.
 

@@ -2342,6 +2342,7 @@ category Software {
             ->  applicationShimming
             
         & applicationShimming
+            developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
             ->  persistence, // use application shim databases for persistence
                 attemptProcessInjection,
