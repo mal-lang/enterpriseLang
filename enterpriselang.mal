@@ -94,8 +94,7 @@ category Software {
                 os.windows.deobfuscateOrDecodeFilesOrInformation,
                 os.windows._dLLSearchOrderHijacking,
                 os.windows.domainTrustDiscovery,
-                os.windows.dynamicDataExchange,  
-                os.windows.emailStorageCollection,
+                os.windows.dynamicDataExchange,
                 os.windows.mshta,
                 os.windows.attemptExecutionThroughAPI,
                 os.windows.executionThroughModuleLoad,
@@ -204,8 +203,7 @@ category Software {
 
         | userCredentials
             ->  userRights,
-                os._validAccounts,  
-                os.windows.outlookEmailCollection,
+                os._validAccounts,
                 os.computer.router.internalNetwork.exchangeServerCollection,
                 os.service.userRemoteServicesLogin
 
@@ -277,11 +275,13 @@ category Software {
     } 
 
     asset RemoteDesktopUser extends UserAccount {
-        | userRights
-            +>  os.windows.remoteDesktopProtocol
+        | userCredentials
+            +>  os.windows.attemptRemoteDesktopProtocol,
+                os.windows.attemptEmailCollection
 
         # multiFactorAuthentication
-            ->  os.windows.remoteDesktopProtocol
+            ->  os.windows.remoteDesktopProtocol,
+                os.windows.emailCollection
     }     
 
     asset AdminAccount {
@@ -561,7 +561,8 @@ category Software {
         | spearphishingViaSocialMedia [Bernoulli(0.4475)*Exponential(0.286)]
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  browser.attemptSpearphishingAttachment,
-                browser.attemptSpearphishingLink
+                browser.attemptSpearphishingLink,
+                os.attemptBruteForce // https://www.us-cert.gov/ncas/alerts/TA18-086A
 
         | attemptSupplyChainCompromise @hidden [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
             developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
@@ -1301,7 +1302,7 @@ category Software {
                 dataSizedTransfer,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2,
+                attemptExfiltrationOverC2Channel,
                 automatedExfiltration,
                 dataEncrypted, 
                 dataStaged    
@@ -1311,7 +1312,7 @@ category Software {
                 computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2,
+                attemptExfiltrationOverC2Channel,
                 dataEncrypted,
                 dataStaged,
                 automatedExfiltration,
@@ -1323,7 +1324,7 @@ category Software {
             ->  computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2,
+                attemptExfiltrationOverC2Channel,
                 automatedExfiltration
 
         | dataSizedTransfer
@@ -1335,7 +1336,7 @@ category Software {
             ->  computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2,
+                attemptExfiltrationOverC2Channel,
                 dataCompressed,
                 dataEncrypted
         
@@ -1357,14 +1358,14 @@ category Software {
                 computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2
+                attemptExfiltrationOverC2Channel
 
         & inhibitSystemRecovery {A}
             user info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."    
             ->  systemShutdownOrReboot
 
         | scheduledExfiltration
-            ->  exfiltrationOverC2,
+            ->  attemptExfiltrationOverC2Channel,
                 exfiltrationOverAternativeProtocol       
     
         | exfiltrationOverAternativeProtocol
@@ -1381,12 +1382,16 @@ category Software {
             ->  dataCollected, 
                 sensitiveDataCollected
 
-        | exfiltrationOverC2
+        | attemptExfiltrationOverC2Channel @hidden
+            ->  exfiltrationOverC2Channel
+
+        & exfiltrationOverC2Channel
+            user info: " Data exfiltration is performed over the Command and Control channel."
             ->  computer.router.internalNetwork.dataExfiltration
 
         | automatedExfiltration
             ->  exfiltrationOverAternativeProtocol,
-                exfiltrationOverC2
+                attemptExfiltrationOverC2Channel
 
         & networkServiceScan
             user info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
@@ -2043,13 +2048,17 @@ category Software {
                 codeProxyExecution,
                 componentObjectModelHijacking // establish Persistence via Component Object Model Hijacking
 
+        | attemptRemoteDesktopProtocol @hidden
+            ->  remoteDesktopProtocol
+
         & remoteDesktopProtocol [Bernoulli(0.5561)*Exponential(480)]
             user info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
             developer info: "Sources used for distribution result: https://www.fireeye.com/blog/threat-research/2020/02/mtrends-2020-insights-from-the-front-lines.html, https://duo.com/decipher/attackers-combine-attacks-against-rdp-with-ransomware, https://www.securitymagazine.com/articles/90983-percent-of-organizations-exhibit-malicious-remote-desktop-protocol-rdp-behaviors, https://medium.com/enterprise-nxt/2020-ransomware-attacks-still-mostly-through-unsecured-rdp-b167fefcd490, https://www.youtube.com/watch?v=Olgso_oXQa8"
             ->  attemptAccessibilityFeatures,
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
-                graphicalUserInterface
+                graphicalUserInterface,
+                attemptExfiltrationOverC2Channel
 
         & replicationThroughRemovableMedia [Bernoulli(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
@@ -2278,8 +2287,9 @@ category Software {
         | systemShutdownOrReboot {A}
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."  
 
-        | timestomp
+        | timestomp [Bernoulli(0.0396)]
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://github.com/jackson5sec/timestomp" 
             ->  bypassHostForensicAnalysis
 
         & queryRegistery
@@ -2330,13 +2340,13 @@ category Software {
                 service.attemptExploitationForPrivilegeEscalation,
                 persistence
 
-        & emailStorageCollection
-            user info: "Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
-            ->  dataCollected
+        | attemptEmailCollection @hidden
+            ->  emailCollection
 
-        & outlookEmailCollection
-            user info: "Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
-            ->  dataCollected
+        & emailCollection
+            user info: "Adversaries may target user email to collect sensitive information from a target."
+            ->  dataCollected,
+                remoteDesktopProtocol // https://www.us-cert.gov/ncas/alerts/TA18-086A
         
         | attemptApplicationShimming @hidden
             ->  applicationShimming
@@ -2408,6 +2418,7 @@ category Software {
                 bypassUserAccountControl,
                 dLLSearchOrderHijacking,
                 dLLSideLoading,
+                emailCollection,
                 fileSystemPermissionsWeakness,
                 modifyExistingService,
                 pathInterception,
@@ -2541,8 +2552,7 @@ category Software {
 
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
-            +>  emailStorageCollection,
-                outlookEmailCollection
+            +>  emailCollection
 
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
@@ -2674,8 +2684,9 @@ category Software {
             user info: "Adversaries have used systemd functionality to establish persistent access to victim systems by creating and/or modifying service unit files that cause systemd to execute malicious commands at recurring intervals, such as at system boot."
             ->  persistence
 
-        | timestomp
+        | timestomp [Bernoulli(0.0396)]
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://github.com/jackson5sec/timestomp"
             ->  bypassHostForensicAnalysis
 
         | trap [Exponential(0.1)]
@@ -3173,6 +3184,7 @@ category Network {
                 router.computer.os.customCryptographicProtocol,
                 router.computer.os.dataCompressed,
                 router.computer.os.dataEncoding,
+                router.computer.os.exfiltrationOverC2Channel,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
@@ -3283,6 +3295,7 @@ category Network {
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.connectionProxy,
                 router.computer.os.dataEncoding,
+                router.computer.os.exfiltrationOverC2Channel,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
