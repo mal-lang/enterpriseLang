@@ -94,10 +94,11 @@ category Software {
                 os.windows.deobfuscateOrDecodeFilesOrInformation,
                 os.windows._dLLSearchOrderHijacking,
                 os.windows.domainTrustDiscovery,
-                os.windows.dynamicDataExchange,  
-                os.windows.emailStorageCollection,
+                os.windows.dynamicDataExchange,
                 os.windows.mshta,
                 os.windows.attemptExecutionThroughAPI,
+                os.windows.attemptRemoteDesktopProtocol,
+                os.windows.attemptEmailCollection,
                 os.windows.executionThroughModuleLoad,
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
@@ -204,8 +205,7 @@ category Software {
 
         | userCredentials
             ->  userRights,
-                os._validAccounts,  
-                os.windows.outlookEmailCollection,
+                os._validAccounts,
                 os.computer.router.internalNetwork.exchangeServerCollection,
                 os.service.userRemoteServicesLogin
 
@@ -277,11 +277,9 @@ category Software {
     } 
 
     asset RemoteDesktopUser extends UserAccount {
-        | userRights
-            +>  os.windows.remoteDesktopProtocol
-
         # multiFactorAuthentication
-            ->  os.windows.remoteDesktopProtocol
+            ->  os.windows.remoteDesktopProtocol,
+                os.windows.emailCollection
     }     
 
     asset AdminAccount {
@@ -561,7 +559,8 @@ category Software {
         | spearphishingViaSocialMedia //(0.4475)*Exponential(0.286)]
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  browser.attemptSpearphishingAttachment,
-                browser.attemptSpearphishingLink
+                browser.attemptSpearphishingLink,
+                os.attemptBruteForce // https://www.us-cert.gov/ncas/alerts/TA18-086A
 
         | attemptSupplyChainCompromise @hidden //(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
             developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
@@ -661,8 +660,8 @@ category Software {
                 exploitationForDefenseEvasion,
                 exploitationOfRemoteServices  
 
-        # updateSoftware //(0.34)]
-            developer info: "Sources for distribution result: https://www.usenix.org/system/files/conference/soups2015/soups15-paper-ion.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture"
+        # updateSoftware //(0.567125)]
+            developer info: "Sources for distribution result: https://www.usenix.org/system/files/conference/soups2015/soups15-paper-ion.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture, https://www.bitsight.com/press-releases/thousands-organizations-run-majority-of-computers-onoutdated-operating-systems, https://cdn2.hubspot.net/hubfs/486579/Avast_PC_Trends_Report_2019.pdf, https://netmarketshare.com/operating-system-market-share.aspx?, https://gs.statcounter.com/windows-version-market-share/desktop/worldwide/#monthly-201906-202006, https://www.darkreading.com/mobile/more-than-half-of-android-devices-run-outdated-browsers/d/d-id/1327483, https://www.pcworld.com/article/2013737/out-of-date-vulnerable-browsers-put-users-at-risk.html"
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  applicationDeploymentSoftware,
                 exploitationForDefenseEvasion,
@@ -688,6 +687,9 @@ category Software {
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
             ->  browser.spearphishingLink, //  send a link through Spearphishing Link to the target user to entice them to grant access to the application
                 applicationAccessToken
+
+        | attemptTrustedRelationship
+            ->  trustedRelationship
 
         & trustedRelationship //(0.40)*TruncatedNormal(0.042,0.021)]
             user info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
@@ -803,8 +805,9 @@ category Software {
             ->  adminAccount.adminCredentials,
                 userAccount.userCredentials
 
-        & accountDiscovery
+        & accountDiscovery //(0.01967)]
             user info: "get account names and information"
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, Red Canary's ATT&CK technique percentages Top 50 Google Sheets Document, https://krisk.io/post/sok-attack-securecomm19.pdf, https://attack.mitre.org/techniques/T1087/"
 
         & domainDiscovery
             user info: "get domain names and information"
@@ -820,7 +823,7 @@ category Software {
                 systemNetworkConnectionsDiscovery,
                 service.browser.installExtensions,
                 computer.peripheralDevice.removableMedia.infectedMedia,
-                service.thirdpartySoftware.trustedRelationship
+                service.thirdpartySoftware.attemptTrustedRelationship
 
         & connectionProxy //(0.825)]
             user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
@@ -1109,6 +1112,7 @@ category Software {
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/process-injection/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  service.attemptExploitationForPrivilegeEscalation,
                 bypassAntivirus,
+                persistence,
                 bypassProcessWhitelisting
 
         & redundantAccess
@@ -1137,7 +1141,7 @@ category Software {
         & runtimeDataManipulation {I}
             user info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
-        & standardCryptographicProtocol [TruncatedNormal(26.82,15.913)]
+        & standardCryptographicProtocol //(26.82,15.913)]
             user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
             developer info: "TTC assumed instant. Sources for distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://blogs.cisco.com/security/malwares-use-of-tls-and-encryption, https://news.sophos.com/en-us/2020/02/18/nearly-a-quarter-of-malware-now-communicates-using-tls/, https://www.cyren.com/blog/articles/over-one-third-of-malware-uses-https, https://istlsfastyet.com/, https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/"
             ->  computer.router.internalNetwork.c2Connected
@@ -1214,7 +1218,7 @@ category Software {
         & bruteForce //(0.3)]
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper."
-            ->  userAccount.userCredentials           
+            ->  userAccount.userCredentials // https://us-cert.cisa.gov/ncas/alerts/TA18-086A          
 
         | attemptAntivirusCheck @hidden
             ->  antivirusCheck    
@@ -1299,7 +1303,7 @@ category Software {
                 dataSizedTransfer,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2,
+                attemptExfiltrationOverC2Channel,
                 automatedExfiltration,
                 dataEncrypted, 
                 dataStaged    
@@ -1309,7 +1313,7 @@ category Software {
                 computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2,
+                attemptExfiltrationOverC2Channel,
                 dataEncrypted,
                 dataStaged,
                 automatedExfiltration,
@@ -1321,7 +1325,7 @@ category Software {
             ->  computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2,
+                attemptExfiltrationOverC2Channel,
                 automatedExfiltration
 
         | dataSizedTransfer
@@ -1333,7 +1337,7 @@ category Software {
             ->  computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2,
+                attemptExfiltrationOverC2Channel,
                 dataCompressed,
                 dataEncrypted
         
@@ -1355,14 +1359,14 @@ category Software {
                 computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                exfiltrationOverC2
+                attemptExfiltrationOverC2Channel
 
         & inhibitSystemRecovery {A}
             user info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."    
             ->  systemShutdownOrReboot
 
         | scheduledExfiltration
-            ->  exfiltrationOverC2,
+            ->  attemptExfiltrationOverC2Channel,
                 exfiltrationOverAternativeProtocol       
     
         | exfiltrationOverAternativeProtocol
@@ -1379,12 +1383,16 @@ category Software {
             ->  dataCollected, 
                 sensitiveDataCollected
 
-        | exfiltrationOverC2
+        | attemptExfiltrationOverC2Channel @hidden
+            ->  exfiltrationOverC2Channel
+
+        & exfiltrationOverC2Channel
+            user info: " Data exfiltration is performed over the Command and Control channel."
             ->  computer.router.internalNetwork.dataExfiltration
 
         | automatedExfiltration
             ->  exfiltrationOverAternativeProtocol,
-                exfiltrationOverC2
+                attemptExfiltrationOverC2Channel
 
         & networkServiceScan
             user info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
@@ -1578,7 +1586,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1033/"
             ->  service.browser.browserExtensions
 
-        # updateSoftware //(0.34)]
+        # updateSoftware //(0.567125)]
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  firmwareCorruption,
                 service.browser.driveByCompromise,
@@ -1674,9 +1682,9 @@ category Software {
             ->  appCertDLLs 
             
         & appCertDLLs
+            developer info: "Binaries probability distribution. Source for distribution results : Process Injection result and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
-            ->  persistence,
-                service.attemptExploitationForPrivilegeEscalation
+            ->  attemptProcessInjection
 
         & appInitDLLs //(0.79)*Exponential(127.1)]
             developer info: "Sources for distribution results: Work on processInjection and https://www.spiceworks.com/marketing/network-security/pdf-report/"
@@ -1805,10 +1813,10 @@ category Software {
             ->  executeCode    
         
         | extraWindowMemoryInjection
+            developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
-            ->  bypassAntivirus,
-                bypassHostIntrusionPrevention,
-                service.attemptExploitationForPrivilegeEscalation
+            ->  bypassHostIntrusionPrevention,
+                attemptProcessInjection
 
         | fileSystemLogicalOffsets
             user info: "Windows allows programs to have direct access to logical volumes. This technique bypasses Windows file access controls as well as file system monitoring tools."
@@ -1840,10 +1848,10 @@ category Software {
                 bypassFileSystemAccessControls
 
         | imageFileExecutionOptionsInjection
+            developer info: "Binary probability distribution. Soucres for distribution results: process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
             ->  bypassAutorunsAnalysis,
-                persistence,
-                service.attemptExploitationForPrivilegeEscalation
+                attemptProcessInjection
 
         | attemptIndicatorBlocking @hidden
             ->  indicatorBlocking
@@ -1941,8 +1949,9 @@ category Software {
             ->  sysAdmin.systemCredentials,
                 adminAccount.windowsAdmin.adminCredentials
 
-        & passTheHash
+        & passTheHash //(0.16)*Exponential(480)]
             user info: "This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash."
+            developer info: "Sources used for distribution result: https://www.securityweek.com/pass-hash-remains-poorly-defended-threat-vector, https://www.youtube.com/watch?v=6em5TUASfHM, https://www.youtube.com/watch?v=bTYR_xYSDIk"
             ->  computer.router.internalNetwork.remoteSystemsConnection // PtH may be used to perform actions on local or remote systems
 
         | attemptPassTheTicket @hidden
@@ -2040,13 +2049,17 @@ category Software {
                 codeProxyExecution,
                 componentObjectModelHijacking // establish Persistence via Component Object Model Hijacking
 
+        | attemptRemoteDesktopProtocol @hidden
+            ->  remoteDesktopProtocol
+
         & remoteDesktopProtocol //(0.5561)*Exponential(480)]
             user info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
             developer info: "Sources used for distribution result: https://www.fireeye.com/blog/threat-research/2020/02/mtrends-2020-insights-from-the-front-lines.html, https://duo.com/decipher/attackers-combine-attacks-against-rdp-with-ransomware, https://www.securitymagazine.com/articles/90983-percent-of-organizations-exhibit-malicious-remote-desktop-protocol-rdp-behaviors, https://medium.com/enterprise-nxt/2020-ransomware-attacks-still-mostly-through-unsecured-rdp-b167fefcd490, https://www.youtube.com/watch?v=Olgso_oXQa8"
             ->  attemptAccessibilityFeatures,
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
-                graphicalUserInterface
+                graphicalUserInterface,
+                attemptExfiltrationOverC2Channel
 
         & replicationThroughRemovableMedia //(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
@@ -2067,8 +2080,9 @@ category Software {
             user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
             ->  persistence
 
-        & screensaver
+        & screensaver //(0.01605)*Exponential(96)]
             user info: "Adversaries can use screensaver settings to maintain persistence by setting the screensaver to run malware after a certain timeframe of user inactivity."
+            developer info: "Sources for distribution result: https://malware.wikia.org/wiki/MyDoom, https://unit42.paloaltonetworks.com/mydoom-still-active-in-2019/, https://www.menlosecurity.com/blog/only-4-percent-of-users-click-on-phishing-emails.-yet-those-4-percent-never-learn, https://study.sagepub.com/chiricogsp, https://www.welivesecurity.com/wp-content/uploads/2017/08/eset-gazer.pdf" 
             ->  persistence
 
         | searchOrderHijacking
@@ -2136,7 +2150,7 @@ category Software {
         | attemptSoftwarePacking @hidden
             ->  softwarePacking
 
-        & softwarePacking [TruncatedNormal(0.56784,0.25219)]
+        & softwarePacking //(0.56784,0.25219)]
             user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
             developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf, https://www.researchgate.net/publication/301902892_Entropy_analysis_to_classify_unknown_packing_algorithms_for_malware_detection, https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://www.lastline.com/labsblog/malware-packing/, www.blackhat.com/presentations/bh-usa-06/BH-US-06-Morgenstern.pdf"
             ->  indicatorRemovalFromTools,
@@ -2240,11 +2254,12 @@ category Software {
             ->  commandLineInterface,
                 executeCode 
             
-        | hooking             
+        | hooking           
+            developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"  
             user info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
             ->  executeCode,
                 captureAPICalls,
-                service.attemptExploitationForPrivilegeEscalation
+                attemptProcessInjection
 
         | hypervisor           
             user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
@@ -2273,8 +2288,9 @@ category Software {
         | systemShutdownOrReboot {A}
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."  
 
-        | timestomp
+        | timestomp //(0.0396)]
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://github.com/jackson5sec/timestomp" 
             ->  bypassHostForensicAnalysis
 
         & queryRegistery
@@ -2325,20 +2341,22 @@ category Software {
                 service.attemptExploitationForPrivilegeEscalation,
                 persistence
 
-        & emailStorageCollection
-            user info: "Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
-            ->  dataCollected
+        | attemptEmailCollection @hidden
+            ->  emailCollection
 
-        & outlookEmailCollection
-            user info: "Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
-            ->  dataCollected
+        & emailCollection
+            user info: "Adversaries may target user email to collect sensitive information from a target."
+            ->  dataCollected,
+                attemptRemoteDesktopProtocol // https://www.us-cert.gov/ncas/alerts/TA18-086A
         
         | attemptApplicationShimming @hidden
             ->  applicationShimming
             
         & applicationShimming
+            developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
             ->  persistence, // use application shim databases for persistence
+                attemptProcessInjection,
                 hooking, // the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS
                 attemptBypassUserAccountControl // certain shims can be used to Bypass User Account Control (UAC)
 
@@ -2401,6 +2419,7 @@ category Software {
                 bypassUserAccountControl,
                 dLLSearchOrderHijacking,
                 dLLSideLoading,
+                emailCollection,
                 fileSystemPermissionsWeakness,
                 modifyExistingService,
                 pathInterception,
@@ -2534,8 +2553,7 @@ category Software {
 
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
-            +>  emailStorageCollection,
-                outlookEmailCollection
+            +>  emailCollection
 
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
@@ -2561,7 +2579,7 @@ category Software {
             ->  lLMNR_NBT_NS_PoisoningAndRelay,
                 forcedAuthentication 
 
-        # updateSoftware //(0.34)]
+        # updateSoftware //(0.567125)]
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
                 applicationShimming,
@@ -2665,8 +2683,9 @@ category Software {
             user info: "Adversaries have used systemd functionality to establish persistent access to victim systems by creating and/or modifying service unit files that cause systemd to execute malicious commands at recurring intervals, such as at system boot."
             ->  persistence
 
-        | timestomp
+        | timestomp //(0.0396)]
             user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://github.com/jackson5sec/timestomp"
             ->  bypassHostForensicAnalysis
 
         | trap //(0.1)]
@@ -3164,6 +3183,7 @@ category Network {
                 router.computer.os.customCryptographicProtocol,
                 router.computer.os.dataCompressed,
                 router.computer.os.dataEncoding,
+                router.computer.os.exfiltrationOverC2Channel,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
@@ -3274,6 +3294,7 @@ category Network {
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.connectionProxy,
                 router.computer.os.dataEncoding,
+                router.computer.os.exfiltrationOverC2Channel,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
