@@ -20,3 +20,4 @@ Binary probability distribution
 ## Discussion
 
 Based on the source I found, I assumed that all the techniques that could be sub techniques of Process Injection would have the same probability distribution and TTC. There might be some variations in reality but for the sake of the model I decided to use a general probability distribution for all Process Injection subtechniques.
+Further work could eventually lead to adding a probability for all the sub techniques for Process Injection and then remove the general probability distribution given to Process Injection.

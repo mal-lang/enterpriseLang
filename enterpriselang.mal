@@ -2244,11 +2244,12 @@ category Software {
             ->  commandLineInterface,
                 executeCode 
             
-        | hooking             
+        | hooking           
+            developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"  
             user info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
             ->  executeCode,
                 captureAPICalls,
-                service.attemptExploitationForPrivilegeEscalation
+                attemptProcessInjection
 
         | hypervisor           
             user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
@@ -2343,6 +2344,7 @@ category Software {
         & applicationShimming
             user info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
             ->  persistence, // use application shim databases for persistence
+                attemptProcessInjection,
                 hooking, // the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS
                 attemptBypassUserAccountControl // certain shims can be used to Bypass User Account Control (UAC)
 

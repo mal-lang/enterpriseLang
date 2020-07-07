@@ -168,7 +168,7 @@ Execution granted through EWM injection may take place in the address space of a
 ~~Process Injection is the only child but according to the mitre description it's not and there are others.~~ I was wrong, process injection is a child because this technique is a Procee Injection sub technique .
 https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process
 
-### File System Permission Weakness
+### File System Permission Weakness (needs)
 
 persistence might be a child.
 
@@ -205,7 +205,7 @@ This needs a probability distribution.
 
 Note : This is the third technique I believe that is "similar to process injection". Maybe we could assume that all those techniques have the same probability (at least as a first approximation).
 
-### Launch Daemon
+### Launch Daemon (needs)
 
 Adversaries may install a new launch daemon that can be configured to execute at startup by using launchd or launchctl to load a plist into the appropriate directories. The daemon name may be disguised by using a name from a related operating system or benign software. Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root.
 
@@ -215,7 +215,7 @@ This should have a TTC (persistence) and prevalence (rather low according to the
 
 REVIEW link with lanchd and launchctl
 
-### New Service  
+### New Service  (needs) 
 
 Masquerading might be a parent rather than a child. serviceExecution might be a child rather than a parent.
 
@@ -223,7 +223,7 @@ This needs a probability distribution.
 
 Link with Launch Daemon and Launch ctl? (CAPEC)
 
-### Parent PID spoofing 
+### Parent PID spoofing (needs)
 
 This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
 
@@ -241,11 +241,11 @@ Looking at the children and the technique in the MITRE framework, this specific 
 
 These techniques can be used for persistence, REVIEW them to check they actually do in the code.
 
-### Plist Modification
+### Plist Modification (needs)
 
 This needs a probability distribution, the probability that a simple user has write access to the plist.
 
-### Port Monitors
+### Port Monitors (needs)
 
 This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
 
@@ -255,7 +255,7 @@ Setting up the port monitor to execute the chosen DLL at startup doesn't seem to
 
 This needs a probability distribution, the probability that the permissions will allow writing a fully-qualified pathname for that DLL to HKLM\SYSTEM\CurrentControlSet\Control\Print\Monitors. 
 
-### PowerShell Profile
+### PowerShell Profile (needs)
 
 An administrator can also configure a profile that applies to all users and host programs on the local compute
 
@@ -279,7 +279,7 @@ Probability found by Love
 
 Note: Admin Rights are required for remote execution via Scheduled Tasks.
 
-### Service Registry Permission Weakness
+### Service Registry Permission Weakness (needs)
 
 If the permissions for users and groups are not properly set and allow access to the Registry keys for a service, then adversaries can change the service binPath/ImagePath to point to a different executable under their control. When the service starts or is restarted, then the adversary-controlled program will execute, allowing the adversary to gain persistence and/or privilege escalation to the account context the service is set to execute under (local/domain account, SYSTEM, LocalService, or NetworkService).
 
@@ -295,7 +295,7 @@ Note: The mitigation isn't named as it is in the MITRE framework, I don't know i
 
 In the code, this attack step is *split into 2*, on part for persistence, the other for privilege escalation, which is a good thing to do for other attack steps that work similarly and might have a different succes rate for privilege escalation and persistence.
 
-### Setuid & Setgid
+### Setuid & Setgid (needs)
 
 An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context. Additionally, adversaries can use this mechanism on their own malware to make sure they're able to execute in elevated contexts in the future.
 
@@ -303,7 +303,7 @@ With proper OS Configuration, this attack can be blocked.
 
 We could assess this probability distribution to be binary if we find one for the mitigation.
 
-### SID-History Injection
+### SID-History Injection (needs)
 
 Adversaries may use this mechanism for privilege escalation. With Domain Administrator (or equivalent) rights, harvested or well-known SID values may be inserted into SID-History to enable impersonation of arbitrary users/groups such as Enterprise Administrators. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management.
 
@@ -313,7 +313,7 @@ We could assess this probability distribution to be binary if we find one for th
 
 Note : This isn't the first technique that seems to be used for Lateral Movement too but isn't listed in the Lateral Movement Tactic.
 
-### Startup Items
+### Startup Items (needs)
 
 An adversary can create the appropriate folders/files in the StartupItems directory to register their own persistence mechanism. Additionally, since StartupItems run during the bootup phase of macOS, they will run as root. If an adversary is able to modify an existing Startup Item, then they will be able to Privilege Escalate as well.
 
@@ -323,7 +323,7 @@ If the adversary has permission to modify existing files in this directory, they
 
 This needs a probability distribution.
 
-### Sudo 
+### Sudo  (needs)
 
 Adversaries can take advantage of these configurations to execute commands as other users or spawn processes with higher privileges. You must have elevated privileges to edit this file though.
 
@@ -333,7 +333,7 @@ We could assess this probability distribution to be binary if we find one for th
 
 Many exploits of commands that can be executed via sudo can be found and performed in no time.
 
-### Sudo Caching 
+### Sudo Caching (needs)
 
 Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password. /var/db/sudo's timestamp can be monitored to see if it falls within the timestamp_timeout range. If it does, then malware can execute sudo commands without needing to supply the user's password. When tty_tickets is disabled, adversaries can do this from any tty for that user.
 
