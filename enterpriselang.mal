@@ -2070,8 +2070,9 @@ category Software {
             user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
             ->  persistence
 
-        & screensaver
+        & screensaver [Bernoulli(0.01605)*Exponential(96)]
             user info: "Adversaries can use screensaver settings to maintain persistence by setting the screensaver to run malware after a certain timeframe of user inactivity."
+            developer info: "Sources for distribution result: https://malware.wikia.org/wiki/MyDoom, https://unit42.paloaltonetworks.com/mydoom-still-active-in-2019/, https://www.menlosecurity.com/blog/only-4-percent-of-users-click-on-phishing-emails.-yet-those-4-percent-never-learn, https://study.sagepub.com/chiricogsp, https://www.welivesecurity.com/wp-content/uploads/2017/08/eset-gazer.pdf" 
             ->  persistence
 
         | searchOrderHijacking
