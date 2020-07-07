@@ -97,6 +97,8 @@ category Software {
                 os.windows.dynamicDataExchange,
                 os.windows.mshta,
                 os.windows.attemptExecutionThroughAPI,
+                os.windows.attemptRemoteDesktopProtocol,
+                os.windows.attemptEmailCollection,
                 os.windows.executionThroughModuleLoad,
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
@@ -275,10 +277,6 @@ category Software {
     } 
 
     asset RemoteDesktopUser extends UserAccount {
-        | userCredentials
-            +>  os.windows.attemptRemoteDesktopProtocol,
-                os.windows.attemptEmailCollection
-
         # multiFactorAuthentication
             ->  os.windows.remoteDesktopProtocol,
                 os.windows.emailCollection
@@ -690,6 +688,9 @@ category Software {
             ->  browser.spearphishingLink, //  send a link through Spearphishing Link to the target user to entice them to grant access to the application
                 applicationAccessToken
 
+        | attemptTrustedRelationship @hidden
+            ->  trustedRelationship
+
         & trustedRelationship [Bernoulli(0.40)*TruncatedNormal(0.042,0.021)]
             user info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
             developer info: "Sources for distribution result: accenture.com/_acnmedia/PDF-116/Accenture-Cybersecurity-Report-2020.pdf, https://enterprise.verizon.com/resources/reports/DBIR_2018_Report_execsummary.pdf" 
@@ -822,7 +823,7 @@ category Software {
                 systemNetworkConnectionsDiscovery,
                 service.browser.installExtensions,
                 computer.peripheralDevice.removableMedia.infectedMedia,
-                service.thirdpartySoftware.trustedRelationship
+                service.thirdpartySoftware.attemptTrustedRelationship
 
         & connectionProxy [Bernoulli(0.825)]
             user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
@@ -1217,7 +1218,7 @@ category Software {
         & bruteForce [Exponential(0.3)]
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper."
-            ->  userAccount.userCredentials           
+            ->  userAccount.userCredentials // https://us-cert.cisa.gov/ncas/alerts/TA18-086A
 
         | attemptAntivirusCheck @hidden
             ->  antivirusCheck    
@@ -2346,7 +2347,7 @@ category Software {
         & emailCollection
             user info: "Adversaries may target user email to collect sensitive information from a target."
             ->  dataCollected,
-                remoteDesktopProtocol // https://www.us-cert.gov/ncas/alerts/TA18-086A
+                attemptRemoteDesktopProtocol // https://www.us-cert.gov/ncas/alerts/TA18-086A
         
         | attemptApplicationShimming @hidden
             ->  applicationShimming
