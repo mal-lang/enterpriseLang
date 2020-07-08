@@ -131,7 +131,7 @@ If the program is configured to run at a higher privilege level than the current
 
 This technique is similar to *DLL Search Order Hijacking*, on macOS and OS X. We'll assume that the probability distribution for dylibHijacking is the same as the one for DLL Search Order Hijacking.
 
-### Elevated Execution with Prompt (needs review)
+### Elevated Execution with Prompt 
 
 Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials.The purpose of this API is to give application developers an easy way to perform operations with root privileges, such as for application installation or updating. This API does not validate that the program requesting root privileges comes from a reputable source or has been maliciously modified. Although this API is deprecated, it still fully functions in the latest releases of macOS. *When calling this API, the user will be prompted to enter their credentials* but no checks on the origin or integrity of the program are made. The program calling the API may also load world writable files which can be modified to perform malicious behavior with elevated privileges.
 
@@ -139,7 +139,6 @@ Adversaries may abuse AuthorizationExecuteWithPrivileges to obtain root privileg
 
 This suggests that the masquerading technique may be used before calling the API in order to execute malicious code with privilege. Masquerading should then be a parent for this technique. Persistence might be a child too.
 
-This needs review.
 
 ### Emond
 
