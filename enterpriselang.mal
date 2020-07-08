@@ -1825,11 +1825,12 @@ category Software {
         | attemptFileSystemPermissionsWeakness @hidden
             ->  fileSystemPermissionsWeakness
 
-        & fileSystemPermissionsWeakness
+        & fileSystemPermissionsWeakness [Exponential(1)]
             user info: "Adversaries may use this technique to replace legitimate binaries with malicious ones as a means of executing code at a higher permissions level."
             ->  executeCode,
                 persistence,
-                service.attemptExploitationForPrivilegeEscalation
+                _dLLSearchOrderHijacking,
+                attemptBypassUserAccountControl
 
         & forcedAuthentication
             user info: "Adversaries may take advantage of this behavior to gain access to user account hashes through forced SMB authentication."

@@ -167,11 +167,9 @@ Execution granted through EWM injection may take place in the address space of a
 ~~Process Injection is the only child but according to the mitre description it's not and there are others.~~ I was wrong, process injection is a child because this technique is a Procee Injection sub technique .
 https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process
 
-### File System Permission Weakness (needs)
+### File System Permission Weakness
 
 persistence might be a child.
-
-This needs a probability distribution (TTC too if persistence) and maybe some review.
 
 About Executable Installers
 
