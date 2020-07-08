@@ -950,8 +950,9 @@ category Software {
             user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
             developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: https://www.wired.com/2015/03/researchers-uncover-way-hack-bios-undermine-secure-operating-systems/, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
 
-        | hiddenFilesAndDirectories
+        | hiddenFilesAndDirectories [Bernoulli(0.0106)]
             user info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a 'hidden' file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://attack.mitre.org/techniques/T1158/"
             ->  bypassHostForensicAnalysis,
                 persistence
 
