@@ -1913,8 +1913,9 @@ category Software {
                 executeCode,
                 serviceExecution
 
-        & modifyRegistry
+        & modifyRegistry [Bernoulli(0.0661)]
             user info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution. An adversary may modify these Registry keys to add new SSPs."
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.usenix.org/legacyurl/view-current-malware-behaviors, https://krisk.io/post/sok-attack-securecomm19.pdf, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc732643(v=ws.11)?redirectedfrom=MSDN"
             ->  persistence,
                 securitySupportProvider,
                 bypassHostForensicAnalysis,
