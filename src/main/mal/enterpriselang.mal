@@ -188,8 +188,8 @@ category Software {
                 os.service._exploitationForCredentialAccess,
                 os.service.attemptExploitationForDefenseEvasion,
                 os.service.attemptExploitationForPrivilegeEscalation,
-                os.service._exploitationOfRemoteServices,
-                os.service.externalRemoteServices,
+                os.service.attemptExploitationOfRemoteServices,
+                os.service.attemptExternalRemoteServices,
                 os.service.implantContainerImage,
                 os.service.remoteAccessTools,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
@@ -205,9 +205,9 @@ category Software {
 
         | userCredentials
             ->  userRights,
-                os._validAccounts,
+                os.attemptValidAccounts,
                 os.computer.router.internalNetwork.exchangeServerCollection,
-                os.service.userRemoteServicesLogin
+                os.service.attemptRemoteServices
 
         & userExecution
             developer info: "Binary probability relation."
@@ -270,10 +270,9 @@ category Software {
                 os.macOS.loginItem,
                 os.macOS.rc_common,
                 os.macOS._startupItems,
-                os.service.userRemoteServicesLogin,
-                os.service.adminRemoteServicesLogin,
+                os.service.remoteServices,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
-                os.service.thirdpartySoftware._useThirdpartySoftware 
+                os.service.thirdpartySoftware._useThirdpartySoftware
     } 
 
     asset RemoteDesktopUser extends UserAccount {
@@ -325,8 +324,7 @@ category Software {
              
         | adminCredentials
             ->  adminRights,
-                os._validAccounts,
-                os.service.adminRemoteServicesLogin
+                os.attemptValidAccounts
             
         & createUserAccount 
             ->  os.persistence          
@@ -366,7 +364,7 @@ category Software {
                 os.macOS.sudo,
                 os.macOS.sudoCaching,
                 os.service.applicationDeploymentSoftware,
-                os.service._exploitationOfRemoteServices,
+                os.service.exploitationOfRemoteServices,
                 os.service.thirdpartySoftware._useThirdpartySoftware, // grant access to application deployment systems only to a limited number of authorized administrators
                 os.service.exploitHighVulnerabilityPublicFacingApplication,
                 os.service.exploitMediumVulnerabilityPublicFacingApplication,
@@ -523,13 +521,12 @@ category Software {
 
         | serviceInformation 
 
-        & userRemoteServicesLogin
-            user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
-            ->  os.computer.router.internalNetwork.c2Connected 
+        | attemptRemoteServices @hidden
+            ->  remoteServices
 
-        & adminRemoteServicesLogin
+        & remoteServices
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
-            ->  os.computer.router.internalNetwork.c2Connected 
+            ->  os.computer.router.internalNetwork.c2Connected
 
         & transmittedDataManipulation {I}
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
@@ -611,7 +608,7 @@ category Software {
                 os.windows.sysAdmin.systemRights,
                 thirdpartySoftware._useThirdpartySoftware
 
-        | _exploitationOfRemoteServices
+        | attemptExploitationOfRemoteServices
             user info: "An adversary may need to determine if the remote system is in a vulnerable state, which may be done through Network Service Scanning or other Discovery methods."
             ->  exploitationOfRemoteServices
 
@@ -627,8 +624,8 @@ category Software {
             developer info: "Sources for distribution result: https://www.securitymetrics.com/blog/remote-access-attacks-how-protect-against-malware, https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://securitybrief.com.au/story/15-000-companies-still-critically-vulnerable-from-citrix-security-flaws-report"
             ->  os.computer.router.internalNetwork.persistence,
                 os.computer.router.internalNetwork.remoteAccess,
-                os.validAccounts,
-                _exploitationOfRemoteServices
+                attemptRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
+                attemptExploitationOfRemoteServices
 
         # applicationIsolationAndSandboxing
             user info: "https://attack.mitre.org/mitigations/M1048/"
@@ -694,7 +691,7 @@ category Software {
         & trustedRelationship //(0.40)*TruncatedNormal(0.042,0.021)]
             user info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
             developer info: "Sources for distribution result: accenture.com/_acnmedia/PDF-116/Accenture-Cybersecurity-Report-2020.pdf, https://enterprise.verizon.com/resources/reports/DBIR_2018_Report_execsummary.pdf" 
-            ->  os._validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
+            ->  os.attemptValidAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
 
         & _useThirdpartySoftware @hidden //(0.70)]
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
@@ -970,7 +967,7 @@ category Software {
         | inputCapture //(0.071)]
             user info: "Adversaries can use methods of capturing user input for obtaining credentials for Valid Accounts and information Collection that include keylogging and user input field interception."
             developer info: "Sources used for distribution result: https://www.statista.com/statistics/271037/distribution-of-most-common-malware-file-types/, https://www.rsaconference.com/industry-topics/blog/do-malware-authors-dream-of-original-code, http://keyllama.com/KeyLlamaUSB.pdf"
-            ->  _validAccounts,
+            ->  attemptValidAccounts,
                 userAccount.userCredentials 
 
         & installRootCertificate
@@ -1046,7 +1043,7 @@ category Software {
 
         & privateKeys
             user info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
-            ->  service.userRemoteServicesLogin,
+            ->  service.attemptRemoteServices,
                 inputCapture,
                 attemptBruteForce  
 
@@ -1117,7 +1114,7 @@ category Software {
 
         & redundantAccess
             user info: "Adversaries may use more than one remote access tool with varying command and control protocols as a hedge against detection. Adversaries may also attempt to gain access to Valid Accounts to use External Remote Services such as external VPNs as a way to maintain access despite interruptions to remote access tools deployed within a target network."
-            ->  _validAccounts,
+            ->  attemptValidAccounts,
                 bypassAntivirus,
                 computer.router.internalNetwork.webShell, // Web shells may serve as Redundant Access or as a persistence mechanism in case an adversary's primary access methods are detected and removed
                 computer.router.externalNetwork.bypassNetworkIntrusionDetection,
@@ -1251,14 +1248,14 @@ category Software {
             user info: "Adversaries may conduct C2 communications over a non-standard port to bypass proxies and firewalls that have been improperly configured."
             ->  computer.router.internalNetwork.c2Connected
 
-        | _validAccounts @hidden
+        | attemptValidAccounts @hidden
             ->  validAccounts    
 
         & validAccounts
             developer info: "Binary probability relation."
             user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
-            ->  service.userRemoteServicesLogin,
-                service.adminRemoteServicesLogin,
+            ->  service.attemptRemoteServices,
+                service.attemptExternalRemoteServices,
                 computer.router.internalNetwork.bypassNetworkIntrusionDetection,
                 bypassHostIntrusionPrevention,
                 bypassProcessWhitelisting,
@@ -1303,7 +1300,7 @@ category Software {
                 dataSizedTransfer,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                attemptExfiltrationOverC2Channel,
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 automatedExfiltration,
                 dataEncrypted, 
                 dataStaged    
@@ -1313,7 +1310,7 @@ category Software {
                 computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                attemptExfiltrationOverC2Channel,
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 dataEncrypted,
                 dataStaged,
                 automatedExfiltration,
@@ -1325,7 +1322,7 @@ category Software {
             ->  computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                attemptExfiltrationOverC2Channel,
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 automatedExfiltration
 
         | dataSizedTransfer
@@ -1337,7 +1334,7 @@ category Software {
             ->  computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                attemptExfiltrationOverC2Channel,
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 dataCompressed,
                 dataEncrypted
         
@@ -1350,7 +1347,7 @@ category Software {
         & dataEncryptedForImpact {A} //(0.366)*Exponential(12)]
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
-            ->  _validAccounts,
+            ->  attemptValidAccounts,
                 attemptCredentialDumping,
                 inhibitSystemRecovery,
                 windows.windowsAdminShares
@@ -1362,14 +1359,14 @@ category Software {
                 computer.exfiltrationOverPhysicalMedium,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                attemptExfiltrationOverC2Channel
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
         & inhibitSystemRecovery {A}
             user info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."    
             ->  systemShutdownOrReboot
 
         | scheduledExfiltration
-            ->  attemptExfiltrationOverC2Channel,
+            ->  computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 exfiltrationOverAternativeProtocol       
     
         | exfiltrationOverAternativeProtocol
@@ -1386,25 +1383,17 @@ category Software {
             ->  dataCollected, 
                 sensitiveDataCollected
 
-        | attemptExfiltrationOverC2Channel @hidden
-            ->  exfiltrationOverC2Channel
-
-        & exfiltrationOverC2Channel
-            user info: " Data exfiltration is performed over the Command and Control channel."
-            ->  computer.router.internalNetwork.dataExfiltration
-
         | automatedExfiltration
             ->  exfiltrationOverAternativeProtocol,
-                attemptExfiltrationOverC2Channel
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
         & networkServiceScan
             user info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
-            ->  service._exploitationOfRemoteServices
+            ->  service.attemptExploitationOfRemoteServices
 
         & permissionGroupsDiscovery //(0.0526)]
             user info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
             developer info: "Sources for probability result: Red Canary ATT&CK technique percentages (Top 50), https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1069/"
-
 
         # antivirus //(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
@@ -1458,8 +1447,7 @@ category Software {
                 validAccounts,
                 service.browser.stealWebSessionCookie,
                 service.applicationDeploymentSoftware,
-                service.userRemoteServicesLogin,
-                service.adminRemoteServicesLogin,
+                service.remoteServices,
                 service.thirdpartySoftware.useThirdpartySoftware
 
         # passwordPolicies 
@@ -1487,7 +1475,7 @@ category Software {
             ->  scripting,
                 communicationThroughRemovableMedia,
                 service.exploitationOfRemoteServices,
-                service.externalRemoteServices 
+                service.externalRemoteServices
 
         # activeDirectoryConfiguration
             user info: "https://attack.mitre.org/mitigations/M1015/"
@@ -1893,7 +1881,7 @@ category Software {
             ->  attemptBruteForce,
                 persistence,
                 service.attemptExploitationForPrivilegeEscalation,
-                _validAccounts           
+                attemptValidAccounts           
 
         & lLMNR_NBT_NS_PoisoningAndRelay
             user info: "AAdversaries can spoof an authoritative source for name resolution on a victim network by responding to LLMNR (UDP 5355)/NBT-NS (UDP 137) traffic. The adversary can then collect the hash information sent over the wire through tools that monitor the ports for traffic or through Network Sniffing and crack the hashes offline through Brute Force to obtain the plaintext passwords."
@@ -2062,7 +2050,7 @@ category Software {
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
                 graphicalUserInterface,
-                attemptExfiltrationOverC2Channel
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
         & replicationThroughRemovableMedia //(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
@@ -2124,7 +2112,7 @@ category Software {
         & sIDHistoryInjection
             user info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
             ->  _sIDHistoryInjection,
-                service.adminRemoteServicesLogin, // leads to Remote Services attack
+                service.attemptRemoteServices, // leads to Remote Services attack
                 windowsAdminShares, // leads to Windows Admin Shares attack    
                 windowsRemoteManagement // leads to Windows Remote Management attack 
 
@@ -3085,8 +3073,15 @@ category Network {
 
         & defacement {I} //(0.31)*Exponential(10.67)]
             user info: "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users."
-            developer info: "Time here is: assumed time defacement will last. Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi5m_fWpY7qAhUaxMQBHU6yBxoQFjAKegQIMhAB&url=https%3A%2F%2Fdocuments.trendmicro.com%2Fassets%2Fwhite_papers%2Fwp-a-deep-dive-into-defacement.pdf&usg=AOvVaw2zOWHBoWsMXdfxK_fLTP_G, https://www.internetlivestats.com/total-number-of-websites/, https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://books.google.se/books?id=c7CpBAAAQBAJ&printsec=frontcover&dq=Cyber+Blockades&hl=en&sa=X&ved=0ahUKEwj4qsnGq47qAhVRXpoKHWACBqkQ6AEIKDAA#v=onepage&q=Cyber%20Blockades&f=false"
-        
+            developer info: "Time here is: assumed time defacement will last. Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi5m_fWpY7qAhUaxMQBHU6yBxoQFjAKegQIMhAB&url=https%3A%2F%2Fdocuments.trendmicro.com%2Fassets%2Fwhite_papers%2Fwp-a-deep-dive-into-defacement.pdf&usg=AOvVaw2zOWHBoWsMXdfxK_fLTP_G, https://www.internetlivestats.com/total-number-of-websites/, https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://books.google.se/books?id=c7CpBAAAQBAJ&printsec=frontcover&dq=Cyber+Blockades&hl=en&sa=X&ved=0ahUKEwj4qsnGq47qAhVRXpoKHWACBqkQ6AEIKDAA#v=onepage&q=Cyber%20Blockades&f=false"     
+
+        | attemptExfiltrationOverC2Channel @hidden
+            ->  exfiltrationOverC2Channel
+
+        & exfiltrationOverC2Channel
+            user info: " Data exfiltration is performed over the Command and Control channel."
+            ->  dataExfiltration
+
         E firewallExists
             <-  router.firewall
             ->  router.firewall._bypassFirewall
@@ -3132,7 +3127,9 @@ category Network {
         | c2Connected 
             ->  communicate,
                 dataObfuscation,
-                packetCapture
+                packetCapture,
+                dataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
+                attemptExfiltrationOverC2Channel // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
 
         | communicate 
 
@@ -3185,6 +3182,7 @@ category Network {
             ->  applicationLayerConnexion,
                 c2Connexion,
                 dataExfiltration,
+                exfiltrationOverC2Channel,
                 generateDomainNames,
                 router.computer.os.service.browser.spearphishingAttachment,
                 router.computer.os.commonlyUsedPortsConnection,
@@ -3193,7 +3191,6 @@ category Network {
                 router.computer.os.customCryptographicProtocol,
                 router.computer.os.dataCompressed,
                 router.computer.os.dataEncoding,
-                router.computer.os.exfiltrationOverC2Channel,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
@@ -3306,12 +3303,12 @@ category Network {
             ->  webService,
                 router.computer.os.service.browser.spearphishingAttachment,
                 router.internalNetwork.dataObfuscation,
+                router.internalNetwork.exfiltrationOverC2Channel,
                 router.internalNetwork.generateDomainNames,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.connectionProxy,
                 router.computer.os.dataEncoding,
-                router.computer.os.exfiltrationOverC2Channel,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
