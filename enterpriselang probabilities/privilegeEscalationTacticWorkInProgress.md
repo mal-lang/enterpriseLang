@@ -51,7 +51,7 @@ Privilege Escalation consists of techniques that adversaries use to gain higher-
 
 ## Probability Assessment
 
-### User & Admin Access Token Manipulation (needs review)
+### User & Admin Access Token Manipulation
 
 Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection. An adversary can use built-in Windows API functions to copy access tokens from existing processes; this is known as token stealing. An adversary must already be in a privileged user context (i.e. administrator) to steal a token. However, adversaries commonly use token stealing to elevate their security context from the administrator level to the SYSTEM level. An adversary can use a token to authenticate to a remote system as the account for that token if the account has appropriate permissions on the remote system.
 
@@ -111,7 +111,7 @@ To keep shims secure, Windows designed them to run in user mode so they cannot m
 
 This one looks much more complex than it currently is in the entreprise.mal and needs to be reviewed. BypassExecutionPrevention?
 
-### Bypass user Account Control (needs review)
+### Bypass user Account Control
 
 Probability found by Love
 
