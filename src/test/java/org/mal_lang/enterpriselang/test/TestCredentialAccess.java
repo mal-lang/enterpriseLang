@@ -19,6 +19,8 @@ public class TestCredentialAccess extends EnterpriseLangTest {
         public final UserAccount userAccount = new UserAccount("userAccount",false,false);
         public final AdminAccount adminAccount = new AdminAccount("adminAccount",false,false);    
         public final OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false); // We assume all defenses are disabled for OS. We can enable some of them, then the corresponding attack steps can not be reached.
+        //public final OS os = OS os = new OS("os");
+        //os.limitSoftwareInstallation.defaultValue = true;
         public final Windows windows = new Windows("windows");
 
         public AdminRightsUserCredentialAccessModel() {
