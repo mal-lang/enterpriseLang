@@ -2295,7 +2295,8 @@ category Software {
             ->  attemptScripting,
                 systemInformationDiscovery
 
-        & networkShareDiscovery
+        & networkShareDiscovery [Bernoulli(0.0129)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://attack.mitre.org/software/S0039/"
             ->  computer.router.internalNetwork.networkShareDiscovery
 
         | attemptAccessTokenManipulation @hidden
@@ -2937,7 +2938,8 @@ category Software {
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
 
-        & networkShareDiscovery
+        & networkShareDiscovery [Bernoulli(0.0129)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/"
             ->  computer.router.internalNetwork.networkShareDiscovery
 
         & securitySoftwareDiscovery [Bernoulli(0.83387)]
