@@ -2901,8 +2901,9 @@ category Software {
             user info: "An adversary can modify one of these files directly to include a link to their malicious executable to provide a persistence mechanism each time the user reboots their machine."
             ->  persistence
 
-        | securitydMemory
+        | securitydMemory [Bernoulli(0.0158)]
             user info: "If an adversary can obtain root access (allowing them to read securityd's memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user's logon keychain."
+            developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0276/, https://macos.checkpoint.com/, https://juusosalonen.com/post/30923743427/breaking-into-the-os-x-keychain, https://github.com/juuso/keychaindump"
             ->  keychainCollection
 
         & setuidAndSetgid
