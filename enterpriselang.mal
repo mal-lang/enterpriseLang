@@ -1498,7 +1498,8 @@ category Software {
                 privateKeys,
                 validAccounts 
 
-        # filterNetworkTraffic
+        # filterNetworkTraffic [Bernoulli(0.8217)]
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"
             ->  validAccounts
 
@@ -1734,8 +1735,9 @@ category Software {
             ->  attemptProcessInjection,
                 persistence            
 
-        | componentFirmware
-            user info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."       
+        | componentFirmware [Bernoulli(0.0000934)*Exponential(360)]
+            user info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."
+            developer info: "https://attack.mitre.org/groups/, https://media.kasperskycontenthub.com/wp-content/uploads/sites/43/2018/03/08064459/Equation_group_questions_and_answers.pdf, https://eclypsium.com/2019/12/20/anatomy-of-a-firmware-attack/, https://www.youtube.com/watch?v=loBX_vEXxVA&feature=youtu.be"       
             ->  bypassFileMonitoring,
                 bypassHostIntrusionPrevention, 
                 bypassAntivirus         
@@ -2296,7 +2298,8 @@ category Software {
             ->  attemptScripting,
                 systemInformationDiscovery
 
-        & networkShareDiscovery
+        & networkShareDiscovery [Bernoulli(0.0129)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://attack.mitre.org/software/S0039/"
             ->  computer.router.internalNetwork.networkShareDiscovery
 
         | attemptAccessTokenManipulation @hidden
@@ -2572,7 +2575,8 @@ category Software {
                 windowsRemoteManagement,
                 dynamicDataExchange
 
-        # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
+        # filterNetworkTraffic [Bernoulli(0.8217)] // Use host-based security software to block LLMNR/NetBIOS traffic.
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  lLMNR_NBT_NS_PoisoningAndRelay,
                 forcedAuthentication 
@@ -2902,8 +2906,9 @@ category Software {
             user info: "An adversary can modify one of these files directly to include a link to their malicious executable to provide a persistence mechanism each time the user reboots their machine."
             ->  persistence
 
-        | securitydMemory
+        | securitydMemory [Bernoulli(0.0158)]
             user info: "If an adversary can obtain root access (allowing them to read securityd's memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user's logon keychain."
+            developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0276/, https://macos.checkpoint.com/, https://juusosalonen.com/post/30923743427/breaking-into-the-os-x-keychain, https://github.com/juuso/keychaindump"
             ->  keychainCollection
 
         & setuidAndSetgid
@@ -2939,7 +2944,8 @@ category Software {
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
 
-        & networkShareDiscovery
+        & networkShareDiscovery [Bernoulli(0.0129)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/"
             ->  computer.router.internalNetwork.networkShareDiscovery
 
         & securitySoftwareDiscovery [Bernoulli(0.83387)]
@@ -3147,7 +3153,8 @@ category Network {
             user info: "https://attack.mitre.org/mitigations/M1038/"
             ->  router.computer.os.networkServiceScan
 
-        # filterNetworkTraffic
+        # filterNetworkTraffic [Bernoulli(0.8217)]
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.endpointDenialOfService,
@@ -3220,9 +3227,9 @@ category Network {
                 router.computer.os.service.thirdpartySoftware.trustedRelationship,
                 router.computer.os.service.thirdpartySoftware.useThirdpartySoftware
 
-        # vulnerabilityScanning [Bernoulli(0.41)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
+        # vulnerabilityScanning [Bernoulli(0.653)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
             user info: "https://attack.mitre.org/mitigations/M1016/"
-            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture"
+            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.scmagazineuk.com/one-fourth-global-organisations-faced-breaches-unpatched-vulnerabilities/article/1586349#:~:text=Vulnerability%20management%20starts%20with%20visibility,networks%20within%20minutes%20or%20hours., https://www.zdnet.com/article/zero-days-fileless-attacks-are-now-the-most-dangerous-threats-to-the-enterprise/, https://liu.diva-portal.org/smash/get/diva2:1348588/FULLTEXT01.pdf, https://pdfs.semanticscholar.org/775d/ed35d7940b94b5bc01d568d472e59fd24775.pdf, "
             ->  router.computer.os.service.exploitHighVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitLowVulnerabilityPublicFacingApplication,
@@ -3277,7 +3284,8 @@ category Network {
             user info:"https://attack.mitre.org/mitigations/M1041/"   
             ->  transmittedDataManipulation
 
-        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+        # filterNetworkTraffic [Bernoulli(0.8217)] // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  dataFromCloudStorageObject,
                 router.computer.os.endpointDenialOfService,
@@ -3333,7 +3341,8 @@ category Network {
             ->  router.internalNetwork.dataExfiltration,
                 router.internalNetwork.c2Connexion
 
-        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+        # filterNetworkTraffic [Bernoulli(0.8217)] // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  router.computer.os.service.cloudInstanceMetadataAPI,
                 router.computer.os.windows.bITSJobs,
