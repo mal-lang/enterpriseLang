@@ -1498,7 +1498,8 @@ category Software {
                 privateKeys,
                 validAccounts 
 
-        # filterNetworkTraffic
+        # filterNetworkTraffic [Bernoulli(0.8217)]
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"
             ->  validAccounts
 
@@ -2572,7 +2573,8 @@ category Software {
                 windowsRemoteManagement,
                 dynamicDataExchange
 
-        # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
+        # filterNetworkTraffic [Bernoulli(0.8217)] // Use host-based security software to block LLMNR/NetBIOS traffic.
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  lLMNR_NBT_NS_PoisoningAndRelay,
                 forcedAuthentication 
@@ -3148,7 +3150,8 @@ category Network {
             user info: "https://attack.mitre.org/mitigations/M1038/"
             ->  router.computer.os.networkServiceScan
 
-        # filterNetworkTraffic
+        # filterNetworkTraffic [Bernoulli(0.8217)]
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.endpointDenialOfService,
@@ -3278,7 +3281,8 @@ category Network {
             user info:"https://attack.mitre.org/mitigations/M1041/"   
             ->  transmittedDataManipulation
 
-        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+        # filterNetworkTraffic [Bernoulli(0.8217)] // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  dataFromCloudStorageObject,
                 router.computer.os.endpointDenialOfService,
@@ -3334,7 +3338,8 @@ category Network {
             ->  router.internalNetwork.dataExfiltration,
                 router.internalNetwork.c2Connexion
 
-        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+        # filterNetworkTraffic [Bernoulli(0.8217)] // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  router.computer.os.service.cloudInstanceMetadataAPI,
                 router.computer.os.windows.bITSJobs,
