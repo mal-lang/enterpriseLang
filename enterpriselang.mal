@@ -1735,8 +1735,9 @@ category Software {
             ->  attemptProcessInjection,
                 persistence            
 
-        | componentFirmware
-            user info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."       
+        | componentFirmware [Bernoulli(0.0000934)*Exponential(360)]
+            user info: "Adversaries may compromise computer components and install malicious firmware that will execute adversary code outside of the operating system and main system firmware or BIOS."
+            developer info: "https://attack.mitre.org/groups/, https://media.kasperskycontenthub.com/wp-content/uploads/sites/43/2018/03/08064459/Equation_group_questions_and_answers.pdf, https://eclypsium.com/2019/12/20/anatomy-of-a-firmware-attack/, https://www.youtube.com/watch?v=loBX_vEXxVA&feature=youtu.be"       
             ->  bypassFileMonitoring,
                 bypassHostIntrusionPrevention, 
                 bypassAntivirus         
