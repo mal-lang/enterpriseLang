@@ -3221,9 +3221,9 @@ category Network {
                 router.computer.os.service.thirdpartySoftware.trustedRelationship,
                 router.computer.os.service.thirdpartySoftware.useThirdpartySoftware
 
-        # vulnerabilityScanning [Bernoulli(0.41)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
+        # vulnerabilityScanning [Bernoulli(0.653)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
             user info: "https://attack.mitre.org/mitigations/M1016/"
-            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.computerweekly.com/news/252462476/Most-businesses-vulnerable-to-supply-chain-cyber-attacks#:~:text=Seven%20in%2010%20businesses%20may,to%20research%20commissioned%20by%20Accenture"
+            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.scmagazineuk.com/one-fourth-global-organisations-faced-breaches-unpatched-vulnerabilities/article/1586349#:~:text=Vulnerability%20management%20starts%20with%20visibility,networks%20within%20minutes%20or%20hours., https://www.zdnet.com/article/zero-days-fileless-attacks-are-now-the-most-dangerous-threats-to-the-enterprise/, https://liu.diva-portal.org/smash/get/diva2:1348588/FULLTEXT01.pdf, https://pdfs.semanticscholar.org/775d/ed35d7940b94b5bc01d568d472e59fd24775.pdf, "
             ->  router.computer.os.service.exploitHighVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitLowVulnerabilityPublicFacingApplication,
