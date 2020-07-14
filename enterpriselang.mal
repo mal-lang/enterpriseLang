@@ -190,7 +190,7 @@ category Software {
                 os.service.attemptExploitationOfRemoteServices,
                 os.service.attemptExternalRemoteServices,
                 os.service.implantContainerImage,
-                os.service.remoteAccessTools,
+                os.service.remoteAccessSoftware,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
                 os.service.browser.credentialsFromWebBrowsers,
@@ -534,7 +534,8 @@ category Software {
         | informationRepositories
             ->  os.dataCollected
 
-        | remoteAccessTools
+        | remoteAccessSoftware [Bernoulli(0.0789)*Exponential(106.67)]
+            developer info: "https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting/, https://www.proofpoint.com/us/threat-insight/post/proofpoint-q3-2019-threat-report-emotets-return-rats-reign-supreme-and-more, https://www.youtube.com/watch?v=RzVtc9i3mzs, https://www.youtube.com/watch?v=om3OJWpZDGU"
             ->  os.computer.router.internalNetwork.c2Connexion
 
         | serviceExhaustionFlood
@@ -648,7 +649,7 @@ category Software {
 
         # executionPrevention
             user info: "https://attack.mitre.org/mitigations/M1038/"
-            ->  remoteAccessTools
+            ->  remoteAccessSoftware
 
         # threatIntelligenceProgram
             user info: "https://attack.mitre.org/mitigations/M1019/"
@@ -2043,7 +2044,7 @@ category Software {
             user info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
             developer info: "Sources used for distribution result: https://dsimg.ubm-us.net/envelope/395823/551993/Fileless%20Attack%20Survival%20Guide.pdf, https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB"
             ->  masquerading, // leads to Masquerading attack
-                service.remoteAccessTools,
+                service.remoteAccessSoftware,
                 persistence
 
         & regsvcsOrRegasm
