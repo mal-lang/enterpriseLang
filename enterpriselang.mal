@@ -1004,7 +1004,8 @@ category Software {
         | attemptMultiHopProxy @hidden
             ->  multiHopProxy
 
-        & multiHopProxy
+        & multiHopProxy [Bernoulli(0.0124)*Exponential(1440)]
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/software/S0281/, https://objective-see.com/blog/blog_0x25.html, https://www.cable.co.uk/broadband/speed/worldwide-speed-league/, https://www.secureworks.com/research/wcry-ransomware-analysis"
             user info: "To disguise the source of malicious traffic, adversaries may chain together multiple proxies."
             ->  computer.router.internalNetwork.c2Connected
 
