@@ -43,6 +43,7 @@ category Software {
                 os.accountDiscovery,
                 os.applicationWindowDiscovery,
                 os.attemptAutomatedCollection,
+                os.attemptAbuseElevationControlMechanism,
                 os.attemptBruteForce,
                 os.commandLineInterface,
                 os.compileAfterDelivery,
@@ -148,7 +149,7 @@ category Software {
                 os.linux.hISTCONTROL,
                 os.linux.localJobScheduling,
                 os.linux.portKnocking,
-                os.linux.setuidAndSetgid,
+                os.linux.attemptSetuidAndSetgid,
                 os.linux.spaceAfterFileName,
                 os.linux.source,
                 os.linux.sshHijacking,
@@ -178,7 +179,7 @@ category Software {
                 os.macOS.networkShareDiscovery,
                 os.macOS.videoCapture,
                 os.macOS.reopenedApplications,
-                os.macOS.setuidAndSetgid,
+                os.macOS.attemptSetuidAndSetgid,
                 os.macOS.source,
                 os.macOS.sshHijacking,
                 os.macOS.attemptSudoAndSudoCaching,
@@ -284,8 +285,9 @@ category Software {
         | adminRights
             user info: "Administrator is an actual account."
             ->  userAccount.userRights,
-                createUserAccount, 
+                createAccount, 
                 os.accountAccessRemoval,   
+                os.attemptAbuseElevationControlMechanism,
                 os.attemptAutomatedCollection,
                 os.commandLineInterface,
                 os.dataDestruction,
@@ -325,19 +327,25 @@ category Software {
             ->  adminRights,
                 os.attemptValidAccounts,
                 os.service.attemptRemoteServices
-            
-        & createUserAccount [Bernoulli(0.05665)*Exponential(1440)]
+
+        | attemptCreateAccount @hidden
+            ->  createAccount
+
+        & createAccount [Bernoulli(0.05665)*Exponential(1440)]
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting/, https://support.microsoft.com/en-us/help/4026923/windows-10-create-a-local-user-or-administrator-account, https://www.youtube.com/watch?v=Ym0JJ5NGdrA, https://www.youtube.com/watch?v=SRqxIb_ETEQ"
-            ->  os.persistence          
+            ->  os.cloudAccount,
+                os.domainAccount,
+                os.localAccount,
+                os.persistence          
         
         # multiFactorAuthentication
             user info: "https://attack.mitre.org/mitigations/M1032/"
-            ->  createUserAccount
+            ->  createAccount
 
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  createUserAccount,
+            ->  createAccount,
                 os.credentialDumping,
                 os.firmwareCorruption,
                 os.windows.accountManipulation,
@@ -786,6 +794,18 @@ category Software {
     }
 
     asset OS {   
+        | attemptAbuseElevationControlMechanism @hidden
+            ->  abuseElevationControlMechanism
+
+        & abuseElevationControlMechanism
+            user info: "Adversaries may circumvent mechanisms designed to control elevate privileges to gain higher-level permissions."
+            ->  linux.attemptSetuidAndSetgid,
+                macOS.attemptSetuidAndSetgid,
+                windows.attemptBypassUserAccountControl,
+                linux.attemptSudoAndSudoCaching,
+                macOS.attemptSudoAndSudoCaching,
+                macOS.attemptElevatedExecutionWithPrompt        
+
         | accountAccessRemoval {A}
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
 
@@ -804,6 +824,22 @@ category Software {
         & accountDiscovery [Bernoulli(0.01967)]
             user info: "get account names and information"
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, Red Canary's ATT&CK technique percentages Top 50 Google Sheets Document, https://krisk.io/post/sok-attack-securecomm19.pdf, https://attack.mitre.org/techniques/T1087/"
+            ->  cloudAccount,
+                domainAccount,
+                emailAccount,
+                localAccount
+
+        | cloudAccount
+            user info: "Adversaries may attempt to get a listing of cloud accounts."
+
+        | domainAccount
+            user info: "Adversaries may attempt to get a listing of domain accounts."
+
+        | emailAccount
+            user info: "Adversaries may attempt to get a listing of email addresses and accounts."
+
+        | localAccount
+            user info: "Adversaries may attempt to get a listing of local system accounts."
 
         | attemptDefacement @hidden
             ->  defacement
@@ -1526,14 +1562,14 @@ category Software {
 
         # operatingSystemConfiguration 
             user info: "https://attack.mitre.org/mitigations/M1028/"
-            ->  accountDiscovery, 
+            ->  accountDiscovery,
                 communicationThroughRemovableMedia,
                 credentialDumping,
                 domainDiscovery,
                 exfiltrationOverOtherNetworkMedium,
                 inhibitSystemRecovery,
                 installRootCertificate,
-                adminAccount.createUserAccount
+                adminAccount.createAccount
 
         # softwareConfiguration
             user info: "https://attack.mitre.org/mitigations/M1054/"
@@ -1847,7 +1883,7 @@ category Software {
                 disablingSecurityTools, // leads to Disabling Security Tools attack
                 remoteFileCopy, // leads to Remote File Copy attack
                 serviceExecution, // leads to Service Execution attack
-                adminAccount.createUserAccount,
+                adminAccount.attemptCreateAccount,
                 bypassSystemAccessControls,
                 bypassFileSystemAccessControls
 
@@ -2328,15 +2364,20 @@ category Software {
             developer info: "Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://pentestlab.blog/2017/04/03/token-manipulation/"
             ->  tokenImpersonationOrTheft,
                 createProcessWithAToken,
-                makeAndImpersonateToken
+                makeAndImpersonateToken,
+                parentPIDSpoofing,
+                attemptSIDHistoryInjection
 
         | tokenImpersonationOrTheft
+            user info: "Adversaries may duplicate then impersonate another user's token to escalate privileges and bypass access controls."
             ->  service.attemptExploitationForPrivilegeEscalation
         
-        | createProcessWithAToken 
+        | createProcessWithAToken
+            user info: "Adversaries may create a new process with a duplicated token to escalate privileges and bypass access controls."
             ->  service.attemptExploitationForPrivilegeEscalation
 
         | makeAndImpersonateToken
+            user info: "Adversaries may make and impersonate tokens to escalate privileges and bypass access controls."
             ->  service.attemptExploitationForPrivilegeEscalation
 
         & securitySoftwareDiscovery [Bernoulli(0.83387)]
@@ -2671,6 +2712,9 @@ category Software {
             user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
             ->  persistence
 
+        | attemptSetuidAndSetgid @hidden
+            ->  setuidAndSetgid      
+
         & setuidAndSetgid
             user info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user's context."
             ->  service.attemptExploitationForPrivilegeEscalation,
@@ -2835,7 +2879,7 @@ category Software {
 
         & hiddenUsers
             user info: "By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily."
-            ->  adminAccount.createUserAccount
+            ->  adminAccount.attemptCreateAccount
 
         & hiddenWindow [Bernoulli(0.22)]
             user info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
@@ -2934,6 +2978,9 @@ category Software {
             user info: "If an adversary can obtain root access (allowing them to read securityd's memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user's logon keychain."
             developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0276/, https://macos.checkpoint.com/, https://juusosalonen.com/post/30923743427/breaking-into-the-os-x-keychain, https://github.com/juuso/keychaindump"
             ->  keychainCollection
+
+        | attemptSetuidAndSetgid @hidden
+            ->  setuidAndSetgid
 
         & setuidAndSetgid
             user info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user's context."
@@ -3231,7 +3278,7 @@ category Network {
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  remoteAccess,
                 router.computer.os.service.applicationDeploymentSoftware,
-                router.computer.os.adminAccount.createUserAccount,
+                router.computer.os.adminAccount.createAccount,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.customCommandAndControlProtocol,
