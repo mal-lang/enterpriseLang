@@ -253,7 +253,7 @@ Setting up the port monitor to execute the chosen DLL at startup doesn't seem to
 
 This needs a probability distribution, the probability that the permissions will allow writing a fully-qualified pathname for that DLL to HKLM\SYSTEM\CurrentControlSet\Control\Print\Monitors. 
 
-### PowerShell Profile (needs)
+### PowerShell Profile 
 
 An administrator can also configure a profile that applies to all users and host programs on the local compute
 

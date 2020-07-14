@@ -118,6 +118,7 @@ category Software {
                 os.windows.peripheralDeviceDiscovery,
                 os.windows.powerShell,
                 os.windows.attemptPowerShellUserProfile,
+                os.windows.attemptPowerShellAdminProfile,
                 os.windows.processDoppelganging,
                 os.windows.processHollowing,
                 os.windows.registryRunKeysOrStartupFolder,
