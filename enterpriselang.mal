@@ -2126,7 +2126,8 @@ category Software {
             user info: "Adversaries may add malicious content to an internally accessible website through an open network file share that contains the website's webroot or Web content directory and then browse to that content with a Web browser to cause the server to execute the malicious content."
             ->  service.browser.executionThroughMaliciousContent
 
-        & shortcutModification
+        & shortcutModification [Bernoulli(0.03)]
+            developer info: "Sources for distribution result: https://ics-cert.kaspersky.com/reports/2019/09/30/threat-landscape-for-industrial-automation-systems-h1-2019/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting/, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.welivesecurity.com/wp-content/uploads/2018/10/ESET_GreyEnergy.pdf, https://www.pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf"
             user info: "Adversaries could use shortcuts to execute their tools for persistence. Adversaries could also edit the target path or entirely replace an existing shortcut so their tools will be executed instead of the intended legitimate program."
             ->  executeCode,
                 persistence,
