@@ -202,7 +202,7 @@ This needs a probability distribution.
 
 Note : This is the third technique I believe that is "similar to process injection". Maybe we could assume that all those techniques have the same probability (at least as a first approximation).
 
-### Launch Daemon (needs)
+### Launch Daemon
 
 Adversaries may install a new launch daemon that can be configured to execute at startup by using launchd or launchctl to load a plist into the appropriate directories. The daemon name may be disguised by using a name from a related operating system or benign software. Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root.
 
@@ -238,9 +238,10 @@ Looking at the children and the technique in the MITRE framework, this specific 
 
 These techniques can be used for persistence, REVIEW them to check they actually do in the code.
 
-### Plist Modification (needs)
+### Plist Modification
 
 This needs a probability distribution, the probability that a simple user has write access to the plist.
+This might be carried by a defense though.
 
 ### Port Monitors (needs)
 

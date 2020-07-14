@@ -117,7 +117,7 @@ category Software {
                 os.windows.pathInterception,
                 os.windows.peripheralDeviceDiscovery,
                 os.windows.powerShell,
-                os.windows.attemptPowerShellProfile,
+                os.windows.attemptPowerShellUserProfile,
                 os.windows.processDoppelganging,
                 os.windows.processHollowing,
                 os.windows.registryRunKeysOrStartupFolder,
@@ -408,7 +408,8 @@ category Software {
                 os.windows.pathInterception,
                 os.windows.portMonitors,
                 os.windows.powerShell,
-                os.windows.attemptPowerShellProfile,
+                os.windows.attemptPowerShellUserProfile,
+                os.windows.attemptPowerShellAdminProfile,
                 os.windows.processDoppelganging,
                 os.windows.queryRegistery,
                 os.windows.remoteScheduledTask,
@@ -1996,11 +1997,21 @@ category Software {
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 persistence
 
-        | attemptPowerShellProfile @hidden
+        | attemptPowerShellUserProfile @hidden
             user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
-            ->  powerShellProfile
+            ->  powerShellUserProfile
 
-        & powerShellProfile
+        & powerShellUserProfile [Exponential(2)]
+            developer info: "sources for distribution results : https://www.quora.com/ITs-how-often-do-you-use-PowerShell-And-what-do-you-think-about-it"
+            user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."   
+            ->  persistence
+
+        | attemptPowerShellAdminProfile @hidden
+            user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
+            ->  powerShellAdminProfile
+        
+        & powerShellAdminProfile [Bernoulli(0.5)*Exponential(2)]
+            developer info: "sources for distribution results : https://www.quora.com/ITs-how-often-do-you-use-PowerShell-And-what-do-you-think-about-it"
             user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."   
             ->  service.attemptExploitationForPrivilegeEscalation,
                 persistence
@@ -2435,7 +2446,8 @@ category Software {
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  powerShell,
-                powerShellProfile,
+                powerShellUserProfile,
+                powerShellAdminProfile,
                 serverSoftwareComponent,
                 lSASS_Driver         
 
@@ -2520,6 +2532,8 @@ category Software {
                 modifyRegistry,
                 ntfsFileAttributes,
                 pathInterception,
+                powerShellUserProfile,
+                powerShellAdminProfile,
                 sharedWebroot,
                 sIPAndTrustProviderHijacking,
                 serviceStop,
@@ -2530,7 +2544,6 @@ category Software {
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
             user info: "https://attack.mitre.org/mitigations/M1024/"
             ->  sIPAndTrustProviderHijacking,
-                powerShellProfile,
                 serviceStop,
                 serviceRegistryPermissionsWeakness,
                 timeProviders
@@ -2544,7 +2557,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1054/"
             +>  indicatorBlocking,
                 officeApplicationStartup,
-                powerShellProfile,
+                powerShellUserProfile,
+                powerShellAdminProfile,
                 dynamicDataExchange
 
         # bootIntegrity 
