@@ -2207,7 +2207,8 @@ category Software {
         | attemptServiceStop @hidden {A}
             ->  serviceStop
 
-        & serviceStop {A}
+        & serviceStop {A} [Bernoulli(0.0837)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://blog.talosintelligence.com/2018/02/olympic-destroyer.html, https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-changeserviceconfigw, https://www.fireeye.com/blog/threat-research/2017/05/wannacry-malware-profile.html, https://www.crowdstrike.com/blog/big-game-hunting-with-ryuk-another-lucrative-targeted-ransomware/"
             user info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
             ->  dataDestruction,
                 attemptDataEncryptedForImpact
