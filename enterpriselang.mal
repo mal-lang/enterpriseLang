@@ -1052,7 +1052,8 @@ category Software {
                 inputCapture,
                 attemptBruteForce  
 
-        | resourceHijacking {A}
+        | resourceHijacking {A} [Bernoulli(0.046)*Exponential(48)]
+            developer info: "https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.ptsecurity.com/ww-en/analytics/cybersecurity-threatscape-2019-q1/, https://content.fireeye.com/apt-41/rpt-apt41, https://github.com/xmrig/xmrig, https://steemit.com/utopian-io/@afterglow/tutorial-how-to-install-configure-and-use-xmrig-cryptocurrency-miner-for-monero-on-your-computer"
             user info: "Adversaries may consume enough system resources to negatively impact and/or cause affected machines to become unresponsive."
             ->  computer.unresponsive  
 
