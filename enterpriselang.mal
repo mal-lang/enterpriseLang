@@ -326,7 +326,8 @@ category Software {
                 os.attemptValidAccounts,
                 os.service.attemptRemoteServices
             
-        & createUserAccount 
+        & createUserAccount [Bernoulli(0.05665)*Exponential(1440)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting/, https://support.microsoft.com/en-us/help/4026923/windows-10-create-a-local-user-or-administrator-account, https://www.youtube.com/watch?v=Ym0JJ5NGdrA, https://www.youtube.com/watch?v=SRqxIb_ETEQ"
             ->  os.persistence          
         
         # multiFactorAuthentication
