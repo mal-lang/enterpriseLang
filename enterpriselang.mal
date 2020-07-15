@@ -83,7 +83,6 @@ category Software {
                 os.systemShutdownOrReboot,
                 os.storedDataManipulation,
                 os.remoteFileCopy, 
-                os.windows.accountManipulation,
                 os.windows.attemptBITSJobs,
                 os.windows.attemptBypassUserAccountControl,
                 os.windows.changeDefaultFileAssociation,
@@ -114,7 +113,7 @@ category Software {
                 os.windows.networkShareConnectionRemoval,
                 os.windows.networkShareDiscovery,
                 os.windows.officeApplicationStartup,
-                os.windows.parentPIDSpoofingUser,
+                os.windows.parentPIDSpoofing,
                 os.windows.pathInterception,
                 os.windows.peripheralDeviceDiscovery,
                 os.windows.powerShell,
@@ -157,6 +156,8 @@ category Software {
                 os.linux.attemptSystemdService,
                 os.linux.timestomp,
                 os.linux.trap,
+                os.linux.attemptSSHAuthorizedKeys,
+                os.macOS.attemptSSHAuthorizedKeys,
                 os.macOS.appleScript,
                 os.macOS.attemptBash_profileAndBashrc,
                 os.macOS.attemptClearCommandHistory,
@@ -213,7 +214,6 @@ category Software {
             developer info: "Binary probability relation."
             ->  os.computer.infectedComputer,
                 os.computer.infectedWindowsComputer,
-                os.windows.attemptParentPIDSpoofingUser,
                 os.executeCode
 
         | userInformation
@@ -287,7 +287,7 @@ category Software {
             user info: "Administrator is an actual account."
             ->  userAccount.userRights,
                 createAccount, 
-                os.accountAccessRemoval,   
+                os.accountAccessRemoval,
                 os.attemptAbuseElevationControlMechanism,
                 os.attemptAutomatedCollection,
                 os.commandLineInterface,
@@ -321,6 +321,9 @@ category Software {
                 os.service.transmittedDataManipulation,
                 os.service.applicationDeploymentSoftware,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
+                os.service.azure.additionalAzureServicePrincipalCredentials,
+                os.service.office365.exchangeEmailDelegatePermissions,
+                os.service.office365.addOffice365GlobalAdministratorRole,
                 os.computer.router.internalNetwork.transmittedDataManipulation,
                 os.computer.router.externalNetwork.transmittedDataManipulation
              
@@ -349,7 +352,7 @@ category Software {
             ->  createAccount,
                 os.credentialDumping,
                 os.firmwareCorruption,
-                os.windows.accountManipulation,
+                os.accountManipulation,
                 os.windows.modifyRegistry,
                 os.windows.passTheTicket,
                 os.windows.powerShell,
@@ -399,6 +402,7 @@ category Software {
                 os.windows.dCShadow,
                 os.windows.attemptDLLSearchOrderHijacking,
                 os.windows.attemptExecutionThroughAPI,
+                os.windows.exchangeEmailDelegatePermissions,
                 os.windows.extraWindowMemoryInjection,
                 os.windows.fileSystemLogicalOffsets,
                 os.windows.attemptFileSystemPermissionsWeakness,
@@ -414,7 +418,7 @@ category Software {
                 os.windows.networkShareConnectionRemoval,
                 os.windows.newService,
                 os.windows.officeApplicationStartup,
-                os.windows.parentPIDSpoofingAdmin,
+                os.windows.parentPIDSpoofing,
                 os.windows.passwordFilterDLL,
                 os.windows.pathInterception,
                 os.windows.attemptPortMonitors,
@@ -447,7 +451,7 @@ category Software {
         | adminCredentials
 
         # multiFactorAuthentication
-            +>  os.windows.accountManipulation       
+            +>  os.accountManipulation       
     }
     
     asset Root extends AdminAccount {
@@ -462,6 +466,8 @@ category Software {
                 os.linux.attemptBash_profileAndBashrc,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
+                os.linux.attemptSSHAuthorizedKeys,
+                os.macOS.attemptSSHAuthorizedKeys,
                 os.macOS.securitySoftwareDiscovery,
                 os.macOS.attemptBash_profileAndBashrc,
                 os.macOS.attemptElevatedExecutionWithPrompt,
@@ -716,7 +722,22 @@ category Software {
         | collectVideo @hidden
             ->  os.computer.collectVideo
     }
-    
+
+    asset Azure extends Service {
+        & additionalAzureServicePrincipalCredentials
+            user info: "Adversaries may add adversary-controlled credentials for Azure Service Principals in addition to existing legitimate credentials to maintain persistent access to victim Azure accounts."         
+    }
+
+    asset Office365 extends Service {
+        & exchangeEmailDelegatePermissions
+            user info: "Adversaries may grant additional permission levels, such as ReadPermission or FullAccess, to maintain persistent access to an adversary-controlled email account."
+            ->  os.internalSpearphishing
+
+        & addOffice365GlobalAdministratorRole
+            user info: "An adversary may add the Global Administrator role to an adversary-controlled account to maintain persistent access to an Office 365 tenant."
+            ->  os.adminAccount.attemptCreateAccount 
+    }
+
     asset Browser {
         & driveByCompromise [Bernoulli(0.37)]
             user info: "A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing." 
@@ -794,7 +815,22 @@ category Software {
                 service.os.computer.router.externalNetwork.webService
     }
 
-    asset OS {   
+    asset OS {
+        | attemptAccountManipulation @hidden
+            ->  accountManipulation   
+
+        & accountManipulation [Bernoulli(0.101)]
+            user info: "Account manipulation may aid adversaries in maintaining access to credentials and certain permission levels within an environment." 
+            developer info: "Sources used for probability distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1098/, https://www.us-cert.gov/ncas/alerts/TA18-074A" 
+            ->  userAccount.userCredentials,
+                persistence,
+                service.azure.additionalAzureServicePrincipalCredentials,
+                service.office365.exchangeEmailDelegatePermissions,
+                service.office365.addOffice365GlobalAdministratorRole,
+                windows.exchangeEmailDelegatePermissions,
+                linux.attemptSSHAuthorizedKeys,
+                macOS.attemptSSHAuthorizedKeys
+
         | attemptAbuseElevationControlMechanism @hidden
             ->  abuseElevationControlMechanism
 
@@ -916,7 +952,8 @@ category Software {
         | attemptCredentialsInFiles @hidden
             ->  credentialsInFiles
 
-        & credentialsInFiles
+        & credentialsInFiles [Bernoulli(0.0179)*Exponential(282)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://blog.talosintelligence.com/2018/07/smoking-guns-smoke-loader-learned-new.html#more, https://www.statista.com/statistics/751847/worldwide-seagate-western-digital-average-hard-drive-capacity/, https://www.hardware-revolution.com/how-much-storage-capacity-do-i-need-for-my-computer-2020/"
             ->  userAccount.userCredentials,
                 adminAccount.adminCredentials,
                 windows.sysAdmin.systemCredentials   
@@ -1455,7 +1492,8 @@ category Software {
 
         # restrictFileAndDirectoryPermissions 
             user info: "https://attack.mitre.org/mitigations/M1022/"
-            ->  credentialsInFiles,
+            ->  abuseElevationControlMechanism,
+                credentialsInFiles,
                 disablingSecurityTools,
                 indicatorRemovalOnHost,
                 linux.clearCommandHistory,
@@ -1534,7 +1572,8 @@ category Software {
 
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
-            ->  credentialsInFiles,
+            ->  abuseElevationControlMechanism,
+                credentialsInFiles,
                 credentialsInRegistry,
                 service.browser.browserExtensions,
                 service.thirdpartySoftware.stealApplicationAccessToken,
@@ -1565,7 +1604,9 @@ category Software {
 
         # operatingSystemConfiguration 
             user info: "https://attack.mitre.org/mitigations/M1028/"
-            ->  accountDiscovery,
+            ->  accountManipulation,
+                abuseElevationControlMechanism,
+                accountDiscovery,
                 communicationThroughRemovableMedia,
                 credentialDumping,
                 domainDiscovery,
@@ -1581,9 +1622,10 @@ category Software {
 
         # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
             user info: "https://attack.mitre.org/mitigations/M1038/"
-            ->  commandLineInterface, 
-                accountDiscovery,
+            ->  accountDiscovery,
+                abuseElevationControlMechanism,
                 applicationWindowDiscovery,
+                commandLineInterface,
                 binaryPadding,
                 service.browser.browserExtensions,
                 computer.collectAudio,
@@ -1601,7 +1643,8 @@ category Software {
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  credentialsInRegistry,
+            ->  abuseElevationControlMechanism,
+                credentialsInRegistry,
                 validAccounts,
                 service.implantContainerImage,
                 computer.router.internalNetwork.webShell
@@ -1637,7 +1680,8 @@ category Software {
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
-            ->  service.thirdpartySoftware.trustedRelationship
+            ->  abuseElevationControlMechanism,
+                service.thirdpartySoftware.trustedRelationship
 
         # exploitProtection
             user info: "https://attack.mitre.org/mitigations/M1050/"
@@ -1711,13 +1755,7 @@ category Software {
             ->  systemRights
     }
     
-    asset Windows extends OS {   
-        & accountManipulation [Bernoulli(0.101)]
-            user info: "Account manipulation may aid adversaries in maintaining access to credentials and certain permission levels within an environment." 
-            developer info: "Sources used for probability distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1098/, https://www.us-cert.gov/ncas/alerts/TA18-074A" 
-            ->  userAccount.userCredentials,
-                persistence
-
+    asset Windows extends OS {
         | attemptAppCertDLLs @hidden
             ->  appCertDLLs 
             
@@ -1799,8 +1837,7 @@ category Software {
             ->  attemptSIDHistoryInjection,
                 bypassLogAnalysis
 
-        | deobfuscateOrDecodeFilesOrInformation [Bernoulli(0.2102)]
-            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, Red Canary ATT&CK technique percentages top 50 (private google sheets document), https://attack.mitre.org/software/S0160/"
+        | deobfuscateOrDecodeFilesOrInformation 
             ->  bypassAntivirus,
                 bypassHostIntrusionPrevention,
                 bypassSignatureBasedDetection,
@@ -1826,15 +1863,19 @@ category Software {
                 attemptlSASS_Driver
 
         | attemptlSASS_Driver @hidden [Bernoulli(0.5)*Exponential(0.1)]
-            -> lSASS_Driver
+            ->  lSASS_Driver
 
         & mshta [Bernoulli(0.3329)*Exponential(491)]
             user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
             developer info: "Sources used for distribution: https://lolbas-project.github.io/lolbas/Binaries/Mshta/, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/blog/microsoft-html-application-hta-abuse-part-deux/"
             ->  executeCode,
                 bypassDigitalCertificateValidation,
-                bypassApplicationWhitelisting    
-               
+                bypassApplicationWhitelisting
+
+        & exchangeEmailDelegatePermissions
+            user info: "Adversaries may grant additional permission levels, such as ReadPermission or FullAccess, to maintain persistent access to an adversary-controlled email account."
+            ->  internalSpearphishing
+     
         | executeCode 
             +>  componentFirmware,
                 service.attemptExploitationForPrivilegeEscalation,
@@ -1847,8 +1888,6 @@ category Software {
             user info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
             developer info: "TTC assumed instant. Sources for probability distribution: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1106/"
             ->  executeCode,
-                attemptParentPIDSpoofingUser,
-                attemptParentPIDSpoofingAdmin,
                 attemptProcessInjection
 
         & executionThroughModuleLoad [Bernoulli(0.93)*Exponential(1)]
@@ -2017,24 +2056,13 @@ category Software {
                 pathEnvironmentVariableMisconfiguration,
                 searchOrderHijacking
 
-        | attemptParentPIDSpoofingUser
-            -> parentPIDSpoofingUser
-
-        | attemptParentPIDSpoofingAdmin
-            -> parentPIDSpoofingAdmin
-
-        & parentPIDSpoofingUser
-            developer info: "Binary probability distribution."
-            user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
-            ->  bypassHostForensicAnalysis,
-                bypassHeuristicDetection
-
-        & parentPIDSpoofingAdmin
-            developer info: "Binary probability distribution."
+        | parentPIDSpoofing
             user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
             ->  bypassHostForensicAnalysis,
                 bypassHeuristicDetection,
-                service.attemptExploitationForPrivilegeEscalation
+                service.browser.attemptSpearphishingAttachment,
+                service.attemptExploitationForPrivilegeEscalation,
+                attemptScripting
 
         | pathEnvironmentVariableMisconfiguration 
             user info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
@@ -2052,6 +2080,7 @@ category Software {
             developer info: "The process takes a few seconds to complete, so the TTC has excluded. It would be [Exponential(28800)] if included. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/powershell/"  
             ->  computer.router.internalNetwork.remoteSystemsConnection,
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
+                parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 persistence
 
         | attemptPowerShellUserProfile @hidden
@@ -2140,6 +2169,7 @@ category Software {
             ->  bypassAntivirus,
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation,
+                parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 executeCode  
 
         & serverSoftwareComponent
@@ -2380,8 +2410,7 @@ category Software {
             ->  tokenImpersonationOrTheft,
                 createProcessWithAToken,
                 makeAndImpersonateToken,
-                attemptParentPIDSpoofingUser,
-                attemptParentPIDSpoofingAdmin,
+                parentPIDSpoofing,
                 attemptSIDHistoryInjection
 
         | tokenImpersonationOrTheft
@@ -2744,6 +2773,13 @@ category Software {
             developer info: "Binary probability distribution."
             user info:"The source command loads functions into the current shell or executes files in the current context."
             ->  executeCode
+            
+        | attemptSSHAuthorizedKeys @hidden
+            ->  sSHAuthorizedKeys
+
+        & sSHAuthorizedKeys
+            user info: "Adversaries may modify the SSH authorized_keys file to maintain persistence on a victim host."
+            ->  persistence
 
         & sshHijacking
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
@@ -2797,7 +2833,8 @@ category Software {
 
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
-            +>  sshHijacking
+            +>  sSHAuthorizedKeys,
+                sshHijacking
 
         # executionPrevention
             +>  kernelModulesAndExtensions
@@ -2832,6 +2869,7 @@ category Software {
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
             +>  bash_profileAndBashrc,
+                sSHAuthorizedKeys,
                 sshHijacking,
                 sudoAndSudoCaching,
                 systemdService   
@@ -3011,6 +3049,13 @@ category Software {
             developer info: "Binary probability distribution."
             ->  executeCode
 
+        | attemptSSHAuthorizedKeys @hidden
+            ->  sSHAuthorizedKeys
+
+        & sSHAuthorizedKeys
+            user info: "Adversaries may modify the SSH authorized_keys file to maintain persistence on a victim host."
+            ->  persistence
+
         & sshHijacking
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
@@ -3083,6 +3128,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1042/"
             +>  emond,
                 reopenedApplications,
+                sSHAuthorizedKeys,
                 sshHijacking
 
         # executionPrevention
@@ -3123,6 +3169,7 @@ category Software {
                 dylibHijacking,
                 logonScripts,
                 plistModification,
+                sSHAuthorizedKeys,
                 sshHijacking,
                 startupItems,
                 sudoAndSudoCaching
@@ -3305,7 +3352,7 @@ category Network {
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.standardNonApplicationLayerProtocol,
-                router.computer.os.windows.accountManipulation,
+                router.computer.os.accountManipulation,
                 router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.domainTrustDiscovery,
                 router.computer.os.windows.serviceStop,
@@ -3358,7 +3405,8 @@ category Network {
         | externalDefacement {I}
             user info: "Websites are a common victim of defacement that often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda."
 
-        & webService
+        & webService [Bernoulli(0.0445)]
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.fireeye.com/blog/threat-research/2019/04/pick-six-intercepting-a-fin6-intrusion.html"
             user info: "Adversaries may use an existing, legitimate external Web service as a means for relaying commands to a compromised system."
             ->  router.computer.os.bypassBinaryAnalysis,
                 router.computer.os.bypassLogAnalysis,
@@ -3418,7 +3466,7 @@ category Network {
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.standardNonApplicationLayerProtocol,
-                router.computer.os.windows.accountManipulation,
+                router.computer.os.accountManipulation,
                 router.computer.os.windows.serviceStop         
 
         # sSLOrTLSInspection
@@ -3461,7 +3509,7 @@ category Hardware {
                 os.uncommonlyUsedPortsConnection,
                 os.fileDeletion,
                 os.windows.attemptPowerShell,
-                os.windows.accountManipulation,
+                os.attemptAccountManipulation,
                 os.service.attemptExternalRemoteServices,
                 peripheralDevice.removableMedia.infectedMedia,
                 peripheralDevice.removableMedia.dataFromRemovableMedia
@@ -3548,6 +3596,8 @@ associations {
     OS [os] * <--Extends--> * [macOS] MacOS
     SysAdmin [sysAdmin] * <--Operates--> * [windows] Windows
     OS [os] * <--Runs--> * [service] Service
+    Azure [azure] * <--Extends--> * [service] Service
+    Office365 [office365] * <--Extends--> * [service] Service
     Computer [computer] * <--Operates--> * [os] OS
     Router [router] * <--Communicates--> * [computer] Computer
     Firewall [firewall] * <--Protect--> * [router] Router
