@@ -1797,7 +1797,8 @@ category Software {
             ->  attemptSIDHistoryInjection,
                 bypassLogAnalysis
 
-        | deobfuscateOrDecodeFilesOrInformation 
+        | deobfuscateOrDecodeFilesOrInformation [Bernoulli(0.2102)]
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, Red Canary ATT&CK technique percentages top 50 (private google sheets document), https://attack.mitre.org/software/S0160/"
             ->  bypassAntivirus,
                 bypassHostIntrusionPrevention,
                 bypassSignatureBasedDetection,
