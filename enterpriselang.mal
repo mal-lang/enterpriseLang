@@ -805,7 +805,8 @@ category Software {
             user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
             ->  service.os.sensitiveDataCollected
 
-        # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
+        # restrictWebBasedContent [Bernoulli(0.3)] // Block unknown or unused attachments by default that should not be transmitted over email.
+            developer info: "Sources for distribution result: https://community.spiceworks.com/blog/3073-data-snapshot-how-web-filtering-affects-workplace-security-and-productivity, https://www.internetsociety.org/resources/doc/2017/internet-content-blocking/, https://www.phishingbox.com/resources/phishing-facts, https://www.darkreading.com/vulnerabilities---threats/social-media-platforms-double-as-major-malware-distribution-centers/d/d-id/1333973"
             user info: "https://attack.mitre.org/mitigations/M1021/"
             ->  spearphishingAttachment, 
                 spearphishingLink,
