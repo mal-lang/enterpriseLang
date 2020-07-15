@@ -114,7 +114,7 @@ category Software {
                 os.windows.networkShareConnectionRemoval,
                 os.windows.networkShareDiscovery,
                 os.windows.officeApplicationStartup,
-                os.windows.parentPIDSpoofing,
+                os.windows.parentPIDSpoofingUser,
                 os.windows.pathInterception,
                 os.windows.peripheralDeviceDiscovery,
                 os.windows.powerShell,
@@ -213,6 +213,7 @@ category Software {
             developer info: "Binary probability relation."
             ->  os.computer.infectedComputer,
                 os.computer.infectedWindowsComputer,
+                os.windows.attemptParentPIDSpoofingUser,
                 os.executeCode
 
         | userInformation
@@ -413,7 +414,7 @@ category Software {
                 os.windows.networkShareConnectionRemoval,
                 os.windows.newService,
                 os.windows.officeApplicationStartup,
-                os.windows.parentPIDSpoofing,
+                os.windows.parentPIDSpoofingAdmin,
                 os.windows.passwordFilterDLL,
                 os.windows.pathInterception,
                 os.windows.portMonitors,
@@ -1844,6 +1845,8 @@ category Software {
             user info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
             developer info: "TTC assumed instant. Sources for probability distribution: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1106/"
             ->  executeCode,
+                attemptParentPIDSpoofingUser,
+                attemptParentPIDSpoofingAdmin,
                 attemptProcessInjection
 
         & executionThroughModuleLoad [Bernoulli(0.93)*Exponential(1)]
@@ -2012,13 +2015,24 @@ category Software {
                 pathEnvironmentVariableMisconfiguration,
                 searchOrderHijacking
 
-        | parentPIDSpoofing
+        | attemptParentPIDSpoofingUser
+            -> parentPIDSpoofingUser
+
+        | attemptParentPIDSpoofingAdmin
+            -> parentPIDSpoofingAdmin
+
+        & parentPIDSpoofingUser
+            developer info: "Binary probability distribution."
+            user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
+            ->  bypassHostForensicAnalysis,
+                bypassHeuristicDetection
+
+        & parentPIDSpoofingAdmin
+            developer info: "Binary probability distribution."
             user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
             ->  bypassHostForensicAnalysis,
                 bypassHeuristicDetection,
-                service.browser.attemptSpearphishingAttachment,
-                service.attemptExploitationForPrivilegeEscalation,
-                attemptScripting
+                service.attemptExploitationForPrivilegeEscalation
 
         | pathEnvironmentVariableMisconfiguration 
             user info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
@@ -2036,7 +2050,6 @@ category Software {
             developer info: "The process takes a few seconds to complete, so the TTC has excluded. It would be [Exponential(28800)] if included. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/powershell/"  
             ->  computer.router.internalNetwork.remoteSystemsConnection,
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
-                parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 persistence
 
         | attemptPowerShellUserProfile @hidden
@@ -2125,7 +2138,6 @@ category Software {
             ->  bypassAntivirus,
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation,
-                parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 executeCode  
 
         & serverSoftwareComponent
@@ -2366,7 +2378,8 @@ category Software {
             ->  tokenImpersonationOrTheft,
                 createProcessWithAToken,
                 makeAndImpersonateToken,
-                parentPIDSpoofing,
+                attemptParentPIDSpoofingUser,
+                attemptParentPIDSpoofingAdmin,
                 attemptSIDHistoryInjection
 
         | tokenImpersonationOrTheft

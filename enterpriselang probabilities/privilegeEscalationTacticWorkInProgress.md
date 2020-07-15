@@ -212,7 +212,7 @@ This should have a TTC (persistence) and prevalence (rather low according to the
 
 REVIEW link with lanchd and launchctl
 
-### New Service  (needs) 
+### New Service  (needs)
 
 Masquerading might be a parent rather than a child. serviceExecution might be a child rather than a parent.
 
@@ -295,7 +295,7 @@ In the code, this attack step is *split into 2*, on part for persistence, the ot
 
 ### Setuid & Setgid (needs)
 
-An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context. Additionally, adversaries can use this mechanism on their own malware to make sure they're able to execute in elevated contexts in the future.
+An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setuid or setgid bits to get code running in a different user’s context. Additionally, adversaries can use this mechanism on their own malware to make sure they're able to execute in elevated contexts in the future.
 
 With proper OS Configuration, this attack can be blocked.
 
