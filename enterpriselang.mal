@@ -916,7 +916,8 @@ category Software {
         | attemptCredentialsInFiles @hidden
             ->  credentialsInFiles
 
-        & credentialsInFiles
+        & credentialsInFiles [Bernoulli(0.0179)*Exponential(282)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://blog.talosintelligence.com/2018/07/smoking-guns-smoke-loader-learned-new.html#more, https://www.statista.com/statistics/751847/worldwide-seagate-western-digital-average-hard-drive-capacity/, https://www.hardware-revolution.com/how-much-storage-capacity-do-i-need-for-my-computer-2020/"
             ->  userAccount.userCredentials,
                 adminAccount.adminCredentials,
                 windows.sysAdmin.systemCredentials   
