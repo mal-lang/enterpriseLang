@@ -127,7 +127,7 @@ category Software {
                 os.windows.rundll32,
                 os.windows.attemptScheduledTask,
                 os.windows.screensaver,
-                os.windows.shortcutModification,
+                os.windows.attemptShortcutModification,
                 os.windows.signedBinaryProxyExecution,
                 os.windows.signedScriptProxyExecution,
                 os.windows.sIPAndTrustProviderHijacking,
@@ -174,7 +174,7 @@ category Software {
                 os.macOS.localJobScheduling,
                 os.macOS.loginItem,
                 os.macOS.attemptLogonScripts,
-                os.macOS.plistModification,
+                os.macOS.attemptPlistModification,
                 os.macOS.portKnocking,
                 os.macOS.spaceAfterFileName,
                 os.macOS.networkShareDiscovery,
@@ -230,7 +230,8 @@ category Software {
                 os.windows.templateInjection,
                 os.macOS.inputPrompt, 
                 os.macOS.loginItem,
-                os.macOS.reopenedApplications, 
+                os.macOS.reopenedApplications,
+                os.macOS.plistModification,
                 os.service.browser.browserExtensions,
                 os.service.spearphishingViaService,
                 os.service.thirdpartySoftware.useThirdpartySoftware,
@@ -410,7 +411,7 @@ category Software {
                 os.windows.hooking,
                 os.windows.hypervisor,
                 os.windows.imageFileExecutionOptionsInjection,
-                os.windows.lSASS_Driver,
+                os.windows.attemptLSASS_Driver,
                 os.windows.manInTheBrowser,
                 os.windows.modifyExistingService,
                 os.windows.modifyRegistry,
@@ -421,7 +422,7 @@ category Software {
                 os.windows.parentPIDSpoofing,
                 os.windows.passwordFilterDLL,
                 os.windows.pathInterception,
-                os.windows.attemptPortMonitors,
+                os.windows.portMonitors,
                 os.windows.powerShell,
                 os.windows.attemptPowerShellUserProfile,
                 os.windows.attemptPowerShellAdminProfile,
@@ -435,18 +436,18 @@ category Software {
                 os.windows.serverSoftwareComponent,
                 os.windows.serviceExecution,
                 os.windows.attemptServiceRegistryPermissionsWeakness,
-                os.windows.shortcutModification,
+                os.windows.attemptShortcutModification,
                 os.windows.attemptSIDHistoryInjection,
                 os.windows.attemptScheduledTask,
                 os.windows.systemFirmware,
                 os.windows.systemServiceDiscovery,
-                os.windows.timeProviders,
+                os.windows.attemptTimeProviders,
                 os.windows.timestomp,
                 os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
                 os.windows.windowsRemoteManagement,
-                os.windows.winlogonHelperDLL
+                os.windows.attemptWinlogonHelperDLL
 
         | adminCredentials
 
@@ -480,7 +481,7 @@ category Software {
                 os.macOS.attemptLaunchAgent,
                 os.macOS.launchctl,
                 os.macOS.launchDaemon,
-                os.macOS.plistModification,
+                os.macOS.attemptPlistModification,
                 os.macOS.rc_common,
                 os.macOS.securitydMemory,
                 os.macOS.sshHijacking,
@@ -831,6 +832,27 @@ category Software {
                 linux.attemptSSHAuthorizedKeys,
                 macOS.attemptSSHAuthorizedKeys
 
+        | archiveCollectedData
+            user info: "An adversary may compress and/or encrypt data that is collected prior to exfiltration."
+            ->  archiveViaUtility,
+                archiveViaLibrary,
+                archiveViaCustomMethod
+
+        & archiveViaUtility
+            user info: "An adversary may compress and/or encrypt data that is collected prior to exfiltration."
+            ->  dataCompressed,
+                dataEncrypted
+
+        | archiveViaLibrary
+            user info: "An adversary may compress or encrypt data that is collected prior to exfiltration using 3rd party libraries."
+            ->  dataCompressed,
+                dataEncrypted
+
+        | archiveViaCustomMethod
+            user info: "An adversary may compress or encrypt data that is collected prior to exfiltration using a custom method."
+            ->  dataCompressed,
+                dataEncrypted
+
         | attemptAbuseElevationControlMechanism @hidden
             ->  abuseElevationControlMechanism
 
@@ -847,7 +869,21 @@ category Software {
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
 
         | applicationExhaustionFlood
-            ->  service.blockUserAccess 
+            ->  service.blockUserAccess
+
+        | bootOrLogonAutostartExecution
+            ->  windows.registryRunKeysOrStartupFolder,
+                windows.authenticationPackage,
+                windows.attemptTimeProviders,
+                windows.attemptWinlogonHelperDLL,
+                windows.attemptLSASS_Driver,
+                windows.attemptShortcutModification,
+                windows.securitySupportProvider,
+                windows.portMonitors,
+                linux.kernelModulesAndExtensions,
+                macOS.kernelModulesAndExtensions,
+                macOS.reopenedApplications,
+                macOS.attemptPlistModification
 
         | infectedOS
             ->  clipboardData,
@@ -1155,8 +1191,7 @@ category Software {
             ->  bypassFileSystemAccessControls,
                 windows.attemptAccessibilityFeatures, // leads to Accessibility Features attack
                 windows.attemptLogonScripts, //leads to Logon Scripts attack
-                macOS.attemptLogonScripts, // leads to Logon Scripts attack
-                windows.portMonitors
+                macOS.attemptLogonScripts // leads to Logon Scripts attack
 
         | graphicalUserInterface
             developer info: "Binary probability distribution."
@@ -1229,20 +1264,32 @@ category Software {
             developer info: "TTC assumed instant. Sources for distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://blogs.cisco.com/security/malwares-use-of-tls-and-encryption, https://news.sophos.com/en-us/2020/02/18/nearly-a-quarter-of-malware-now-communicates-using-tls/, https://www.cyren.com/blog/articles/over-one-third-of-malware-uses-https, https://istlsfastyet.com/, https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/"
             ->  computer.router.internalNetwork.c2Connected
 
-        | attemptStandardApplicationLayerProtocol
-            ->  standardApplicationLayerProtocol    
+        | attemptApplicationLayerProtocol @hidden
+            ->  applicationLayerProtocol    
 
-        & standardApplicationLayerProtocol [Bernoulli(0.20)]
+        & applicationLayerProtocol [Bernoulli(0.20)]
             user info: "Adversaries may communicate using a common, standardized application layer protocol such as HTTP, HTTPS, SMTP, or DNS to avoid detection by blending in with existing traffic."
             developer info: "Sources used for distribution result: https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB"
-            ->  computer.router.internalNetwork.communicate
+            ->  webProtocols,
+                fileTransferProtocols,
+                mailProtocols,
+                dNS
 
-        | attemptStandardNonApplicationLayerProtocol
-            ->  standardNonApplicationLayerProtocol    
+        | webProtocols
+            user info: "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic."
+            ->  computer.router.internalNetwork.c2Connexion
 
-        & standardNonApplicationLayerProtocol
-            user info: "Use of a standard non-application layer protocol for communication between host and C2 server or among infected hosts within a network."
-            ->  computer.router.internalNetwork.communicate        
+        | fileTransferProtocols
+            user info: "Adversaries may communicate using application layer protocols associated with transferring files to avoid detection/network filtering by blending in with existing traffic."
+            ->  computer.router.internalNetwork.c2Connexion
+
+        | mailProtocols
+            user info: "Adversaries may communicate using application layer protocols associated with electronic map delivery to avoid detection/network filtering by blending in with existing traffic."
+            ->  computer.router.internalNetwork.c2Connexion
+
+        & dNS
+            user info: "Adversaries may communicate using the Domain Name System (DNS) application layer protocol to avoid detection/network filtering by blending in with existing traffic."
+            ->  computer.router.internalNetwork.c2Connexion
 
         | systemNetworkConfigurationDiscovery
             user info: "Adversaries will likely look for details about the network configuration and settings of systems they access or through information discovery of remote systems."
@@ -1573,6 +1620,7 @@ category Software {
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
             ->  abuseElevationControlMechanism,
+                archiveViaUtility,
                 credentialsInFiles,
                 credentialsInRegistry,
                 service.browser.browserExtensions,
@@ -1585,7 +1633,8 @@ category Software {
         # filterNetworkTraffic [Bernoulli(0.8217)]
             developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"
-            ->  validAccounts
+            ->  dNS,
+                validAccounts
 
         # applicationDeveloperGuidance
             user info: "https://attack.mitre.org/mitigations/M1013/"
@@ -1710,14 +1759,14 @@ category Software {
                 windows.hooking,
                 windows.hypervisor,
                 windows.imageFileExecutionOptionsInjection,
-                windows.lSASS_Driver,
+                windows.attemptLSASS_Driver,
                 windows.manInTheBrowser,
                 windows.modifyExistingService,
                 windows.modifyRegistry,
                 windows.netshHelperDLL,
                 windows.passwordFilterDLL,
                 windows.pathInterception,
-                windows.attemptPortMonitors,
+                windows.portMonitors,
                 windows.processDoppelganging,
                 windows.serverSoftwareComponent,
                 windows.serviceExecution,
@@ -1726,10 +1775,10 @@ category Software {
                 windows.sIPAndTrustProviderHijacking,
                 windows.systemServiceDiscovery,
                 windows.serviceStop,
-                windows.timeProviders,
+                windows.attemptTimeProviders,
                 windows.timestomp,
                 windows.windowsManagementInstrumentationEventSubscription,
-                windows.winlogonHelperDLL,
+                windows.attemptWinlogonHelperDLL,
                 windows.os.accountAccessRemoval,
                 windows.os.attemptCredentialDumping,
                 windows.os.attemptCredentialsInFiles,
@@ -1787,6 +1836,18 @@ category Software {
             ->  executeCode,
                 persistence,
                 exfiltrationOverAternativeProtocol // BITS upload functionalities can be used to perform Exfiltration Over Alternative Protocol
+
+        | attemptBootOrLogonInitializationScripts @hidden
+            ->  bootOrLogonInitializationScripts
+
+        & bootOrLogonInitializationScripts
+            user info: "Adversaries may use scripts automatically executed at boot or logon initialization to establish persistence."
+            ->  attemptLogonScripts,
+                networkLogonScripts
+
+        | networkLogonScripts
+            user info: "Adversaries may use network logon scripts automatically executed at logon initialization to establish persistence."
+            ->  computer.router.internalNetwork.persistence
 
         & cmstp
             user info: "Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
@@ -1853,16 +1914,16 @@ category Software {
             ->  bypassProcessWhitelisting,
                 attemptBypassUserAccountControl,
                 userAccount.userRights,
-                attemptlSASS_Driver,
+                attemptLSASS_Driver,
                 service.attemptExploitationForPrivilegeEscalation                   
                
         | dLLSideLoading [Bernoulli(0.0755)]
             developer info: "Sources used for probability result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf"
             ->  bypassProcessWhitelisting,
                 bypassAntivirus,
-                attemptlSASS_Driver
+                attemptLSASS_Driver
 
-        | attemptlSASS_Driver @hidden [Bernoulli(0.5)*Exponential(0.1)]
+        | attemptLSASS_Driver @hidden [Bernoulli(0.5)*Exponential(0.1)]
             ->  lSASS_Driver
 
         & mshta [Bernoulli(0.3329)*Exponential(491)]
@@ -2208,6 +2269,9 @@ category Software {
             user info: "Adversaries may add malicious content to an internally accessible website through an open network file share that contains the website's webroot or Web content directory and then browse to that content with a Web browser to cause the server to execute the malicious content."
             ->  service.browser.executionThroughMaliciousContent
 
+        | attemptShortcutModification @hidden
+            ->  shortcutModification
+
         & shortcutModification [Bernoulli(0.03)]
             developer info: "Sources for distribution result: https://ics-cert.kaspersky.com/reports/2019/09/30/threat-landscape-for-industrial-automation-systems-h1-2019/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting/, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.welivesecurity.com/wp-content/uploads/2018/10/ESET_GreyEnergy.pdf, https://www.pwc.co.uk/cyber-security/pdf/cloud-hopper-annex-b-final.pdf"
             user info: "Adversaries could use shortcuts to execute their tools for persistence. Adversaries could also edit the target path or entirely replace an existing shortcut so their tools will be executed instead of the intended legitimate program."
@@ -2270,6 +2334,9 @@ category Software {
                 forcedAuthentication, // leads to Forced Authentication attack
                 service.browser.spearphishingAttachment, // can be delivered via Spearphishing Attachment
                 attemptTaintSharedContent // can be delivered via Taint Shared Content
+
+        | attemptTimeProviders @hidden
+            ->  timeProviders
 
         & timeProviders
             user info: "Adversaries may abuse Windows Time service to establish Persistence, specifically by registering and enabling a malicious DLL as a time provider."
@@ -2337,6 +2404,9 @@ category Software {
             user info: "WinRM allows a user to interact with a remote system."
             ->  computer.router.internalNetwork.remoteExecution,
                 service.externalRemoteServices // Windows Remote Management can also be used externally  
+
+        | attemptWinlogonHelperDLL @hidden
+            ->  winlogonHelperDLL
 
         & winlogonHelperDLL
             user info: "Adversaries may take advantage of these features to repeatedly execute malicious code and establish Persistence."
@@ -2440,11 +2510,7 @@ category Software {
         | peripheralDeviceDiscovery
             ->  computer.peripheralDeviceDiscovery
 
-        | attemptPortMonitors
-            -> portMonitors
-
-        & portMonitors [Exponential(288)]
-            developer info: "Sources for distribution results: https://www.itprotoday.com/security/how-can-i-allow-members-printer-operators-group-add-printers, http://techgenix.com/allowprintoperatorstoaddaprinter/"
+        | portMonitors
             user info: "Adversaries can use this technique to load malicious code at startup that will persist on system reboot and execute as SYSTEM."
             ->  executeCode,
                 service.attemptExploitationForPrivilegeEscalation,
@@ -2545,8 +2611,7 @@ category Software {
             +>  powerShell,
                 powerShellUserProfile,
                 powerShellAdminProfile,
-                serverSoftwareComponent,
-                lSASS_Driver         
+                serverSoftwareComponent        
 
         # credentialAccessProtection
             user info: "https://attack.mitre.org/mitigations/M1043/"
@@ -2609,6 +2674,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1025/"
             ->  authenticationPackage,
                 credentialDumping,
+                lSASS_Driver,
                 securitySupportProvider 
 
         # privilegedAccountManagement [Bernoulli(0.30)]
@@ -2625,6 +2691,7 @@ category Software {
             +>  controlPanelItems,
                 dLLSideLoading,
                 indicatorBlocking,
+                bootOrLogonInitializationScripts,
                 logonScripts,
                 modifyRegistry,
                 ntfsFileAttributes,
@@ -2892,6 +2959,15 @@ category Software {
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
 
+        | attemptBootOrLogonInitializationScripts @hidden
+            ->  bootOrLogonInitializationScripts
+
+        & bootOrLogonInitializationScripts
+            user info: "Adversaries may use scripts automatically executed at boot or logon initialization to establish persistence."
+            ->  attemptLogonScripts,
+                rc_common,
+                attemptStartupItems
+
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
@@ -3009,6 +3085,9 @@ category Software {
 
         & logonScripts
             ->  adminAccount.rootAdmin.adminRights  
+
+        | attemptPlistModification @hidden
+            ->  plistModification
 
         & plistModification
             user info: "Adversaries can modify these plist files to point to their own code, can use them to execute their code in the context of another user, bypass whitelisting procedures, or even use them as a persistence mechanism."
@@ -3298,7 +3377,6 @@ category Network {
                 router.computer.os.endpointDenialOfService,
                 router.computer.os.multiHopProxy,
                 router.computer.os.networkDenialOfService,
-                router.computer.os.standardNonApplicationLayerProtocol,
                 router.computer.os.windows.bITSJobs 
 
         # limitAccessToResourceOverNetwork
@@ -3336,8 +3414,7 @@ category Network {
                 router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
-                router.computer.os.standardApplicationLayerProtocol,
-                router.computer.os.standardNonApplicationLayerProtocol,
+                router.computer.os.applicationLayerProtocol,
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.windows.templateInjection
 
@@ -3351,7 +3428,6 @@ category Network {
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
-                router.computer.os.standardNonApplicationLayerProtocol,
                 router.computer.os.accountManipulation,
                 router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.domainTrustDiscovery,
@@ -3430,7 +3506,6 @@ category Network {
                 router.computer.os.endpointDenialOfService,
                 router.computer.os.multiHopProxy,
                 router.computer.os.networkDenialOfService,
-                router.computer.os.standardNonApplicationLayerProtocol,
                 router.computer.os.windows.bITSJobs  
 
         # networkIntrusionPrevention
@@ -3451,8 +3526,7 @@ category Network {
                 router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
-                router.computer.os.standardApplicationLayerProtocol,
-                router.computer.os.standardNonApplicationLayerProtocol
+                router.computer.os.applicationLayerProtocol
 
         # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
             user info: "https://attack.mitre.org/mitigations/M1030/"
@@ -3465,7 +3539,6 @@ category Network {
                 router.computer.os.uncommonlyUsedPortsConnection,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
-                router.computer.os.standardNonApplicationLayerProtocol,
                 router.computer.os.accountManipulation,
                 router.computer.os.windows.serviceStop         
 
