@@ -1322,7 +1322,8 @@ category Software {
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf, https://docs.microsoft.com/en-us/sysinternals/downloads/sdelete"
             ->  bypassHostForensicAnalysis
 
-        | fileAndDirectoryDiscovery
+        | fileAndDirectoryDiscovery [Bernoulli(0.3197)]
+            developer info: "Sources for distribution result: https://www.sans.org/cyber-security-summit/archives/file/summit_archive_1536351477.pdf, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, "
             user info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system."
             ->  attemptAutomatedCollection
 
