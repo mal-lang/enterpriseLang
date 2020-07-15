@@ -417,7 +417,7 @@ category Software {
                 os.windows.parentPIDSpoofingAdmin,
                 os.windows.passwordFilterDLL,
                 os.windows.pathInterception,
-                os.windows.portMonitors,
+                os.windows.attemptPortMonitors,
                 os.windows.powerShell,
                 os.windows.attemptPowerShellUserProfile,
                 os.windows.attemptPowerShellAdminProfile,
@@ -1118,7 +1118,8 @@ category Software {
             ->  bypassFileSystemAccessControls,
                 windows.attemptAccessibilityFeatures, // leads to Accessibility Features attack
                 windows.attemptLogonScripts, //leads to Logon Scripts attack
-                macOS.attemptLogonScripts // leads to Logon Scripts attack
+                macOS.attemptLogonScripts, // leads to Logon Scripts attack
+                windows.portMonitors
 
         | graphicalUserInterface
             developer info: "Binary probability distribution."
@@ -1672,7 +1673,7 @@ category Software {
                 windows.netshHelperDLL,
                 windows.passwordFilterDLL,
                 windows.pathInterception,
-                windows.portMonitors,
+                windows.attemptPortMonitors,
                 windows.processDoppelganging,
                 windows.serverSoftwareComponent,
                 windows.serviceExecution,
@@ -2410,7 +2411,11 @@ category Software {
         | peripheralDeviceDiscovery
             ->  computer.peripheralDeviceDiscovery
 
-        | portMonitors
+        | attemptPortMonitors
+            -> portMonitors
+
+        & portMonitors [Exponential(288)]
+            developer info: "Sources for distribution results: https://www.itprotoday.com/security/how-can-i-allow-members-printer-operators-group-add-printers, http://techgenix.com/allowprintoperatorstoaddaprinter/"
             user info: "Adversaries can use this technique to load malicious code at startup that will persist on system reboot and execute as SYSTEM."
             ->  executeCode,
                 service.attemptExploitationForPrivilegeEscalation,

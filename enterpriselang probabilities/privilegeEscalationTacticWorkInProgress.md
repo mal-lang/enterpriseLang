@@ -218,9 +218,7 @@ Masquerading might be a parent rather than a child. serviceExecution might be a 
 
 This needs a probability distribution.
 
-Link with Launch Daemon and Launch ctl? (CAPEC)
-
-### Parent PID spoofing (needs)
+### Parent PID spoofing
 
 This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
 
@@ -228,7 +226,6 @@ Adversaries may abuse these mechanisms to evade defenses, such as those blocking
 
 Explicitly assigning the PPID may also enable Privilege Escalation (given appropriate access rights to the parent process). For example, an adversary in a privileged user context (i.e. administrator) may spawn a new process and assign the parent as a process running as SYSTEM (such as lsass.exe), causing the new process to be elevated via the inherited access token.
 
-This needs REVIEW.
 
 ### Path interception
 
