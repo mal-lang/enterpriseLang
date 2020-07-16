@@ -1402,7 +1402,8 @@ category Software {
         & storedDataManipulation {I}
             user info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."    
 
-        & uncommonlyUsedPortsConnection
+        & nonStandardPort [TruncatedNormal(41.11,31.68)]
+            developer info: "Sources used for distribution result: https://www.nexustek.com/blog/cyber-security-tip-detecting-attacks-over-low-traffic-ports/, https://krisk.io/publication/mitre-attack-securecomm19/, https://media.paloaltonetworks.com/documents/The-Modern-Malware-Review-March-2013.pdf, https://www.usenix.org/event/leet09/tech/full_papers/bayer/bayer.pdf, https://www.securityweek.com/rise-malware-using-encryption-shows-importance-network-traffic-inspection, "
             user info: "Adversaries may conduct C2 communications over a non-standard port to bypass proxies and firewalls that have been improperly configured."
             ->  computer.router.internalNetwork.c2Connected
 
@@ -3444,7 +3445,7 @@ category Network {
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
                 router.computer.os.applicationLayerProtocol,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.windows.templateInjection
 
         # networkSegmentation
@@ -3453,7 +3454,7 @@ category Network {
                 router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.adminAccount.createAccount,
                 router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
@@ -3545,7 +3546,7 @@ category Network {
                 router.internalNetwork.exfiltrationOverC2Channel,
                 router.internalNetwork.generateDomainNames,
                 router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.connectionProxy,
                 router.computer.os.dataEncoding,
                 router.computer.os.fallbackChannels,
@@ -3565,7 +3566,7 @@ category Network {
                 router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.service.exploitationOfRemoteServices,
                 router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.accountManipulation,
@@ -3593,7 +3594,7 @@ category Network {
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.service.externalRemoteServices,
                 router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.remoteDesktopProtocol,
@@ -3608,7 +3609,7 @@ category Hardware {
                 router.internalNetwork.attemptDataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-049a
                 router.externalNetwork.attemptDataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-049a
                 os.commonlyUsedPortsConnection,
-                os.uncommonlyUsedPortsConnection,
+                os.nonStandardPort,
                 os.fileDeletion,
                 os.windows.attemptPowerShell,
                 os.attemptAccountManipulation,
