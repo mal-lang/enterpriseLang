@@ -429,7 +429,7 @@ category Software {
                 os.windows.attemptPowerShellUserProfile,
                 os.windows.attemptPowerShellAdminProfile,
                 os.windows.processDoppelganging,
-                os.windows.queryRegistery,
+                os.windows.queryRegistry,
                 os.windows.remoteScheduledTask,
                 os.windows.registryRunKeysOrStartupFolder,
                 os.windows.regsvcsOrRegasm,
@@ -2467,7 +2467,8 @@ category Software {
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://github.com/jackson5sec/timestomp" 
             ->  bypassHostForensicAnalysis
 
-        & queryRegistery
+        & queryRegistry [Bernoulli(0.05226)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/software/S0075/, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc742028(v=ws.11), https://www.welivesecurity.com/wp-content/uploads/2020/05/ESET_Turla_ComRAT.pdf"
             user info: "The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
             ->  attemptScripting,
                 systemInformationDiscovery
@@ -2639,7 +2640,7 @@ category Software {
                 mshta,
                 networkShareDiscovery,
                 pathInterception,
-                queryRegistery,
+                queryRegistry,
                 regsvcsOrRegasm, 
                 screensaver,
                 signedBinaryProxyExecution,
