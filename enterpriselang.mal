@@ -548,7 +548,8 @@ category Software {
         | attemptRemoteServices @hidden
              ->  remoteServices
 
-        & remoteServices
+        & remoteServices [Bernoulli(0.04346)]
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/"
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
             ->  os.computer.router.internalNetwork.c2Connected
 
