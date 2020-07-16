@@ -2410,7 +2410,8 @@ category Software {
         | attemptSystemTimeDiscovery @hidden
             ->  systemTimeDiscovery
 
-        & systemTimeDiscovery
+        & systemTimeDiscovery [Bernoulli(0.19744)]
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://krisk.io/publication/mitre-attack-securecomm19/, https://attack.mitre.org/software/S0039/"
             user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
             ->  attemptScheduledTask         
 
