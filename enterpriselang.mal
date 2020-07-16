@@ -43,8 +43,8 @@ category Software {
                 os.accountDiscovery,
                 os.applicationWindowDiscovery,
                 os.attemptAutomatedCollection,
-                os.attemptAbuseElevationControlMechanism,
-                os.attemptBruteForce,
+                os.abuseElevationControlMechanism,
+                os.bruteForce,
                 os.commandLineInterface,
                 os.compileAfterDelivery,
                 os.attemptCredentialsInFiles,
@@ -64,6 +64,10 @@ category Software {
                 os.inhibitSystemRecovery,
                 os.internalSpearphishing,
                 os.installRootCertificate,
+                os.passwordGuessing,
+                os.passwordCracking,
+                os.passwordSpraying,
+                os.credentialStuffing,
                 os.passwordPolicyDiscovery,
                 os.permissionGroupsDiscovery,
                 os.privateKeys,
@@ -152,7 +156,7 @@ category Software {
                 os.linux.spaceAfterFileName,
                 os.linux.source,
                 os.linux.sshHijacking,
-                os.linux.attemptSudoAndSudoCaching,
+                os.linux.sudoAndSudoCaching,
                 os.linux.attemptSystemdService,
                 os.linux.timestomp,
                 os.linux.trap,
@@ -183,7 +187,7 @@ category Software {
                 os.macOS.attemptSetuidAndSetgid,
                 os.macOS.source,
                 os.macOS.sshHijacking,
-                os.macOS.attemptSudoAndSudoCaching,
+                os.macOS.sudoAndSudoCaching,
                 os.macOS.trap,
                 os.service.cloudInstanceMetadataAPI,
                 os.service.attemptExploitationForCredentialAccess,
@@ -242,6 +246,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  os.disablingSecurityTools,
                 os.validAccounts,
+                os.credentialStuffing,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
                 os.windows.serviceStop,
                 os.windows.bITSJobs,
@@ -290,7 +295,7 @@ category Software {
             ->  userAccount.userRights,
                 createAccount, 
                 os.accountAccessRemoval,
-                os.attemptAbuseElevationControlMechanism,
+                os.abuseElevationControlMechanism,
                 os.attemptAutomatedCollection,
                 os.commandLineInterface,
                 os.dataDestruction,
@@ -577,7 +582,7 @@ category Software {
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
             ->  browser.attemptSpearphishingAttachment,
                 browser.attemptSpearphishingLink,
-                os.attemptBruteForce // https://www.us-cert.gov/ncas/alerts/TA18-086A
+                os.bruteForce // https://www.us-cert.gov/ncas/alerts/TA18-086A
 
         | attemptSupplyChainCompromise @hidden [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
             developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
@@ -857,17 +862,14 @@ category Software {
             ->  dataCompressed,
                 dataEncrypted
 
-        | attemptAbuseElevationControlMechanism @hidden
-            ->  abuseElevationControlMechanism
-
-        & abuseElevationControlMechanism
+        | abuseElevationControlMechanism
             user info: "Adversaries may circumvent mechanisms designed to control elevate privileges to gain higher-level permissions."
             ->  linux.attemptSetuidAndSetgid,
                 macOS.attemptSetuidAndSetgid,
                 windows.attemptBypassUserAccountControl,
-                linux.attemptSudoAndSudoCaching,
-                macOS.attemptSudoAndSudoCaching,
-                macOS.attemptElevatedExecutionWithPrompt        
+                linux.sudoAndSudoCaching,
+                macOS.sudoAndSudoCaching,
+                macOS.attemptElevatedExecutionWithPrompt
 
         | accountAccessRemoval {A}
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
@@ -963,7 +965,7 @@ category Software {
             ->  attemptProcessInjection
 
         | collectHashInformation
-            ->  attemptBruteForce, // leads to Brute Force attack  
+            ->  attemptPasswordCracking, // leads to Brute Force: Password Cracking attack  
                 windows.passTheHash, // leads to Pass the Hash attack
                 windows.networkSniffing // leads to Network Sniffing attack
 
@@ -1169,7 +1171,7 @@ category Software {
             user info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
             ->  service.attemptRemoteServices,
                 inputCapture,
-                attemptBruteForce  
+                bruteForce  
 
         | resourceHijacking {A} [Bernoulli(0.046)*Exponential(48)]
             developer info: "https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.ptsecurity.com/ww-en/analytics/cybersecurity-threatscape-2019-q1/, https://content.fireeye.com/apt-41/rpt-apt41, https://github.com/xmrig/xmrig, https://steemit.com/utopian-io/@afterglow/tutorial-how-to-install-configure-and-use-xmrig-cryptocurrency-miner-for-monero-on-your-computer"
@@ -1346,13 +1348,32 @@ category Software {
         & bruteForceWithPasswordPolicy
             ->  userAccount.userCredentials // the probability distribution should be so that it has higher chance of success than the bruteforce attack
 
-        | attemptBruteForce @hidden
-            ->  bruteForce
-
-        & bruteForce [Exponential(0.3)]
+        | bruteForce [Exponential(0.3)]
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper."
+            ->  passwordGuessing,
+                attemptPasswordCracking,
+                passwordSpraying,
+                credentialStuffing
+
+        & passwordGuessing
+            user info: "Adversaries with no prior knowledge of legitimate credentials within the system or environment may guess passwords to attempt access to accounts."
             ->  userAccount.userCredentials // https://us-cert.cisa.gov/ncas/alerts/TA18-086A
+
+        | attemptPasswordCracking @hidden
+            ->  passwordCracking
+
+        & passwordCracking
+            user info: "Adversaries may use password cracking to attempt to recover usable credentials, such as plaintext passwords, when credential material such as password hashes are obtained."
+            ->  userAccount.userCredentials
+
+        & passwordSpraying
+            user info: "Adversaries may use a single or small list of commonly used passwords against many different accounts to attempt to acquire valid account credentials."
+            ->  userAccount.userCredentials        
+
+        & credentialStuffing
+            user info: "Adversaries may use credentials obtained from breach dumps of unrelated accounts to gain access to target accounts through credential overlap."
+            ->  userAccount.userCredentials
 
         | attemptAntivirusCheck @hidden
             ->  antivirusCheck    
@@ -1543,8 +1564,7 @@ category Software {
 
         # restrictFileAndDirectoryPermissions 
             user info: "https://attack.mitre.org/mitigations/M1022/"
-            ->  abuseElevationControlMechanism,
-                credentialsInFiles,
+            ->  credentialsInFiles,
                 disablingSecurityTools,
                 indicatorRemovalOnHost,
                 linux.clearCommandHistory,
@@ -1558,7 +1578,9 @@ category Software {
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             user info: "https://attack.mitre.org/mitigations/M1036/" 
             developer info: "Binary probability relation."
-            ->  bruteForce
+            ->  passwordGuessing,
+                passwordSpraying,
+                credentialStuffing
 
         # behaviorPreventionOnEndpoint
             user info: "https://attack.mitre.org/mitigations/M1040/"
@@ -1580,7 +1602,10 @@ category Software {
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             user info: "https://attack.mitre.org/mitigations/M1032/" 
-            ->  bruteForce,
+            ->  credentialStuffing,
+                passwordGuessing,
+                passwordCracking,
+                passwordSpraying,
                 networkSniffing,
                 validAccounts,
                 service.browser.stealWebSessionCookie,
@@ -1590,8 +1615,11 @@ category Software {
 
         # passwordPolicies 
             user info: "https://attack.mitre.org/mitigations/M1027/" 
-            ->  bruteForce,
+            ->  passwordGuessing,
+                passwordCracking,
+                passwordSpraying,
                 credentialDumping,
+                credentialStuffing,
                 credentialsInFiles,
                 credentialsInRegistry,
                 validAccounts,
@@ -1624,8 +1652,7 @@ category Software {
 
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
-            ->  abuseElevationControlMechanism,
-                archiveViaUtility,
+            ->  archiveViaUtility,
                 credentialsInFiles,
                 credentialsInRegistry,
                 service.browser.browserExtensions,
@@ -1659,7 +1686,6 @@ category Software {
         # operatingSystemConfiguration 
             user info: "https://attack.mitre.org/mitigations/M1028/"
             ->  accountManipulation,
-                abuseElevationControlMechanism,
                 accountDiscovery,
                 communicationThroughRemovableMedia,
                 credentialDumping,
@@ -1677,7 +1703,6 @@ category Software {
         # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
             user info: "https://attack.mitre.org/mitigations/M1038/"
             ->  accountDiscovery,
-                abuseElevationControlMechanism,
                 applicationWindowDiscovery,
                 commandLineInterface,
                 binaryPadding,
@@ -1697,8 +1722,7 @@ category Software {
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  abuseElevationControlMechanism,
-                credentialsInRegistry,
+            ->  credentialsInRegistry,
                 validAccounts,
                 service.implantContainerImage,
                 computer.router.internalNetwork.webShell
@@ -1734,8 +1758,7 @@ category Software {
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
-            ->  abuseElevationControlMechanism,
-                service.thirdpartySoftware.trustedRelationship
+            ->  service.thirdpartySoftware.trustedRelationship
 
         # exploitProtection
             user info: "https://attack.mitre.org/mitigations/M1050/"
@@ -2038,7 +2061,7 @@ category Software {
 
         & kerberoasting
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
-            ->  attemptBruteForce,
+            ->  bruteForce,
                 persistence,
                 service.attemptExploitationForPrivilegeEscalation,
                 attemptValidAccounts
@@ -2769,6 +2792,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
                 applicationShimming,
+                bypassUserAccountControl,
                 officeApplicationStartup,
                 passTheHash
         
@@ -2858,9 +2882,6 @@ category Software {
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
 
-        | attemptSudoAndSudoCaching @hidden
-            ->  sudoAndSudoCaching
-
         & sudoAndSudoCaching [Exponential(288)]
             developer info: "Sources for distribution results: https://www.sudo.ws/man/1.8.15/sudoers.man.html"
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
@@ -2937,6 +2958,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
                 sshHijacking,
+                sudoAndSudoCaching,
                 processInjection
 
         # restrictFileAndDirectoryPermissions
@@ -2994,7 +3016,7 @@ category Software {
             developer info: "Based on the results for dLLSearchOrderHijacking.  Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  service.attemptExploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
 
-        | attemptElevatedExecutionWithPrompt
+        | attemptElevatedExecutionWithPrompt @hidden
             ->  elevatedExecutionWithPrompt
 
         & elevatedExecutionWithPrompt
