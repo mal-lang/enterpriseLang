@@ -2205,7 +2205,8 @@ category Software {
                 bypassSignatureBasedDetection,
                 bypassFileOrPathWhitelisting    
 
-        | processHollowing
+        | processHollowing [Bernoulli(0.0122)*Exponential(1440]
+            developer info: "Sources for distribution result: https://redcanary.com/threat-detection-report/techniques/, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://adalogics.com/blog/the-state-of-advanced-code-injections, https://www.youtube.com/watch?v=G6AoZ5F4CH8, https://www.youtube.com/watch?v=k2pLF56gXXw&feature=youtu.be&t=106"
             user info: "Execution of the malicious code is masked under a legitimate process and may evade defenses and detection analysis."
             ->  bypassAntivirus,
                 bypassProcessWhitelisting,
