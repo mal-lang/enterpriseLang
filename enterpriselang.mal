@@ -1531,7 +1531,9 @@ category Software {
             ->  computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 exfiltrationOverAternativeProtocol       
     
-        | exfiltrationOverAternativeProtocol
+        | exfiltrationOverAternativeProtocol [Bernoulli(0.79224)*Exponential(1878)]
+            developer info: "Sources for distribution results: https://repo.zenk-security.com/Techniques%20d.attaques%20%20.%20%20Failles/Exfiltration%20Techniques%20-%20An%20examination%20And%20Emulation.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
+            user info: "https://attack.mitre.org/techniques/T1048/"
             ->  computer.router.internalNetwork.dataExfiltration
 
         | dataFromInformationRepositories 
