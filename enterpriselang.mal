@@ -3635,7 +3635,9 @@ category Hardware {
 
         | unresponsive
 
-        | exfiltrationOverPhysicalMedium
+        | exfiltrationOverPhysicalMedium [Bernoulli(0.79224)*Exponential(7.69)]
+            developer info: "Sources for distribution results: https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
+            user info: "https://attack.mitre.org/techniques/T1052/"
             ->  peripheralDevice.removableMedia.dataExfiltration
 
         E microphoneExists
