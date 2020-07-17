@@ -29,4 +29,4 @@ We assess the probability distribution for this technique to be [Bernoulli(0.792
 
 ## Discussion
 
-Sub-techniques deal with the symettry/encryption of the alternative protocols. For efficiency purposes, I decided to take them all into account in the main technique and not to find a probability for each sub technique, assuming the TTC and prevalence would likely be the same. Further investigation may lead to more detailed results. However, the first source states that sessions with certain symmetry ratios can signify malicious activity which may impact the success rate.
+Sub-techniques deal with the symettry/encryption of the alternative protocols. For efficiency purposes, I decided to take them all into account in the main technique and not to find a probability for each sub technique, assuming the TTC and prevalence would likely be the same. Further investigation may lead to more detailed results. However, the first source states that sessions with certain symmetry ratios can signify malicious activity which may impact the success rate. Encryption on the other hand might help adversaries bypass certain defenses.

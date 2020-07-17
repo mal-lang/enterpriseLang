@@ -1060,8 +1060,15 @@ category Software {
         | attemptExfiltrationOverOtherNetworkMedium @hidden
             ->  exfiltrationOverOtherNetworkMedium
 
-        & exfiltrationOverOtherNetworkMedium
+        & exfiltrationOverOtherNetworkMedium [Exponential(259.5)]
+            developer info: "Sources for distribution results: https://fr.wikipedia.org/wiki/D%C3%A9bits_et_port%C3%A9es, https://www.atlasandboots.com/remote-work/countries-with-the-fastest-internet-in-the-world/#:~:text=The%20global%20average%20broadband%20internet,Mbps%20(megabits%20per%20second)."
             user info: "Adversaries could choose to do exfiltration over a WiFi connection, modem, cellular data connection, Bluetooth, or another radio frequency (RF) channel if they have sufficient access or proximity, and the connection might not be secured or defended as well as the primary Internet-connected channel because it is not routed through the same enterprise network."     
+            ->  exfiltrationOverBluetooth,
+                computer.router.internalNetwork.dataExfiltration
+        
+        & exfiltrationOverBluetooth [Exponential(51.86)]
+            developer info: "Sources for distribution results: https://fr.wikipedia.org/wiki/D%C3%A9bits_et_port%C3%A9es, https://www.atlasandboots.com/remote-work/countries-with-the-fastest-internet-in-the-world/#:~:text=The%20global%20average%20broadband%20internet,Mbps%20(megabits%20per%20second)."
+            ->  computer.router.internalNetwork.dataExfiltration
 
         | fallbackChannels  
             user info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
