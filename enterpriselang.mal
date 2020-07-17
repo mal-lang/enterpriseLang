@@ -46,6 +46,7 @@ category Software {
                 os.abuseElevationControlMechanism,
                 os.bruteForce,
                 os.commandLineInterface,
+                os.commandAndScriptingInterpreter,
                 os.compileAfterDelivery,
                 os.attemptCredentialsInFiles,
                 os.attemptCredentialsInRegistry,
@@ -120,7 +121,6 @@ category Software {
                 os.windows.parentPIDSpoofing,
                 os.windows.pathInterception,
                 os.windows.peripheralDeviceDiscovery,
-                os.windows.powerShell,
                 os.windows.attemptPowerShellUserProfile,
                 os.windows.attemptPowerShellAdminProfile,
                 os.windows.processDoppelganging,
@@ -162,7 +162,6 @@ category Software {
                 os.linux.trap,
                 os.linux.attemptSSHAuthorizedKeys,
                 os.macOS.attemptSSHAuthorizedKeys,
-                os.macOS.appleScript,
                 os.macOS.attemptBash_profileAndBashrc,
                 os.macOS.attemptClearCommandHistory,
                 os.macOS.attemptDylibHijacking,
@@ -310,10 +309,10 @@ category Software {
                 os.fileAndDirectoryDiscovery,
                 os.fileAndDirectoryPermissionsModification,
                 os.firmwareCorruption, 
-                os.graphicalUserInterface,  
+                os.graphicalUserInterface,
                 os.inhibitSystemRecovery, 
                 os.inputCapture,
-                os.installRootCertificate,            
+                os.installRootCertificate,
                 os.networkServiceScan,
                 os.networkSniffing,
                 os.redundantAccess,
@@ -920,6 +919,32 @@ category Software {
 
         | localAccount
             user info: "Adversaries may attempt to get a listing of local system accounts."
+
+        | commandAndScriptingInterpreter
+            user info: "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries."
+            ->  visualBasic,
+                python,
+                javaScriptOrJScript,
+                windows.windowsCommandShell,
+                windows.attemptPowerShell,
+                linux.unixShell,
+                macOS.unixShell,
+                macOS.appleScript
+
+        & visualBasic
+            user info: "Adversaries may abuse Visual Basic (VB) for execution."
+            ->  service.browser.attemptSpearphishingAttachment,
+                executeCode
+
+        & python
+            user info: "Adversaries may abuse Python commands and scripts for execution."
+            ->  executeCode
+
+        & javaScriptOrJScript
+            user info: "Adversaries may abuse JavaScript / JScript to execute various behaviors. Common uses include hosting malicious scripts on websites as part of a Drive-by Compromise or downloading and executing these script files as secondary payloads."
+            ->  executeCode,
+                service.browser.driveByCompromise,
+                obfuscatedFilesOrInformation
 
         | attemptDefacement @hidden
             ->  defacement
@@ -1572,6 +1597,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             ->  antivirusCheck,
+                visualBasic,
+                python,
                 obfuscatedFilesOrInformation,
                 service.browser.spearphishingAttachment,
                 service.browser.spearphishingLink,
@@ -1588,6 +1615,8 @@ category Software {
                 privateKeys,
                 runtimeDataManipulation,
                 storedDataManipulation,
+                visualBasic,
+                javaScriptOrJScript,
                 computer.router.externalNetwork.dataFromCloudStorageObject
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
@@ -1654,7 +1683,9 @@ category Software {
 
         # disableOrRemoveFeatureOrProgram 
             user info: "https://attack.mitre.org/techniques/T1064/"
-            ->  scripting,
+            ->  javaScriptOrJScript,
+                scripting,
+                visualBasic,
                 communicationThroughRemovableMedia,
                 service.exploitationOfRemoteServices,
                 service.externalRemoteServices
@@ -1676,6 +1707,7 @@ category Software {
                 service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
+                python,
                 validAccounts 
 
         # filterNetworkTraffic [Bernoulli(0.8217)]
@@ -1729,10 +1761,13 @@ category Software {
                 domainDiscovery,
                 domainFronting,
                 fileDeletion,
+                javaScriptOrJScript,
                 masquerading,
                 permissionGroupsDiscovery,
+                python,
                 remoteSystemDiscovery,     
                 systemInformationDiscovery,
+                visualBasic,
                 userAccount.userExecution          
              
         # privilegedAccountManagement [Bernoulli(0.30)]
@@ -1761,7 +1796,8 @@ category Software {
 
         # limitSoftwareInstallation
             user info: "https://attack.mitre.org/mitigations/M1033/"
-            ->  service.browser.browserExtensions
+            ->  python,
+                service.browser.browserExtensions
 
         # updateSoftware [Bernoulli(0.567125)]
             user info: "https://attack.mitre.org/mitigations/M1051/"
@@ -2214,7 +2250,7 @@ category Software {
                 bypassSignatureBasedDetection,
                 bypassFileOrPathWhitelisting    
 
-        | processHollowing [Bernoulli(0.0122)*Exponential(1440]
+        | processHollowing [Bernoulli(0.0122)*Exponential(1440)]
             developer info: "Sources for distribution result: https://redcanary.com/threat-detection-report/techniques/, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://adalogics.com/blog/the-state-of-advanced-code-injections, https://www.youtube.com/watch?v=G6AoZ5F4CH8, https://www.youtube.com/watch?v=k2pLF56gXXw&feature=youtu.be&t=106"
             user info: "Execution of the malicious code is masked under a legitimate process and may evade defenses and detection analysis."
             ->  bypassAntivirus,
@@ -2435,6 +2471,10 @@ category Software {
             ->  networkShareConnectionRemoval, // leads to Network Share Connection Removal attack
                 windowsManagementInstrumentation // leads to Windows Management Instrumentation attack
 
+        & windowsCommandShell
+            developer info: "Adversaries may abuse the Windows command shell for execution."
+            ->  executeCode
+
         | windowsManagementInstrumentation [Bernoulli(0.26)*Exponential(43.49)]
             user info: "An adversary can use WMI to interact with local and remote systems and use it as a means to perform many tactic functions."
             developer info: "TTC is upper bound of likely time needed. Sources used for probability distribution result: https://redcanary.com/threat-detection-report/techniques/windows-management-instrumentation/, https://www.fireeye.com/content/dam/fireeye-www/global/en/current-threats/pdfs/wp-windows-management-instrumentation.pdf, https://www.microsoft.com/security/blog/2017/06/27/new-ransomware-old-techniques-petya-adds-worm-capabilities/, https://securelist.com/olympicdestroyer-is-here-to-trick-the-industry/84295/"
@@ -2628,7 +2668,8 @@ category Software {
         # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
-            +>  softwarePacking,
+            +>  powerShell,
+                softwarePacking,
                 templateInjection
 
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
@@ -2690,6 +2731,7 @@ category Software {
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
                 trustedDeveloperUtilities,
+                windowsCommandShell,
                 winlogonHelperDLL,
                 xslScriptProcessing,
                 computer.router.internalNetwork.networkSharedDrive.taintSharedContent
@@ -2924,6 +2966,10 @@ category Software {
             ->  executeCode,
                 persistence
 
+        & unixShell
+            developer info: "Adversaries may abuse Unix shell commands and scripts for execution."
+            ->  executeCode
+
         | executeCode 
             +>  computer.infectedLinuxComputer 
 
@@ -2950,7 +2996,8 @@ category Software {
                 sshHijacking
 
         # executionPrevention
-            +>  kernelModulesAndExtensions
+            +>  kernelModulesAndExtensions,
+                unixShell
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             user info: "https://attack.mitre.org/mitigations/M1039/"
@@ -3215,6 +3262,10 @@ category Software {
             developer info: "TTC Assumed instant. Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
             ->  service.attemptExploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
+        & unixShell
+            developer info: "Adversaries may abuse Unix shell commands and scripts for execution."
+            ->  executeCode
+
         | windowsManagementInstrumentation
             ->  attemptScripting 
 
@@ -3258,13 +3309,15 @@ category Software {
                 sshHijacking
 
         # executionPrevention
-            +>  securitySoftwareDiscovery,
+            +>  appleScript,
+                securitySoftwareDiscovery,
                 elevatedExecutionWithPrompt,
                 gatekeeperBypass,
                 hiddenWindow,
                 kernelModulesAndExtensions,
                 lC_LOAD_DYLIB_Addition,
-                networkShareDiscovery         
+                networkShareDiscovery,
+                unixShell
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             user info: "https://attack.mitre.org/mitigations/M1039/"
