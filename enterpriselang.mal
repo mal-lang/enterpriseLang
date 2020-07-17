@@ -1426,7 +1426,8 @@ category Software {
         | attemptCredentialsInRegistry @hidden
             ->  credentialsInRegistry
 
-        & credentialsInRegistry
+        & credentialsInRegistry [Bernoulli(0.02055)*Exponential(2618)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/techniques/T1552/002/"
             ->  userAccount.userCredentials,
                 adminAccount.adminCredentials 
 
