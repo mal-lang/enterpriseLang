@@ -2161,7 +2161,8 @@ category Software {
         | attemptNtfsFileAttributes @hidden
             ->  ntfsFileAttributes
 
-        & ntfsFileAttributes
+        & ntfsFileAttributes [Bernoulli(0.00702)]
+            developer info: "Sources for distribution result: Red Canary ATT&CK technique percentages (private google sheets document), https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://cdn2.hubspot.net/hubfs/3354902/Cybereason%20Labs%20Analysis%20Operation%20Cobalt%20Kitty.pdf, https://www.volexity.com/blog/2016/11/09/powerduke-post-election-spear-phishing-campaigns-targeting-think-tanks-and-ngos/"
             user info: "Adversaries may store malicious data or binaries in file attribute metadata instead of directly in files, to evade some defenses, such as static indicator scanning tools and anti-virus."
             ->  bypassSignatureBasedDetection,
                 bypassHostForensicAnalysis,
