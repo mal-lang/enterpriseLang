@@ -548,7 +548,8 @@ category Software {
         | attemptRemoteServices @hidden
              ->  remoteServices
 
-        & remoteServices
+        & remoteServices [Bernoulli(0.04346)]
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/"
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
             ->  os.computer.router.internalNetwork.c2Connected
 
@@ -1402,7 +1403,8 @@ category Software {
         & storedDataManipulation {I}
             user info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."    
 
-        & uncommonlyUsedPortsConnection
+        & nonStandardPort [TruncatedNormal(41.11,31.68)]
+            developer info: "Sources used for distribution result: https://www.nexustek.com/blog/cyber-security-tip-detecting-attacks-over-low-traffic-ports/, https://krisk.io/publication/mitre-attack-securecomm19/, https://media.paloaltonetworks.com/documents/The-Modern-Malware-Review-March-2013.pdf, https://www.usenix.org/event/leet09/tech/full_papers/bayer/bayer.pdf, https://www.securityweek.com/rise-malware-using-encryption-shows-importance-network-traffic-inspection, "
             user info: "Adversaries may conduct C2 communications over a non-standard port to bypass proxies and firewalls that have been improperly configured."
             ->  computer.router.internalNetwork.c2Connected
 
@@ -1424,7 +1426,8 @@ category Software {
         | attemptCredentialsInRegistry @hidden
             ->  credentialsInRegistry
 
-        & credentialsInRegistry
+        & credentialsInRegistry [Bernoulli(0.02055)*Exponential(2618)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/techniques/T1552/002/"
             ->  userAccount.userCredentials,
                 adminAccount.adminCredentials 
 
@@ -2410,7 +2413,8 @@ category Software {
         | attemptSystemTimeDiscovery @hidden
             ->  systemTimeDiscovery
 
-        & systemTimeDiscovery
+        & systemTimeDiscovery [Bernoulli(0.19744)]
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://krisk.io/publication/mitre-attack-securecomm19/, https://attack.mitre.org/software/S0039/"
             user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
             ->  attemptScheduledTask         
 
@@ -3447,7 +3451,7 @@ category Network {
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
                 router.computer.os.applicationLayerProtocol,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.windows.templateInjection
 
         # networkSegmentation
@@ -3456,7 +3460,7 @@ category Network {
                 router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.adminAccount.createAccount,
                 router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
@@ -3548,7 +3552,7 @@ category Network {
                 router.internalNetwork.exfiltrationOverC2Channel,
                 router.internalNetwork.generateDomainNames,
                 router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.connectionProxy,
                 router.computer.os.dataEncoding,
                 router.computer.os.fallbackChannels,
@@ -3568,7 +3572,7 @@ category Network {
                 router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.service.exploitationOfRemoteServices,
                 router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.accountManipulation,
@@ -3596,7 +3600,7 @@ category Network {
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.uncommonlyUsedPortsConnection,
+                router.computer.os.nonStandardPort,
                 router.computer.os.service.externalRemoteServices,
                 router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.remoteDesktopProtocol,
@@ -3611,7 +3615,7 @@ category Hardware {
                 router.internalNetwork.attemptDataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-049a
                 router.externalNetwork.attemptDataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-049a
                 os.commonlyUsedPortsConnection,
-                os.uncommonlyUsedPortsConnection,
+                os.nonStandardPort,
                 os.fileDeletion,
                 os.windows.attemptPowerShell,
                 os.attemptAccountManipulation,
