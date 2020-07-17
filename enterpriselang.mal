@@ -1498,6 +1498,7 @@ category Software {
                 dataEncrypted
         
         & dataDestruction {A}
+            developer info: "Binary probability distribution."
             ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
 
         | attemptDataEncryptedForImpact @hidden
@@ -1590,8 +1591,9 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1046/"
             ->  firmwareCorruption
  
-        # dataBackup
+        # dataBackup [Bernoulli(0.4567)]
             user info: "https://attack.mitre.org/mitigations/M1053/"
+            developer info: "Source for distribution results: https://www.helpnetsecurity.com/2020/04/03/back-up-data/"
             ->  dataDestruction,
                 dataEncryptedForImpact,
                 inhibitSystemRecovery,
@@ -2447,6 +2449,7 @@ category Software {
             ->  dynamicDataExchange
 
         | dynamicDataExchange [Bernoulli(0.93)*Exponential(1)]
+            developer info: "Sources for distribution results : https://www.fortinet.com/blog/threat-research/cybercriminals-exploiting-microsoft-s-vulnerable-dynamic-data-exchange-protocol"
             user info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
             ->  commandLineInterface,
                 executeCode 

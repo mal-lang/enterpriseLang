@@ -240,7 +240,7 @@ These techniques can be used for persistence, REVIEW them to check they actually
 This needs a probability distribution, the probability that a simple user has write access to the plist.
 This might be carried by a defense though.
 
-### Port Monitors (needs)
+### Port Monitors
 
 This type of attack technique cannot be easily mitigated with preventive controls since it is based on the abuse of system features.
 
