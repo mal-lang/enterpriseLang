@@ -1083,7 +1083,8 @@ category Software {
                 bypassLogAnalysis,
                 bypassAntivirus
 
-        & indicatorRemovalOnHost
+        & indicatorRemovalOnHost [Bernoulli(0.04)]
+            developer info: "Sources used for distribution result: Red Canary top 50 ATT&CK techniques (private google sheets document), https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://content.fireeye.com/m-trends/rpt-m-trends-2020, https://www.welivesecurity.com/wp-content/uploads/2017/02/Read-The-Manual.pdf, https://www.proofpoint.com/us/threat-insight/post/leviathan-espionage-actor-spearphishes-maritime-and-defense-targets"
             user info: "Adversaries may delete or alter generated artifacts on a host system, including logs and potentially captured files such as quarantined malware."
             ->  bypassHostIntrusionPrevention,
                 bypassLogAnalysis,
