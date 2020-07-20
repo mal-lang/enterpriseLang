@@ -54,9 +54,10 @@ category Software {
                 os.attemptDataEncryptedForImpact,
                 os.dataDestruction,
                 os.dataManipulation,
-                os.diskContentWipe,
+                os.dataFromInformationRepositories,
+                os.diskWipe,
+                os.dynamicResolution,
                 os.domainDiscovery,
-                os.domainGenerationAlgorithms,
                 os.executionGuardrails,
                 os.fileDeletion,
                 os.fileAndDirectoryDiscovery,
@@ -102,7 +103,7 @@ category Software {
                 os.windows.mshta,
                 os.windows.attemptExecutionThroughAPI,
                 os.windows.attemptRemoteDesktopProtocol,
-                os.windows.attemptEmailCollection,
+                os.windows.emailCollection,
                 os.windows.executionThroughModuleLoad,
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
@@ -222,6 +223,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1017/"
             developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241"      
             ->  os.service.browser.stealWebSessionCookie,
+                os.confluence,
+                os.sharepoint,
                 os.credentialDumping,
                 os.credentialsInFiles,
                 os.twoFactorAuthenticationInterception, // remove smart cards when not in use
@@ -243,6 +246,8 @@ category Software {
             ->  os.disablingSecurityTools,
                 os.validAccounts,
                 os.credentialStuffing,
+                os.confluence,
+                os.sharepoint,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
                 os.windows.serviceStop,
                 os.windows.bITSJobs,
@@ -283,8 +288,7 @@ category Software {
     asset RemoteDesktopUser extends UserAccount {
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
-            ->  os.windows.remoteDesktopProtocol,
-                os.windows.emailCollection
+            ->  os.windows.remoteDesktopProtocol
     }     
 
     asset AdminAccount {
@@ -304,8 +308,6 @@ category Software {
                 os.attemptCredentialsInRegistry,
                 os.processDiscovery,
                 os.detailedRemoteSystemDiscovery,
-                os.diskContentWipe,
-                os.diskStructureWipe,
                 os.fileAndDirectoryDiscovery,
                 os.fileAndDirectoryPermissionsModification,
                 os.firmwareCorruption, 
@@ -727,6 +729,8 @@ category Software {
 
         | emailAddressCollected
 
+        | sensitiveDataCollected
+
         & additionalAzureServicePrincipalCredentials
             user info: "Adversaries may add adversary-controlled credentials for Azure Service Principals in addition to existing legitimate credentials to maintain persistent access to victim Azure accounts."         
             ->  persistence
@@ -767,6 +771,21 @@ category Software {
             user info: "An adversary may revert changes made to a cloud instance after they have performed malicious activities in attempt to evade detection and remove evidence of their presence."
             ->  os.computer.router.externalNetwork.bypassNetworkIntrusionDetection,
                 os.computer.router.internalNetwork.bypassNetworkIntrusionDetection
+
+        & remoteEmailCollection
+            user info: "Adversaries may target an Exchange server or Office 365 to collect sensitive information."
+            ->  os.windows.attemptRemoteDesktopProtocol, // https://www.us-cert.gov/ncas/alerts/TA18-086A
+                sensitiveDataCollected
+
+        & emailForwardingRule
+            user info: "Adversaries may setup email forwarding rules to collect sensitive information."
+            ->  sensitiveDataCollected
+
+        # multiFactorAuthentication
+            ->  remoteEmailCollection
+
+        # audit
+            ->  remoteEmailCollection
     }
 
     asset Browser {
@@ -827,13 +846,11 @@ category Software {
                 service.os.userAccount.userCredentials,
                 service.os.persistence
 
-        & stealWebSessionCookie [Bernoulli(0.93)]
-            developer info: "Sources for distribution results: https://www.researchgate.net/publication/220496661_Session_Management_Vulnerabilities_in_Today's_Web, https://owasp.org/www-community/attacks/Session_hijacking_attack"
+        & stealWebSessionCookie
             user info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
             ->  webSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
 
         | webSessionCookie
-            developer info: "Binary probability distribution."
             user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
             ->  service.os.sensitiveDataCollected
 
@@ -998,10 +1015,7 @@ category Software {
             ->  commandAndScriptingInterpreter,
                 attemptAutomatedCollection
 
-        | attemptDefacement @hidden
-            ->  defacement
-
-        & defacement
+        | defacement
             user info: "Adversaries may modify visual content available internally or externally to an enterprise network."
             ->  computer.router.internalNetwork.internalDefacement,
                 computer.router.externalNetwork.externalDefacement
@@ -1009,7 +1023,7 @@ category Software {
         & domainDiscovery
             user info: "get domain names and information"
 
-        | domainGenerationAlgorithms 
+        & domainGenerationAlgorithms 
             user info: "Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination for command and control traffic rather than relying on a list of static IP addresses or domains." 
             ->  fallbackChannels, // leads to Fallback Channels attack
                 computer.router.internalNetwork.communicate,
@@ -1113,6 +1127,21 @@ category Software {
                 bypassSignatureBasedDetection,
                 bypassLogAnalysis,
                 bypassAntivirus
+
+        | dynamicResolution
+            user info: "Adversaries may dynamically establish connections to command and control infrastructure to evade common detections and remediations."
+            ->  fallbackChannels,
+                fastFluxDNS,
+                domainGenerationAlgorithms,
+                dNSCalculation
+
+        | fastFluxDNS
+            user info: "Adversaries may use Fast Flux DNS to hide a command and control channel behind an array of rapidly changing IP addresses linked to a single domain resolution."
+            ->  fallbackChannels
+
+        | dNSCalculation
+            user info: "Adversaries may perform calculations on addresses returned in DNS results to determine which port and IP address to use for command and control, rather than relying on a predetermined port number or the actual returned IP address."
+            ->  bypassEgressFiltering
 
         | domainFronting
             user info: "Domain fronting takes advantage of routing schemes in Content Delivery Networks (CDNs) and other services which host multiple domains to obfuscate the intended destination of HTTPS traffic or traffic tunneled through HTTPS."
@@ -1409,6 +1438,8 @@ category Software {
 
         | bypassDigitalCertificateValidation   
 
+        | bypassEgressFiltering
+
         | bypassFileMonitoring
 
         | bypassFileOrPathWhitelisting
@@ -1531,6 +1562,11 @@ category Software {
             user info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system."
             ->  attemptAutomatedCollection
 
+        | diskWipe {A}
+            user info: "Adversaries may wipe or corrupt raw disk data on specific systems or in large numbers in a network to interrupt availability to system and network resources."
+            ->  diskContentWipe,
+                diskStructureWipe
+
         & diskContentWipe {A} [Bernoulli(0.5433)*Exponential(126.437)]
             user info: "Adversaries may erase the contents of storage devices on specific systems as well as large numbers of systems in a network to interrupt availability to system and network resources."
             developer info: "Sources used for probability distribution: https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://threatpost.com/secrets-of-the-wiper-inside-the-worlds-most-destructive-malware/131836/, https://www.statista.com/statistics/795748/worldwide-seagate-average-hard-disk-drive-capacity/, https://hdd.userbenchmark.com/"
@@ -1643,9 +1679,19 @@ category Software {
             user info: "https://attack.mitre.org/techniques/T1048/"
             ->  computer.router.internalNetwork.dataExfiltration
 
-        | dataFromInformationRepositories 
+        | dataFromInformationRepositories
+            user info: "Adversaries may leverage information repositories to mine valuable information."
+            ->  confluence,
+                sharepoint
+
+        & confluence
+            user info: "Adversaries may leverage Confluence repositories to mine valuable information."
             ->  service.informationRepositories
-          
+   
+        & sharepoint
+            user info: "Adversaries may leverage the SharePoint repository as a source to mine valuable information."
+            ->  service.informationRepositories
+
         | attemptAutomatedCollection @hidden
             ->  automatedCollection
 
@@ -1690,7 +1736,8 @@ category Software {
                 storedDataManipulation,
                 visualBasic,
                 javaScriptOrJScript,
-                computer.router.externalNetwork.dataFromCloudStorageObject
+                computer.router.externalNetwork.dataFromCloudStorageObject,
+                computer.router.internalNetwork.networkSharedDrive.taintSharedContent
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             user info: "https://attack.mitre.org/mitigations/M1036/" 
@@ -1715,7 +1762,8 @@ category Software {
                 inhibitSystemRecovery,
                 diskContentWipe,
                 diskStructureWipe,
-                defacement
+                computer.router.internalNetwork.internalDefacement,
+                computer.router.externalNetwork.externalDefacement
 
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
@@ -1779,6 +1827,8 @@ category Software {
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
             ->  archiveViaUtility,
+                confluence,
+                sharepoint,
                 credentialsInFiles,
                 credentialsInRegistry,
                 service.browser.browserExtensions,
@@ -2685,14 +2735,27 @@ category Software {
                 service.attemptExploitationForPrivilegeEscalation,
                 persistence
 
-        | attemptEmailCollection @hidden
-            ->  emailCollection
-
-        & emailCollection
+        | emailCollection
             user info: "Adversaries may target user email to collect sensitive information from a target."
-            ->  dataCollected,
-                attemptRemoteDesktopProtocol // https://www.us-cert.gov/ncas/alerts/TA18-086A
-        
+            ->  localEmailCollection,
+                remoteEmailCollection,
+                emailForwardingRule,
+                service.cloudService.remoteEmailCollection,
+                service.cloudService.emailForwardingRule
+       
+        & localEmailCollection
+            user info: "Adversaries may target user email on local systems to collect sensitive information."
+            ->  sensitiveDataCollected
+
+        & remoteEmailCollection
+            user info: "Adversaries may target an Exchange server or Office 365 to collect sensitive information."
+            ->  attemptRemoteDesktopProtocol, // https://www.us-cert.gov/ncas/alerts/TA18-086A
+                sensitiveDataCollected
+
+        & emailForwardingRule
+            user info: "Adversaries may setup email forwarding rules to collect sensitive information."
+            ->  sensitiveDataCollected
+
         | attemptApplicationShimming @hidden
             ->  applicationShimming
             
@@ -2764,7 +2827,7 @@ category Software {
                 bypassUserAccountControl,
                 dLLSearchOrderHijacking,
                 dLLSideLoading,
-                emailCollection,
+                emailForwardingRule,
                 fileSystemPermissionsWeakness,
                 pathInterception,
                 remoteDesktopProtocol,
@@ -2873,8 +2936,7 @@ category Software {
                 sIPAndTrustProviderHijacking,
                 serviceStop,
                 serviceExecution,
-                timeProviders,
-                computer.router.internalNetwork.networkSharedDrive.taintSharedContent  
+                timeProviders
 
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
             user info: "https://attack.mitre.org/mitigations/M1024/"
@@ -2903,7 +2965,9 @@ category Software {
 
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
-            +>  emailCollection
+            +>  localEmailCollection,
+                remoteEmailCollection,
+                emailForwardingRule
 
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
@@ -3479,7 +3543,7 @@ category Network {
         & dataExfiltration
             ->  router.externalNetwork.dataExfiltration
 
-        | internalDefacement {I} [Bernoulli(0.31)*Exponential(10.67)]
+        & internalDefacement {I} [Bernoulli(0.31)*Exponential(10.67)]
             user info: "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users."
             developer info: "Time here is: assumed time defacement will last. Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi5m_fWpY7qAhUaxMQBHU6yBxoQFjAKegQIMhAB&url=https%3A%2F%2Fdocuments.trendmicro.com%2Fassets%2Fwhite_papers%2Fwp-a-deep-dive-into-defacement.pdf&usg=AOvVaw2zOWHBoWsMXdfxK_fLTP_G, https://www.internetlivestats.com/total-number-of-websites/, https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://books.google.se/books?id=c7CpBAAAQBAJ&printsec=frontcover&dq=Cyber+Blockades&hl=en&sa=X&ved=0ahUKEwj4qsnGq47qAhVRXpoKHWACBqkQ6AEIKDAA#v=onepage&q=Cyber%20Blockades&f=false"
             ->  router.computer.os.service.browser.driveByCompromise // website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise
@@ -3592,6 +3656,7 @@ category Network {
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             user info: "https://attack.mitre.org/mitigations/M1032/"
             ->  exchangeServerCollection,
+                router.computer.os.service.cloudService.remoteEmailCollection,
                 router.computer.os.service.externalRemoteServices,
                 router.externalNetwork.dataFromCloudStorageObject
 
@@ -3611,6 +3676,7 @@ category Network {
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.customCryptographicProtocol,
                 router.computer.os.dataCompressed,
+                router.computer.os.domainGenerationAlgorithms,
                 router.computer.os.standardEncoding,
                 router.computer.os.nonStandardEncoding,
                 router.computer.os.fallbackChannels,
@@ -3686,7 +3752,7 @@ category Network {
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
 
-        | externalDefacement {I}
+        & externalDefacement {I}
             user info: "Websites are a common victim of defacement that often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda."
 
         & webService [Bernoulli(0.0445)]
