@@ -1520,9 +1520,11 @@ category Software {
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 automatedExfiltration
 
-        | dataSizedTransfer
+        | dataSizedTransfer [Exponential(288)]
+            developer info: "Sources for distribution results: https://www.computerhope.com/unix/usplit.htm, https://stackoverflow.com/questions/31786287/how-to-split-large-text-file-in-windows"
             user info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
-            ->  computer.router.internalNetwork.dataExfiltration
+            ->  exfiltrationOverAternativeProtocol,
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
         | dataStaged [Bernoulli(0.01025)]
             developer info: "Sources for distribution result: Red Canary top 50 att&ck techniques (private google sheets document), https://krisk.io/publication/mitre-attack-securecomm19/"
@@ -1582,6 +1584,7 @@ category Software {
                 sensitiveDataCollected
 
         | automatedExfiltration
+            "Binary probability distribution."
             ->  exfiltrationOverAternativeProtocol,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
