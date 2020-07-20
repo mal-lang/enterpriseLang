@@ -16,8 +16,8 @@ public class TestCredentialAccess extends EnterpriseLangTest {
         Attacker's entry point: AdminAccount.adminRights
         */
 
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false);
-        public final AdminAccount adminAccount = new AdminAccount("adminAccount",false,false);    
+        public final UserAccount userAccount = new UserAccount("userAccount");
+        public final AdminAccount adminAccount = new AdminAccount("adminAccount");    
         public final OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false); // We assume all defenses are disabled for OS. We can enable some of them, then the corresponding attack steps can not be reached.
         //public final OS os = OS os = new OS("os");
         //os.limitSoftwareInstallation.defaultValue = true;
@@ -41,7 +41,6 @@ public class TestCredentialAccess extends EnterpriseLangTest {
             model.os.attemptCredentialDumping.assertCompromisedInstantaneously();
             model.os.credentialDumping.assertCompromisedInstantaneously();
             model.os.collectHashInformation.assertCompromisedInstantaneously();
-            model.os.attemptBruteForce.assertCompromisedInstantaneously();
             model.os.bruteForce.assertCompromisedInstantaneously();
             model.windows.passTheHash.assertCompromisedInstantaneously();
             model.userAccount.userCredentials.assertCompromisedInstantaneously();
@@ -61,8 +60,8 @@ public class TestCredentialAccess extends EnterpriseLangTest {
         Attacker's entry point: UserAccount.userRights
         */
 
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false);
-        public final AdminAccount adminAccount = new AdminAccount("adminAccount",false,false);    
+        public final UserAccount userAccount = new UserAccount("userAccount");
+        public final AdminAccount adminAccount = new AdminAccount("adminAccount");    
         public final Service service = new Service("service");
         public final OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
         public final Windows windows = new Windows("windows");
@@ -89,7 +88,6 @@ public class TestCredentialAccess extends EnterpriseLangTest {
             model.os.attemptCredentialDumping.assertCompromisedInstantaneously();
             model.os.credentialDumping.assertCompromisedInstantaneously();
             model.os.collectHashInformation.assertCompromisedInstantaneously();
-            model.os.attemptBruteForce.assertCompromisedInstantaneously();
             model.os.bruteForce.assertCompromisedInstantaneously();
             model.windows.passTheHash.assertCompromisedInstantaneously();
             model.userAccount.userCredentials.assertCompromisedInstantaneously();
