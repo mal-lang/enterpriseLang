@@ -50,9 +50,10 @@ category Software {
                 os.compileAfterDelivery,
                 os.attemptCredentialsInFiles,
                 os.attemptCredentialsInRegistry,
-                os.attemptDataEncoding,
+                os.dataEncoding,
                 os.attemptDataEncryptedForImpact,
-                os.dataDestruction, 
+                os.dataDestruction,
+                os.dataManipulation,
                 os.diskContentWipe,
                 os.domainDiscovery,
                 os.domainGenerationAlgorithms,
@@ -74,7 +75,6 @@ category Software {
                 os.privateKeys,
                 os.attemptProcessInjection,
                 os.processDiscovery,
-                os.runtimeDataManipulation,
                 os.redundantAccess,
                 os.remoteSystemDiscovery,
                 os.resourceHijacking,
@@ -86,7 +86,6 @@ category Software {
                 os.systemNetworkConnectionsDiscovery,
                 os.systemOwnerOrUserDiscovery,
                 os.systemShutdownOrReboot,
-                os.storedDataManipulation,
                 os.remoteFileCopy, 
                 os.windows.attemptBITSJobs,
                 os.windows.attemptBypassUserAccountControl,
@@ -157,7 +156,7 @@ category Software {
                 os.linux.source,
                 os.linux.sshHijacking,
                 os.linux.sudoAndSudoCaching,
-                os.linux.attemptSystemdService,
+                os.linux.systemdService,
                 os.linux.timestomp,
                 os.linux.trap,
                 os.linux.attemptSSHAuthorizedKeys,
@@ -196,15 +195,13 @@ category Software {
                 os.service.attemptExternalRemoteServices,
                 os.service.implantContainerImage,
                 os.service.remoteAccessSoftware,
+                os.service.cloudService.modifyCloudComputeInfrastructure,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
-                os.service.browser.credentialsFromWebBrowsers,
                 os.service.browser.driveByCompromise,
                 os.service.browser.installExtensions,
                 os.service.browser.stealWebSessionCookie,
-                os.computer.router.internalNetwork.transmittedDataManipulation,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
-                os.computer.router.externalNetwork.transmittedDataManipulation,
                 os.computer.router.externalNetwork.webService
 
         | userCredentials
@@ -253,8 +250,6 @@ category Software {
                 os.windows.indicatorBlocking,
                 os.windows.scheduledTask,
                 os.windows.manInTheBrowser,
-                os.windows.modifyExistingService,
-                os.windows.newService,
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
                 os.windows.pathInterception,
@@ -263,6 +258,7 @@ category Software {
                 os.windows.remoteScheduledTask,
                 os.windows.sharedWebroot,
                 os.windows.shortcutModification,
+                os.windows.windowsService,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
                 os.windows.winlogonHelperDLL,
@@ -277,6 +273,9 @@ category Software {
                 os.macOS.rc_common,
                 os.macOS.attemptStartupItems,
                 os.service.remoteServices,
+                os.service.cloudService.createSnapshot,
+                os.service.cloudService.createCloudInstance,
+                os.service.cloudService.deleteCloudInstance,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.useThirdpartySoftware
     } 
@@ -297,6 +296,7 @@ category Software {
                 os.abuseElevationControlMechanism,
                 os.attemptAutomatedCollection,
                 os.commandLineInterface,
+                os.credentialsFromPasswordStores,
                 os.dataDestruction,
                 os.attemptDataEncryptedForImpact,
                 os.attemptCredentialDumping,
@@ -317,21 +317,16 @@ category Software {
                 os.networkSniffing,
                 os.redundantAccess,
                 os.resourceHijacking,
-                os.runtimeDataManipulation,
                 os.softwareDiscovery,
-                os.storedDataManipulation,
                 os.systemNetworkConnectionsDiscovery,
                 os.systemOwnerOrUserDiscovery,
                 os.systemShutdownOrReboot,
                 os.twoFactorAuthenticationInterception,
-                os.service.transmittedDataManipulation,
                 os.service.applicationDeploymentSoftware,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
-                os.service.azure.additionalAzureServicePrincipalCredentials,
-                os.service.office365.exchangeEmailDelegatePermissions,
-                os.service.office365.addOffice365GlobalAdministratorRole,
-                os.computer.router.internalNetwork.transmittedDataManipulation,
-                os.computer.router.externalNetwork.transmittedDataManipulation
+                os.service.cloudService.additionalAzureServicePrincipalCredentials,
+                os.service.cloudService.exchangeEmailDelegatePermissions,
+                os.service.cloudService.addOffice365GlobalAdministratorRole
              
         | adminCredentials
             ->  adminRights,
@@ -343,23 +338,17 @@ category Software {
 
         & createAccount [Bernoulli(0.05665)*Exponential(1440)]
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting/, https://support.microsoft.com/en-us/help/4026923/windows-10-create-a-local-user-or-administrator-account, https://www.youtube.com/watch?v=Ym0JJ5NGdrA, https://www.youtube.com/watch?v=SRqxIb_ETEQ"
-            ->  os.cloudAccount,
+            ->  os.service.cloudService.cloudAccount,
                 os.domainAccount,
-                os.localAccount,
-                os.persistence          
-        
-        # multiFactorAuthentication [Bernoulli(0.99325)]
-            developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
-            user info: "https://attack.mitre.org/mitigations/M1032/"
-            ->  createAccount
+                os.localAccount
 
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  createAccount,
-                os.credentialDumping,
+            ->  os.credentialDumping,
                 os.firmwareCorruption,
-                os.accountManipulation,
+                os.localAccount,
+                os.domainAccount,
                 os.windows.modifyRegistry,
                 os.windows.passTheTicket,
                 os.windows.powerShell,
@@ -383,6 +372,7 @@ category Software {
                 os.macOS.sudoAndSudoCaching,
                 os.service.applicationDeploymentSoftware,
                 os.service.exploitationOfRemoteServices,
+                os.service.cloudService.cloudAccount,
                 os.service.thirdpartySoftware.useThirdpartySoftware, // grant access to application deployment systems only to a limited number of authorized administrators
                 os.service.exploitHighVulnerabilityPublicFacingApplication,
                 os.service.exploitMediumVulnerabilityPublicFacingApplication,
@@ -419,11 +409,9 @@ category Software {
                 os.windows.imageFileExecutionOptionsInjection,
                 os.windows.attemptLSASS_Driver,
                 os.windows.manInTheBrowser,
-                os.windows.modifyExistingService,
                 os.windows.modifyRegistry,
                 os.windows.netshHelperDLL,
                 os.windows.networkShareConnectionRemoval,
-                os.windows.newService,
                 os.windows.officeApplicationStartup,
                 os.windows.parentPIDSpoofing,
                 os.windows.passwordFilterDLL,
@@ -440,7 +428,7 @@ category Software {
                 os.windows.regsvr32,
                 os.windows.securitySupportProvider,
                 os.windows.serverSoftwareComponent,
-                os.windows.serviceExecution,
+                os.windows.attemptServiceExecution,
                 os.windows.attemptServiceRegistryPermissionsWeakness,
                 os.windows.attemptShortcutModification,
                 os.windows.attemptSIDHistoryInjection,
@@ -455,11 +443,7 @@ category Software {
                 os.windows.windowsRemoteManagement,
                 os.windows.attemptWinlogonHelperDLL
 
-        | adminCredentials
-
-        # multiFactorAuthentication [Bernoulli(0.99325)]
-            developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
-            +>  os.accountManipulation       
+        | adminCredentials     
     }
     
     asset Root extends AdminAccount {
@@ -467,20 +451,18 @@ category Software {
             user info: "Unix Root account is equivalent to WindowsAdmin account."
             +>  os.linux.kernelModulesAndExtensions,
                 os.linux.serverSoftwareComponent,
-                os.linux.attemptSystemdService,
                 os.linux.sshHijacking,
                 os.linux.timestomp,
                 os.linux.trap,
                 os.linux.attemptBash_profileAndBashrc,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
-                os.linux.attemptSSHAuthorizedKeys,
-                os.macOS.attemptSSHAuthorizedKeys,
+                os.linux.securitydMemory,
                 os.macOS.securitySoftwareDiscovery,
                 os.macOS.attemptBash_profileAndBashrc,
                 os.macOS.attemptElevatedExecutionWithPrompt,
                 os.macOS.emond,
-                os.macOS.keychainCollection,
+                os.macOS.keychain,
                 os.macOS.localJobScheduling,
                 os.macOS.gatekeeperBypass,
                 os.macOS.hiddenUsers,
@@ -732,19 +714,59 @@ category Software {
             ->  os.computer.collectVideo
     }
 
-    asset Azure extends Service {
+    asset CloudService extends Service {
+        | persistence
+
+        | cloudAccount
+            user info: "Adversaries may attempt to get a listing of cloud accounts."
+            ->  os.persistence
+
+        | emailAccount
+            user info: "Adversaries may attempt to get a listing of email addresses and accounts."
+            ->  emailAddressCollected
+
+        | emailAddressCollected
+
         & additionalAzureServicePrincipalCredentials
             user info: "Adversaries may add adversary-controlled credentials for Azure Service Principals in addition to existing legitimate credentials to maintain persistent access to victim Azure accounts."         
-    }
+            ->  persistence
 
-    asset Office365 extends Service {
         & exchangeEmailDelegatePermissions
             user info: "Adversaries may grant additional permission levels, such as ReadPermission or FullAccess, to maintain persistent access to an adversary-controlled email account."
             ->  os.internalSpearphishing
 
         & addOffice365GlobalAdministratorRole
             user info: "An adversary may add the Global Administrator role to an adversary-controlled account to maintain persistent access to an Office 365 tenant."
-            ->  os.adminAccount.attemptCreateAccount 
+            ->  os.adminAccount.attemptCreateAccount
+
+        | modifyCloudComputeInfrastructure
+            user info: "An adversary may attempt to modify a cloud account's compute service infrastructure to evade defenses."
+            ->  createSnapshot,
+                createCloudInstance,
+                deleteCloudInstance,
+                revertCloudInstance
+
+        & createSnapshot
+            user info: "An adversary may create a snapshot or data backup within a cloud account to evade defenses."
+            ->  os.computer.router.externalNetwork.bypassNetworkIntrusionDetection,
+                os.computer.router.internalNetwork.bypassNetworkIntrusionDetection
+
+        & createCloudInstance
+            user info: "An adversary may create a new instance or virtual machine (VM) within the compute service of a cloud account to evade defenses."
+            ->  os.dataFromLocalSystem,
+                os.remoteDataStaging,
+                deleteCloudInstance,
+                os.computer.router.firewall.bypassFirewall
+
+        & deleteCloudInstance
+            user info: "An adversary may delete a cloud instance after they have performed malicious activities in an attempt to evade detection and remove evidence of their presence. An adversary may also Create Cloud Instance and later terminate the instance after achieving their objectives."
+            ->  os.computer.router.externalNetwork.bypassNetworkIntrusionDetection,
+                os.computer.router.internalNetwork.bypassNetworkIntrusionDetection
+
+        | revertCloudInstance
+            user info: "An adversary may revert changes made to a cloud instance after they have performed malicious activities in attempt to evade detection and remove evidence of their presence."
+            ->  os.computer.router.externalNetwork.bypassNetworkIntrusionDetection,
+                os.computer.router.internalNetwork.bypassNetworkIntrusionDetection
     }
 
     asset Browser {
@@ -828,17 +850,14 @@ category Software {
     }
 
     asset OS {
-        | attemptAccountManipulation @hidden
-            ->  accountManipulation   
-
-        & accountManipulation [Bernoulli(0.101)]
+        | accountManipulation [Bernoulli(0.101)]
             user info: "Account manipulation may aid adversaries in maintaining access to credentials and certain permission levels within an environment." 
             developer info: "Sources used for probability distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1098/, https://www.us-cert.gov/ncas/alerts/TA18-074A" 
             ->  userAccount.userCredentials,
                 persistence,
-                service.azure.additionalAzureServicePrincipalCredentials,
-                service.office365.exchangeEmailDelegatePermissions,
-                service.office365.addOffice365GlobalAdministratorRole,
+                service.cloudService.additionalAzureServicePrincipalCredentials,
+                service.cloudService.exchangeEmailDelegatePermissions,
+                service.cloudService.addOffice365GlobalAdministratorRole,
                 windows.exchangeEmailDelegatePermissions,
                 linux.attemptSSHAuthorizedKeys,
                 macOS.attemptSSHAuthorizedKeys
@@ -902,25 +921,29 @@ category Software {
             ->  adminAccount.adminCredentials,
                 userAccount.userCredentials
 
-        & accountDiscovery [Bernoulli(0.01967)]
+        | accountDiscovery [Bernoulli(0.01967)]
             user info: "get account names and information"
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, Red Canary's ATT&CK technique percentages Top 50 Google Sheets Document, https://krisk.io/post/sok-attack-securecomm19.pdf, https://attack.mitre.org/techniques/T1087/"
-            ->  cloudAccount,
-                domainAccount,
-                emailAccount,
-                localAccount
+            ->  service.cloudService.cloudAccount,
+                service.cloudService.emailAccount,
+                attemptDomainAccount,
+                attemptLocalAccount
 
-        | cloudAccount
-            user info: "Adversaries may attempt to get a listing of cloud accounts."
+        | attemptDomainAccount @hidden
+            ->  domainAccount
 
-        | domainAccount
+        & domainAccount
             user info: "Adversaries may attempt to get a listing of domain accounts."
+            ->  userAccount.userInformation,
+                persistence
 
-        | emailAccount
-            user info: "Adversaries may attempt to get a listing of email addresses and accounts."
+        | attemptLocalAccount @hidden
+            ->  localAccount
 
-        | localAccount
+        & localAccount
             user info: "Adversaries may attempt to get a listing of local system accounts."
+            ->  userAccount.userInformation,
+                persistence
 
         | commandAndScriptingInterpreter
             user info: "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries."
@@ -947,6 +970,33 @@ category Software {
             ->  executeCode,
                 service.browser.driveByCompromise,
                 obfuscatedFilesOrInformation
+
+        | createOrModifySystemProcess
+            user info: "Adversaries may create or modify system-level processes to repeatedly execute malicious payloads as part of persistence."
+            ->  macOS.attemptLaunchAgent,
+                macOS.attemptLaunchDaemon,
+                linux.attemptSystemdService,
+                windows.attemptWindowsService
+
+        | credentialsFromPasswordStores
+            user info: "Adversaries may search for common password storage locations to obtain user credentials."
+            ->  macOS.attemptKeychain,
+                macOS.securitydMemory,
+                linux.securitydMemory,
+                service.browser.credentialsFromWebBrowsers
+
+        | dataManipulation
+            user info: "Adversaries may insert, delete, or manipulate data in order to manipulate external outcomes or hide activity."
+            ->  storedDataManipulation,
+                service.transmittedDataManipulation,
+                computer.router.externalNetwork.attemptTransmittedDataManipulation,
+                computer.router.internalNetwork.transmittedDataManipulation,
+                runtimeDataManipulation
+
+        | dataFromLocalSystem
+            user info: "Adversaries may search local system sources, such as file systems or local databases, to find files of interest and sensitive data prior to Exfiltration."
+            ->  commandAndScriptingInterpreter,
+                attemptAutomatedCollection
 
         | attemptDefacement @hidden
             ->  defacement
@@ -1042,14 +1092,19 @@ category Software {
             user info: "Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
             ->  computer.router.internalNetwork.c2Connected
 
-        | attemptDataEncoding @hidden
-            user info: "Use of data encoding may be to adhere to existing protocol specifications and includes use of ASCII, Unicode, Base64, MIME, UTF-8, or other binary-to-text and character encoding systems."
-            ->  dataEncoding
-
-        & dataEncoding [Bernoulli(0.0614)]
+        | dataEncoding [Bernoulli(0.0614)]
             developer info: "TTC instant/not applicable. Sources used for probability distribution result: https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/powershell-threats-grow-further-and-operate-plain-sight, https://docs.broadcom.com/docs/increased-use-of-powershell-in-attacks-16-en"
+            ->  standardEncoding,
+                nonStandardEncoding
+
+        & standardEncoding
+            user info: "Adversaries may encode data with a standard data encoding system to make the content of command and control traffic more difficult to detect." 
             ->  computer.router.internalNetwork.communicate
-          
+
+        & nonStandardEncoding            
+            user info: "Adversaries may encode data with a non-standard data encoding system to make the content of command and control traffic more difficult to detect."
+            ->  computer.router.internalNetwork.communicate
+
         & disablingSecurityTools [Bernoulli(0.23)*Exponential(111.55)]
             user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
             developer info: "Sources for probability distribution: https://redcanary.com/threat-detection-report/techniques/disabling-security-tools/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
@@ -1522,16 +1577,30 @@ category Software {
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 automatedExfiltration
 
-        | dataSizedTransfer [Exponential(288)]
-            developer info: "Sources for distribution results: https://www.computerhope.com/unix/usplit.htm, https://stackoverflow.com/questions/31786287/how-to-split-large-text-file-in-windows"
+        | dataSizedTransfer
             user info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
-            ->  exfiltrationOverAternativeProtocol,
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel
+            ->  computer.router.internalNetwork.dataExfiltration
 
         | dataStaged [Bernoulli(0.01025)]
             developer info: "Sources for distribution result: Red Canary top 50 att&ck techniques (private google sheets document), https://krisk.io/publication/mitre-attack-securecomm19/"
             user info: "Collected data is staged in a central location or directory prior to Exfiltration. Data may be kept in separate files or combined into one file through techniques such as Data Compressed or Data Encrypted."
-            ->  computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
+            ->  localDataStaging,
+                remoteDataStaging
+
+        | localDataStaging
+            user info: "Adversaries may stage collected data in a central location or directory on the local system prior to Exfiltration."
+            ->  archiveCollectedData, // Data may be kept in separate files or combined into one file through techniques such as Archive Collected Data
+                computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                dataCompressed,
+                dataEncrypted
+
+        | remoteDataStaging
+            user info: "Adversaries may stage data collected from multiple systems in a central location or directory on one system prior to Exfiltration."
+            ->  archiveCollectedData,
+                computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
@@ -1567,7 +1636,7 @@ category Software {
 
         | scheduledExfiltration [Bernoulli(0.92)*Exponential(0.384)]
             developer info: "Sources for distribution results: https://www.welivesecurity.com/wp-content/uploads/2016/10/eset-sednit-part-2.pdf, https://www.welivesecurity.com/wp-content/uploads/2020/05/ESET_Turla_ComRAT.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
-            ->  computer.router.internalNetwork.dataExfiltration     
+            ->  computer.router.internalNetwork.dataExfiltration         
     
         | exfiltrationOverAternativeProtocol [Bernoulli(0.79224)*Exponential(1878)]
             developer info: "Sources for distribution results: https://repo.zenk-security.com/Techniques%20d.attaques%20%20.%20%20Failles/Exfiltration%20Techniques%20-%20An%20examination%20And%20Emulation.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
@@ -1586,7 +1655,6 @@ category Software {
                 sensitiveDataCollected
 
         | automatedExfiltration
-            "Binary probability distribution."
             ->  exfiltrationOverAternativeProtocol,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
@@ -1653,6 +1721,8 @@ category Software {
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             user info: "https://attack.mitre.org/mitigations/M1032/" 
             ->  credentialStuffing,
+                localAccount,
+                domainAccount,
                 passwordGuessing,
                 passwordCracking,
                 passwordSpraying,
@@ -1661,6 +1731,10 @@ category Software {
                 service.browser.stealWebSessionCookie,
                 service.applicationDeploymentSoftware,
                 service.remoteServices,
+                service.cloudService.cloudAccount,
+                service.cloudService.additionalAzureServicePrincipalCredentials,
+                service.cloudService.exchangeEmailDelegatePermissions,
+                service.cloudService.addOffice365GlobalAdministratorRole,
                 service.thirdpartySoftware.useThirdpartySoftware
 
         # passwordPolicies 
@@ -1708,6 +1782,9 @@ category Software {
                 credentialsInFiles,
                 credentialsInRegistry,
                 service.browser.browserExtensions,
+                service.cloudService.createSnapshot,
+                service.cloudService.createCloudInstance,
+                service.cloudService.deleteCloudInstance,
                 service.thirdpartySoftware.stealApplicationAccessToken,
                 service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
@@ -1738,15 +1815,14 @@ category Software {
 
         # operatingSystemConfiguration 
             user info: "https://attack.mitre.org/mitigations/M1028/"
-            ->  accountManipulation,
-                accountDiscovery,
-                communicationThroughRemovableMedia,
+            ->  communicationThroughRemovableMedia,
                 credentialDumping,
                 domainDiscovery,
                 exfiltrationOverOtherNetworkMedium,
                 inhibitSystemRecovery,
                 installRootCertificate,
-                adminAccount.createAccount
+                localAccount,
+                domainAccount
 
         # softwareConfiguration
             user info: "https://attack.mitre.org/mitigations/M1054/"
@@ -1755,8 +1831,7 @@ category Software {
 
         # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
             user info: "https://attack.mitre.org/mitigations/M1038/"
-            ->  accountDiscovery,
-                applicationWindowDiscovery,
+            ->  applicationWindowDiscovery,
                 commandLineInterface,
                 binaryPadding,
                 service.browser.browserExtensions,
@@ -1781,6 +1856,9 @@ category Software {
             ->  credentialsInRegistry,
                 validAccounts,
                 service.implantContainerImage,
+                service.cloudService.additionalAzureServicePrincipalCredentials,
+                service.cloudService.exchangeEmailDelegatePermissions,
+                service.cloudService.addOffice365GlobalAdministratorRole,
                 computer.router.internalNetwork.webShell
 
         # encryptSensitiveInformation 
@@ -1846,7 +1924,6 @@ category Software {
                 windows.imageFileExecutionOptionsInjection,
                 windows.attemptLSASS_Driver,
                 windows.manInTheBrowser,
-                windows.modifyExistingService,
                 windows.modifyRegistry,
                 windows.netshHelperDLL,
                 windows.passwordFilterDLL,
@@ -1854,7 +1931,7 @@ category Software {
                 windows.portMonitors,
                 windows.processDoppelganging,
                 windows.serverSoftwareComponent,
-                windows.serviceExecution,
+                windows.attemptServiceExecution,
                 windows.attemptServiceRegistryPermissionsWeakness,
                 windows.attemptSIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
@@ -1878,10 +1955,8 @@ category Software {
                 windows.os.networkSniffing,
                 windows.os.redundantAccess,
                 windows.os.rootkit,
-                windows.os.runtimeDataManipulation,
                 windows.os.dataDestruction,
                 windows.os.systemShutdownOrReboot,
-                windows.os.storedDataManipulation,
                 windows.os.twoFactorAuthenticationInterception,
                 windows.os.service.thirdpartySoftware.attemptUseThirdpartySoftware
 
@@ -2073,7 +2148,7 @@ category Software {
             ->  attemptScheduledTask, // leads to Scheduled Task attack
                 disablingSecurityTools, // leads to Disabling Security Tools attack
                 remoteFileCopy, // leads to Remote File Copy attack
-                serviceExecution, // leads to Service Execution attack
+                attemptServiceExecution, // leads to Service Execution attack
                 adminAccount.attemptCreateAccount,
                 bypassSystemAccessControls,
                 bypassFileSystemAccessControls
@@ -2136,13 +2211,6 @@ category Software {
             user info: "Adversaries can take advantage of security vulnerabilities and inherent functionality in browser software to change content, modify behavior, and intercept information as part of various man in the browser techniques."
             ->  service.browser.driveByCompromise
 
-        & modifyExistingService
-            user info: "Adversaries can modify an existing service to persist malware on a system by using system utilities or by using custom tools to interact with the Windows API. Adversaries may also intentionally corrupt or kill services to execute malicious recovery programs/commands."
-            ->  persistence,
-                masquerading, // Use of existing services is a type of Masquerading that may make detection analysis more challenging
-                executeCode,
-                serviceExecution
-
         & modifyRegistry [Bernoulli(0.0661)]
             user info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution. An adversary may modify these Registry keys to add new SSPs."
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.usenix.org/legacyurl/view-current-malware-behaviors, https://krisk.io/post/sok-attack-securecomm19.pdf, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc732643(v=ws.11)?redirectedfrom=MSDN"
@@ -2158,10 +2226,14 @@ category Software {
             user info: "Adversaries may remove share connections that are no longer useful in order to clean up traces of their operation."
             ->  bypassHostForensicAnalysis
 
-        & newService
+        | attemptWindowsService @hidden
+            ->  windowsService
+
+        & windowsService
             user info: "Adversaries may install a new service that can be configured to execute at startup by using utilities to interact with services or by directly modifying the Registry."
             ->  service.attemptExploitationForPrivilegeEscalation, // an adversary may also use a service to escalate privileges from administrator to SYSTEM
-                masquerading // benign software with Masquerading
+                masquerading, // benign software with Masquerading
+                persistence
 
         | attemptNtfsFileAttributes @hidden
             ->  ntfsFileAttributes
@@ -2337,10 +2409,13 @@ category Software {
             user info: "An adversary may modify these Registry keys to add new SSPs."
             ->  persistence
 
+        | attemptServiceExecution @hidden
+            ->  serviceExecution
+
         & serviceExecution
             developer info: "Binary probability distribution."
             user info: "Adversaries may execute a binary, command, or script via a method that interacts with Windows services, such as the Service Control Manager."
-            ->  newService // Adversaries may also directly start services through Service Execution
+            ->  attemptWindowsService // Adversaries may also directly start services through Service Execution
 
         | attemptServiceRegistryPermissionsWeakness @hidden
             ->  serviceRegistryPermissionsWeakness
@@ -2691,11 +2766,11 @@ category Software {
                 dLLSideLoading,
                 emailCollection,
                 fileSystemPermissionsWeakness,
-                modifyExistingService,
                 pathInterception,
                 remoteDesktopProtocol,
                 serverSoftwareComponent,
-                scheduledTask
+                scheduledTask,
+                windowsService
 
         # behaviorPreventionOnEndpoint
             user info : "https://attack.mitre.org/mitigations/M1040/"
@@ -2933,6 +3008,11 @@ category Software {
             ->  service.attemptExploitationForPrivilegeEscalation,
                 persistence  
 
+        & securitydMemory [Bernoulli(0.0158)]
+            user info: "If an adversary can obtain root access (allowing them to read securityd's memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user's logon keychain."
+            developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0276/, https://macos.checkpoint.com/, https://juusosalonen.com/post/30923743427/breaking-into-the-os-x-keychain, https://github.com/juuso/keychaindump"
+            ->  userAccount.userCredentials
+
         | source
             developer info: "Binary probability distribution."
             user info:"The source command loads functions into the current shell or executes files in the current context."
@@ -3153,6 +3233,9 @@ category Software {
                 bypassProcessWhitelisting,
                 bypassFileOrPathWhitelisting  
 
+        | attemptLaunchDaemon @hidden
+            ->  launchDaemon
+
         & launchDaemon
             developer info: "Binary probability distribution."
             user info: "Launch Daemons may be created with administrator privileges, but are executed under root privileges, so an adversary may also use a service to escalate privileges from administrator to root. Adversary can modify a current Launch Daemon's executable and gain persistence or Privilege Escalation."
@@ -3211,10 +3294,10 @@ category Software {
             user info: "An adversary can modify one of these files directly to include a link to their malicious executable to provide a persistence mechanism each time the user reboots their machine."
             ->  persistence
 
-        | securitydMemory [Bernoulli(0.0158)]
+        & securitydMemory [Bernoulli(0.0158)]
             user info: "If an adversary can obtain root access (allowing them to read securityd's memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user's logon keychain."
             developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0276/, https://macos.checkpoint.com/, https://juusosalonen.com/post/30923743427/breaking-into-the-os-x-keychain, https://github.com/juuso/keychaindump"
-            ->  keychainCollection
+            ->  userAccount.userCredentials
 
         | attemptSetuidAndSetgid @hidden
             ->  setuidAndSetgid
@@ -3275,7 +3358,10 @@ category Software {
         | windowsManagementInstrumentation
             ->  attemptScripting 
 
-        & keychainCollection
+        | attemptKeychain @hidden
+            ->  keychain
+
+        & keychain
             user info: "If an adversary knows the credentials for the login keychain, then they can get access to all the other credentials stored in this vault."
             ->  userAccount.userCredentials
 
@@ -3340,7 +3426,7 @@ category Software {
 
         # passwordPolicies // Set and enforce secure password policies for accounts 
             user info: "https://attack.mitre.org/mitigations/M1027/"
-            +>  keychainCollection,
+            +>  keychain,
                 sshHijacking
 
         # privilegedAccountManagement [Bernoulli(0.30)]
@@ -3401,8 +3487,7 @@ category Network {
         | attemptExfiltrationOverC2Channel @hidden
              ->  exfiltrationOverC2Channel
 
-         & exfiltrationOverC2Channel [Bernoulli(0.79224)*Exponential(1878)]
-             developer info: "Sources for distribution results: https://repo.zenk-security.com/Techniques%20d.attaques%20%20.%20%20Failles/Exfiltration%20Techniques%20-%20An%20examination%20And%20Emulation.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf, https://www.sans.org/blog/the-importance-of-command-and-control-analysis-for-incident-response/"
+         & exfiltrationOverC2Channel
              user info: " Data exfiltration is performed over the Command and Control channel."
              ->  dataExfiltration
 
@@ -3448,7 +3533,7 @@ category Network {
 
         | c2Connected 
             ->  communicate,
-                attemptDataObfuscation,
+                dataObfuscation,
                 packetCapture,
                 dataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
                 attemptExfiltrationOverC2Channel // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
@@ -3457,14 +3542,24 @@ category Network {
 
         | generateDomainNames 
 
-        | attemptDataObfuscation @hidden
-            ->  dataObfuscation
-
-        & dataObfuscation [Bernoulli(0.685)]
+        | dataObfuscation [Bernoulli(0.685)]
             user info: "This encompasses many methods, such as adding junk data to protocol traffic, using steganography, commingling legitimate traffic with C2 communications traffic, or using a non-standard data encoding system."
             developer info: "TTC instant/not applicable. sources used for probability distribution: https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://books.google.se/books?id=tHK6CAAAQBAJ&pg=PA175&lpg=PA175&dq=percent+of+malware+using+obfuscation&source=bl&ots=uAffxqpZX2&sig=ACfU3U2kkIrqzLLQ8ipOR2RwkRPzc8Jp1A&hl=en&sa=X&ved=2ahUKEwio69vRhZrqAhVMEncKHYwLAwsQ6AEwC3oECGQQAQ#v=onepage&q=percent%20of%20malware%20using%20obfuscation&f=false"
-            ->  router.externalNetwork.bypassNetworkIntrusionDetection,
-                bypassNetworkIntrusionDetection
+            ->  junkData,
+                steganography,
+                protocolImpersonation
+
+        & junkData
+            user info: "Adversaries may add junk data to protocols used for command and control to make detection more difficult."
+            ->  bypassNetworkIntrusionDetection 
+
+        & steganography
+            user info: "Adversaries may use steganographic techniques to hide command and control traffic to make detection efforts more difficult."
+            ->  bypassNetworkIntrusionDetection
+
+        & protocolImpersonation     
+            user info: "Adversaries may impersonate legitimate protocols or web service traffic to disguise command and control activity and thwart analysis efforts."
+            ->  communicate
 
         | packetCapture
 
@@ -3507,13 +3602,17 @@ category Network {
                 dataExfiltration,
                 exfiltrationOverC2Channel,
                 generateDomainNames,
+                junkData,
+                steganography,
+                protocolImpersonation,
                 router.computer.os.service.browser.spearphishingAttachment,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.connectionProxy,
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.customCryptographicProtocol,
                 router.computer.os.dataCompressed,
-                router.computer.os.dataEncoding,
+                router.computer.os.standardEncoding,
+                router.computer.os.nonStandardEncoding,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
@@ -3530,13 +3629,12 @@ category Network {
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  remoteAccess,
                 router.computer.os.service.applicationDeploymentSoftware,
-                router.computer.os.adminAccount.createAccount,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.nonStandardPort,
                 router.computer.os.customCommandAndControlProtocol,
+                router.computer.os.domainAccount,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
-                router.computer.os.accountManipulation,
                 router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.domainTrustDiscovery,
                 router.computer.os.windows.serviceStop,
@@ -3546,6 +3644,8 @@ category Network {
                 router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitLowVulnerabilityPublicFacingApplication,
                 router.computer.os.service.externalRemoteServices,
+                router.computer.os.service.cloudService.cloudAccount,
+                router.computer.os.service.cloudService.additionalAzureServicePrincipalCredentials,
                 router.computer.os.service.thirdpartySoftware.trustedRelationship,
                 router.computer.os.service.thirdpartySoftware.useThirdpartySoftware
 
@@ -3626,7 +3726,6 @@ category Network {
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.nonStandardPort,
                 router.computer.os.connectionProxy,
-                router.computer.os.dataEncoding,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
@@ -3647,7 +3746,6 @@ category Network {
                 router.computer.os.nonStandardPort,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
-                router.computer.os.accountManipulation,
                 router.computer.os.windows.serviceStop         
 
         # sSLOrTLSInspection
@@ -3690,7 +3788,7 @@ category Hardware {
                 os.nonStandardPort,
                 os.fileDeletion,
                 os.windows.attemptPowerShell,
-                os.attemptAccountManipulation,
+                os.accountManipulation,
                 os.service.attemptExternalRemoteServices,
                 peripheralDevice.removableMedia.infectedMedia,
                 peripheralDevice.removableMedia.dataFromRemovableMedia
@@ -3779,8 +3877,7 @@ associations {
     OS [os] * <--Extends--> * [macOS] MacOS
     SysAdmin [sysAdmin] * <--Operates--> * [windows] Windows
     OS [os] * <--Runs--> * [service] Service
-    Azure [azure] * <--Extends--> * [service] Service
-    Office365 [office365] * <--Extends--> * [service] Service
+    CloudService [cloudService] * <--Extends--> * [service] Service
     Computer [computer] * <--Operates--> * [os] OS
     Router [router] * <--Communicates--> * [computer] Computer
     Firewall [firewall] * <--Protect--> * [router] Router
