@@ -805,11 +805,13 @@ category Software {
                 service.os.userAccount.userCredentials,
                 service.os.persistence
 
-        & stealWebSessionCookie
+        & stealWebSessionCookie [Bernoulli(0.93)]
+            developer info: "Sources for distribution results: https://www.researchgate.net/publication/220496661_Session_Management_Vulnerabilities_in_Today's_Web, https://owasp.org/www-community/attacks/Session_hijacking_attack"
             user info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
             ->  webSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
 
         | webSessionCookie
+            developer info: "Binary probability distribution."
             user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
             ->  service.os.sensitiveDataCollected
 
