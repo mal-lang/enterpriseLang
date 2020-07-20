@@ -3396,7 +3396,8 @@ category Network {
         | attemptExfiltrationOverC2Channel @hidden
              ->  exfiltrationOverC2Channel
 
-         & exfiltrationOverC2Channel
+         & exfiltrationOverC2Channel [Bernoulli(0.79224)*Exponential(1878)]
+             developer info: "Sources for distribution results: https://repo.zenk-security.com/Techniques%20d.attaques%20%20.%20%20Failles/Exfiltration%20Techniques%20-%20An%20examination%20And%20Emulation.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf, https://www.sans.org/blog/the-importance-of-command-and-control-analysis-for-incident-response/"
              user info: " Data exfiltration is performed over the Command and Control channel."
              ->  dataExfiltration
 
