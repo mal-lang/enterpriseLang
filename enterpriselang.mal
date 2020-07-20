@@ -195,6 +195,7 @@ category Software {
                 os.service.attemptExternalRemoteServices,
                 os.service.implantContainerImage,
                 os.service.remoteAccessSoftware,
+                os.service.cloudService.modifyCloudComputeInfrastructure,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
                 os.service.browser.driveByCompromise,
@@ -272,6 +273,9 @@ category Software {
                 os.macOS.rc_common,
                 os.macOS.attemptStartupItems,
                 os.service.remoteServices,
+                os.service.cloudService.createSnapshot,
+                os.service.cloudService.createCloudInstance,
+                os.service.cloudService.deleteCloudInstance,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.useThirdpartySoftware
     } 
@@ -733,7 +737,36 @@ category Software {
 
         & addOffice365GlobalAdministratorRole
             user info: "An adversary may add the Global Administrator role to an adversary-controlled account to maintain persistent access to an Office 365 tenant."
-            ->  os.adminAccount.attemptCreateAccount 
+            ->  os.adminAccount.attemptCreateAccount
+
+        | modifyCloudComputeInfrastructure
+            user info: "An adversary may attempt to modify a cloud account's compute service infrastructure to evade defenses."
+            ->  createSnapshot,
+                createCloudInstance,
+                deleteCloudInstance,
+                revertCloudInstance
+
+        & createSnapshot
+            user info: "An adversary may create a snapshot or data backup within a cloud account to evade defenses."
+            ->  os.computer.router.externalNetwork.bypassNetworkIntrusionDetection,
+                os.computer.router.internalNetwork.bypassNetworkIntrusionDetection
+
+        & createCloudInstance
+            user info: "An adversary may create a new instance or virtual machine (VM) within the compute service of a cloud account to evade defenses."
+            ->  os.dataFromLocalSystem,
+                os.remoteDataStaging,
+                deleteCloudInstance,
+                os.computer.router.firewall.bypassFirewall
+
+        & deleteCloudInstance
+            user info: "An adversary may delete a cloud instance after they have performed malicious activities in an attempt to evade detection and remove evidence of their presence. An adversary may also Create Cloud Instance and later terminate the instance after achieving their objectives."
+            ->  os.computer.router.externalNetwork.bypassNetworkIntrusionDetection,
+                os.computer.router.internalNetwork.bypassNetworkIntrusionDetection
+
+        | revertCloudInstance
+            user info: "An adversary may revert changes made to a cloud instance after they have performed malicious activities in attempt to evade detection and remove evidence of their presence."
+            ->  os.computer.router.externalNetwork.bypassNetworkIntrusionDetection,
+                os.computer.router.internalNetwork.bypassNetworkIntrusionDetection
     }
 
     asset Browser {
@@ -957,6 +990,11 @@ category Software {
                 computer.router.externalNetwork.attemptTransmittedDataManipulation,
                 computer.router.internalNetwork.transmittedDataManipulation,
                 runtimeDataManipulation
+
+        | dataFromLocalSystem
+            user info: "Adversaries may search local system sources, such as file systems or local databases, to find files of interest and sensitive data prior to Exfiltration."
+            ->  commandAndScriptingInterpreter,
+                attemptAutomatedCollection
 
         | attemptDefacement @hidden
             ->  defacement
@@ -1544,7 +1582,23 @@ category Software {
         | dataStaged [Bernoulli(0.01025)]
             developer info: "Sources for distribution result: Red Canary top 50 att&ck techniques (private google sheets document), https://krisk.io/publication/mitre-attack-securecomm19/"
             user info: "Collected data is staged in a central location or directory prior to Exfiltration. Data may be kept in separate files or combined into one file through techniques such as Data Compressed or Data Encrypted."
-            ->  computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
+            ->  localDataStaging,
+                remoteDataStaging
+
+        | localDataStaging
+            user info: "Adversaries may stage collected data in a central location or directory on the local system prior to Exfiltration."
+            ->  archiveCollectedData, // Data may be kept in separate files or combined into one file through techniques such as Archive Collected Data
+                computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
+                exfiltrationOverAternativeProtocol,
+                scheduledExfiltration,
+                dataCompressed,
+                dataEncrypted
+
+        | remoteDataStaging
+            user info: "Adversaries may stage data collected from multiple systems in a central location or directory on one system prior to Exfiltration."
+            ->  archiveCollectedData,
+                computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 exfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
@@ -1726,6 +1780,9 @@ category Software {
                 credentialsInFiles,
                 credentialsInRegistry,
                 service.browser.browserExtensions,
+                service.cloudService.createSnapshot,
+                service.cloudService.createCloudInstance,
+                service.cloudService.deleteCloudInstance,
                 service.thirdpartySoftware.stealApplicationAccessToken,
                 service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
@@ -3474,7 +3531,7 @@ category Network {
 
         | c2Connected 
             ->  communicate,
-                attemptDataObfuscation,
+                dataObfuscation,
                 packetCapture,
                 dataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
                 attemptExfiltrationOverC2Channel // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
@@ -3483,14 +3540,24 @@ category Network {
 
         | generateDomainNames 
 
-        | attemptDataObfuscation @hidden
-            ->  dataObfuscation
-
-        & dataObfuscation [Bernoulli(0.685)]
+        | dataObfuscation [Bernoulli(0.685)]
             user info: "This encompasses many methods, such as adding junk data to protocol traffic, using steganography, commingling legitimate traffic with C2 communications traffic, or using a non-standard data encoding system."
             developer info: "TTC instant/not applicable. sources used for probability distribution: https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://books.google.se/books?id=tHK6CAAAQBAJ&pg=PA175&lpg=PA175&dq=percent+of+malware+using+obfuscation&source=bl&ots=uAffxqpZX2&sig=ACfU3U2kkIrqzLLQ8ipOR2RwkRPzc8Jp1A&hl=en&sa=X&ved=2ahUKEwio69vRhZrqAhVMEncKHYwLAwsQ6AEwC3oECGQQAQ#v=onepage&q=percent%20of%20malware%20using%20obfuscation&f=false"
-            ->  router.externalNetwork.bypassNetworkIntrusionDetection,
-                bypassNetworkIntrusionDetection
+            ->  junkData,
+                steganography,
+                protocolImpersonation
+
+        & junkData
+            user info: "Adversaries may add junk data to protocols used for command and control to make detection more difficult."
+            ->  bypassNetworkIntrusionDetection 
+
+        & steganography
+            user info: "Adversaries may use steganographic techniques to hide command and control traffic to make detection efforts more difficult."
+            ->  bypassNetworkIntrusionDetection
+
+        & protocolImpersonation     
+            user info: "Adversaries may impersonate legitimate protocols or web service traffic to disguise command and control activity and thwart analysis efforts."
+            ->  communicate
 
         | packetCapture
 
@@ -3533,6 +3600,9 @@ category Network {
                 dataExfiltration,
                 exfiltrationOverC2Channel,
                 generateDomainNames,
+                junkData,
+                steganography,
+                protocolImpersonation,
                 router.computer.os.service.browser.spearphishingAttachment,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.connectionProxy,
