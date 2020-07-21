@@ -3089,7 +3089,8 @@ category Software {
             user info: "Adversaries may modify the SSH authorized_keys file to maintain persistence on a victim host."
             ->  persistence
 
-        & sshHijacking
+        & sshHijacking [Bernoulli(0.51)]
+            developer info: "Sources for distribution results: http://book.itep.ru/depository/security/vulnerability/AST-0125626_Ponemon_2014_SSH_Security_Vulnerability_Report.pdf" 
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
 
@@ -3382,7 +3383,8 @@ category Software {
             user info: "Adversaries may modify the SSH authorized_keys file to maintain persistence on a victim host."
             ->  persistence
 
-        & sshHijacking
+        & sshHijacking [Bernoulli(0.51)]
+            developer info: "Sources for distribution results: http://book.itep.ru/depository/security/vulnerability/AST-0125626_Ponemon_2014_SSH_Security_Vulnerability_Report.pdf" 
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
 
