@@ -121,8 +121,7 @@ category Software {
                 os.windows.parentPIDSpoofing,
                 os.windows.pathInterception,
                 os.windows.peripheralDeviceDiscovery,
-                os.windows.attemptPowerShellUserProfile,
-                os.windows.attemptPowerShellAdminProfile,
+                os.windows.powerShellUserProfile,
                 os.windows.processDoppelganging,
                 os.windows.processHollowing,
                 os.windows.registryRunKeysOrStartupFolder,
@@ -147,7 +146,7 @@ category Software {
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsRemoteManagement,
                 os.windows.xslScriptProcessing,
-                os.linux.attemptBash_profileAndBashrc,
+                os.linux.bash_profileAndBashrc,
                 os.linux.attemptClearCommandHistory,
                 os.linux.hISTCONTROL,
                 os.linux.localJobScheduling,
@@ -162,7 +161,7 @@ category Software {
                 os.linux.trap,
                 os.linux.attemptSSHAuthorizedKeys,
                 os.macOS.attemptSSHAuthorizedKeys,
-                os.macOS.attemptBash_profileAndBashrc,
+                os.macOS.bash_profileAndBashrc,
                 os.macOS.attemptClearCommandHistory,
                 os.macOS.attemptDylibHijacking,
                 os.macOS.attemptElevatedExecutionWithPrompt,
@@ -384,17 +383,16 @@ category Software {
     asset WindowsAdmin extends AdminAccount {
         | adminRights
             user info: "WindowsAdmin account is equivalent to Unix Root account."
-            +>  os.windows.attemptAccessibilityFeatures,
+            +>  os.windows.accessibilityFeatures,
                 os.windows.attemptAccessTokenManipulation,
                 os.windows.serviceStop,
-                os.windows.attemptAppCertDLLs,
+                os.windows.appCertDLLs,
                 os.windows.appInitDLLs,
-                os.windows.attemptApplicationShimming,
+                os.windows.applicationShimming,
                 os.windows.authenticationPackage,
                 os.windows.attemptBITSJobs,
                 os.windows.bootkit,                                          
                 os.windows.attemptBypassUserAccountControl,
-                os.windows.changeDefaultFileAssociation,
                 os.windows.attemptComponentObjectModelAndDistributedCOM,
                 os.windows.controlPanelItems,
                 os.windows.dCShadow,
@@ -419,8 +417,7 @@ category Software {
                 os.windows.pathInterception,
                 os.windows.portMonitors,
                 os.windows.powerShell,
-                os.windows.attemptPowerShellUserProfile,
-                os.windows.attemptPowerShellAdminProfile,
+                os.windows.powerShellAdminProfile,
                 os.windows.processDoppelganging,
                 os.windows.queryRegistry,
                 os.windows.remoteScheduledTask,
@@ -440,7 +437,7 @@ category Software {
                 os.windows.timestomp,
                 os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
-                os.windows.windowsManagementInstrumentationEventSubscription,
+                os.windows.attemptWindowsManagementInstrumentationEventSubscription,
                 os.windows.windowsRemoteManagement,
                 os.windows.attemptWinlogonHelperDLL
 
@@ -454,12 +451,9 @@ category Software {
                 os.linux.serverSoftwareComponent,
                 os.linux.sshHijacking,
                 os.linux.timestomp,
-                os.linux.trap,
-                os.linux.attemptBash_profileAndBashrc,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
                 os.linux.securitydMemory,
-                os.macOS.attemptBash_profileAndBashrc,
                 os.macOS.attemptElevatedExecutionWithPrompt,
                 os.macOS.emond,
                 os.macOS.keychain,
@@ -474,8 +468,7 @@ category Software {
                 os.macOS.rc_common,
                 os.macOS.securitydMemory,
                 os.macOS.sshHijacking,
-                os.macOS.attemptStartupItems,
-                os.macOS.trap
+                os.macOS.attemptStartupItems
     }
 
     asset Service {
@@ -779,6 +772,17 @@ category Software {
             user info: "Adversaries may setup email forwarding rules to collect sensitive information."
             ->  sensitiveDataCollected
 
+        | applicationExhaustionFlood {A}
+            user info: "Adversaries may target resource intensive features of web applications to cause a denial of service (DoS)." 
+            ->  blockUserAccess
+
+        | serviceExhaustionFlood {A}
+            user info: "Adversaries may target the different network services provided by systems to conduct a DoS."
+            ->  os.windows.attemptServiceStop
+
+        | applicationOrSystemExploitation {A}
+            user info: "Adversaries may exploit software vulnerabilities that can cause an application or system to crash and deny availability to users."
+
         # multiFactorAuthentication
             ->  remoteEmailCollection
 
@@ -909,9 +913,6 @@ category Software {
 
         | accountAccessRemoval {A}
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
-
-        | applicationExhaustionFlood
-            ->  service.blockUserAccess
 
         | bootOrLogonAutostartExecution
             ->  windows.registryRunKeysOrStartupFolder,
@@ -1156,8 +1157,47 @@ category Software {
         & endpointDenialOfService {A}
             user info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
             ->  applicationExhaustionFlood,
-                osExhaustionFlood,
-                windows.attemptServiceStop
+                oSExhaustionFlood,
+                serviceExhaustionFlood,
+                applicationOrSystemExploitation,
+                service.cloudService.applicationExhaustionFlood,
+                service.cloudService.serviceExhaustionFlood,
+                service.cloudService.applicationOrSystemExploitation
+
+        | applicationExhaustionFlood {A}
+            user info: "Adversaries may target resource intensive features of web applications to cause a denial of service (DoS)." 
+            ->  service.blockUserAccess
+
+        | oSExhaustionFlood {A}
+            user info: "Adversaries may target the operating system (OS) for a DoS attack, since the (OS) is responsible for managing the finite resources on a system." 
+
+        | serviceExhaustionFlood {A}
+            user info: "Adversaries may target the different network services provided by systems to conduct a DoS."
+            ->  windows.attemptServiceStop
+
+        | applicationOrSystemExploitation {A}
+            user info: "Adversaries may exploit software vulnerabilities that can cause an application or system to crash and deny availability to users."
+
+        | eventTriggeredExecution
+            user info: "Adversaries may establish persistence and/or elevate privileges using system mechanisms that trigger execution based on specific events."
+            ->  windows.changeDefaultFileAssociation,
+                windows.screensaver,
+                windows.attemptWindowsManagementInstrumentationEventSubscription,
+                windows.netshHelperDLL,
+                windows.attemptAccessibilityFeatures,
+                windows.attemptAppCertDLLs,
+                windows.attemptAppInitDLLs,
+                windows.attemptApplicationShimming,
+                windows.imageFileExecutionOptionsInjection,
+                windows.powerShellUserProfile,
+                windows.powerShellAdminProfile,             
+                windows.componentObjectModelHijacking,
+                linux.bash_profileAndBashrc,
+                linux.trap,
+                macOS.attemptEmond,
+                macOS.bash_profileAndBashrc,
+                macOS.trap,
+                macOS.lC_LOAD_DYLIB_Addition
 
         & executionGuardrails
             user info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
@@ -1325,7 +1365,7 @@ category Software {
         | softwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
             developer info: "TTC assumed instant. Sources used for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
-            -> os.windows.securitySoftwareDiscovery 
+            ->  windows.securitySoftwareDiscovery 
 
         | systemAccess
 
@@ -1345,8 +1385,6 @@ category Software {
 
         | systemShutdownOrReboot {A}
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."
-
-        | osExhaustionFlood
 
         | attemptProcessInjection @hidden
             ->  processInjection
@@ -1989,7 +2027,7 @@ category Software {
                 windows.serviceStop,
                 windows.attemptTimeProviders,
                 windows.timestomp,
-                windows.windowsManagementInstrumentationEventSubscription,
+                windows.attemptWindowsManagementInstrumentationEventSubscription,
                 windows.attemptWinlogonHelperDLL,
                 windows.os.accountAccessRemoval,
                 windows.os.attemptCredentialDumping,
@@ -2023,6 +2061,9 @@ category Software {
             user info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
             ->  attemptProcessInjection
 
+        | attemptAppInitDLLs @hidden
+            ->  appInitDLLs
+            
         & appInitDLLs [Bernoulli(0.79)*Exponential(127.1)]
             developer info: "Sources for distribution results: Work on processInjection and https://www.spiceworks.com/marketing/network-security/pdf-report/"
             ->  persistence,
@@ -2271,6 +2312,7 @@ category Software {
 
         | netshHelperDLL
             user info: "Adversaries can use netsh.exe with helper DLLs to proxy execution of arbitrary code in a persistent manner."
+            ->  persistence
 
         | networkShareConnectionRemoval
             user info: "Adversaries may remove share connections that are no longer useful in order to clean up traces of their operation."
@@ -2613,6 +2655,9 @@ category Software {
                 executeCode,
                 inhibitSystemRecovery
 
+        | attemptWindowsManagementInstrumentationEventSubscription @hidden
+            ->  windowsManagementInstrumentationEventSubscription
+
         & windowsManagementInstrumentationEventSubscription
             user info: "Adversaries may use the capabilities of WMI to subscribe to an event and execute arbitrary code when that event occurs, providing persistence on a system."
             ->  persistence
@@ -2772,6 +2817,7 @@ category Software {
             ->  persistence   
 
         | changeDefaultFileAssociation
+            user info: "Adversaries may establish persistence by executing malicious content triggered by a file type association."
             ->  persistence
 
         | trustedDomainInfo // leads to SID-History Injection, Pass the Ticket, and Kerberoasting attacks
@@ -3029,9 +3075,6 @@ category Software {
         | infectedOS
             +>  bashHistory
 
-        | attemptBash_profileAndBashrc @hidden
-            ->  bash_profileAndBashrc
-
         & bash_profileAndBashrc
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
@@ -3196,9 +3239,6 @@ category Software {
                 adminAccount.rootAdmin.adminCredentials,
                 userAccount.userCredentials
 
-        | attemptBash_profileAndBashrc @hidden
-            ->  bash_profileAndBashrc
-
         & bash_profileAndBashrc
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
@@ -3240,6 +3280,9 @@ category Software {
             user info: "Adversaries may leverage the AuthorizationExecuteWithPrivileges API to escalate privileges by prompting the user for credentials."
             ->  service.attemptExploitationForPrivilegeEscalation,
                 persistence
+
+        | attemptEmond @hidden
+            ->  emond
 
         & emond [Exponential(2)]
             developer info: "Source for distribution result : https://www.xorrior.com/emond-persistence/"
