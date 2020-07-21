@@ -63,6 +63,8 @@ category Software {
                 os.fileAndDirectoryDiscovery,
                 os.fileAndDirectoryPermissionsModification,
                 os.graphicalUserInterface,
+                os.hiddenFileSystem,
+                os.runVirtualInstance,
                 os.hiddenFilesAndDirectories,
                 os.inhibitSystemRecovery,
                 os.internalSpearphishing,
@@ -108,6 +110,7 @@ category Software {
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
                 os.windows.groupPolicyModification,
+                os.windows.hiddenWindow,
                 os.windows.indirectCommandExecution,
                 os.windows.inputPrompt,
                 os.windows.installUtil,
@@ -195,6 +198,8 @@ category Software {
                 os.service.attemptExternalRemoteServices,
                 os.service.implantContainerImage,
                 os.service.remoteAccessSoftware,
+                os.service.cloudService.cloudServiceDiscovery,
+                os.service.cloudService.cloudServiceDashboard,
                 os.service.cloudService.modifyCloudComputeInfrastructure,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
@@ -278,6 +283,7 @@ category Software {
                 os.macOS.attemptStartupItems,
                 os.service.remoteServices,
                 os.service.cloudService.createSnapshot,
+                os.service.cloudService.cloudServiceDashboard,
                 os.service.cloudService.createCloudInstance,
                 os.service.cloudService.deleteCloudInstance,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
@@ -308,7 +314,6 @@ category Software {
                 os.processDiscovery,
                 os.detailedRemoteSystemDiscovery,
                 os.fileAndDirectoryDiscovery,
-                os.fileAndDirectoryPermissionsModification,
                 os.firmwareCorruption, 
                 os.graphicalUserInterface,
                 os.inhibitSystemRecovery, 
@@ -710,10 +715,20 @@ category Software {
     asset CloudService extends Service {
         | persistence
 
+        | cloudServiceInformationCollected
+
         | cloudAccount
             user info: "Adversaries may attempt to get a listing of cloud accounts."
             ->  os.persistence
 
+        | cloudServiceDiscovery
+            user info: "An adversary may attempt to enumerate the cloud services running on a system after gaining access." 
+            ->  cloudServiceInformationCollected
+
+        & cloudServiceDashboard
+            user info: "An adversary may use a cloud service dashboard GUI with stolen credentials to gain useful information from an operational cloud environment, such as specific services, resources, and features."
+            ->  cloudServiceInformationCollected
+            
         | emailAccount
             user info: "Adversaries may attempt to get a listing of email addresses and accounts."
             ->  emailAddressCollected
@@ -865,7 +880,8 @@ category Software {
                 driveByCompromise,
                 service.os.domainGenerationAlgorithms,
                 service.os.windows.compiledHTMLFile,
-                service.os.computer.router.externalNetwork.webService
+                service.os.computer.router.externalNetwork.webService,
+                service.os.computer.router.externalNetwork.exfiltrationOverWebService
     }
 
     asset OS {
@@ -975,7 +991,9 @@ category Software {
         & visualBasic
             user info: "Adversaries may abuse Visual Basic (VB) for execution."
             ->  service.browser.attemptSpearphishingAttachment,
-                executeCode
+                executeCode,
+                windows.attemptHiddenWindow, // make windows hidden
+                macOS.attemptHiddenWindow
 
         & python
             user info: "Adversaries may abuse Python commands and scripts for execution."
@@ -984,6 +1002,8 @@ category Software {
         & javaScriptOrJScript
             user info: "Adversaries may abuse JavaScript / JScript to execute various behaviors. Common uses include hosting malicious scripts on websites as part of a Drive-by Compromise or downloading and executing these script files as secondary payloads."
             ->  executeCode,
+                windows.attemptHiddenWindow, // make windows hidden
+                macOS.attemptHiddenWindow,
                 service.browser.driveByCompromise,
                 obfuscatedFilesOrInformation
 
@@ -1199,15 +1219,15 @@ category Software {
                 macOS.trap,
                 macOS.lC_LOAD_DYLIB_Addition
 
-        & executionGuardrails
+        | executionGuardrails
             user info: "Adversaries may use guardrails and environmental keying to help protect their TTPs and evade detection."
-            ->  bypassAntivirus, 
-                bypassHostForensicAnalysis, 
-                bypassSignatureBasedDetection,  
-                bypassStaticFileAnalysis       
+            ->  environmentalKeying
 
-        | attemptExfiltrationOverOtherNetworkMedium @hidden
-            ->  exfiltrationOverOtherNetworkMedium
+        & environmentalKeying
+            user info: "Adversaries may environmentally key payloads or other features of malware to evade defenses and constraint execution to a specific target environment."
+            ->  payloadDelivery
+      
+        | payloadDelivery
 
         & exfiltrationOverOtherNetworkMedium [Exponential(259.5)]
             developer info: "Sources for distribution results: https://fr.wikipedia.org/wiki/D%C3%A9bits_et_port%C3%A9es, https://www.atlasandboots.com/remote-work/countries-with-the-fastest-internet-in-the-world/#:~:text=The%20global%20average%20broadband%20internet,Mbps%20(megabits%20per%20second)."
@@ -1217,6 +1237,7 @@ category Software {
         
         & exfiltrationOverBluetooth [Exponential(51.86)]
             developer info: "Sources for distribution results: https://fr.wikipedia.org/wiki/D%C3%A9bits_et_port%C3%A9es, https://www.atlasandboots.com/remote-work/countries-with-the-fastest-internet-in-the-world/#:~:text=The%20global%20average%20broadband%20internet,Mbps%20(megabits%20per%20second)."
+            user info: "Adversaries may attempt to exfiltrate data over Bluetooth rather than the command and control channel."
             ->  computer.router.internalNetwork.dataExfiltration
 
         | fallbackChannels  
@@ -1227,11 +1248,31 @@ category Software {
             user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
             developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: https://www.wired.com/2015/03/researchers-uncover-way-hack-bios-undermine-secure-operating-systems/, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
 
+        | hideArtifacts
+            user info: "Adversaries may attempt to hide artifacts associated with their behaviors to evade detection."
+            ->  hiddenFilesAndDirectories,
+                windows.ntfsFileAttributes,
+                windows.attemptHiddenWindow,
+                macOS.attemptHiddenWindow,
+                macOS.hiddenUsers,
+                hiddenFileSystem,
+                runVirtualInstance
+
+        & hiddenFileSystem
+            user info: "Adversaries may use a hidden file system to conceal malicious activity from users and security tools." 
+
+        & runVirtualInstance
+            user info: "Adversaries may carry out malicious operations using a virtual instance to avoid detection."
+            ->  bypassHostIntrusionPrevention
+
         | hiddenFilesAndDirectories [Bernoulli(0.0106)]
             user info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a 'hidden' file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://attack.mitre.org/techniques/T1158/"
             ->  bypassHostForensicAnalysis,
                 persistence
+
+        | hijackExecutionFlow
+            user info: "Adversaries may execute their own malicious payloads by hijacking the way operating systems run programs."
 
         | indicatorRemovalFromTools
             user info: "An adversary may be able to modify the tool by removing the indicator that is no longer detected by the target's defensive systems."
@@ -1352,10 +1393,9 @@ category Software {
         | fileAndDirectoryPermissionsModification [Bernoulli(0.2174)]
             user info: "File and directory permissions are commonly managed by discretionary access control lists (DACLs) specified by the file or directory owner."
             developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0402, https://securelist.com/threats-to-macos-users/93116/, https://www.carbonblack.com/2019/02/12/tau-threat-intelligence-notification-new-macos-malware-variant-of-shlayer-osx-discovered/"
-            ->  bypassFileSystemAccessControls,
-                windows.attemptAccessibilityFeatures, // leads to Accessibility Features attack
-                windows.attemptLogonScripts, //leads to Logon Scripts attack
-                macOS.attemptLogonScripts // leads to Logon Scripts attack
+            ->  windows.windowsFileAndDirectoryPermissionsModification,
+                macOS.macFileAndDirectoryPermissionsModification,
+                linux.linuxFileAndDirectoryPermissionsModification
 
         | graphicalUserInterface
             developer info: "Binary probability distribution."
@@ -1622,9 +1662,9 @@ category Software {
         
         & sensitiveDataCollected
             ->  dataCompressed,
-                computer.exfiltrationOverPhysicalMedium,
+                computer.attemptExfiltrationOverPhysicalMedium,
                 dataSizedTransfer,
-                exfiltrationOverAternativeProtocol,
+                attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 automatedExfiltration,
@@ -1633,8 +1673,8 @@ category Software {
 
         & dataCollected
             ->  dataCompressed,
-                computer.exfiltrationOverPhysicalMedium,
-                exfiltrationOverAternativeProtocol,
+                computer.attemptExfiltrationOverPhysicalMedium,
+                attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 dataEncrypted,
@@ -1645,8 +1685,8 @@ category Software {
         | dataEncrypted [Bernoulli(0.567)*Exponential(3.25)]
             user info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
             developer info: "Sources for TTC too many to list, please see 'enterpriselang probabilities/dataEncrypted.md'. Other sources: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf "
-            ->  computer.exfiltrationOverPhysicalMedium,
-                exfiltrationOverAternativeProtocol,
+            ->  computer.attemptExfiltrationOverPhysicalMedium,
+                attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 automatedExfiltration
@@ -1664,9 +1704,9 @@ category Software {
         | localDataStaging
             user info: "Adversaries may stage collected data in a central location or directory on the local system prior to Exfiltration."
             ->  archiveCollectedData, // Data may be kept in separate files or combined into one file through techniques such as Archive Collected Data
-                computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
+                computer.attemptExfiltrationOverPhysicalMedium, // leads to exfiltration attacks
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
-                exfiltrationOverAternativeProtocol,
+                attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
                 dataCompressed,
                 dataEncrypted
@@ -1674,9 +1714,9 @@ category Software {
         | remoteDataStaging
             user info: "Adversaries may stage data collected from multiple systems in a central location or directory on one system prior to Exfiltration."
             ->  archiveCollectedData,
-                computer.exfiltrationOverPhysicalMedium, // leads to exfiltration attacks
+                computer.attemptExfiltrationOverPhysicalMedium, // leads to exfiltration attacks
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
-                exfiltrationOverAternativeProtocol,
+                attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
                 dataCompressed,
                 dataEncrypted
@@ -1700,7 +1740,7 @@ category Software {
             developer info: "TTC assumed instant. For more info see enterpriselang probabilities/dataCompressed.md. Sources used for distribution: https://cloud.google.com/security/data-loss-prevention/preventing-data-exfiltration, https://targetedthreats.net/media/4-Glossary.pdf, https://www.wiley.com/en-se/The+Art+of+Memory+Forensics%3A+Detecting+Malware+and+Threats+in+Windows%2C+Linux%2C+and+Mac+Memory-p-9781118824993 pg. 560"
             ->  dataEncrypted,
                 automatedExfiltration,
-                computer.exfiltrationOverPhysicalMedium,
+                computer.attemptExfiltrationOverPhysicalMedium,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 scheduledExfiltration
 
@@ -1712,9 +1752,26 @@ category Software {
             developer info: "Sources for distribution results: https://www.welivesecurity.com/wp-content/uploads/2016/10/eset-sednit-part-2.pdf, https://www.welivesecurity.com/wp-content/uploads/2020/05/ESET_Turla_ComRAT.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
             ->  computer.router.internalNetwork.dataExfiltration         
     
-        | exfiltrationOverAternativeProtocol [Bernoulli(0.79224)*Exponential(1878)]
+        | attemptExfiltrationOverAternativeProtocol @hidden
+            ->  exfiltrationOverAternativeProtocol
+
+        & exfiltrationOverAternativeProtocol [Bernoulli(0.79224)*Exponential(1878)]
             developer info: "Sources for distribution results: https://repo.zenk-security.com/Techniques%20d.attaques%20%20.%20%20Failles/Exfiltration%20Techniques%20-%20An%20examination%20And%20Emulation.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
             user info: "https://attack.mitre.org/techniques/T1048/"
+            ->  exfiltrationOverAsymmetricEncryptedNonC2Protocol,
+                exfiltrationOverSymmetricEncryptedNonC2Protocol,
+                exfiltrationOverUnencryptedOrObfuscatedNonC2Protocol
+
+        | exfiltrationOverAsymmetricEncryptedNonC2Protocol
+            user info: "Adversaries may steal data by exfiltrating it over an asymmetrically encrypted network protocol other than that of the existing command and control channel."
+            ->  computer.router.internalNetwork.dataExfiltration
+
+        | exfiltrationOverSymmetricEncryptedNonC2Protocol
+            user info: "Adversaries may steal data by exfiltrating it over a symmetrically encrypted network protocol other than that of the existing command and control channel."
+            ->  computer.router.internalNetwork.dataExfiltration
+
+        | exfiltrationOverUnencryptedOrObfuscatedNonC2Protocol
+            user info: "Adversaries may steal data by exfiltrating it over an un-encrypted network protocol other than that of the existing command and control channel."  
             ->  computer.router.internalNetwork.dataExfiltration
 
         | dataFromInformationRepositories
@@ -1739,7 +1796,7 @@ category Software {
                 sensitiveDataCollected
 
         | automatedExfiltration
-            ->  exfiltrationOverAternativeProtocol,
+            ->  attemptExfiltrationOverAternativeProtocol,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
         & networkServiceScan
@@ -1844,7 +1901,7 @@ category Software {
 
         # doNotMitigate // Execution Guardrails likely should not be mitigated with preventative controls because it may protect unintended targets from being compromised.
             user info: "https://attack.mitre.org/mitigations/M1055/"
-            ->  executionGuardrails                
+            ->  environmentalKeying                
 
         # disableOrRemoveFeatureOrProgram 
             user info: "https://attack.mitre.org/techniques/T1064/"
@@ -1852,8 +1909,11 @@ category Software {
                 scripting,
                 visualBasic,
                 communicationThroughRemovableMedia,
+                exfiltrationOverBluetooth,
+                runVirtualInstance,
                 service.exploitationOfRemoteServices,
-                service.externalRemoteServices
+                service.externalRemoteServices,
+                computer.exfiltrationOverPhysicalMedium
 
         # activeDirectoryConfiguration
             user info: "https://attack.mitre.org/mitigations/M1015/"
@@ -1899,7 +1959,8 @@ category Software {
         # limitHardwareInstallation
             user info: "https://attack.mitre.org/mitigations/M1034/"
             developer info: "Binary probability relation."
-            ->  computer.hardwareAddition.hardwareAdditions     
+            ->  computer.hardwareAddition.hardwareAdditions,
+                computer.exfiltrationOverPhysicalMedium     
 
         # operatingSystemConfiguration 
             user info: "https://attack.mitre.org/mitigations/M1028/"
@@ -1933,7 +1994,8 @@ category Software {
                 masquerading,
                 permissionGroupsDiscovery,
                 python,
-                remoteSystemDiscovery,     
+                remoteSystemDiscovery,    
+                runVirtualInstance, 
                 systemInformationDiscovery,
                 visualBasic,
                 userAccount.userExecution          
@@ -2086,7 +2148,7 @@ category Software {
             developer info: "TTC assumed instant. Sources used for probability distribution: https://blog.trendmicro.com/trendlabs-security-intelligence/tropic-trooper-new-strategy/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://en.wikipedia.org/wiki/Windows_Desktop_Gadgets, https://www.fireeye.com/blog/threat-research/2018/03/suspected-chinese-espionage-group-targeting-maritime-and-engineering-industries.html" 
             ->  executeCode,
                 persistence,
-                exfiltrationOverAternativeProtocol // BITS upload functionalities can be used to perform Exfiltration Over Alternative Protocol
+                attemptExfiltrationOverAternativeProtocol // BITS upload functionalities can be used to perform Exfiltration Over Alternative Protocol
 
         | attemptBootOrLogonInitializationScripts @hidden
             ->  bootOrLogonInitializationScripts
@@ -2213,6 +2275,12 @@ category Software {
             ->  bypassHostIntrusionPrevention,
                 attemptProcessInjection
 
+        & windowsFileAndDirectoryPermissionsModification 
+            user info: "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files."
+            ->  attemptAccessibilityFeatures, // leads to Accessibility Features attack
+                bootOrLogonInitializationScripts, //leads to Logon Scripts attack
+                hijackExecutionFlow
+
         | fileSystemLogicalOffsets
             user info: "Windows allows programs to have direct access to logical volumes. This technique bypasses Windows file access controls as well as file system monitoring tools."
             ->  bypassFileMonitoring,
@@ -2243,6 +2311,13 @@ category Software {
                 adminAccount.attemptCreateAccount,
                 bypassSystemAccessControls,
                 bypassFileSystemAccessControls
+
+        | attemptHiddenWindow @hidden
+            ->  hiddenWindow
+
+        & hiddenWindow [Bernoulli(0.22)]
+            user info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
+            developer info: "Sources for probability distribution: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download"
 
         | imageFileExecutionOptionsInjection
             developer info: "Binary probability distribution. Soucres for distribution results: process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
@@ -2327,9 +2402,6 @@ category Software {
                 masquerading, // benign software with Masquerading
                 persistence
 
-        | attemptNtfsFileAttributes @hidden
-            ->  ntfsFileAttributes
-
         & ntfsFileAttributes [Bernoulli(0.00702)]
             developer info: "Sources for distribution result: Red Canary ATT&CK technique percentages (private google sheets document), https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://cdn2.hubspot.net/hubfs/3354902/Cybereason%20Labs%20Analysis%20Operation%20Cobalt%20Kitty.pdf, https://www.volexity.com/blog/2016/11/09/powerduke-post-election-spear-phishing-campaigns-targeting-think-tanks-and-ngos/"
             user info: "Adversaries may store malicious data or binaries in file attribute metadata instead of directly in files, to evade some defenses, such as static indicator scanning tools and anti-virus."
@@ -2392,7 +2464,8 @@ category Software {
             ->  computer.router.internalNetwork.remoteSystemsConnection,
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
-                persistence
+                persistence,
+                attemptHiddenWindow // make windows hidden
 
         | attemptPowerShellUserProfile @hidden
             user info: "Adversaries may gain persistence and elevate privileges in certain situations by abusing PowerShell profiles."
@@ -2963,7 +3036,8 @@ category Software {
                 bypassUserAccountControl,
                 componentObjectModelAndDistributedCOM,
                 passTheHash,
-                scheduledTask
+                scheduledTask,
+                windowsFileAndDirectoryPermissionsModification
 
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
@@ -2981,7 +3055,8 @@ category Software {
                 sIPAndTrustProviderHijacking,
                 serviceStop,
                 serviceExecution,
-                timeProviders
+                timeProviders,
+                windowsFileAndDirectoryPermissionsModification
 
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
             user info: "https://attack.mitre.org/mitigations/M1024/"
@@ -3036,7 +3111,7 @@ category Software {
         # filterNetworkTraffic [Bernoulli(0.8217)] // Use host-based security software to block LLMNR/NetBIOS traffic.
             developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
-            ->  lLMNR_NBT_NS_PoisoningAndRelay,
+            +>  lLMNR_NBT_NS_PoisoningAndRelay,
                 forcedAuthentication 
 
         # updateSoftware [Bernoulli(0.567125)]
@@ -3083,6 +3158,11 @@ category Software {
             ->  indicatorRemovalOnHost,
                 adminAccount.windowsAdmin.adminCredentials,
                 userAccount.userCredentials
+
+        & linuxFileAndDirectoryPermissionsModification 
+            user info: "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files."
+            ->  bash_profileAndBashrc,
+                hijackExecutionFlow
 
         & hISTCONTROL
             user info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
@@ -3218,7 +3298,8 @@ category Software {
             +>  bootkit,
                 sshHijacking,
                 sudoAndSudoCaching,
-                processInjection
+                processInjection,
+                linuxFileAndDirectoryPermissionsModification
 
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
@@ -3226,7 +3307,8 @@ category Software {
                 sSHAuthorizedKeys,
                 sshHijacking,
                 sudoAndSudoCaching,
-                systemdService   
+                systemdService,
+                linuxFileAndDirectoryPermissionsModification
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -3290,6 +3372,11 @@ category Software {
             ->  persistence,
                 service.attemptExploitationForPrivilegeEscalation
 
+        & macFileAndDirectoryPermissionsModification 
+            user info: "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files."
+            ->  bash_profileAndBashrc,
+                hijackExecutionFlow
+
         | executeCode 
             +>  computer.infectedMacOSComputer   
 
@@ -3301,6 +3388,9 @@ category Software {
         & hiddenUsers
             user info: "By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily."
             ->  adminAccount.attemptCreateAccount
+
+        | attemptHiddenWindow @hidden
+            ->  hiddenWindow
 
         & hiddenWindow [Bernoulli(0.22)]
             user info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
@@ -3539,7 +3629,8 @@ category Software {
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            +>  sshHijacking
+            +>  sshHijacking,
+                macFileAndDirectoryPermissionsModification
 
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
@@ -3550,7 +3641,8 @@ category Software {
                 sSHAuthorizedKeys,
                 sshHijacking,
                 startupItems,
-                sudoAndSudoCaching
+                sudoAndSudoCaching,
+                macFileAndDirectoryPermissionsModification
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -3686,7 +3778,8 @@ category Network {
                 router.computer.os.endpointDenialOfService,
                 router.computer.os.multiHopProxy,
                 router.computer.os.networkDenialOfService,
-                router.computer.os.windows.bITSJobs 
+                router.computer.os.exfiltrationOverAternativeProtocol,
+                router.computer.os.windows.bITSJobs
 
         # limitAccessToResourceOverNetwork
             user info: "https://attack.mitre.org/mitigations/M1035/"   
@@ -3720,6 +3813,7 @@ category Network {
                 router.computer.os.customCryptographicProtocol,
                 router.computer.os.dataCompressed,
                 router.computer.os.domainGenerationAlgorithms,
+                router.computer.os.exfiltrationOverAternativeProtocol,
                 router.computer.os.standardEncoding,
                 router.computer.os.nonStandardEncoding,
                 router.computer.os.fallbackChannels,
@@ -3742,6 +3836,7 @@ category Network {
                 router.computer.os.nonStandardPort,
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.domainAccount,
+                router.computer.os.exfiltrationOverAternativeProtocol,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.windows.componentObjectModelAndDistributedCOM,
@@ -3799,6 +3894,19 @@ category Network {
 
         & externalDefacement {I}
             user info: "Websites are a common victim of defacement that often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda."
+
+        & exfiltrationOverWebService
+            user info: "Adversaries may use an existing, legitimate external Web service to exfiltrate data rather than their primary command and control channel."
+            ->  exfiltrationToCodeRepository,
+                exfiltrationToCloudStorage
+
+        | exfiltrationToCodeRepository
+            user info: "Adversaries may exfiltrate data to a code repository rather than over their primary command and control channel."
+            ->  dataExfiltration
+
+        | exfiltrationToCloudStorage
+            user info: "Adversaries may exfiltrate data to a cloud storage service rather than over their primary command and control channel."
+            ->  dataExfiltration
 
         & webService [Bernoulli(0.0445)]
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.fireeye.com/blog/threat-research/2019/04/pick-six-intercepting-a-fin6-intrusion.html"
@@ -3912,9 +4020,17 @@ category Hardware {
 
         | unresponsive
 
-        | exfiltrationOverPhysicalMedium [Bernoulli(0.79224)*Exponential(7.69)]
+        | attemptExfiltrationOverPhysicalMedium @hidden
+            ->  exfiltrationOverPhysicalMedium
+
+        & exfiltrationOverPhysicalMedium [Bernoulli(0.79224)*Exponential(7.69)]
             developer info: "Sources for distribution results: https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
             user info: "https://attack.mitre.org/techniques/T1052/"
+            ->  exfiltrationOverUSB,
+                peripheralDevice.removableMedia.dataExfiltration
+
+        | exfiltrationOverUSB
+            user info: "Adversaries may attempt to exfiltrate data over a USB connected physical device."
             ->  peripheralDevice.removableMedia.dataExfiltration
 
         E microphoneExists
