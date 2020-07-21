@@ -722,10 +722,12 @@ category Software {
             ->  os.persistence
 
         | cloudServiceDiscovery
+            developer info: "Binary probability distribution, TTC assumed instant (few seconds) : https://www.etasr.com/index.php/ETASR/article/view/1577"
             user info: "An adversary may attempt to enumerate the cloud services running on a system after gaining access." 
             ->  cloudServiceInformationCollected
 
-        & cloudServiceDashboard
+        & cloudServiceDashboard [Exponential(1)]
+            developer info: "Binary probability distribution (stolen credentials). TTC assumed arbitrarily based on findings from dataFromCloudStorageObject : Exploring a cloud service manually to find sensitive data would take some time"
             user info: "An adversary may use a cloud service dashboard GUI with stolen credentials to gain useful information from an operational cloud environment, such as specific services, resources, and features."
             ->  cloudServiceInformationCollected
             
