@@ -386,7 +386,6 @@ category Software {
             user info: "WindowsAdmin account is equivalent to Unix Root account."
             +>  os.windows.attemptAccessibilityFeatures,
                 os.windows.attemptAccessTokenManipulation,
-                os.windows.securitySoftwareDiscovery,
                 os.windows.serviceStop,
                 os.windows.attemptAppCertDLLs,
                 os.windows.appInitDLLs,
@@ -460,7 +459,6 @@ category Software {
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
                 os.linux.securitydMemory,
-                os.macOS.securitySoftwareDiscovery,
                 os.macOS.attemptBash_profileAndBashrc,
                 os.macOS.attemptElevatedExecutionWithPrompt,
                 os.macOS.emond,
@@ -1324,8 +1322,10 @@ category Software {
             user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
             ->  windows.attemptSystemFirmware
 
-        | softwareDiscovery
+        | softwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
+            developer info: "TTC assumed instant. Sources used for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
+            -> os.windows.securitySoftwareDiscovery 
 
         | systemAccess
 
@@ -2714,9 +2714,9 @@ category Software {
             user info: "Adversaries may make and impersonate tokens to escalate privileges and bypass access controls."
             ->  service.attemptExploitationForPrivilegeEscalation
 
-        & securitySoftwareDiscovery [Bernoulli(0.83387)]
+        & securitySoftwareDiscovery
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            developer info: "TTC assumed instant. Sources used for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
+            developer info: "Binary probability distribution."
             ->  virtualizationOrSandboxEvasion
 
         | attemptBypassUserAccountControl @hidden
@@ -2854,7 +2854,6 @@ category Software {
         # executionPrevention
             user info: "https://attack.mitre.org/mitigations/M1038/"
             +>  accessibilityFeatures,
-                securitySoftwareDiscovery,
                 appCertDLLs,
                 appInitDLLs,
                 cmstp,
@@ -3412,9 +3411,9 @@ category Software {
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/"
             ->  computer.router.internalNetwork.networkShareDiscovery
 
-        & securitySoftwareDiscovery [Bernoulli(0.83387)]
+        & securitySoftwareDiscovery
             user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            developer info: "TTC Assumed instant. Sources for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
+            developer info: "Binary probability distribution."
             ->  service.attemptExploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
         & unixShell
@@ -3468,7 +3467,6 @@ category Software {
 
         # executionPrevention
             +>  appleScript,
-                securitySoftwareDiscovery,
                 elevatedExecutionWithPrompt,
                 gatekeeperBypass,
                 hiddenWindow,
