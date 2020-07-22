@@ -178,7 +178,6 @@ category Software {
                 os.macOS.lC_LOAD_DYLIB_Addition,
                 os.macOS.lC_MAINHijacking,
                 os.macOS.localJobScheduling,
-                os.macOS.loginItem,
                 os.macOS.attemptLogonScripts,
                 os.macOS.attemptPlistModification,
                 os.macOS.portKnocking,
@@ -237,7 +236,6 @@ category Software {
                 os.windows.manInTheBrowser,
                 os.windows.templateInjection,
                 os.macOS.inputPrompt, 
-                os.macOS.loginItem,
                 os.macOS.reopenedApplications,
                 os.macOS.plistModification,
                 os.service.browser.browserExtensions,
@@ -279,7 +277,6 @@ category Software {
                 os.macOS.launchctl,
                 os.macOS.launchDaemon,
                 os.macOS.localJobScheduling,
-                os.macOS.loginItem,
                 os.macOS.rc_common,
                 os.macOS.attemptStartupItems,
                 os.service.remoteServices,
@@ -1303,10 +1300,13 @@ category Software {
             user info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
             ->  bypassDigitalCertificateValidation  
 
-        | internalSpearphishing
+        | internalSpearphishing [Bernoulli(0.85)*Exponential(1)]
+            developer info: "Sources for distribution results: https://er.educause.edu/articles/2005/1/fostering-email-security-awareness-the-west-point-carronade and other work on spearphishing." 
             user info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
-            ->  service.browser.spearphishingLink,
-                service.browser.spearphishingAttachment,
+            ->  attemptUserExecution,
+                computer.os.service.thirdpartySoftware.applicationAccessToken,
+                computer.os.service.exploitationForClientExecution,
+                computer.os.windows.dynamicDataExchange,
                 inputCapture
 
         & masquerading [Bernoulli(0.34)*Exponential(1)]
@@ -3424,6 +3424,7 @@ category Software {
             +>  bashHistory
 
         & inputPrompt
+            developer info: "Binary probability distribution."
             user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
             ->  userAccount.userCredentials
 
@@ -3473,11 +3474,7 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence,  to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
             ->  persistence,
-                adminAccount.rootAdmin.adminRights
-
-        & loginItem
-            user info: "If an adversary can register their own login item or modified an existing one, then they can use it to execute their code for a persistence mechanism each time the user logs in."
-            ->  persistence      
+                adminAccount.rootAdmin.adminRights 
 
         | attemptLogonScripts @hidden
             ->  logonScripts
