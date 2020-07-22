@@ -3899,7 +3899,7 @@ category Network {
         & dataFromCloudStorageObject [Bernoulli(0.11)]
             developer info: "Sources for distribution results: https://www.helpnetsecurity.com/2020/01/28/accessing-cloud-services/#:~:text=Shadow%20IT%20continues%20to%20expand,the%20cloud%20provider%20is%20breached., https://go.netskope.com/rs/665-KFP-612/images/2020-02-February%20Cloud%20and%20Threat%20Report-WEB%20%281%29.pdf"
             user info: "Adversaries may access data objects from improperly secured cloud storage."
-            ->  os.service.cloudService.sensitiveDataCollected
+            ->  router.computer.os.service.cloudService.sensitiveDataCollected
 
         | attemptDataEncryptedForImpact @hidden
             ->  dataEncryptedForImpact
