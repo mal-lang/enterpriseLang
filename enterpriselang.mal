@@ -168,7 +168,8 @@ category Software {
                 os.macOS.attemptClearCommandHistory,
                 os.macOS.attemptDylibHijacking,
                 os.macOS.attemptElevatedExecutionWithPrompt,
-                os.macOS.gatekeeperBypass,
+                os.macOS.gatekeeperBypassViaDriveByCompromise,
+                os.macOS.gatekeeperBypassViaHardwareAddition,
                 os.macOS.hiddenWindow,
                 os.macOS.hISTCONTROL,
                 os.macOS.inputPrompt,
@@ -463,7 +464,7 @@ category Software {
                 os.macOS.emond,
                 os.macOS.keychain,
                 os.macOS.localJobScheduling,
-                os.macOS.gatekeeperBypass,
+                os.macOS.gatekeeperBypassViaAdminRights,
                 os.macOS.hiddenUsers,
                 os.macOS.kernelModulesAndExtensions,
                 os.macOS.attemptLaunchAgent,
@@ -814,7 +815,9 @@ category Software {
             ->  malvertising,
                 crossSiteScripting,
                 service.os.computer.user.attemptUserExecution,
-                service.exploitationForClientExecution
+                service.exploitationForClientExecution,
+                service.os.macOS.gatekeeperBypassViaDriveByCompromise
+
 
         | malvertising [Gamma(9,0.167)]
             developer info: "Sources for distribution result: https://www.adstage.io/resources/q1-2020-ppc-benchmark-report/; https://www.youtube.com/watch?v=rTg9l4d8MU4; https://www.facebook.com/business/help/204798856225114?id=649869995454285"
@@ -1242,7 +1245,8 @@ category Software {
             user info: "Adversaries may attempt to exfiltrate data over Bluetooth rather than the command and control channel."
             ->  computer.router.internalNetwork.dataExfiltration
 
-        | fallbackChannels  
+        | fallbackChannels
+            developer info: "Binary probability distribution."
             user info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
             ->  computer.router.internalNetwork.communicate  
 
@@ -3382,7 +3386,20 @@ category Software {
         | executeCode 
             +>  computer.infectedMacOSComputer   
 
+        & gatekeeperBypassViaDriveByCompromise
+            -> attemptGatekeeperBypass
+        
+        & gatekeeperBypassViaHardwareAddition
+            -> attemptGatekeeperBypass
+
+        & gatekeeperBypassViaAdminRights
+            -> attemptGatekeeperBypass
+
+        | attemptGatekeeperBypass 
+            -> gatekeeperBypass
+
         & gatekeeperBypass
+            developer info: "Binary probability distribution."
             user info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won't set this flag. Additionally, other utilities or events like drive-by downloads don't necessarily set it either. This completely bypasses the built-in Gatekeeper check."
             ->  bypassApplicationWhitelisting,
                 bypassAntivirus 
@@ -4065,7 +4082,8 @@ category Hardware {
             
         & hardwareAdditions 
             user info: "Adversaries may introduce computer accessories, computers, or networking hardware into a system or network that can be used as a vector to gain access." 
-            ->  os.executeCode  
+            ->  os.executeCode,
+                os.macOS.gatekeeperBypassViaHardwareAddition
     }
 
     asset PeripheralDevice {
