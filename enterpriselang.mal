@@ -1315,13 +1315,6 @@ category Software {
             ->  bypassFileOrPathWhitelisting,
                 macOS.elevatedExecutionWithPrompt // combine with elevatedExecutionWithPrompt to trick the user into granting escalated privileges to malicious code
 
-        | attemptMultibandCommunication @hidden
-            ->  multibandCommunication
-
-        & multibandCommunication
-            user info: "Some adversaries may split communications between different protocols. There could be one protocol for inbound command and control and another for outbound data, allowing it to bypass certain firewall restrictions."
-            ->  computer.router.internalNetwork.c2Connected
-
         | attemptMultiHopProxy @hidden
             ->  multiHopProxy
 
@@ -1333,7 +1326,8 @@ category Software {
         | attemptMultilayerEncryption @hidden
             ->  multilayerEncryption
 
-        & multilayerEncryption
+        & multilayerEncryption [Bernoulli(0.60)*Exponential(5400)]
+            developer info: "Sources for distribution results : https://www.jscape.com/blog/bid/84422/symmetric-vs-asymmetric-encryption#:~:text=Symmetric%20key%20encryption%20doesn't,to%20speed%2C%20symmetric%20trumps%20asymmetric.&text=For%20as%20long%20as%20you,to%20decrypt%20your%20encrypted%20file., https://www.cse.wustl.edu/~jain/cse567-06/ftp/encryption_perf/, https://arxiv.org/ftp/arxiv/papers/1312/1312.3183.pdf, https://www.cisco.com/c/dam/en/us/solutions/collateral/enterprise-networks/enterprise-network-security/nb-09-encrytd-traf-anlytcs-wp-cte-en.pdf"
             user info: "An adversary performs C2 communications using multiple layers of encryption, typically (but not exclusively) tunneling a custom encryption scheme within a protocol encryption scheme such as HTTPS or SMTPS."
             ->  computer.router.internalNetwork.c2Connected
 
@@ -3833,7 +3827,6 @@ category Network {
                 router.computer.os.standardEncoding,
                 router.computer.os.nonStandardEncoding,
                 router.computer.os.fallbackChannels,
-                router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
                 router.computer.os.multiStageChannels,
                 router.computer.os.networkServiceScan,
@@ -3962,7 +3955,6 @@ category Network {
                 router.computer.os.nonStandardPort,
                 router.computer.os.connectionProxy,
                 router.computer.os.fallbackChannels,
-                router.computer.os.multibandCommunication,
                 router.computer.os.multilayerEncryption,
                 router.computer.os.multiStageChannels,
                 router.computer.os.redundantAccess,
