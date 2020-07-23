@@ -2897,7 +2897,8 @@ category Software {
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
             ->  service.attemptExploitationForPrivilegeEscalation
        
-        | peripheralDeviceDiscovery
+        | peripheralDeviceDiscovery [Exponential(1)]
+            developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/646.html, https://www.welivesecurity.com/wp-content/uploads/2016/10/eset-sednit-part-2.pdf, https://github.com/mal-lang/malcompiler/wiki/Supported-distribution-functions" 
             ->  computer.peripheralDeviceDiscovery
 
         | portMonitors
@@ -4113,6 +4114,7 @@ category Hardware {
             ->  os.dataCollected
         
         | peripheralDeviceDiscovery
+            developer info: "Binary distribution result (endpoint)"
             user info: "Adversaries may attempt to gather information about attached peripheral devices and components connected to a computer system. The information may be used to enhance their awareness of the system and network environment or may be used for further actions."
 
         E webcamExists
