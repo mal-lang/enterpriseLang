@@ -530,7 +530,7 @@ category Software {
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
             ->  os.computer.router.internalNetwork.c2Connected
 
-        & transmittedDataManipulation {I}
+        & transmittedDataManipulation {I} [Exponential(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
         | informationRepositories
@@ -1023,7 +1023,8 @@ category Software {
                 linux.securitydMemory,
                 service.browser.credentialsFromWebBrowsers
 
-        | dataManipulation
+        | dataManipulation [Bernoulli(0.65833)*Exponential(0.02)]
+            developer info: "Sources for distribution results: https://threatpost.com/what-is-a-data-manipulation-attack-and-how-to-mitigate-against-them/141563/, https://www.lexology.com/library/detail.aspx?g=2cbd967d-0dcc-4adb-a16f-417b7479cec7, work on the Data Encryption mitigation"
             user info: "Adversaries may insert, delete, or manipulate data in order to manipulate external outcomes or hide activity."
             ->  storedDataManipulation,
                 service.transmittedDataManipulation,
@@ -1472,6 +1473,7 @@ category Software {
                 windows.attemptSystemFirmware // leads to system firmware attack
 
         & runtimeDataManipulation {I}
+            developer info: "Binary probability distribution."
             user info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
         & standardCryptographicProtocol [TruncatedNormal(26.82,15.913)]
@@ -1611,6 +1613,7 @@ category Software {
         | sSHCredentialInterception
 
         & storedDataManipulation {I}
+            developer info: "Binary probability distribution."
             user info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."    
 
         & nonStandardPort [TruncatedNormal(41.11,31.68)]
@@ -3774,7 +3777,7 @@ category Network {
 
         | bypassProxies
 
-        & transmittedDataManipulation {I}
+        & transmittedDataManipulation {I} [Exponential(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
         & c2Connexion
@@ -3992,7 +3995,7 @@ category Network {
         | attemptTransmittedDataManipulation @hidden {I}
             ->  transmittedDataManipulation
  
-        & transmittedDataManipulation {I} [Bernoulli(0.65833)*Exponential(24)]
+        & transmittedDataManipulation {I} [Exponential(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
             developer info: "Sources used for distribution: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiW28Dmk4vqAhXS4KYKHZvADy4QFjABegQIAhAB&url=https%3A%2F%2Fgo.thalesesecurity.com%2Frs%2F480-LWA-970%2Fimages%2F2019-DTR-Global-USL-Web.pdf&usg=AOvVaw2rKeGVWQgkIV7M0vjnCo1g, https://secure2.sophos.com/en-us/medialibrary/Gated%20Assets/white%20papers/the-state-of-encryption-today-wpna.pdf?cmp=701j0000001WskZAAS, www.businesswire.com/news/home/20190221005061/en/Survey-83-Percent-U.S.-Organizations-Accidentally-Exposed, https://content.fireeye.com/apt/rpt-apt38"
             
