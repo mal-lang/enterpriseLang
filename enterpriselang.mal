@@ -56,6 +56,7 @@ category Software {
                 os.dataManipulation,
                 os.dataFromInformationRepositories,
                 os.diskWipe,
+                os.disableOrModifyTools,
                 os.dynamicResolution,
                 os.domainDiscovery,
                 os.executionGuardrails,
@@ -202,6 +203,7 @@ category Software {
                 os.service.remoteAccessSoftware,
                 os.service.cloudService.cloudServiceDiscovery,
                 os.service.cloudService.cloudServiceDashboard,
+                os.service.cloudService.disableOrModifyCloudFirewall,
                 os.service.cloudService.modifyCloudComputeInfrastructure,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
@@ -252,14 +254,17 @@ category Software {
                 os.validAccounts,
                 os.credentialStuffing,
                 os.confluence,
+                os.disablingSecurityTools,
+                os.disableOrModifySystemFirewall,
+                os.indicatorBlocking,
                 os.sharepoint,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
                 os.windows.serviceStop,
                 os.windows.bITSJobs,
                 os.windows.cOR_PROFILER,
+                os.windows.disableWindowsEventLogging,
                 os.windows.executableInstallerFilePermissionsWeakness,
                 os.windows.fileSystemPermissionsWeakness,
-                os.windows.indicatorBlocking,
                 os.windows.scheduledTask,
                 os.windows.manInTheBrowser,
                 os.windows.passTheHash,
@@ -287,6 +292,7 @@ category Software {
                 os.service.cloudService.cloudServiceDashboard,
                 os.service.cloudService.createCloudInstance,
                 os.service.cloudService.deleteCloudInstance,
+                os.service.cloudService.disableOrModifyCloudFirewall,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.useThirdpartySoftware
     } 
@@ -439,6 +445,7 @@ category Software {
                 os.windows.attemptTimeProviders,
                 os.windows.timestomp,
                 os.windows.windowsAdminShares,
+                os.windows.disableWindowsEventLogging,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.attemptWindowsManagementInstrumentationEventSubscription,
                 os.windows.windowsRemoteManagement,
@@ -728,7 +735,11 @@ category Software {
             developer info: "Binary probability distribution (stolen credentials). TTC assumed arbitrarily based on findings from dataFromCloudStorageObject : Exploring a cloud service manually to find sensitive data would take some time"
             user info: "An adversary may use a cloud service dashboard GUI with stolen credentials to gain useful information from an operational cloud environment, such as specific services, resources, and features."
             ->  cloudServiceInformationCollected
-            
+   
+        & disableOrModifyCloudFirewall
+            user info: "Adversaries may disable or modify a firewall within a cloud environment to bypass controls that limit access to cloud resources."
+            ->  os.computer.router.internalNetwork.c2Connected // modifying or disabling a cloud firewall may enable adversary C2 communications
+
         | emailAccount
             user info: "Adversaries may attempt to get a listing of email addresses and accounts."
             ->  emailAddressCollected
@@ -1413,6 +1424,35 @@ category Software {
             ->  windows.attemptSystemFirmware
 
         | impareDefenses
+            user info: "Adversaries may maliciously modify components of a victim environment in order to hinder or disable defensive mechanisms."
+            ->  disableOrModifyTools,
+                disableOrModifySystemFirewall,
+                attemptIndicatorBlocking,
+                service.cloudService.disableOrModifyCloudFirewall,
+                windows.disableWindowsEventLogging,
+                linux.hISTCONTROL,
+                macOS.hISTCONTROL
+
+        & disableOrModifyTools
+            user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
+            ->  bypassAntivirus,
+                bypassFileMonitoring,
+                bypassHostIntrusionPrevention,
+                bypassLogAnalysis,
+                bypassSignatureBasedDetection
+
+        & disableOrModifySystemFirewall
+            user info: "Adversaries may disable or modify system firewalls in order to bypass controls limiting network usage."
+            ->  computer.router.firewall.bypassFirewall,
+                computer.router.internalNetwork.c2Connected // modifying or disabling a system firewall may enable adversary C2 communications
+
+        | attemptIndicatorBlocking @hidden
+            ->  indicatorBlocking
+
+        & indicatorBlocking
+            user info: "An adversary may attempt to block indicators or events typically captured by sensors from being gathered and analyzed."
+            ->  bypassAntivirus,
+                bypassHostIntrusionPrevention
 
         | softwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
@@ -1837,9 +1877,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1022/"
             ->  credentialsInFiles,
                 disablingSecurityTools,
+                disableOrModifySystemFirewall,
                 indicatorRemovalOnHost,
-                linux.clearCommandHistory,
-                macOS.clearCommandHistory,
                 masquerading,
                 privateKeys,
                 runtimeDataManipulation,
@@ -1848,6 +1887,11 @@ category Software {
                 javaScriptOrJScript,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 computer.router.internalNetwork.networkSharedDrive.taintSharedContent
+
+        # restrictRegistryPermissions
+            user info: "https://attack.mitre.org/mitigations/M1024/"
+            ->  disablingSecurityTools,
+                disableOrModifySystemFirewall
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
             user info: "https://attack.mitre.org/mitigations/M1036/" 
@@ -1948,6 +1992,7 @@ category Software {
                 service.cloudService.createSnapshot,
                 service.cloudService.createCloudInstance,
                 service.cloudService.deleteCloudInstance,
+                service.cloudService.disableOrModifyCloudFirewall,
                 service.thirdpartySoftware.stealApplicationAccessToken,
                 service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
@@ -2248,6 +2293,10 @@ category Software {
                 computer.router.externalNetwork.bypassNetworkIntrusionDetection,
                 computer.router.internalNetwork.bypassNetworkIntrusionDetection     
 
+        & disableWindowsEventLogging
+            user info: "Adversaries may disable Windows event logging to limit data that can be leveraged for detections and audits."
+            ->  bypassLogAnalysis
+
         | attemptDLLSearchOrderHijacking @hidden
             ->  dLLSearchOrderHijacking 
 
@@ -2354,15 +2403,6 @@ category Software {
             user info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
             ->  bypassAutorunsAnalysis,
                 attemptProcessInjection
-
-        | attemptIndicatorBlocking @hidden
-            ->  indicatorBlocking
-
-        & indicatorBlocking
-            user info: "An adversary may attempt to block indicators or events typically captured by sensors from being gathered and analyzed."
-            ->  bypassAntivirus,
-                bypassLogAnalysis,
-                bypassHostIntrusionPrevention     
 
         | indirectCommandExecution
             user info: "Adversaries may abuse the Windows system features for Defense Evasion."
@@ -2519,6 +2559,7 @@ category Software {
             developer info: "The process takes a few seconds to complete, so the TTC has excluded. It would be [Exponential(28800)] if included. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/powershell/"  
             ->  computer.router.internalNetwork.remoteSystemsConnection,
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
+                attemptIndicatorBlocking, // tampering settings that control the collection and flow of event telemetry
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 persistence,
                 attemptHiddenWindow // make windows hidden
@@ -2782,7 +2823,8 @@ category Software {
             developer info: "TTC is upper bound of likely time needed. Sources used for probability distribution result: https://redcanary.com/threat-detection-report/techniques/windows-management-instrumentation/, https://www.fireeye.com/content/dam/fireeye-www/global/en/current-threats/pdfs/wp-windows-management-instrumentation.pdf, https://www.microsoft.com/security/blog/2017/06/27/new-ransomware-old-techniques-petya-adds-worm-capabilities/, https://securelist.com/olympicdestroyer-is-here-to-trick-the-industry/84295/"
             ->  systemInformationDiscovery, // extract information about the operating system
                 executeCode,
-                inhibitSystemRecovery
+                inhibitSystemRecovery,
+                attemptIndicatorBlocking // tampering settings that control the collection and flow of event telemetry
 
         | attemptWindowsManagementInstrumentationEventSubscription @hidden
             ->  windowsManagementInstrumentationEventSubscription
@@ -3107,7 +3149,6 @@ category Software {
             +>  controlPanelItems,
                 cOR_PROFILER,
                 dLLSideLoading,
-                indicatorBlocking,
                 bootOrLogonInitializationScripts,
                 logonScripts,
                 modifyRegistry,
@@ -3121,11 +3162,13 @@ category Software {
                 serviceExecution,
                 servicesRegistryPermissionsWeakness,
                 timeProviders,
+                disableWindowsEventLogging,
                 windowsFileAndDirectoryPermissionsModification
 
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
             user info: "https://attack.mitre.org/mitigations/M1024/"
-            ->  sIPAndTrustProviderHijacking,
+            +>  disableWindowsEventLogging,
+                sIPAndTrustProviderHijacking,
                 serviceStop,
                 serviceRegistryPermissionsWeakness,
                 timeProviders
@@ -3137,8 +3180,7 @@ category Software {
 
         # softwareConfiguration
             user info: "https://attack.mitre.org/mitigations/M1054/"
-            +>  indicatorBlocking,
-                officeApplicationStartup,
+            +>  officeApplicationStartup,
                 powerShellUserProfile,
                 powerShellAdminProfile,
                 dynamicDataExchange
@@ -3376,6 +3418,7 @@ category Software {
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
             +>  bash_profileAndBashrc,
+                clearCommandHistory,
                 sSHAuthorizedKeys,
                 sshHijacking,
                 sudoAndSudoCaching,
@@ -3714,6 +3757,7 @@ category Software {
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
             +>  bash_profileAndBashrc,
+                clearCommandHistory,
                 dylibHijacking,
                 logonScripts,
                 plistModification,
