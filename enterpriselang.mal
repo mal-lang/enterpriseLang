@@ -1799,7 +1799,8 @@ category Software {
             ->  attemptExfiltrationOverAternativeProtocol,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
-        & networkServiceScan
+        & networkServiceScan [Exponential(72)]
+            developer info: "Sources for distribution results: https://www.acunetix.com/blog/docs/how-long-does-a-scan-take-to-complete/#:~:text=The%20duration%20of%20a%20scan,between%202%20and%204%20hours."
             user info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
             ->  service.attemptExploitationOfRemoteServices
 
