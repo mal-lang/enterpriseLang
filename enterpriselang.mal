@@ -91,21 +91,22 @@ category Software {
                 os.systemShutdownOrReboot,
                 os.remoteFileCopy, 
                 os.windows.attemptBITSJobs,
-                os.windows.attemptBypassUserAccountControl,
+                os.windows.bypassUserAccessControl,
                 os.windows.changeDefaultFileAssociation,
                 os.windows.cmstp,
                 os.windows.compiledHTMLFile,
-                os.windows.attemptComponentObjectModelAndDistributedCOM,
+                os.windows.cOR_PROFILER,
                 os.windows.componentObjectModelHijacking,
                 os.windows.controlPanelItems,
                 os.windows.deobfuscateOrDecodeFilesOrInformation,
-                os.windows.attemptDLLSearchOrderHijacking,
+                os.windows.dLLSearchOrderHijacking,
                 os.windows.domainTrustDiscovery,
                 os.windows.dynamicDataExchange,
                 os.windows.mshta,
                 os.windows.attemptExecutionThroughAPI,
                 os.windows.attemptRemoteDesktopProtocol,
                 os.windows.emailCollection,
+                os.windows.executableInstallerFilePermissionsWeakness,
                 os.windows.executionThroughModuleLoad,
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
@@ -121,8 +122,8 @@ category Software {
                 os.windows.networkShareConnectionRemoval,
                 os.windows.networkShareDiscovery,
                 os.windows.officeApplicationStartup,
+                os.windows.pathInterceptionBySearchOrderHijacking,
                 os.windows.parentPIDSpoofing,
-                os.windows.pathInterception,
                 os.windows.peripheralDeviceDiscovery,
                 os.windows.powerShellUserProfile,
                 os.windows.processDoppelganging,
@@ -144,6 +145,8 @@ category Software {
                 os.windows.trustedDeveloperUtilities,
                 os.windows.attemptAccessTokenManipulation,
                 os.windows.securitySoftwareDiscovery,
+                os.windows.servicesFilePermissionsWeakness,
+                os.windows.servicesRegistryPermissionsWeakness,
                 os.windows.serviceStop,
                 os.windows.videoCapture,
                 os.windows.windowsManagementInstrumentation,
@@ -166,7 +169,6 @@ category Software {
                 os.macOS.attemptSSHAuthorizedKeys,
                 os.macOS.bash_profileAndBashrc,
                 os.macOS.attemptClearCommandHistory,
-                os.macOS.attemptDylibHijacking,
                 os.macOS.attemptElevatedExecutionWithPrompt,
                 os.macOS.gatekeeperBypassViaDriveByCompromise,
                 os.macOS.gatekeeperBypassViaHardwareAddition,
@@ -254,16 +256,18 @@ category Software {
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
                 os.windows.serviceStop,
                 os.windows.bITSJobs,
+                os.windows.cOR_PROFILER,
+                os.windows.executableInstallerFilePermissionsWeakness,
                 os.windows.fileSystemPermissionsWeakness,
                 os.windows.indicatorBlocking,
                 os.windows.scheduledTask,
                 os.windows.manInTheBrowser,
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
-                os.windows.pathInterception,
                 os.windows.accessTokenManipulation,
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduledTask,
+                os.windows.servicesFilePermissionsWeakness,
                 os.windows.sharedWebroot,
                 os.windows.shortcutModification,
                 os.windows.windowsService,
@@ -272,7 +276,6 @@ category Software {
                 os.windows.winlogonHelperDLL,
                 os.linux.localJobScheduling,
                 os.linux.systemdService,
-                os.macOS.dylibHijacking,
                 os.macOS.launchAgent,
                 os.macOS.launchctl,
                 os.macOS.launchDaemon,
@@ -395,11 +398,9 @@ category Software {
                 os.windows.authenticationPackage,
                 os.windows.attemptBITSJobs,
                 os.windows.bootkit,                                          
-                os.windows.attemptBypassUserAccountControl,
-                os.windows.attemptComponentObjectModelAndDistributedCOM,
                 os.windows.controlPanelItems,
                 os.windows.dCShadow,
-                os.windows.attemptDLLSearchOrderHijacking,
+                os.windows.distributedComponentObjectModel,
                 os.windows.attemptExecutionThroughAPI,
                 os.windows.exchangeEmailDelegatePermissions,
                 os.windows.extraWindowMemoryInjection,
@@ -417,7 +418,6 @@ category Software {
                 os.windows.officeApplicationStartup,
                 os.windows.parentPIDSpoofing,
                 os.windows.passwordFilterDLL,
-                os.windows.pathInterception,
                 os.windows.portMonitors,
                 os.windows.powerShell,
                 os.windows.powerShellAdminProfile,
@@ -924,7 +924,7 @@ category Software {
             user info: "Adversaries may circumvent mechanisms designed to control elevate privileges to gain higher-level permissions."
             ->  linux.attemptSetuidAndSetgid,
                 macOS.attemptSetuidAndSetgid,
-                windows.attemptBypassUserAccountControl,
+                windows.attemptBypassUserAccessControl,
                 linux.sudoAndSudoCaching,
                 macOS.sudoAndSudoCaching,
                 macOS.attemptElevatedExecutionWithPrompt
@@ -1276,6 +1276,15 @@ category Software {
 
         | hijackExecutionFlow
             user info: "Adversaries may execute their own malicious payloads by hijacking the way operating systems run programs."
+            ->  windows.attemptCOR_PROFILER,
+                windows.attemptDLLSearchOrderHijacking,
+                windows.dLLSideLoading,
+                windows.executableInstallerFilePermissionsWeakness,
+                windows.pathInterception,
+                windows.servicesFilePermissionsWeakness,
+                windows.servicesRegistryPermissionsWeakness,
+                macOS.dylibHijacking,
+                linux.lD_PRELOAD
 
         | indicatorRemovalFromTools
             user info: "An adversary may be able to modify the tool by removing the indicator that is no longer detected by the target's defensive systems."
@@ -1303,7 +1312,7 @@ category Software {
         | internalSpearphishing [Bernoulli(0.85)*Exponential(1)]
             developer info: "Sources for distribution results: https://er.educause.edu/articles/2005/1/fostering-email-security-awareness-the-west-point-carronade and other work on spearphishing." 
             user info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
-            ->  attemptUserExecution,
+            ->  computer.user.attemptUserExecution,
                 computer.os.service.thirdpartySoftware.applicationAccessToken,
                 computer.os.service.exploitationForClientExecution,
                 computer.os.windows.dynamicDataExchange,
@@ -1401,6 +1410,8 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
             ->  windows.attemptSystemFirmware
+
+        | impareDefenses
 
         | softwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
@@ -2065,9 +2076,8 @@ category Software {
             ->  windows.attemptAppCertDLLs,
                 windows.attemptBITSJobs,
                 windows.changeDefaultFileAssociation,
-                windows.attemptComponentObjectModelAndDistributedCOM,
+                windows.attemptDistributedComponentObjectModel,
                 windows.controlPanelItems,
-                windows.attemptDLLSearchOrderHijacking,
                 windows.attemptExecutionThroughAPI,
                 windows.extraWindowMemoryInjection,
                 windows.hooking,
@@ -2078,7 +2088,6 @@ category Software {
                 windows.modifyRegistry,
                 windows.netshHelperDLL,
                 windows.passwordFilterDLL,
-                windows.pathInterception,
                 windows.portMonitors,
                 windows.processDoppelganging,
                 windows.serverSoftwareComponent,
@@ -2166,21 +2175,28 @@ category Software {
         & cmstp
             user info: "Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
             developer info: "Binary probability distribution."
-            ->  attemptBypassUserAccountControl // leads to Bypass User Account Control attack          
+            ->  attemptBypassUserAccessControl // leads to Bypass User Account Control attack          
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
-            ->  attemptBypassUserAccountControl
+            ->  attemptBypassUserAccessControl
 
-        | attemptComponentObjectModelAndDistributedCOM @hidden [Exponential(96)]
+        | attemptComponentObjectModel @hidden
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
-            ->  componentObjectModelAndDistributedCOM
+            ->  componentObjectModel
 
-        & componentObjectModelAndDistributedCOM
+        & componentObjectModel [Exponential(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
-            ->  computer.router.internalNetwork.remoteCOMExecution,
-                dynamicDataExchange
+            ->  dynamicDataExchange,
+                executeCode
+
+        | attemptDistributedComponentObjectModel @hidden
+            ->  distributedComponentObjectModel
+
+        & distributedComponentObjectModel [Exponential(96)]
+            user info: "Adversaries may use Valid Accounts to interact with remote machines by taking advantage of Distributed Component Object Model (DCOM)."
+            ->  computer.router.internalNetwork.remoteCOMExecution
 
         & controlPanelItems [Bernoulli(0.00006)]
             user info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
@@ -2207,6 +2223,16 @@ category Software {
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation   
 
+        | attemptCOR_PROFILER @hidden
+            ->  cOR_PROFILER
+
+        & cOR_PROFILER
+            user info: "Adversaries may leverage the COR_PROFILER environment variable to hijack the execution flow of programs that load the .NET CLR."
+            ->  persistence,
+                attemptBypassUserAccessControl, // to elevate privileges 
+                attemptComponentObjectModel,
+                impareDefenses
+
         | dCShadow
             user info: "This technique may bypass system logging and security monitors such as security information and event management (SIEM) products."
             ->  attemptSIDHistoryInjection,
@@ -2226,7 +2252,7 @@ category Software {
             user info: "Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence."
             developer info: "TTC is extremely low (< 0.00001 seconds) and is excluded. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/dll-search-order-hijacking/. Sources for TTC (not used): http://blog.nsfocus.net/dridex-banking-malware-sample-technical-analysis-solution/, https://threatresearch.ext.hp.com/dridex-threat-analysis-july-2019-variant/"
             ->  bypassProcessWhitelisting,
-                attemptBypassUserAccountControl,
+                attemptBypassUserAccessControl,
                 userAccount.userRights,
                 attemptLSASS_Driver,
                 service.attemptExploitationForPrivilegeEscalation                   
@@ -2296,7 +2322,7 @@ category Software {
             ->  executeCode,
                 persistence,
                 attemptDLLSearchOrderHijacking,
-                attemptBypassUserAccountControl
+                attemptBypassUserAccessControl
 
         & forcedAuthentication
             user info: "Adversaries may take advantage of this behavior to gain access to user account hashes through forced SMB authentication."
@@ -2346,7 +2372,7 @@ category Software {
         & inputPrompt
             user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
             developer info: "Binary probability distribution."
-            ->  attemptBypassUserAccountControl, // leads to Bypass User Account Control attack
+            ->  attemptBypassUserAccessControl, // leads to Bypass User Account Control attack
                 powerShell, // leads to PowerShell attack
                 userAccount.userCredentials       
 
@@ -2357,6 +2383,11 @@ category Software {
                 bypassProcessWhitelisting,
                 signedBinaryProxyExecution,
                 signedScriptProxyExecution    
+
+        | interProcessCommunication
+            user info: "Adversaries may abuse inter-process communication (IPC) mechanisms for local code or command execution."
+            ->  attemptComponentObjectModel,
+                dynamicDataExchange
 
         & kerberoasting
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
@@ -2383,8 +2414,7 @@ category Software {
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.usenix.org/legacyurl/view-current-malware-behaviors, https://krisk.io/post/sok-attack-securecomm19.pdf, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc732643(v=ws.11)?redirectedfrom=MSDN"
             ->  persistence,
                 securitySupportProvider,
-                bypassHostForensicAnalysis,
-                attemptComponentObjectModelAndDistributedCOM
+                bypassHostForensicAnalysis
 
         | netshHelperDLL
             user info: "Adversaries can use netsh.exe with helper DLLs to proxy execution of arbitrary code in a persistent manner."
@@ -2432,14 +2462,6 @@ category Software {
             ->  attemptCredentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
                 computer.router.internalNetwork.c2Connexion // gain remote access 
 
-        & pathInterception [Bernoulli(0.0352)]
-            user info: "Adversaries may take advantage of performing path interception: unquoted paths, path environment variable misconfigurations, and search order hijacking."
-            developer info: "Sources used for distribution result: https://content.fireeye.com/m-trends/rpt-m-trends-2020, http://www.hexacorn.com/blog/2016/03/26/beyond-good-ol-run-key-part-37/"
-            ->  unquotedPaths,
-                persistence,
-                pathEnvironmentVariableMisconfiguration,
-                searchOrderHijacking
-
         | parentPIDSpoofing
             user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
             ->  bypassHostForensicAnalysis,
@@ -2448,9 +2470,39 @@ category Software {
                 service.attemptExploitationForPrivilegeEscalation,
                 attemptScripting
 
-        | pathEnvironmentVariableMisconfiguration 
-            user info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
-            ->  executeCode
+        & executableInstallerFilePermissionsWeakness
+            user info: "Adversaries may execute their own malicious payloads by hijacking the binaries used by an installer."
+            ->  attemptDLLSearchOrderHijacking,
+                attemptBypassUserAccessControl
+
+        & pathInterception [Bernoulli(0.0352)]
+            user info: "Adversaries may take advantage of performing path interception: unquoted paths, path environment variable misconfigurations, and search order hijacking."
+            developer info: "Sources used for distribution result: https://content.fireeye.com/m-trends/rpt-m-trends-2020, http://www.hexacorn.com/blog/2016/03/26/beyond-good-ol-run-key-part-37/"
+            ->  pathInterceptionByPATHEnvironmentVariable,
+                pathInterceptionBySearchOrderHijacking,
+                pathInterceptionByUnquotedPath
+
+        | pathInterceptionByPATHEnvironmentVariable
+            user info: "Adversaries may execute their own malicious payloads by hijacking environment variables used to load libraries."
+
+        & pathInterceptionBySearchOrderHijacking
+            user info: "Adversaries may execute their own malicious payloads by hijacking the search order used to load other programs."
+            ->  attemptDLLSearchOrderHijacking        
+
+        | pathInterceptionByUnquotedPath
+            user info: "Adversaries may execute their own malicious payloads by hijacking vulnerable file path references."
+            ->  executeCode,
+                persistence
+
+        & servicesFilePermissionsWeakness
+            user info: "Adversaries may execute their own malicious payloads by hijacking the binaries used by services."
+            ->  os.service.attemptExploitationForPrivilegeEscalation,
+                persistence
+
+        & servicesRegistryPermissionsWeakness
+            user info: "Adversaries may execute their own malicious payloads by hijacking the Registry entries used by services."
+            ->  os.service.attemptExploitationForPrivilegeEscalation,
+                persistence
 
         | attemptPowerShell @hidden
             user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
@@ -2838,10 +2890,10 @@ category Software {
             developer info: "Binary probability distribution."
             ->  virtualizationOrSandboxEvasion
 
-        | attemptBypassUserAccountControl @hidden
-            ->  bypassUserAccountControl
+        | attemptBypassUserAccessControl @hidden
+            ->  bypassUserAccessControl
 
-        & bypassUserAccountControl [Bernoulli(0.277)]
+        & bypassUserAccessControl [Bernoulli(0.277)]
             developer info: "TTC assumed instant. Sources for probability distribution: https://attack.mitre.org/software/S0129/, https://www.forcepoint.com/sites/default/files/resources/files/forcepoint-security-labs-monsoon-analysis-report.pdf, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6352, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx, https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://github.com/hfiref0x/UACME"
             ->  service.attemptExploitationForPrivilegeEscalation
        
@@ -2884,7 +2936,7 @@ category Software {
             ->  persistence, // use application shim databases for persistence
                 attemptProcessInjection,
                 hooking, // the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS
-                attemptBypassUserAccountControl // certain shims can be used to Bypass User Account Control (UAC)
+                attemptBypassUserAccessControl // certain shims can be used to Bypass User Account Control (UAC)
 
         & authenticationPackage
             user info: "Adversaries can use Windows Authentication Packages for persistence for persistence."
@@ -2934,24 +2986,28 @@ category Software {
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             +>  powerShell,
                 softwarePacking,
-                templateInjection
+                templateInjection,
+                componentObjectModel
 
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             user info: "https://attack.mitre.org/mitigations/M1048/"
-            +>  componentObjectModelAndDistributedCOM,
+            +>  distributedComponentObjectModel,
+                componentObjectModel,
                 dynamicDataExchange
 
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
             +>  domainTrustDiscovery,
-                bypassUserAccountControl,
+                bypassUserAccessControl,
                 dLLSearchOrderHijacking,
                 dLLSideLoading,
                 emailForwardingRule,
+                executableInstallerFilePermissionsWeakness,
                 fileSystemPermissionsWeakness,
                 pathInterception,
                 remoteDesktopProtocol,
                 serverSoftwareComponent,
+                servicesFilePermissionsWeakness,
                 scheduledTask,
                 windowsService
 
@@ -2979,6 +3035,7 @@ category Software {
                 cmstp,
                 controlPanelItems,
                 compiledHTMLFile,
+                cOR_PROFILER,
                 dLLSearchOrderHijacking,
                 executionThroughAPI,
                 executionThroughModuleLoad,
@@ -2987,7 +3044,7 @@ category Software {
                 networkShareDiscovery,
                 pathInterception,
                 queryRegistry,
-                regsvcsOrRegasm, 
+                regsvcsOrRegasm,
                 screensaver,
                 signedBinaryProxyExecution,
                 signedScriptProxyExecution,
@@ -3034,8 +3091,9 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
-                bypassUserAccountControl,
-                componentObjectModelAndDistributedCOM,
+                bypassUserAccessControl,
+                componentObjectModel,
+                distributedComponentObjectModel,
                 passTheHash,
                 scheduledTask,
                 windowsFileAndDirectoryPermissionsModification
@@ -3043,6 +3101,7 @@ category Software {
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
             +>  controlPanelItems,
+                cOR_PROFILER,
                 dLLSideLoading,
                 indicatorBlocking,
                 bootOrLogonInitializationScripts,
@@ -3056,6 +3115,7 @@ category Software {
                 sIPAndTrustProviderHijacking,
                 serviceStop,
                 serviceExecution,
+                servicesRegistryPermissionsWeakness,
                 timeProviders,
                 windowsFileAndDirectoryPermissionsModification
 
@@ -3093,7 +3153,7 @@ category Software {
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
             +>  cmstp,
-                componentObjectModelAndDistributedCOM,
+                distributedComponentObjectModel,
                 installUtil,
                 lLMNR_NBT_NS_PoisoningAndRelay,
                 mshta,
@@ -3119,15 +3179,17 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
                 applicationShimming,
-                bypassUserAccountControl,
+                bypassUserAccessControl,
                 officeApplicationStartup,
                 passTheHash
         
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
             +>  applicationShimming, 
-                bypassUserAccountControl,
+                bypassUserAccessControl,
+                executableInstallerFilePermissionsWeakness,
                 fileSystemPermissionsWeakness,
+                servicesFilePermissionsWeakness,
                 passTheHash
     }
 
@@ -3173,6 +3235,10 @@ category Software {
         & kernelModulesAndExtensions
             user info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
             ->  rootkit        
+
+        & lD_PRELOAD
+            user info: "Adversaries may execute their own malicious payloads by hijacking the dynamic linker used to load libraries."
+            ->  os.service.attemptExploitationForPrivilegeEscalation
 
         & localJobScheduling
             user info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence, to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
@@ -3271,7 +3337,8 @@ category Software {
 
         # executionPrevention
             +>  kernelModulesAndExtensions,
-                unixShell
+                unixShell,
+                lD_PRELOAD
 
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             user info: "https://attack.mitre.org/mitigations/M1039/"
@@ -3346,9 +3413,6 @@ category Software {
             user info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
-
-        | attemptDylibHijacking @hidden   
-            ->  dylibHijacking 
 
         & dylibHijacking [Bernoulli(0.16)] 
             user info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
@@ -3849,7 +3913,6 @@ category Network {
                 router.computer.os.exfiltrationOverAternativeProtocol,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
-                router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.domainTrustDiscovery,
                 router.computer.os.windows.serviceStop,
                 router.computer.os.windows.sharedWebroot,
@@ -4000,8 +4063,8 @@ category Network {
             ->  router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.nonStandardPort,
                 router.computer.os.service.externalRemoteServices,
-                router.computer.os.windows.componentObjectModelAndDistributedCOM,
                 router.computer.os.windows.remoteDesktopProtocol,
+                router.computer.os.windows.distributedComponentObjectModel,
                 router.computer.os.windows.windowsRemoteManagement
     }
 }
