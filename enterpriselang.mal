@@ -1875,7 +1875,8 @@ category Software {
         | attemptAutomatedCollection @hidden
             ->  automatedCollection
 
-        & automatedCollection
+        & automatedCollection [Bernoulli(0.892)*Exponential(9.952)]
+            developer info: "Sources for distribution results available in the ../entrepriselang_probabilities/automatedCollection.md file"
             user info: "Once established within a system or network, an adversary may use automated techniques for collecting internal data."
             ->  dataCollected, 
                 sensitiveDataCollected
@@ -3297,6 +3298,7 @@ category Software {
             ->  clearCommandHistory       
 
         & clearCommandHistory
+            developer info: "Binary probability distribution."
             user info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
@@ -3519,6 +3521,7 @@ category Software {
             ->  clearCommandHistory       
 
         & clearCommandHistory
+            developer info: "Binary probability distribution."
             user info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
