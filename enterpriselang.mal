@@ -16,7 +16,7 @@ category Person {
         & spearphishingAttachmentDownload [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
             ->  attemptUserExecution,
-                computer.os.windows.dynamicDataExchange
+                computer.os.windows.attemptDynamicDataExchange
 
         | attemptUserExecution @hidden
             ->  userAccount.userExecution
@@ -70,6 +70,8 @@ category Software {
                 os.inhibitSystemRecovery,
                 os.internalSpearphishing,
                 os.installRootCertificate,
+                os.lateralToolTransfer,
+                os.manInTheMiddle,
                 os.passwordGuessing,
                 os.passwordCracking,
                 os.passwordSpraying,
@@ -107,7 +109,7 @@ category Software {
                 os.windows.dynamicDataExchange,
                 os.windows.mshta,
                 os.windows.attemptExecutionThroughAPI,
-                os.windows.attemptRemoteDesktopProtocol,
+                os.windows.remoteDesktopProtocol,
                 os.windows.emailCollection,
                 os.windows.executableInstallerFilePermissionsWeakness,
                 os.windows.executionThroughModuleLoad,
@@ -152,6 +154,7 @@ category Software {
                 os.windows.servicesRegistryPermissionsWeakness,
                 os.windows.serviceStop,
                 os.windows.videoCapture,
+                os.windows.windowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsRemoteManagement,
                 os.windows.xslScriptProcessing,
@@ -212,7 +215,9 @@ category Software {
                 os.service.browser.driveByCompromise,
                 os.service.browser.installExtensions,
                 os.service.browser.stealWebSessionCookie,
+                os.computer.router.internalNetwork.transmittedDataManipulation,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
+                os.computer.router.externalNetwork.transmittedDataManipulation,
                 os.computer.router.externalNetwork.webService
 
         | userCredentials
@@ -255,7 +260,6 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1018/"     
             ->  os.disablingSecurityTools,
-                os.validAccounts,
                 os.credentialStuffing,
                 os.confluence,
                 os.disablingSecurityTools,
@@ -448,8 +452,8 @@ category Software {
                 os.windows.systemFirmware,
                 os.windows.systemServiceDiscovery,
                 os.windows.attemptTimeProviders,
-                os.windows.windowsAdminShares,
                 os.windows.disableWindowsEventLogging,
+                os.windows.attemptWindowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.attemptWindowsManagementInstrumentationEventSubscription,
                 os.windows.windowsRemoteManagement,
@@ -1045,7 +1049,7 @@ category Software {
             ->  storedDataManipulation,
                 service.transmittedDataManipulation,
                 computer.router.externalNetwork.attemptTransmittedDataManipulation,
-                computer.router.internalNetwork.transmittedDataManipulation,
+                computer.router.internalNetwork.attemptTransmittedDataManipulation,
                 runtimeDataManipulation
 
         | dataFromLocalSystem
@@ -1340,6 +1344,11 @@ category Software {
             user info: "Adversaries may log user keystrokes to intercept credentials as the user types them."
             ->  userAccount.userCredentials 
 
+        & lateralToolTransfer
+            user info: "Adversaries may transfer tools or other files between systems in a compromised environment."
+            ->  windows.attemptWindowsAdminShares, // copy files laterally between internal victim systems using inherent file sharing protocols
+                windows.attemptRemoteDesktopProtocol
+
         & webPortalCapture
             user info: "Adversaries may install code on externally facing portals, such as a VPN login page, to capture and transmit credentials of users who attempt to log into the service."
             ->  service.attemptExternalRemoteServices, // maintain network access
@@ -1355,8 +1364,15 @@ category Software {
             ->  computer.user.attemptUserExecution,
                 computer.os.service.thirdpartySoftware.applicationAccessToken,
                 computer.os.service.exploitationForClientExecution,
-                computer.os.windows.dynamicDataExchange,
+                computer.os.windows.attemptDynamicDataExchange,
                 inputCapture
+
+        & manInTheMiddle
+            user info: "Adversaries may attempt to position themselves between two or more networked devices using a man-in-the-middle (MiTM) technique to support follow-on behaviors such as Network Sniffing or Transmitted Data Manipulation."
+            ->  networkSniffing,
+                computer.router.internalNetwork.attemptTransmittedDataManipulation,
+                computer.router.externalNetwork.attemptTransmittedDataManipulation,
+                windows.attemptLLMNR_NBT_NS_PoisoningAndRelay
 
         & masquerading [Bernoulli(0.34)*Exponential(1)]
             user info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
@@ -1400,8 +1416,7 @@ category Software {
         & networkSniffing [Bernoulli(0.0044)*Exponential(144)]
             user info: "An adversary may place a network interface into promiscuous mode to passively access data in transit over the network, or use span ports to capture a larger amount of data."
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.vice.com/en_us/article/jpgmxp/how-to-go-from-0-to-sniffing-packets-in-10-minutes"
-            ->  userAccount.userCredentials,
-                windows.lLMNR_NBT_NS_PoisoningAndRelay
+            ->  userAccount.userCredentials
 
         & obfuscatedFilesOrInformation [Bernoulli(0.7395)]
             user info: "Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
@@ -1740,8 +1755,8 @@ category Software {
         & remoteFileCopy [Bernoulli(0.29)]
             user info: "Files may be copied from one system to another to stage adversary tools or other files over the course of an operation."
             developer info: "TTC is very low (10-20 seconds) and is excluded. Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/remote-file-copy/. For estimates on TTC please see remoteFileCopy.md in the Dropbox/MAL work/enterpriselang probability findings/folder."
-            ->  windows.windowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
-                windows.remoteDesktopProtocol,
+            ->  windows.attemptWindowsAdminShares, // Adversaries may also copy files laterally between internal victim systems to support Lateral Movement with remote Execution using inherent file sharing protocols such as file sharing over SMB to connected network shares or with authenticated connections with Windows Admin Shares or Remote Desktop Protocol.
+                windows.attemptRemoteDesktopProtocol,
                 computer.user.attemptUserExecution, // leads to file execution attacks
                 attemptAutomatedCollection // combined with Remote File Copy attack
         
@@ -1819,7 +1834,7 @@ category Software {
             ->  attemptValidAccounts,
                 attemptCredentialDumping,
                 inhibitSystemRecovery,
-                windows.windowsAdminShares
+                windows.attemptWindowsAdminShares
 
         & dataCompressed [Bernoulli(0.75)]
             developer info: "TTC assumed instant. For more info see enterpriselang probabilities/dataCompressed.md. Sources used for distribution: https://cloud.google.com/security/data-loss-prevention/preventing-data-exfiltration, https://targetedthreats.net/media/4-Glossary.pdf, https://www.wiley.com/en-se/The+Art+of+Memory+Forensics%3A+Detecting+Malware+and+Threats+in+Windows%2C+Linux%2C+and+Mac+Memory-p-9781118824993 pg. 560"
@@ -1961,7 +1976,6 @@ category Software {
                 passwordCracking,
                 passwordSpraying,
                 networkSniffing,
-                validAccounts,
                 service.browser.stealWebSessionCookie,
                 service.applicationDeploymentSoftware,
                 service.remoteServices,
@@ -1980,7 +1994,6 @@ category Software {
                 credentialStuffing,
                 credentialsInFiles,
                 credentialsInRegistry,
-                validAccounts,
                 privateKeys,
                 service.browser.credentialsFromWebBrowsers,
                 service.thirdpartySoftware.useThirdpartySoftware
@@ -2001,6 +2014,7 @@ category Software {
                 visualBasic,
                 communicationThroughRemovableMedia,
                 exfiltrationOverBluetooth,
+                manInTheMiddle,
                 runVirtualInstance,
                 service.exploitationOfRemoteServices,
                 service.externalRemoteServices,
@@ -2029,18 +2043,14 @@ category Software {
                 service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
-                python,
-                validAccounts 
+                python
 
         # filterNetworkTraffic [Bernoulli(0.8217)]
             developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"
-            ->  dNS,
-                validAccounts
 
         # applicationDeveloperGuidance
             user info: "https://attack.mitre.org/mitigations/M1013/"
-            ->  validAccounts
 
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/" 
@@ -2095,7 +2105,6 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  credentialsInRegistry,
-                validAccounts,
                 webPortalCapture,
                 service.implantContainerImage,
                 service.cloudService.additionalAzureServicePrincipalCredentials,
@@ -2275,8 +2284,7 @@ category Software {
 
         & componentObjectModel [Exponential(96)]
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
-            ->  dynamicDataExchange,
-                executeCode
+            ->  executeCode
 
         | attemptDistributedComponentObjectModel @hidden
             ->  distributedComponentObjectModel
@@ -2423,7 +2431,7 @@ category Software {
         & forcedAuthentication
             user info: "Adversaries may take advantage of this behavior to gain access to user account hashes through forced SMB authentication."
             ->  templateInjection,
-                collectHashInformation 
+                bruteForce
 
         & groupPolicyModification
             user info: "Malicious GPO modifications can be used to implement Scheduled Task, Disabling Security Tools, Remote File Copy, Create Account, Service Execution and more."
@@ -2479,7 +2487,7 @@ category Software {
         | interProcessCommunication
             user info: "Adversaries may abuse inter-process communication (IPC) mechanisms for local code or command execution."
             ->  attemptComponentObjectModel,
-                dynamicDataExchange
+                attemptDynamicDataExchange
 
         & kerberoasting
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
@@ -2488,9 +2496,13 @@ category Software {
                 service.attemptExploitationForPrivilegeEscalation,
                 attemptValidAccounts
 
+        | attemptLLMNR_NBT_NS_PoisoningAndRelay @hidden
+            ->  lLMNR_NBT_NS_PoisoningAndRelay
+
         & lLMNR_NBT_NS_PoisoningAndRelay
             user info: "AAdversaries can spoof an authoritative source for name resolution on a victim network by responding to LLMNR (UDP 5355)/NBT-NS (UDP 137) traffic. The adversary can then collect the hash information sent over the wire through tools that monitor the ports for traffic or through Network Sniffing and crack the hashes offline through Brute Force to obtain the plaintext passwords."
-            ->  collectHashInformation
+            ->  networkSniffing,
+                bruteForce
 
         & lSASS_Driver
             user info: "Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations."
@@ -2760,7 +2772,7 @@ category Software {
             user info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
             ->  persistence,
                 service.attemptRemoteServices, // leads to Remote Services attack
-                windowsAdminShares, // leads to Windows Admin Shares attack    
+                attemptWindowsAdminShares, // leads to Windows Admin Shares attack    
                 windowsRemoteManagement // leads to Windows Remote Management attack          
 
         & signedBinaryProxyExecution
@@ -2858,6 +2870,9 @@ category Software {
             user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
             ->  attemptScheduledTask         
 
+        | attemptWindowsAdminShares @hidden
+            ->  windowsAdminShares
+
         & windowsAdminShares [Bernoulli(0.28)*Exponential(4114)]
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/windows-admin-shares/, https://www.contextis.com/us/blog/lateral-movement-a-deep-look-into-psexec"
             ->  networkShareConnectionRemoval, // leads to Network Share Connection Removal attack
@@ -2898,9 +2913,12 @@ category Software {
             ->  registryKeysEnabled
 
         & registryKeysEnabled
-            ->  dynamicDataExchange
+            ->  attemptDynamicDataExchange
 
-        | dynamicDataExchange [Bernoulli(0.93)*Exponential(1)]
+        | attemptDynamicDataExchange @hidden
+            ->  dynamicDataExchange 
+
+        & dynamicDataExchange [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources for distribution results : https://www.fortinet.com/blog/threat-research/cybercriminals-exploiting-microsoft-s-vulnerable-dynamic-data-exchange-protocol"
             user info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
             ->  commandLineInterface,
@@ -3076,8 +3094,7 @@ category Software {
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             +>  powerShell,
                 softwarePacking,
-                templateInjection,
-                componentObjectModel
+                templateInjection
 
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             user info: "https://attack.mitre.org/mitigations/M1048/"
@@ -3897,6 +3914,9 @@ category Network {
 
         | bypassProxies
 
+        | attemptTransmittedDataManipulation @hidden
+            ->  transmittedDataManipulation
+
         & transmittedDataManipulation {I} [Exponential(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
@@ -3975,6 +3995,9 @@ category Network {
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.endpointDenialOfService,
+                router.computer.os.lateralToolTransfer,
+                router.computer.os.manInTheMiddle,
+                router.computer.os.dNS,
                 router.computer.os.multiHopProxy,
                 router.computer.os.networkDenialOfService,
                 router.computer.os.exfiltrationOverAternativeProtocol,
@@ -3982,8 +4005,10 @@ category Network {
 
         # limitAccessToResourceOverNetwork
             user info: "https://attack.mitre.org/mitigations/M1035/"   
-            ->  router.computer.os.windows.remoteDesktopProtocol,
+            ->  router.computer.os.manInTheMiddle,
+                router.computer.os.windows.remoteDesktopProtocol,
                 router.computer.os.windows.sharedWebroot,
+                router.computer.os.windows.windowsAdminShares,
                 router.computer.hardwareAddition.hardwareAdditions,
                 router.computer.os.service.externalRemoteServices
 
@@ -4016,6 +4041,8 @@ category Network {
                 router.computer.os.standardEncoding,
                 router.computer.os.nonStandardEncoding,
                 router.computer.os.fallbackChannels,
+                router.computer.os.lateralToolTransfer,
+                router.computer.os.manInTheMiddle,
                 router.computer.os.multilayerEncryption,
                 router.computer.os.multiStageChannels,
                 router.computer.os.networkServiceScan,
@@ -4024,13 +4051,15 @@ category Network {
                 router.computer.os.standardCryptographicProtocol,
                 router.computer.os.applicationLayerProtocol,
                 router.computer.os.nonStandardPort,
-                router.computer.os.windows.templateInjection
+                router.computer.os.windows.templateInjection,
+                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndRelay
 
         # networkSegmentation
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  remoteAccess,
                 router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.commonlyUsedPortsConnection,
+                router.computer.os.manInTheMiddle,
                 router.computer.os.nonStandardPort,
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.domainAccount,
@@ -4038,6 +4067,7 @@ category Network {
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.windows.domainTrustDiscovery,
+                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
                 router.computer.os.windows.serviceStop,
                 router.computer.os.windows.sharedWebroot,
                 router.computer.os.service.exploitationOfRemoteServices,
