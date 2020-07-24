@@ -65,8 +65,8 @@ category Software {
                 os.fileAndDirectoryPermissionsModification,
                 os.graphicalUserInterface,
                 os.hiddenFileSystem,
-                os.runVirtualInstance,
                 os.hiddenFilesAndDirectories,
+                os.indicatorRemovalOnHost,
                 os.inhibitSystemRecovery,
                 os.internalSpearphishing,
                 os.installRootCertificate,
@@ -83,6 +83,7 @@ category Software {
                 os.remoteSystemDiscovery,
                 os.resourceHijacking,
                 os.rootkit,
+                os.runVirtualInstance,
                 os.attemptScripting,
                 os.softwareDiscovery,
                 os.systemInformationDiscovery,
@@ -91,6 +92,7 @@ category Software {
                 os.systemOwnerOrUserDiscovery,
                 os.systemShutdownOrReboot,
                 os.remoteFileCopy, 
+                os.timestomp,
                 os.windows.attemptBITSJobs,
                 os.windows.bypassUserAccessControl,
                 os.windows.changeDefaultFileAssociation,
@@ -111,6 +113,7 @@ category Software {
                 os.windows.executionThroughModuleLoad,
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
+                os.windows.gUIInputCapture,
                 os.windows.groupPolicyModification,
                 os.windows.hiddenWindow,
                 os.windows.indirectCommandExecution,
@@ -142,7 +145,6 @@ category Software {
                 os.windows.systemServiceDiscovery,
                 os.windows.attemptTaintSharedContent,
                 os.windows.templateInjection,
-                os.windows.timestomp,
                 os.windows.trustedDeveloperUtilities,
                 os.windows.attemptAccessTokenManipulation,
                 os.windows.securitySoftwareDiscovery,
@@ -154,7 +156,7 @@ category Software {
                 os.windows.windowsRemoteManagement,
                 os.windows.xslScriptProcessing,
                 os.linux.bash_profileAndBashrc,
-                os.linux.attemptClearCommandHistory,
+                os.linux.clearCommandHistory,
                 os.linux.hISTCONTROL,
                 os.linux.localJobScheduling,
                 os.linux.portKnocking,
@@ -164,15 +166,15 @@ category Software {
                 os.linux.sshHijacking,
                 os.linux.sudoAndSudoCaching,
                 os.linux.systemdService,
-                os.linux.timestomp,
                 os.linux.trap,
                 os.linux.attemptSSHAuthorizedKeys,
                 os.macOS.attemptSSHAuthorizedKeys,
                 os.macOS.bash_profileAndBashrc,
-                os.macOS.attemptClearCommandHistory,
+                os.macOS.clearCommandHistory,
                 os.macOS.attemptElevatedExecutionWithPrompt,
                 os.macOS.gatekeeperBypassViaDriveByCompromise,
                 os.macOS.gatekeeperBypassViaHardwareAddition,
+                os.macOS.gUIInputCapture,
                 os.macOS.hiddenWindow,
                 os.macOS.hISTCONTROL,
                 os.macOS.inputPrompt,
@@ -236,10 +238,12 @@ category Software {
                 os.credentialDumping,
                 os.credentialsInFiles,
                 os.twoFactorAuthenticationInterception, // remove smart cards when not in use
+                os.windows.gUIInputCapture,
                 os.windows.inputPrompt,
                 os.windows.manInTheBrowser,
                 os.windows.templateInjection,
                 os.macOS.inputPrompt, 
+                os.macOS.gUIInputCapture,
                 os.macOS.reopenedApplications,
                 os.macOS.plistModification,
                 os.service.browser.browserExtensions,
@@ -323,8 +327,7 @@ category Software {
                 os.fileAndDirectoryDiscovery,
                 os.firmwareCorruption, 
                 os.graphicalUserInterface,
-                os.inhibitSystemRecovery, 
-                os.inputCapture,
+                os.inhibitSystemRecovery,
                 os.installRootCertificate,
                 os.networkServiceScan,
                 os.networkSniffing,
@@ -397,14 +400,16 @@ category Software {
             user info: "WindowsAdmin account is equivalent to Unix Root account."
             +>  os.windows.accessibilityFeatures,
                 os.windows.attemptAccessTokenManipulation,
-                os.windows.serviceStop,
+                os.windows.attemptServiceStop,
                 os.windows.appCertDLLs,
                 os.windows.appInitDLLs,
                 os.windows.applicationShimming,
                 os.windows.authenticationPackage,
                 os.windows.attemptBITSJobs,
-                os.windows.bootkit,                                          
+                os.windows.bootkit,   
+                os.windows.clearWindowsEventLogs,
                 os.windows.controlPanelItems,
+                os.windows.credentialAPIHooking,
                 os.windows.dCShadow,
                 os.windows.distributedComponentObjectModel,
                 os.windows.attemptExecutionThroughAPI,
@@ -443,7 +448,6 @@ category Software {
                 os.windows.systemFirmware,
                 os.windows.systemServiceDiscovery,
                 os.windows.attemptTimeProviders,
-                os.windows.timestomp,
                 os.windows.windowsAdminShares,
                 os.windows.disableWindowsEventLogging,
                 os.windows.windowsManagementInstrumentation,
@@ -460,7 +464,6 @@ category Software {
             +>  os.linux.kernelModulesAndExtensions,
                 os.linux.serverSoftwareComponent,
                 os.linux.sshHijacking,
-                os.linux.timestomp,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
                 os.linux.securitydMemory,
@@ -1306,18 +1309,41 @@ category Software {
                 bypassLogAnalysis,
                 bypassAntivirus
 
-        & indicatorRemovalOnHost [Bernoulli(0.04)]
+        | indicatorRemovalOnHost [Bernoulli(0.04)]
             developer info: "Sources used for distribution result: Red Canary top 50 ATT&CK techniques (private google sheets document), https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://content.fireeye.com/m-trends/rpt-m-trends-2020, https://www.welivesecurity.com/wp-content/uploads/2017/02/Read-The-Manual.pdf, https://www.proofpoint.com/us/threat-insight/post/leviathan-espionage-actor-spearphishes-maritime-and-defense-targets"
-            user info: "Adversaries may delete or alter generated artifacts on a host system, including logs and potentially captured files such as quarantined malware."
-            ->  bypassHostIntrusionPrevention,
-                bypassLogAnalysis,
-                bypassAntivirus    
+            user info: "Adversaries may delete or alter generated artifacts on a host system, including logs or captured files such as quarantined malware." 
+            ->  fileDeletion,
+                timestomp,
+                windows.clearWindowsEventLogs,
+                windows.networkShareConnectionRemoval,
+                linux.clearLinuxSystemLogs,
+                linux.attemptClearCommandHistory,
+                macOS.clearMacSystemLogs,
+                macOS.attemptClearCommandHistory   
+
+        | timestomp [Bernoulli(0.0396)]
+            user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://github.com/jackson5sec/timestomp" 
+            ->  bypassHostForensicAnalysis,
+                masquerading // hide malware and tools
 
         | inputCapture [Bernoulli(0.071)]
             user info: "Adversaries can use methods of capturing user input for obtaining credentials for Valid Accounts and information Collection that include keylogging and user input field interception."
             developer info: "Sources used for distribution result: https://www.statista.com/statistics/271037/distribution-of-most-common-malware-file-types/, https://www.rsaconference.com/industry-topics/blog/do-malware-authors-dream-of-original-code, http://keyllama.com/KeyLlamaUSB.pdf"
-            ->  attemptValidAccounts,
-                userAccount.userCredentials 
+            ->  keylogging,
+                webPortalCapture,
+                windows.credentialAPIHooking,
+                windows.gUIInputCapture,
+                macOS.gUIInputCapture
+               
+        | keylogging
+            user info: "Adversaries may log user keystrokes to intercept credentials as the user types them."
+            ->  userAccount.userCredentials 
+
+        & webPortalCapture
+            user info: "Adversaries may install code on externally facing portals, such as a VPN login page, to capture and transmit credentials of users who attempt to log into the service."
+            ->  service.attemptExternalRemoteServices, // maintain network access
+                attemptValidAccounts
 
         & installRootCertificate
             user info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
@@ -1689,7 +1715,7 @@ category Software {
             ->  userAccount.userCredentials,
                 adminAccount.adminCredentials 
 
-        & fileDeletion [Bernoulli(0.1238)]
+        | fileDeletion [Bernoulli(0.1238)]
             user info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf, https://docs.microsoft.com/en-us/sysinternals/downloads/sdelete"
             ->  bypassHostForensicAnalysis
@@ -2055,7 +2081,6 @@ category Software {
                 detailedRemoteSystemDiscovery,
                 domainDiscovery,
                 domainFronting,
-                fileDeletion,
                 javaScriptOrJScript,
                 masquerading,
                 permissionGroupsDiscovery,
@@ -2071,6 +2096,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  credentialsInRegistry,
                 validAccounts,
+                webPortalCapture,
                 service.implantContainerImage,
                 service.cloudService.additionalAzureServicePrincipalCredentials,
                 service.cloudService.exchangeEmailDelegatePermissions,
@@ -2132,6 +2158,7 @@ category Software {
                 windows.changeDefaultFileAssociation,
                 windows.attemptDistributedComponentObjectModel,
                 windows.controlPanelItems,
+                windows.credentialAPIHooking,
                 windows.attemptExecutionThroughAPI,
                 windows.extraWindowMemoryInjection,
                 windows.hooking,
@@ -2150,9 +2177,8 @@ category Software {
                 windows.attemptSIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
                 windows.systemServiceDiscovery,
-                windows.serviceStop,
+                windows.attemptServiceStop,
                 windows.attemptTimeProviders,
-                windows.timestomp,
                 windows.attemptWindowsManagementInstrumentationEventSubscription,
                 windows.attemptWinlogonHelperDLL,
                 windows.os.accountAccessRemoval,
@@ -2165,12 +2191,12 @@ category Software {
                 windows.os.firmwareCorruption,
                 windows.os.graphicalUserInterface,
                 windows.os.inhibitSystemRecovery,
-                windows.os.inputCapture,
                 windows.os.networkSniffing,
                 windows.os.redundantAccess,
                 windows.os.rootkit,
                 windows.os.dataDestruction,
                 windows.os.systemShutdownOrReboot,
+                windows.os.timestomp,
                 windows.os.twoFactorAuthenticationInterception,
                 windows.os.service.thirdpartySoftware.attemptUseThirdpartySoftware
 
@@ -2225,6 +2251,13 @@ category Software {
         | networkLogonScripts
             user info: "Adversaries may use network logon scripts automatically executed at logon initialization to establish persistence."
             ->  computer.router.internalNetwork.persistence
+
+        & clearWindowsEventLogs
+            user info: "Adversaries may clear Windows Event Logs to hide the activity of an intrusion."
+            ->  attemptPowerShell, // these logs may be cleared through PowerShell
+                bypassAntivirus,
+                bypassHostIntrusionPrevention,
+                bypassLogAnalysis
 
         & cmstp
             user info: "Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
@@ -2286,6 +2319,10 @@ category Software {
                 attemptBypassUserAccessControl, // to elevate privileges 
                 attemptComponentObjectModel,
                 impareDefenses
+
+        | credentialAPIHooking
+            user info: "Adversaries may hook into Windows application programming interface (API) functions to collect user credentials."
+            ->  userAccount.userCredentials
 
         | dCShadow
             user info: "This technique may bypass system logging and security monitors such as security information and event management (SIEM) products."
@@ -2397,6 +2434,11 @@ category Software {
                 adminAccount.attemptCreateAccount,
                 bypassSystemAccessControls,
                 bypassFileSystemAccessControls
+
+        & gUIInputCapture
+            user info: "Adversaries may mimic common operating system GUI components to prompt users for credentials with a seemingly legitimate prompt."
+            ->  bypassUserAccessControl,
+                userAccount.userCredentials
 
         | attemptHiddenWindow @hidden
             ->  hiddenWindow
@@ -2898,11 +2940,6 @@ category Software {
         | systemShutdownOrReboot {A}
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."  
 
-        | timestomp [Bernoulli(0.0396)]
-            user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
-            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://github.com/jackson5sec/timestomp" 
-            ->  bypassHostForensicAnalysis
-
         & queryRegistry [Bernoulli(0.05226)]
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/software/S0075/, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc742028(v=ws.11), https://www.welivesecurity.com/wp-content/uploads/2020/05/ESET_Turla_ComRAT.pdf"
             user info: "The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
@@ -3153,7 +3190,8 @@ category Software {
 
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
-            +>  controlPanelItems,
+            +>  clearWindowsEventLogs,
+                controlPanelItems,
                 cOR_PROFILER,
                 dLLSideLoading,
                 bootOrLogonInitializationScripts,
@@ -3174,16 +3212,19 @@ category Software {
 
         # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
             user info: "https://attack.mitre.org/mitigations/M1024/"
-            +>  disableWindowsEventLogging,
-                sIPAndTrustProviderHijacking,
+            +>  sIPAndTrustProviderHijacking,
                 serviceStop,
                 serviceRegistryPermissionsWeakness,
                 timeProviders
 
-        # restrictLibraryLoading 
+        # restrictLibraryLoading
             user info: "https://attack.mitre.org/mitigations/M1044/"
             ->  dLLSearchOrderHijacking,
                 lSASS_Driver       
+
+        # remoteDataStorage 
+            user info: "https://attack.mitre.org/mitigations/M1029/"
+            +>  clearWindowsEventLogs
 
         # softwareConfiguration
             user info: "https://attack.mitre.org/mitigations/M1054/"
@@ -3201,7 +3242,8 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1041/"
             +>  localEmailCollection,
                 remoteEmailCollection,
-                emailForwardingRule
+                emailForwardingRule,
+                clearWindowsEventLogs
 
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
@@ -3259,6 +3301,9 @@ category Software {
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
 
+        & clearLinuxSystemLogs
+            user info: "Adversaries may clear system logs to hide evidence of an intrusion. macOS and Linux both keep track of system or user-initiated actions via system logs."
+
         | spaceAfterFileName [Exponential(1)]
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
@@ -3276,7 +3321,7 @@ category Software {
                 adminAccount.windowsAdmin.adminCredentials,
                 userAccount.userCredentials
 
-        & linuxFileAndDirectoryPermissionsModification 
+        & linuxFileAndDirectoryPermissionsModification
             developer info: "Binary probability distribution."
             user info: "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files."
             ->  bash_profileAndBashrc,
@@ -3350,11 +3395,6 @@ category Software {
             user info: "Adversaries have used systemd functionality to establish persistent access to victim systems by creating and/or modifying service unit files that cause systemd to execute malicious commands at recurring intervals, such as at system boot."
             ->  persistence
 
-        | timestomp [Bernoulli(0.0396)]
-            user info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
-            developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://github.com/jackson5sec/timestomp"
-            ->  bypassHostForensicAnalysis
-
         | trap [Exponential(0.1)]
             user info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
             developer info: "Arbitrary distribution. See trap.md file."
@@ -3389,6 +3429,10 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1042/"
             +>  sSHAuthorizedKeys,
                 sshHijacking
+
+        # encryptSensitiveInformation
+            user info: "https://attack.mitre.org/mitigations/M1041/"
+            +>  clearLinuxSystemLogs
 
         # executionPrevention
             +>  kernelModulesAndExtensions,
@@ -3428,11 +3472,16 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1022/"
             +>  bash_profileAndBashrc,
                 clearCommandHistory,
+                clearLinuxSystemLogs,
                 sSHAuthorizedKeys,
                 sshHijacking,
                 sudoAndSudoCaching,
                 systemdService,
                 linuxFileAndDirectoryPermissionsModification
+
+        # remoteDataStorage 
+            user info: "https://attack.mitre.org/mitigations/M1029/"
+            +>  clearLinuxSystemLogs
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -3458,6 +3507,9 @@ category Software {
             ->  attemptLogonScripts,
                 rc_common,
                 attemptStartupItems
+
+        & clearMacSystemLogs
+            user info: "Adversaries may clear system logs to hide evidence of an intrusion. macOS and Linux both keep track of system or user-initiated actions via system logs."
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
@@ -3494,7 +3546,7 @@ category Software {
             ->  persistence,
                 service.attemptExploitationForPrivilegeEscalation
 
-        & macFileAndDirectoryPermissionsModification 
+        & macFileAndDirectoryPermissionsModification
             developer info: "Binary probability distribution."
             user info: "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files."
             ->  bash_profileAndBashrc,
@@ -3520,6 +3572,10 @@ category Software {
             user info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won't set this flag. Additionally, other utilities or events like drive-by downloads don't necessarily set it either. This completely bypasses the built-in Gatekeeper check."
             ->  bypassApplicationWhitelisting,
                 bypassAntivirus 
+
+        & gUIInputCapture
+            user info: "Adversaries may mimic common operating system GUI components to prompt users for credentials with a seemingly legitimate prompt."
+            ->  userAccount.userCredentials
 
         & hiddenUsers
             user info: "By using the Create Account technique with a userID under 500 and enabling this property (setting it to Yes), an adversary can hide their user accounts much more easily."
@@ -3741,6 +3797,10 @@ category Software {
                 networkShareDiscovery,
                 unixShell
 
+        # encryptSensitiveInformation
+            user info: "https://attack.mitre.org/mitigations/M1041/"
+            +>  clearMacSystemLogs
+
         # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
             user info: "https://attack.mitre.org/mitigations/M1039/"
             ->  clearCommandHistory,
@@ -3769,6 +3829,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1022/"
             +>  bash_profileAndBashrc,
                 clearCommandHistory,
+                clearMacSystemLogs,
                 dylibHijacking,
                 logonScripts,
                 plistModification,
@@ -3777,6 +3838,10 @@ category Software {
                 startupItems,
                 sudoAndSudoCaching,
                 macFileAndDirectoryPermissionsModification
+
+        # remoteDataStorage 
+            user info: "https://attack.mitre.org/mitigations/M1029/"
+            +>  clearMacSystemLogs
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -4095,8 +4160,7 @@ category Network {
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.nonStandardPort,
                 router.computer.os.privateKeys,
-                router.computer.os.runtimeDataManipulation,
-                router.computer.os.windows.serviceStop         
+                router.computer.os.runtimeDataManipulation        
 
         # sSLOrTLSInspection
             user info: "https://attack.mitre.org/mitigations/M1020/"
