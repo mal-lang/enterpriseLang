@@ -128,7 +128,6 @@ category Software {
                 os.windows.modifyRegistry,
                 os.windows.networkShareConnectionRemoval,
                 os.windows.networkShareDiscovery,
-                os.windows.officeApplicationStartup,
                 os.windows.pathInterceptionBySearchOrderHijacking,
                 os.windows.parentPIDSpoofing,
                 os.windows.peripheralDeviceDiscovery,
@@ -212,6 +211,12 @@ category Software {
                 os.service.cloudService.cloudServiceDashboard,
                 os.service.cloudService.disableOrModifyCloudFirewall,
                 os.service.cloudService.modifyCloudComputeInfrastructure,
+                os.service.cloudService.officeTemplateMacros,
+                os.service.cloudService.officeTest,
+                os.service.cloudService.outlookForms,
+                os.service.cloudService.outlookHomePage,
+                os.service.cloudService.outlookRules,
+                os.service.cloudService.addIns,
                 os.service.thirdpartySoftware.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
                 os.service.browser.driveByCompromise,
@@ -441,7 +446,6 @@ category Software {
                 os.windows.modifyRegistry,
                 os.windows.netshHelperDLL,
                 os.windows.networkShareConnectionRemoval,
-                os.windows.officeApplicationStartup,
                 os.windows.parentPIDSpoofing,
                 os.windows.passwordFilterDLL,
                 os.windows.portMonitors,
@@ -672,10 +676,6 @@ category Software {
                 exploitMediumVulnerabilityPublicFacingApplication,
                 exploitLowVulnerabilityPublicFacingApplication
 
-        # applicationVetting
-            user info: "https://attack.mitre.org/mitigations/M1005/"       
-            ->  os.obfuscatedFilesOrInformation
-
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
             ->  transmittedDataManipulation
@@ -834,6 +834,30 @@ category Software {
         | applicationOrSystemExploitation {A}
             user info: "Adversaries may exploit software vulnerabilities that can cause an application or system to crash and deny availability to users."
 
+        & officeTemplateMacros
+            user info: "Adversaries may abuse Microsoft Office templates to obtain persistence on a compromised system."
+            ->  os.windows.persistence
+
+        & officeTest
+            user info: "Adversaries may abuse the Microsoft Office Office Test Registry key to obtain persistence on a compromised system."
+            ->  os.windows.persistence
+
+        & outlookForms
+            user info: "Adversaries may abuse Microsoft Outlook forms to obtain persistence on a compromised system."
+            ->  os.windows.persistence
+
+        & outlookHomePage
+            user info: "Adversaries may abuse Microsoft Outlook's Home Page feature to obtain persistence on a compromised system."
+            ->  os.windows.persistence
+
+        & outlookRules
+            user info: "Adversaries may abuse Microsoft Outlook rules to obtain persistence on a compromised system."
+            ->  os.windows.persistence
+
+        | addIns
+            user info: "Adversaries may abuse Microsoft Office add-ins to obtain persistence on a compromised system."
+            ->  os.windows.persistence
+            
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             ->  remoteEmailCollection
@@ -868,6 +892,12 @@ category Software {
             developer info: "Sources for distribution result: https://link.springer.com/book/10.1007/978-3-319-94376-3, https://attack.mitre.org/techniques/T1503/, https://www.proofpoint.com/us/threat-insight/post/new-vega-stealer-shines-brightly-targeted-campaign"
             ->  service.os.userAccount.userCredentials
  
+        | phishing
+            user info: "Adversaries may send phishing messages to elicit sensitive information and/or gain access to victim systems."
+            ->  attemptSpearphishingAttachment,
+                attemptSpearphishingLink,
+                service.attemptSpearphishingViaService
+
         | attemptSpearphishingLink @hidden      
             ->  spearphishingLink
 
@@ -1019,7 +1049,8 @@ category Software {
 
         | commandAndScriptingInterpreter
             user info: "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries."
-            ->  visualBasic,
+            ->  dataFromLocalSystem,
+                visualBasic,
                 python,
                 javaScriptOrJScript,
                 windows.windowsCommandShell,
@@ -1071,10 +1102,8 @@ category Software {
                 runtimeDataManipulation
 
         | dataFromLocalSystem
-            developer info: "Binary probability distribution. Distribution carried by Automated Collection."
             user info: "Adversaries may search local system sources, such as file systems or local databases, to find files of interest and sensitive data prior to Exfiltration."
-            ->  commandAndScriptingInterpreter,
-                attemptAutomatedCollection
+            ->  attemptAutomatedCollection
 
         | defacement
             user info: "Adversaries may modify visual content available internally or externally to an enterprise network."
@@ -1126,9 +1155,9 @@ category Software {
             user info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
             ->  computer.router.internalNetwork.c2Connected
 
-        | compileAfterDelivery     
+        & compileAfterDelivery     
             user info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
-            ->  service.browser.spearphishingAttachment,
+            ->  service.browser.phishing, // source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Phishing.
                 bypassStaticFileAnalysis,
                 bypassBinaryAnalysis,
                 bypassAntivirus,
@@ -1487,17 +1516,19 @@ category Software {
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.vice.com/en_us/article/jpgmxp/how-to-go-from-0-to-sniffing-packets-in-10-minutes"
             ->  userAccount.userCredentials
 
-        & obfuscatedFilesOrInformation [Bernoulli(0.7395)]
+        | obfuscatedFilesOrInformation [Bernoulli(0.7395)]
             user info: "Adversaries may use Obfuscated Files or Information to hide artifacts of an intrusion from analysis."     
             developer info: "TTC assumed instant. Sources for distribution result: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf, https://nakedsecurity.sophos.com/2010/07/27/large-piece-malware/"
-            ->  windows.deobfuscateOrDecodeFilesOrInformation, // leads to Deobfuscate/Decode Files or Information attack
-                bypassHostForensicAnalysis,
-                bypassSignatureBasedDetection,
-                bypassHostIntrusionPrevention,
-                bypassApplicationWhitelisting,
-                bypassProcessWhitelisting,
-                bypassLogAnalysis,
-                bypassFileOrPathWhitelisting      
+            ->  attemptBinaryPadding,
+                windows.attemptSoftwarePacking,
+                macOS.attemptSoftwarePacking,
+                steganography,
+                compileAfterDelivery,
+                indicatorRemovalFromTools   
+
+        | steganography
+            user info: "Adversaries may use steganographic techniques to hide command and control traffic to make detection efforts more difficult."
+            ->  computer.router.internalNetwork.bypassNetworkIntrusionDetection
 
         & privateKeys
             user info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
@@ -1954,7 +1985,7 @@ category Software {
             user info: "Adversaries may leverage Confluence repositories to mine valuable information."
             ->  service.informationRepositories
    
-        & sharepoint [Bernoulli(0.71)]
+        & sharepoint [Exponential(9.952)]
             developer info: "Sources for distribution results: https://www.atlassian.com/customers and automatedCollection.md results"
             user info: "Adversaries may leverage the SharePoint repository as a source to mine valuable information."
             ->  service.informationRepositories
@@ -1988,7 +2019,6 @@ category Software {
             ->  antivirusCheck,
                 visualBasic,
                 python,
-                obfuscatedFilesOrInformation,
                 service.browser.spearphishingAttachment,
                 service.browser.spearphishingLink,
                 service.spearphishingViaService   
@@ -2664,9 +2694,14 @@ category Software {
                 bypassHostForensicAnalysis,
                 bypassAntivirus
 
-        & officeApplicationStartup
+        | officeApplicationStartup
             user info: "There are multiple mechanisms that can be used with Office for persistence when an Office-based application is started."
-            ->  persistence  
+            ->  service.cloudService.officeTemplateMacros,
+                service.cloudService.officeTest,
+                service.cloudService.outlookForms,
+                service.cloudService.outlookHomePage,
+                service.cloudService.outlookRules,
+                service.cloudService.addIns
 
         | attemptPasswordFilterDLL @hidden
             ->  passwordFilterDLL    
@@ -3397,10 +3432,10 @@ category Software {
 
         # softwareConfiguration
             user info: "https://attack.mitre.org/mitigations/M1054/"
-            +>  officeApplicationStartup,
-                powerShellUserProfile,
+            +>  powerShellUserProfile,
                 powerShellAdminProfile,
-                dynamicDataExchange
+                dynamicDataExchange,
+                service.cloudService.officeTest
 
         # bootIntegrity 
             user info: "https://attack.mitre.org/mitigations/M1046/"
@@ -3422,7 +3457,6 @@ category Software {
                 installUtil,
                 lLMNR_NBT_NS_PoisoningAndRelay,
                 mshta,
-                officeApplicationStartup,
                 powerShell,
                 registryKeysEnabled,
                 regsvcsOrRegasm,
@@ -3432,7 +3466,8 @@ category Software {
                 templateInjection,
                 trustedDeveloperUtilities,
                 windowsRemoteManagement,
-                dynamicDataExchange
+                dynamicDataExchange,
+                service.cloudService.officeTemplateMacros
 
         # filterNetworkTraffic [Bernoulli(0.8217)] // Use host-based security software to block LLMNR/NetBIOS traffic.
             developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
@@ -3445,8 +3480,10 @@ category Software {
             +>  appInitDLLs,
                 applicationShimming,
                 bypassUserAccessControl,
-                officeApplicationStartup,
-                passTheHash
+                passTheHash,
+                service.cloudService.outlookForms,
+                service.cloudService.outlookHomePage,
+                service.cloudService.outlookRules
         
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -3896,6 +3933,17 @@ category Software {
             ->  service.attemptExploitationForPrivilegeEscalation,
                 persistence
 
+        | attemptSoftwarePacking @hidden
+            ->  softwarePacking
+
+        & softwarePacking [TruncatedNormal(0.56784,0.25219)]
+            user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
+            developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf, https://www.researchgate.net/publication/301902892_Entropy_analysis_to_classify_unknown_packing_algorithms_for_malware_detection, https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://www.lastline.com/labsblog/malware-packing/, www.blackhat.com/presentations/bh-usa-06/BH-US-06-Morgenstern.pdf"
+            ->  indicatorRemovalFromTools,
+                bypassSignatureBasedDetection,
+                bypassAntivirus,
+                bypassHeuristicDetection 
+
         | source
             developer info: "Binary probability distribution."
             ->  executeCode
@@ -3971,7 +4019,8 @@ category Software {
         # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
-            +>  kernelModulesAndExtensions
+            +>  kernelModulesAndExtensions,
+                softwarePacking
 
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
@@ -4067,11 +4116,6 @@ category Network {
     asset InternalNetwork {
         | obfuscateNetworkTraffic
 
-        # sSLOrTLSInspection
-            user info: "https://attack.mitre.org/mitigations/M1020/"
-            ->  obfuscateNetworkTraffic,
-                router.computer.os.standardCryptographicProtocol
-
         & applicationLayerConnexion
             ->  c2Connexion,
                 bypassNetworkIntrusionDetection,
@@ -4157,16 +4201,12 @@ category Network {
             user info: "This encompasses many methods, such as adding junk data to protocol traffic, using steganography, commingling legitimate traffic with C2 communications traffic, or using a non-standard data encoding system."
             developer info: "TTC instant/not applicable. sources used for probability distribution: https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://books.google.se/books?id=tHK6CAAAQBAJ&pg=PA175&lpg=PA175&dq=percent+of+malware+using+obfuscation&source=bl&ots=uAffxqpZX2&sig=ACfU3U2kkIrqzLLQ8ipOR2RwkRPzc8Jp1A&hl=en&sa=X&ved=2ahUKEwio69vRhZrqAhVMEncKHYwLAwsQ6AEwC3oECGQQAQ#v=onepage&q=percent%20of%20malware%20using%20obfuscation&f=false"
             ->  junkData,
-                steganography,
+                router.computer.os.steganography,
                 protocolImpersonation
 
         & junkData
             user info: "Adversaries may add junk data to protocols used for command and control to make detection more difficult."
             ->  bypassNetworkIntrusionDetection 
-
-        & steganography
-            user info: "Adversaries may use steganographic techniques to hide command and control traffic to make detection efforts more difficult."
-            ->  bypassNetworkIntrusionDetection
 
         & protocolImpersonation     
             user info: "Adversaries may impersonate legitimate protocols or web service traffic to disguise command and control activity and thwart analysis efforts."
@@ -4222,7 +4262,6 @@ category Network {
                 exfiltrationOverC2Channel,
                 generateDomainNames,
                 junkData,
-                steganography,
                 protocolImpersonation,
                 router.computer.os.service.browser.spearphishingAttachment,
                 router.computer.os.commonlyUsedPortsConnection,
@@ -4273,6 +4312,11 @@ category Network {
                 router.computer.os.service.cloudService.additionalAzureServicePrincipalCredentials,
                 router.computer.os.service.thirdpartySoftware.trustedRelationship,
                 router.computer.os.service.thirdpartySoftware.useThirdpartySoftware
+
+        # sSLOrTLSInspection
+            user info: "https://attack.mitre.org/mitigations/M1020/"
+            ->  obfuscateNetworkTraffic,
+                router.computer.os.standardCryptographicProtocol
 
         # vulnerabilityScanning [Bernoulli(0.653)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
             user info: "https://attack.mitre.org/mitigations/M1016/"
@@ -4497,8 +4541,7 @@ category Hardware {
     }
 
     asset RemovableMedia extends PeripheralDevice {
-        | dataFromRemovableMedia [Bernoulli(0.5352)*Exponential(6.47)]
-            developer info: "Sources for distribution results: See dataFromRemovableMedia.md file and automatedCollection.md "
+        | dataFromRemovableMedia
             ->  computer.os.sensitiveDataCollected
 
         | infectedMedia
