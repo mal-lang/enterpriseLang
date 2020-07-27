@@ -1064,6 +1064,7 @@ category Software {
                 runtimeDataManipulation
 
         | dataFromLocalSystem
+            developer info: "Binary probability distribution. Distribution carried by Automated Collection."
             user info: "Adversaries may search local system sources, such as file systems or local databases, to find files of interest and sensitive data prior to Exfiltration."
             ->  commandAndScriptingInterpreter,
                 attemptAutomatedCollection
@@ -1936,7 +1937,7 @@ category Software {
             user info: "Adversaries may leverage Confluence repositories to mine valuable information."
             ->  service.informationRepositories
    
-        & sharepoint [Exponential(9.952)]
+        & sharepoint [Bernoulli(0.71)]
             developer info: "Sources for distribution results: https://www.atlassian.com/customers and automatedCollection.md results"
             user info: "Adversaries may leverage the SharePoint repository as a source to mine valuable information."
             ->  service.informationRepositories
@@ -4409,7 +4410,8 @@ category Hardware {
     }
 
     asset RemovableMedia extends PeripheralDevice {
-        | dataFromRemovableMedia
+        | dataFromRemovableMedia [Bernoulli(0.5352)*Exponential(6.47)]
+            developer info: "Sources for distribution results: See dataFromRemovableMedia.md file and automatedCollection.md "
             ->  computer.os.sensitiveDataCollected
 
         | infectedMedia
