@@ -558,6 +558,7 @@ category Software {
 
         | informationRepositories
             ->  os.dataCollected
+                os.sensitiveDataCollected
 
         | remoteAccessSoftware [Bernoulli(0.0789)*Exponential(106.67)]
             developer info: "https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting/, https://www.proofpoint.com/us/threat-insight/post/proofpoint-q3-2019-threat-report-emotets-return-rats-reign-supreme-and-more, https://www.youtube.com/watch?v=RzVtc9i3mzs, https://www.youtube.com/watch?v=om3OJWpZDGU"
@@ -1924,16 +1925,19 @@ category Software {
             user info: "Adversaries may steal data by exfiltrating it over an un-encrypted network protocol other than that of the existing command and control channel."  
             ->  computer.router.internalNetwork.dataExfiltration
 
-        | dataFromInformationRepositories
+        | dataFromInformationRepositories [Exponential(9.952)]
+            developer info: "Sources for distribution results: See automatedCollection.md and dataFromInformationRepositories.md"
             user info: "Adversaries may leverage information repositories to mine valuable information."
             ->  confluence,
                 sharepoint
 
-        & confluence
+        & confluence [Bernoulli(0.74)]
+            developer info: "Sources for distribution results: https://www.quora.com/Whats-the-number-of-companies-actively-using-SharePoint-worldwide#:~:text=Microsoft%20is%20adding%20approximately%2020%2C000,on%20it%20for%20document%20management. and automatedCollection.md results"
             user info: "Adversaries may leverage Confluence repositories to mine valuable information."
             ->  service.informationRepositories
    
-        & sharepoint
+        & sharepoint [Exponential(9.952)]
+            developer info: "Sources for distribution results: https://www.atlassian.com/customers and automatedCollection.md results"
             user info: "Adversaries may leverage the SharePoint repository as a source to mine valuable information."
             ->  service.informationRepositories
 
