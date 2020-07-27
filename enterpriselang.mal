@@ -124,6 +124,7 @@ category Software {
                 os.windows.kerberoasting,
                 os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
                 os.windows.attemptLogonScripts,
+                os.windows.masqueradeTaskOrService,
                 os.windows.modifyRegistry,
                 os.windows.networkShareConnectionRemoval,
                 os.windows.networkShareDiscovery,
@@ -162,6 +163,7 @@ category Software {
                 os.linux.clearCommandHistory,
                 os.linux.hISTCONTROL,
                 os.linux.localJobScheduling,
+                os.linux.masqueradeTaskOrService,
                 os.linux.portKnocking,
                 os.linux.attemptSetuidAndSetgid,
                 os.linux.spaceAfterFileName,
@@ -174,7 +176,7 @@ category Software {
                 os.macOS.attemptSSHAuthorizedKeys,
                 os.macOS.bash_profileAndBashrc,
                 os.macOS.clearCommandHistory,
-                os.macOS.attemptElevatedExecutionWithPrompt,
+                os.macOS.elevatedExecutionWithPrompt,
                 os.macOS.gatekeeperBypassViaDriveByCompromise,
                 os.macOS.gatekeeperBypassViaHardwareAddition,
                 os.macOS.gUIInputCapture,
@@ -228,7 +230,9 @@ category Software {
 
         & userExecution
             developer info: "Binary probability relation."
-            ->  os.computer.infectedComputer,
+            ->  os.attemptMaliciousFile,
+                os.attemptMaliciousLink,
+                os.computer.infectedComputer,
                 os.computer.infectedWindowsComputer,
                 os.executeCode
 
@@ -416,6 +420,7 @@ category Software {
                 os.windows.credentialAPIHooking,
                 os.windows.dCShadow,
                 os.windows.distributedComponentObjectModel,
+                os.windows.domainControllerAuthentication,
                 os.windows.attemptExecutionThroughAPI,
                 os.windows.exchangeEmailDelegatePermissions,
                 os.windows.extraWindowMemoryInjection,
@@ -427,6 +432,7 @@ category Software {
                 os.windows.imageFileExecutionOptionsInjection,
                 os.windows.attemptLSASS_Driver,
                 os.windows.manInTheBrowser,
+                os.windows.masqueradeTaskOrService,
                 os.windows.modifyRegistry,
                 os.windows.netshHelperDLL,
                 os.windows.networkShareConnectionRemoval,
@@ -466,11 +472,14 @@ category Software {
         | adminRights
             user info: "Unix Root account is equivalent to WindowsAdmin account."
             +>  os.linux.kernelModulesAndExtensions,
+                os.linux.masqueradeTaskOrService,
                 os.linux.serverSoftwareComponent,
                 os.linux.sshHijacking,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
                 os.linux.securitydMemory,
+                os.linux.pluggableAuthenticationModules,
+                os.macOS.pluggableAuthenticationModules,
                 os.macOS.attemptElevatedExecutionWithPrompt,
                 os.macOS.emond,
                 os.macOS.keychain,
@@ -817,7 +826,8 @@ category Software {
         | applicationOrSystemExploitation {A}
             user info: "Adversaries may exploit software vulnerabilities that can cause an application or system to crash and deny availability to users."
 
-        # multiFactorAuthentication
+        # multiFactorAuthentication [Bernoulli(0.99325)]
+            developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             ->  remoteEmailCollection
 
         # audit
@@ -1367,6 +1377,18 @@ category Software {
                 computer.os.windows.attemptDynamicDataExchange,
                 inputCapture
 
+        | attemptMaliciousFile @hidden
+            ->  maliciousFile
+
+        & maliciousFile
+            user info: "An adversary may rely upon a user opening a malicious file in order to gain execution."
+
+        | attemptMaliciousLink @hidden
+            ->  maliciousLink
+
+        & maliciousLink
+            user info: "An adversary may rely upon a user clicking a malicious link in order to gain execution."
+
         & manInTheMiddle
             user info: "Adversaries may attempt to position themselves between two or more networked devices using a man-in-the-middle (MiTM) technique to support follow-on behaviors such as Network Sniffing or Transmitted Data Manipulation."
             ->  networkSniffing,
@@ -1374,11 +1396,39 @@ category Software {
                 computer.router.externalNetwork.attemptTransmittedDataManipulation,
                 windows.attemptLLMNR_NBT_NS_PoisoningAndRelay
 
-        & masquerading [Bernoulli(0.34)*Exponential(1)]
+        | masquerading [Bernoulli(0.34)*Exponential(1)]
             user info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
             developer info: "TTC is time until attack is over, which is time until masquerading file is discovered. Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/masquerading/, https://www.tripwire.com/state-of-security/security-data-protection/security-controls/file-integrity-monitoring/, https://www.cm-alliance.com/cybersecurity-blog/understanding-how-file-integrity-monitoring-works, https://en.wikipedia.org/wiki/System_File_Checker"
-            ->  bypassFileOrPathWhitelisting,
-                macOS.elevatedExecutionWithPrompt // combine with elevatedExecutionWithPrompt to trick the user into granting escalated privileges to malicious code
+            ->  matchLegitimateNameOrLocation,
+                rightToLeftOverride,
+                renameSystemUtilities,
+                windows.invalidCodeSignature,
+                windows.masqueradeTaskOrService,
+                linux.masqueradeTaskOrService,
+                linux.spaceAfterFileName,
+                macOS.invalidCodeSignature,        
+                macOS.attemptElevatedExecutionWithPrompt, // combine with elevatedExecutionWithPrompt to trick the user into granting escalated privileges to malicious code
+                linux.spaceAfterFileName
+
+        | modifyAuthenticationProcess
+            user info: "Adversaries may modify authentication mechanisms and processes to access user credentials or enable otherwise unwarranted access to accounts."
+            ->  windows.domainControllerAuthentication,
+                windows.attemptPasswordFilterDLL,
+                linux.pluggableAuthenticationModules,
+                macOS.pluggableAuthenticationModules
+
+        | rightToLeftOverride
+            user info: "Adversaries may use the right-to-left override (RTLO or RLO) character (U+202E) as a means of tricking a user into executing what they think is a benign file type but is actually executable code. A common use of this technique is with Spearphishing Attachment/Malicious File since it can trick both end users and defenders if they are not aware of how their tools display and render the RTLO character."
+            ->  service.browser.attemptSpearphishingAttachment, // employ various forms of Masquerading on the file to increase the likelihood that a user will open it
+                attemptMaliciousFile // employ various forms of Masquerading on the file to increase the likelihood that a user will open it
+
+        & renameSystemUtilities
+            user info: "Adversaries may rename legitimate system utilities to try to evade security mechanisms concerning the usage of those utilities."
+            ->  bypassFileMonitoring
+
+        & matchLegitimateNameOrLocation
+            user info: "Adversaries may match or approximate the name or location of legitimate files when naming/placing their files."
+            ->  bypassFileOrPathWhitelisting
 
         | attemptMultiHopProxy @hidden
             ->  multiHopProxy
@@ -1927,8 +1977,9 @@ category Software {
                 disablingSecurityTools,
                 disableOrModifySystemFirewall,
                 indicatorRemovalOnHost,
-                masquerading,
+                matchLegitimateNameOrLocation,
                 privateKeys,
+                renameSystemUtilities,
                 runtimeDataManipulation,
                 storedDataManipulation,
                 visualBasic,
@@ -2055,9 +2106,9 @@ category Software {
 
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/" 
-            ->  service.applicationDeploymentSoftware,
-                service.implantContainerImage,
-                masquerading    
+            ->  matchLegitimateNameOrLocation,
+                service.applicationDeploymentSoftware,
+                service.implantContainerImage
 
         # limitHardwareInstallation
             user info: "https://attack.mitre.org/mitigations/M1034/"
@@ -2093,7 +2144,7 @@ category Software {
                 domainDiscovery,
                 domainFronting,
                 javaScriptOrJScript,
-                masquerading,
+                matchLegitimateNameOrLocation,
                 permissionGroupsDiscovery,
                 python,
                 remoteSystemDiscovery,    
@@ -2176,9 +2227,10 @@ category Software {
                 windows.imageFileExecutionOptionsInjection,
                 windows.attemptLSASS_Driver,
                 windows.manInTheBrowser,
+                windows.masqueradeTaskOrService,
                 windows.modifyRegistry,
                 windows.netshHelperDLL,
-                windows.passwordFilterDLL,
+                windows.attemptPasswordFilterDLL,
                 windows.portMonitors,
                 windows.processDoppelganging,
                 windows.serverSoftwareComponent,
@@ -2367,6 +2419,9 @@ category Software {
                 bypassAntivirus,
                 attemptLSASS_Driver
 
+        & domainControllerAuthentication
+            user info: "Adversaries may patch the authentication process on a domain control to bypass the typical authentication mechanisms and enable access to accounts."
+
         | attemptLSASS_Driver @hidden [Bernoulli(0.5)*Exponential(0.1)]
             ->  lSASS_Driver
 
@@ -2490,6 +2545,9 @@ category Software {
             ->  attemptComponentObjectModel,
                 attemptDynamicDataExchange
 
+        & invalidCodeSignature
+            user info: "Adversaries may attempt to mimic features of valid code signatures to increase the chance of deceiving a user, analyst, or tool."
+
         & kerberoasting
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
             ->  bruteForce,
@@ -2513,6 +2571,10 @@ category Software {
         & manInTheBrowser
             user info: "Adversaries can take advantage of security vulnerabilities and inherent functionality in browser software to change content, modify behavior, and intercept information as part of various man in the browser techniques."
             ->  service.browser.driveByCompromise
+
+        | masqueradeTaskOrService
+            user info: "Adversaries may attempt to manipulate the name of a task or service to make it appear legitimate or benign."
+            ->  bypassHostIntrusionPrevention
 
         & modifyRegistry [Bernoulli(0.0661)]
             user info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution. An adversary may modify these Registry keys to add new SSPs."
@@ -2548,6 +2610,9 @@ category Software {
         & officeApplicationStartup
             user info: "There are multiple mechanisms that can be used with Office for persistence when an Office-based application is started."
             ->  persistence  
+
+        | attemptPasswordFilterDLL @hidden
+            ->  passwordFilterDLL    
 
         & passwordFilterDLL
             user info: "Adversaries can register malicious password filters to harvest credentials from local computers and/or entire domains."
@@ -3125,7 +3190,8 @@ category Software {
         
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
-            +>  powerShell,
+            +>  invalidCodeSignature,
+                powerShell,
                 powerShellUserProfile,
                 powerShellAdminProfile,
                 serverSoftwareComponent        
@@ -3175,6 +3241,11 @@ category Software {
             developer info: "Binary probability relation."
             +>  replicationThroughRemovableMedia
 
+        # multiFactorAuthentication [Bernoulli(0.99325)]
+            developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
+            user info: "https://attack.mitre.org/mitigations/M1032/" 
+            +>  domainControllerAuthentication
+
         # operatingSystemConfiguration
             user info: "https://attack.mitre.org/mitigations/M1028/" 
             +>  passwordFilterDLL,
@@ -3192,6 +3263,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1025/"
             ->  authenticationPackage,
                 credentialDumping,
+                domainControllerAuthentication,
                 lSASS_Driver,
                 securitySupportProvider 
 
@@ -3202,6 +3274,7 @@ category Software {
                 bypassUserAccessControl,
                 componentObjectModel,
                 distributedComponentObjectModel,
+                domainControllerAuthentication,
                 passTheHash,
                 scheduledTask,
                 windowsFileAndDirectoryPermissionsModification
@@ -3364,6 +3437,13 @@ category Software {
             ->  persistence,
                 adminAccount.rootAdmin.adminRights
 
+        | masqueradeTaskOrService
+            user info: "Adversaries may attempt to manipulate the name of a task or service to make it appear legitimate or benign."
+            ->  bypassHostIntrusionPrevention
+
+        & pluggableAuthenticationModules
+            user info: "Adversaries may modify pluggable authentication modules (PAM) to access user credentials or enable otherwise unwarranted access to accounts."
+
         & portKnocking
             user info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
             ->  bypassDefensiveNetworkServiceScanning
@@ -3467,6 +3547,11 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1033/"
             +>  systemdService
 
+        # multiFactorAuthentication [Bernoulli(0.99325)]
+            developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
+            user info: "https://attack.mitre.org/mitigations/M1032/"
+            +>  pluggableAuthenticationModules
+            
         # operatingSystemConfiguration
             user info: "https://attack.mitre.org/mitigations/M1028/" 
             +>  bashHistory,
@@ -3484,6 +3569,7 @@ category Software {
             +>  bootkit,
                 sshHijacking,
                 sudoAndSudoCaching,
+                pluggableAuthenticationModules,
                 processInjection,
                 linuxFileAndDirectoryPermissionsModification
 
@@ -3621,6 +3707,9 @@ category Software {
             user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
             ->  userAccount.userCredentials
 
+        & invalidCodeSignature
+            user info: "Adversaries may attempt to mimic features of valid code signatures to increase the chance of deceiving a user, analyst, or tool."
+
         & kernelModulesAndExtensions
             user info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
             ->  rootkit  
@@ -3687,6 +3776,9 @@ category Software {
                 executeCode,
                 service.attemptExploitationForPrivilegeEscalation,
                 persistence
+
+        & pluggableAuthenticationModules
+            user info: "Adversaries may modify pluggable authentication modules (PAM) to access user credentials or enable otherwise unwarranted access to accounts."
 
         & portKnocking
             user info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
@@ -3797,6 +3889,7 @@ category Software {
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  appleScript,
+                invalidCodeSignature,
                 lC_LOAD_DYLIB_Addition,
                 lC_MAINHijacking
 
@@ -3826,6 +3919,11 @@ category Software {
             ->  clearCommandHistory,
                 hISTCONTROL   
 
+        # multiFactorAuthentication [Bernoulli(0.99325)]
+            developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
+            user info: "https://attack.mitre.org/mitigations/M1032/"
+            +>  pluggableAuthenticationModules
+
         # operatingSystemConfiguration
             user info: "https://attack.mitre.org/mitigations/M1028/" 
             +>  bashHistory,
@@ -3843,7 +3941,8 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  sshHijacking,
-                macFileAndDirectoryPermissionsModification
+                macFileAndDirectoryPermissionsModification,
+                pluggableAuthenticationModules
 
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
