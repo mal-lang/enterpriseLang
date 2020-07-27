@@ -244,12 +244,16 @@ category Software {
             ->  os.service.browser.stealWebSessionCookie,
                 os.confluence,
                 os.sharepoint,
-                os.credentialDumping,
                 os.credentialsInFiles,
                 os.twoFactorAuthenticationInterception, // remove smart cards when not in use
+                os.windows.cachedDomainCredentials,
                 os.windows.gUIInputCapture,
                 os.windows.inputPrompt,
                 os.windows.manInTheBrowser,
+                os.windows.nTDS,
+                os.windows.lSASSMemory,
+                os.windows.lSASecrets,
+                os.windows.securityAccountManager,
                 os.windows.templateInjection,
                 os.macOS.inputPrompt, 
                 os.macOS.gUIInputCapture,
@@ -327,7 +331,7 @@ category Software {
                 os.credentialsFromPasswordStores,
                 os.dataDestruction,
                 os.attemptDataEncryptedForImpact,
-                os.attemptCredentialDumping,
+                os.oSCredentialDumping,
                 os.attemptCredentialsInFiles,
                 os.attemptCredentialsInRegistry,
                 os.processDiscovery,
@@ -369,8 +373,7 @@ category Software {
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  os.credentialDumping,
-                os.firmwareCorruption,
+            ->  os.firmwareCorruption,
                 os.localAccount,
                 os.domainAccount,
                 os.windows.modifyRegistry,
@@ -419,6 +422,7 @@ category Software {
                 os.windows.controlPanelItems,
                 os.windows.credentialAPIHooking,
                 os.windows.dCShadow,
+                os.windows.dCSync,
                 os.windows.distributedComponentObjectModel,
                 os.windows.domainControllerAuthentication,
                 os.windows.attemptExecutionThroughAPI,
@@ -430,7 +434,8 @@ category Software {
                 os.windows.hooking,
                 os.windows.hypervisor,
                 os.windows.imageFileExecutionOptionsInjection,
-                os.windows.attemptLSASS_Driver,
+                os.windows.lSASSDriver,
+                os.windows.lSASSMemory,
                 os.windows.manInTheBrowser,
                 os.windows.masqueradeTaskOrService,
                 os.windows.modifyRegistry,
@@ -471,7 +476,8 @@ category Software {
     asset Root extends AdminAccount {
         | adminRights
             user info: "Unix Root account is equivalent to WindowsAdmin account."
-            +>  os.linux.kernelModulesAndExtensions,
+            +>  os.linux._etc_passwdAND_etc_shadow,
+                os.linux.kernelModulesAndExtensions,
                 os.linux.masqueradeTaskOrService,
                 os.linux.serverSoftwareComponent,
                 os.linux.sshHijacking,
@@ -479,6 +485,7 @@ category Software {
                 os.linux.localJobScheduling,
                 os.linux.securitydMemory,
                 os.linux.pluggableAuthenticationModules,
+                os.linux.procFilesystem,
                 os.macOS.pluggableAuthenticationModules,
                 os.macOS.attemptElevatedExecutionWithPrompt,
                 os.macOS.emond,
@@ -557,7 +564,7 @@ category Software {
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
         | informationRepositories
-            ->  os.dataCollected
+            ->  os.dataCollected,
                 os.sensitiveDataCollected
 
         | remoteAccessSoftware [Bernoulli(0.0789)*Exponential(106.67)]
@@ -968,7 +975,7 @@ category Software {
                 windows.authenticationPackage,
                 windows.attemptTimeProviders,
                 windows.attemptWinlogonHelperDLL,
-                windows.attemptLSASS_Driver,
+                windows.attemptLSASSDriver,
                 windows.attemptShortcutModification,
                 windows.securitySupportProvider,
                 windows.portMonitors,
@@ -1128,14 +1135,17 @@ category Software {
                 bypassHostIntrusionPrevention,
                 bypassSignatureBasedDetection
 
-        | attemptCredentialDumping @hidden
-            ->  credentialDumping,
-                systemOwnerOrUserDiscovery
-
-        & credentialDumping [Bernoulli(0.08785)]
+        | oSCredentialDumping [Bernoulli(0.08785)]
             user info: "Credential dumping is the process of obtaining account login and password information, normally in the form of a hash or a clear text password, from the operating system and software."
             developer info: "Sources for distribution result: https://www.picussecurity.com/picus-10-critical-mitre-attck-techniques, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf, https://redcanary.com/threat-detection-report/techniques/credential-dumping/, https://github.com/gentilkiwi/mimikatz" 
-            ->  collectHashInformation
+            ->  windows.attemptLSASSMemory,
+                windows.securityAccountManager,
+                windows.nTDS,
+                windows.lSASecrets,
+                windows.cachedDomainCredentials,
+                windows.dCSync,
+                linux.procFilesystem,
+                linux._etc_passwdAND_etc_shadow
 
         | attemptCredentialsInFiles @hidden
             ->  credentialsInFiles
@@ -1456,12 +1466,19 @@ category Software {
             ->  computer.router.internalNetwork.c2Connected,
                 fallbackChannels
 
-        | attemptNetworkDenialOfService @hidden {A}
-            ->  networkDenialOfService
-
-        & networkDenialOfService {A} [Bernoulli(0.4863)*Exponential(6.6)]
+        | networkDenialOfService {A} [Bernoulli(0.4863)*Exponential(6.6)]
             user info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
             developer info: "Sources used for probability distribution: https://www.netscout.com/news/press-release/complexity-ddos-attacks, https://securelist.com/ddos-attacks-in-q4-2018/89565/, European Application and Network Security Report 2016-17, https://www.globaldots.com/ddos-distributed-denial-of-service-explained"
+            ->  directNetworkFlood,
+                reflectionAmplification
+
+        & directNetworkFlood {A} 
+            user info: "Adversaries may attempt to cause a denial of service (DoS) by directly sending a high-volume of network traffic to a target."
+            ->  applicationExhaustionFlood,
+                service.serviceExhaustionFlood
+
+        & reflectionAmplification {A}
+            user info: "Adversaries may attempt to cause a denial of service by reflecting a high-volume of network traffic to a target."
             ->  applicationExhaustionFlood,
                 service.serviceExhaustionFlood
  
@@ -1756,7 +1773,7 @@ category Software {
 
         & nonStandardPort [TruncatedNormal(41.11,31.68)]
             developer info: "Sources used for distribution result: https://www.nexustek.com/blog/cyber-security-tip-detecting-attacks-over-low-traffic-ports/, https://krisk.io/publication/mitre-attack-securecomm19/, https://media.paloaltonetworks.com/documents/The-Modern-Malware-Review-March-2013.pdf, https://www.usenix.org/event/leet09/tech/full_papers/bayer/bayer.pdf, https://www.securityweek.com/rise-malware-using-encryption-shows-importance-network-traffic-inspection, "
-            user info: "Adversaries may conduct C2 communications over a non-standard port to bypass proxies and firewalls that have been improperly configured."
+            user info: "Adversaries may communicate using a protocol and port paring that are typically not associated."
             ->  computer.router.internalNetwork.c2Connected
 
         | attemptValidAccounts @hidden
@@ -1884,7 +1901,7 @@ category Software {
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
             ->  attemptValidAccounts,
-                attemptCredentialDumping,
+                oSCredentialDumping,
                 inhibitSystemRecovery,
                 windows.attemptWindowsAdminShares
 
@@ -2047,7 +2064,6 @@ category Software {
             ->  passwordGuessing,
                 passwordCracking,
                 passwordSpraying,
-                credentialDumping,
                 credentialStuffing,
                 credentialsInFiles,
                 credentialsInRegistry,
@@ -2079,8 +2095,7 @@ category Software {
 
         # activeDirectoryConfiguration
             user info: "https://attack.mitre.org/mitigations/M1015/"
-            ->  credentialDumping,
-                credentialsInFiles,
+            ->  credentialsInFiles,
                 windows.sIDHistoryInjection, 
                 service.thirdpartySoftware.useThirdpartySoftware
 
@@ -2124,7 +2139,6 @@ category Software {
         # operatingSystemConfiguration 
             user info: "https://attack.mitre.org/mitigations/M1028/"
             ->  communicationThroughRemovableMedia,
-                credentialDumping,
                 domainDiscovery,
                 exfiltrationOverOtherNetworkMedium,
                 inhibitSystemRecovery,
@@ -2221,6 +2235,7 @@ category Software {
             user info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
             ->  windows.attemptAppCertDLLs,
                 windows.attemptBITSJobs,
+                windows.cachedDomainCredentials,
                 windows.changeDefaultFileAssociation,
                 windows.attemptDistributedComponentObjectModel,
                 windows.controlPanelItems,
@@ -2230,14 +2245,18 @@ category Software {
                 windows.hooking,
                 windows.hypervisor,
                 windows.imageFileExecutionOptionsInjection,
-                windows.attemptLSASS_Driver,
+                windows.attemptLSASSDriver,
+                windows.attemptLSASSMemory,
+                windows.lSASecrets,
                 windows.manInTheBrowser,
                 windows.masqueradeTaskOrService,
                 windows.modifyRegistry,
                 windows.netshHelperDLL,
+                windows.nTDS,
                 windows.attemptPasswordFilterDLL,
                 windows.portMonitors,
                 windows.processDoppelganging,
+                windows.securityAccountManager,
                 windows.serverSoftwareComponent,
                 windows.attemptServiceExecution,
                 windows.attemptServiceRegistryPermissionsWeakness,
@@ -2249,7 +2268,7 @@ category Software {
                 windows.attemptWindowsManagementInstrumentationEventSubscription,
                 windows.attemptWinlogonHelperDLL,
                 windows.os.accountAccessRemoval,
-                windows.os.attemptCredentialDumping,
+                windows.os.oSCredentialDumping,
                 windows.os.attemptCredentialsInFiles,
                 windows.os.commandLineInterface,
                 windows.os.attemptDataEncryptedForImpact,
@@ -2395,6 +2414,17 @@ category Software {
             ->  attemptSIDHistoryInjection,
                 bypassLogAnalysis
 
+        & dCSync
+            user info: "Adversaries may attempt to access credentials and other sensitive information by abusing a Windows Domain Controller's application programming interface (API) to simulate the replication process from a remote domain controller using a technique called DCSync."
+            ->  attemptGoldenTicket, // hashes can then in turn be used to create a Golden Ticket for use in Pass the Ticket
+                accountManipulation // hashes can then be used to change an account's password
+
+        | attemptGoldenTicket @hidden
+            ->  goldenTicket
+
+        & goldenTicket
+            user info: "Adversaries who have the KRBTGT account password hash may forge Kerberos ticket-granting tickets (TGT), also known as a golden ticket."
+
         | deobfuscateOrDecodeFilesOrInformation 
             ->  bypassAntivirus,
                 bypassHostIntrusionPrevention,
@@ -2415,20 +2445,33 @@ category Software {
             ->  bypassProcessWhitelisting,
                 attemptBypassUserAccessControl,
                 userAccount.userRights,
-                attemptLSASS_Driver,
+                attemptLSASSDriver,
                 service.attemptExploitationForPrivilegeEscalation                   
                
         | dLLSideLoading [Bernoulli(0.0755)]
             developer info: "Sources used for probability result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/post/sok-attack-securecomm19.pdf"
             ->  bypassProcessWhitelisting,
                 bypassAntivirus,
-                attemptLSASS_Driver
+                attemptLSASSDriver
 
         & domainControllerAuthentication
             user info: "Adversaries may patch the authentication process on a domain control to bypass the typical authentication mechanisms and enable access to accounts."
 
-        | attemptLSASS_Driver @hidden [Bernoulli(0.5)*Exponential(0.1)]
-            ->  lSASS_Driver
+        | attemptLSASSDriver @hidden [Bernoulli(0.5)*Exponential(0.1)]
+            ->  lSASSDriver
+
+        & lSASSDriver
+            user info: "Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations."
+            ->  executeCode,
+                persistence
+
+        & cachedDomainCredentials
+            user info: "Adversaries may attempt to access cached domain credentials used to allow authentication to occur in the event a domain controller is unavailable."
+            ->  collectHashInformation
+
+        & lSASecrets
+            user info: "Adversaries with SYSTEM access to a host may attempt to access Local Security Authority (LSA) secrets, which can contain a variety of different credential materials, such as credentials for service accounts."
+            ->  userAccount.userCredentials
 
         & mshta [Bernoulli(0.3329)*Exponential(491)]
             user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
@@ -2568,10 +2611,15 @@ category Software {
             ->  networkSniffing,
                 bruteForce
 
-        & lSASS_Driver
-            user info: "Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations."
-            ->  executeCode,
-                persistence
+        | attemptLSASSMemory @hidden
+            ->  lSASSMemory
+
+        & lSASSMemory
+            user info: "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS)."
+            ->  useAlternateAuthenticationMaterial // harvest credential materials for Lateral Movement
+
+        | useAlternateAuthenticationMaterial
+            user info: "Adversaries may use alternate authentication material, such as password hashes, Kerberos tickets, and application access tokens, in order to move laterally within an environment and bypass normal system access controls."
 
         & manInTheBrowser
             user info: "Adversaries can take advantage of security vulnerabilities and inherent functionality in browser software to change content, modify behavior, and intercept information as part of various man in the browser techniques."
@@ -2595,6 +2643,10 @@ category Software {
         | networkShareConnectionRemoval
             user info: "Adversaries may remove share connections that are no longer useful in order to clean up traces of their operation."
             ->  bypassHostForensicAnalysis
+
+        & nTDS
+            user info: "Adversaries may attempt to access or create a copy of the Active Directory domain database in order to steal credential information, as well as obtain other information about domain members such as devices, users, and access rights."
+            ->  collectHashInformation
 
         | attemptWindowsService @hidden
             ->  windowsService
@@ -2634,7 +2686,7 @@ category Software {
 
         & passTheTicket
             user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
-            ->  attemptCredentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
+            ->  oSCredentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
                 computer.router.internalNetwork.c2Connexion // gain remote access 
 
         | parentPIDSpoofing
@@ -2668,6 +2720,10 @@ category Software {
             user info: "Adversaries may execute their own malicious payloads by hijacking vulnerable file path references."
             ->  executeCode,
                 persistence
+
+        & securityAccountManager
+            user info: "Adversaries may attempt to extract credential material from the Security Account Manager (SAM) database either through in-memory techniques or through the Windows Registry where the SAM database is stored." 
+            ->  collectHashInformation
 
         & servicesFilePermissionsWeakness
             user info: "Adversaries may execute their own malicious payloads by hijacking the binaries used by services."
@@ -3158,7 +3214,9 @@ category Software {
 
         # activeDirectoryConfiguration
             user info: "https://attack.mitre.org/mitigations/M1015/"
-            +>  passTheTicket
+            +>  cachedDomainCredentials,
+                dCSync,
+                passTheTicket
 
         # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
@@ -3203,8 +3261,8 @@ category Software {
 
         # credentialAccessProtection
             user info: "https://attack.mitre.org/mitigations/M1043/"
-            ->  credentialDumping,
-                lSASS_Driver
+            ->  lSASSDriver,
+                lSASSMemory
 
         # executionPrevention
             user info: "https://attack.mitre.org/mitigations/M1038/"
@@ -3255,21 +3313,30 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1028/" 
             +>  passwordFilterDLL,
                 bITSJobs,
+                cachedDomainCredentials,
+                lSASSMemory,
                 remoteDesktopProtocol,
-                scheduledTask   
+                scheduledTask,
+                securityAccountManager
 
         # passwordPolicies 
             user info: "https://attack.mitre.org/mitigations/M1027/" 
-            +>  passTheHash,
+            +>  cachedDomainCredentials,
+                dCSync,
+                lSASSMemory,
+                lSASecrets,
+                nTDS,
+                passTheHash,
                 passTheTicket,
+                securityAccountManager,
                 windowsAdminShares               
 
         # privilegedProcessIntegrity  
             user info: "https://attack.mitre.org/mitigations/M1025/"
             ->  authenticationPackage,
-                credentialDumping,
                 domainControllerAuthentication,
-                lSASS_Driver,
+                lSASSDriver,
+                lSASSMemory,
                 securitySupportProvider 
 
         # privilegedAccountManagement [Bernoulli(0.30)]
@@ -3277,11 +3344,17 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
                 bypassUserAccessControl,
+                cachedDomainCredentials,
                 componentObjectModel,
+                dCSync,
                 distributedComponentObjectModel,
                 domainControllerAuthentication,
+                lSASSMemory,
+                lSASecrets,
+                nTDS,
                 passTheHash,
                 scheduledTask,
+                securityAccountManager,
                 windowsFileAndDirectoryPermissionsModification
 
         # restrictFileAndDirectoryPermissions
@@ -3316,7 +3389,7 @@ category Software {
         # restrictLibraryLoading
             user info: "https://attack.mitre.org/mitigations/M1044/"
             ->  dLLSearchOrderHijacking,
-                lSASS_Driver       
+                lSASSDriver       
 
         # remoteDataStorage 
             user info: "https://attack.mitre.org/mitigations/M1029/"
@@ -3337,6 +3410,7 @@ category Software {
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
             +>  localEmailCollection,
+                nTDS,
                 remoteEmailCollection,
                 emailForwardingRule,
                 clearWindowsEventLogs
@@ -3401,6 +3475,10 @@ category Software {
         & clearLinuxSystemLogs
             user info: "Adversaries may clear system logs to hide evidence of an intrusion. macOS and Linux both keep track of system or user-initiated actions via system logs."
 
+        & _etc_passwdAND_etc_shadow
+            user info: "Adversaries may attempt to dump the contents of /etc/passwd and /etc/shadow to enable offline password cracking."
+            ->  collectHashInformation
+
         | spaceAfterFileName [Exponential(1)]
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
@@ -3452,6 +3530,10 @@ category Software {
         & portKnocking
             user info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
             ->  bypassDefensiveNetworkServiceScanning
+
+        & procFilesystem
+            user info: "Adversaries may gather credentials from information stored in the Proc filesystem or /proc."
+            ->  collectHashInformation
 
         & serverSoftwareComponent
             user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
@@ -3566,16 +3648,20 @@ category Software {
 
         # passwordPolicies // Set and enforce secure password policies for accounts 
             user info: "https://attack.mitre.org/mitigations/M1027/"
-            +>  sshHijacking
+            +>  sshHijacking,
+                procFilesystem,
+                _etc_passwdAND_etc_shadow
 
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
+                _etc_passwdAND_etc_shadow,
                 sshHijacking,
                 sudoAndSudoCaching,
                 pluggableAuthenticationModules,
                 processInjection,
+                procFilesystem,
                 linuxFileAndDirectoryPermissionsModification
 
         # restrictFileAndDirectoryPermissions
@@ -4101,12 +4187,13 @@ category Network {
             developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
             ->  router.computer.os.customCommandAndControlProtocol,
+                router.computer.os.directNetworkFlood,
                 router.computer.os.endpointDenialOfService,
                 router.computer.os.lateralToolTransfer,
                 router.computer.os.manInTheMiddle,
                 router.computer.os.dNS,
                 router.computer.os.multiHopProxy,
-                router.computer.os.networkDenialOfService,
+                router.computer.os.reflectionAmplification,
                 router.computer.os.exfiltrationOverAternativeProtocol,
                 router.computer.os.windows.bITSJobs
 
@@ -4266,8 +4353,9 @@ category Network {
             ->  dataFromCloudStorageObject,
                 router.computer.os.endpointDenialOfService,
                 router.computer.os.multiHopProxy,
-                router.computer.os.networkDenialOfService,
-                router.computer.os.windows.bITSJobs  
+                router.computer.os.directNetworkFlood,
+                router.computer.os.reflectionAmplification,
+                router.computer.os.windows.bITSJobs
 
         # networkIntrusionPrevention
             user info: "https://attack.mitre.org/mitigations/M1031/"
@@ -4335,7 +4423,6 @@ category Hardware {
             ->  router.internalNetwork.applicationLayerConnexion,
                 router.internalNetwork.attemptDataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-049a
                 router.externalNetwork.attemptDataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-049a
-                os.commonlyUsedPortsConnection,
                 os.nonStandardPort,
                 os.fileDeletion,
                 os.windows.attemptPowerShell,
