@@ -819,12 +819,14 @@ category Software {
             ->  os.computer.router.externalNetwork.bypassNetworkIntrusionDetection,
                 os.computer.router.internalNetwork.bypassNetworkIntrusionDetection
 
-        & remoteEmailCollection
+        & remoteEmailCollection [Bernoulli(0.892)*Exponential(35.19)]
+            developer info: "Sources for distribution results: https://www.lifewire.com/what-is-the-average-size-of-an-email-message-1171208#:~:text=Email%20size%20is%20determined%20by%20much%20more%20than%20just%20the%20message&text=The%20average%20size%20of%20an,text%20or%20about%2037.5%20pages., https://www.litmus.com/blog/the-2017-email-client-market-share-infographic/, more in emailCollection.md"
             user info: "Adversaries may target an Exchange server or Office 365 to collect sensitive information."
             ->  os.windows.attemptRemoteDesktopProtocol, // https://www.us-cert.gov/ncas/alerts/TA18-086A
                 sensitiveDataCollected
 
-        & emailForwardingRule
+        & emailForwardingRule [Exponential(0.00061)]
+            developer info: "Sources for distribution results: https://www.textrequest.com/blog/how-many-emails-do-people-get-every-day/, more in emailCollection.md"
             user info: "Adversaries may setup email forwarding rules to collect sensitive information."
             ->  sensitiveDataCollected
 
@@ -3201,6 +3203,7 @@ category Software {
                 persistence
 
         | emailCollection
+            developer info: "Binary probability distribution. (Probabilities carried by children)"
             user info: "Adversaries may target user email to collect sensitive information from a target."
             ->  localEmailCollection,
                 remoteEmailCollection,
@@ -3208,16 +3211,19 @@ category Software {
                 service.cloudService.remoteEmailCollection,
                 service.cloudService.emailForwardingRule
        
-        & localEmailCollection
+        & localEmailCollection [Bernoulli(0.892)*Exponential(95.58)]
+            developer info: "Sources for distribution results: https://www.lifewire.com/what-is-the-average-size-of-an-email-message-1171208#:~:text=Email%20size%20is%20determined%20by%20much%20more%20than%20just%20the%20message&text=The%20average%20size%20of%20an,text%20or%20about%2037.5%20pages., https://www.litmus.com/blog/the-2017-email-client-market-share-infographic/, more in emailCollection.md"
             user info: "Adversaries may target user email on local systems to collect sensitive information."
             ->  sensitiveDataCollected
 
-        & remoteEmailCollection
+        & remoteEmailCollection [Bernoulli(0.892)*Exponential(35.19)]
+            developer info: "Sources for distribution results: https://www.lifewire.com/what-is-the-average-size-of-an-email-message-1171208#:~:text=Email%20size%20is%20determined%20by%20much%20more%20than%20just%20the%20message&text=The%20average%20size%20of%20an,text%20or%20about%2037.5%20pages., https://www.litmus.com/blog/the-2017-email-client-market-share-infographic/, more in emailCollection.md"
             user info: "Adversaries may target an Exchange server or Office 365 to collect sensitive information."
             ->  attemptRemoteDesktopProtocol, // https://www.us-cert.gov/ncas/alerts/TA18-086A
                 sensitiveDataCollected
 
-        & emailForwardingRule
+        & emailForwardingRule [Exponential(0.00061)]
+            developer info: "Sources for distribution results: https://www.textrequest.com/blog/how-many-emails-do-people-get-every-day/, more in emailCollection.md"
             user info: "Adversaries may setup email forwarding rules to collect sensitive information."
             ->  sensitiveDataCollected
 
