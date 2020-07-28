@@ -4334,7 +4334,8 @@ category Network {
             user info: "Once a user opens the shared tainted content, tfhe malicious portion can be executed to run the adversary's code on a remote system."
             ->  router.computer.os.windows.executeCode
 
-        | dataFromNetworkSharedDrive
+        | dataFromNetworkSharedDrive [Bernoulli(0.892)*Exponential(9.952)]
+            developer info: "Sources for distribution results : see automatedCollection.md file"
             user info: "Adversaries may search network shares on computers they have compromised to find files of interest."
             ->  router.computer.os.sensitiveDataCollected
     }
