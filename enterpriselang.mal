@@ -1782,12 +1782,14 @@ category Software {
         | bypassUserModeSignatureValidation
         
         | passwordPolicyDiscovery
+            developer info: "Binary probability distribution."
             ->  bruteForceWithPasswordPolicy
 
-        & bruteForceWithPasswordPolicy
+        & bruteForceWithPasswordPolicy [Bernoulli(0.83)*Exponential(0.3)]
+            developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper. https://press.avast.com/83-of-americans-are-using-weak-passwords"
             ->  userAccount.userCredentials // the probability distribution should be so that it has higher chance of success than the bruteforce attack
 
-        | bruteForce [Exponential(0.3)]
+        | bruteForce [Bernoulli(0.42)*Exponential(0.3)]
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper."
             ->  passwordGuessing,
