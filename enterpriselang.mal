@@ -59,6 +59,7 @@ category Software {
                 os.disableOrModifyTools,
                 os.dynamicResolution,
                 os.domainDiscovery,
+                os.domainGroups,
                 os.executionGuardrails,
                 os.fileDeletion,
                 os.fileAndDirectoryDiscovery,
@@ -71,13 +72,13 @@ category Software {
                 os.internalSpearphishing,
                 os.installRootCertificate,
                 os.lateralToolTransfer,
+                os.localGroups,
                 os.manInTheMiddle,
                 os.passwordGuessing,
                 os.passwordCracking,
                 os.passwordSpraying,
                 os.credentialStuffing,
                 os.passwordPolicyDiscovery,
-                os.permissionGroupsDiscovery,
                 os.privateKeys,
                 os.attemptProcessInjection,
                 os.processDiscovery,
@@ -207,6 +208,7 @@ category Software {
                 os.service.attemptExternalRemoteServices,
                 os.service.implantContainerImage,
                 os.service.remoteAccessSoftware,
+                os.service.cloudService.cloudGroups,
                 os.service.cloudService.cloudServiceDiscovery,
                 os.service.cloudService.cloudServiceDashboard,
                 os.service.cloudService.disableOrModifyCloudFirewall,
@@ -750,6 +752,9 @@ category Software {
         | cloudAccount
             user info: "Adversaries may attempt to get a listing of cloud accounts."
             ->  os.persistence
+
+        & cloudGroups
+            user info: "Adversaries may attempt to find cloud groups and permission settings. The knowledge of cloud permission groups can help adversaries determine the particular roles of users and groups within an environment, as well as which users are associated with a particular group."
 
         | cloudServiceDiscovery
             developer info: "Binary probability distribution, TTC assumed instant (few seconds) : https://www.etasr.com/index.php/ETASR/article/view/1577"
@@ -1775,6 +1780,26 @@ category Software {
             user info: "Adversaries may use credentials obtained from breach dumps of unrelated accounts to gain access to target accounts through credential overlap."
             ->  userAccount.userCredentials
 
+        | permissionGroupsDiscovery [Bernoulli(0.0526)]
+            developer info: "Sources for probability result: Red Canary ATT&CK technique percentages (Top 50), https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1069/"
+            user info: "Adversaries may attempt to find group and permission settings. This information can help adversaries determine which user accounts and groups are available, the membership of users in particular groups, and which users and groups have elevated permissions."
+            ->  localGroups,
+                domainGroups,
+                service.cloudService.cloudGroups
+
+        & localGroups
+            user info: "Adversaries may attempt to find local system groups and permission settings. The knowledge of local system permission groups can help adversaries determine which groups exist and which users belong to a particular group." 
+
+        & domainGroups
+            user info: "Adversaries may attempt to find domain-level groups and permission settings. The knowledge of domain-level permission groups can help adversaries determine which groups exist and which users belong to a particular group."
+
+        | preOSBoot
+            user info: "Adversaries may abuse Pre-OS Boot mechanisms as a way to establish persistence on a system."
+            ->  windows.attemptSystemFirmware,
+                windows.componentFirmware,
+                windows.bootkit,
+                linux.bootkit
+
         | attemptAntivirusCheck @hidden
             ->  antivirusCheck    
 
@@ -2010,10 +2035,6 @@ category Software {
             user info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."
             ->  service.attemptExploitationOfRemoteServices
 
-        & permissionGroupsDiscovery [Bernoulli(0.0526)]
-            user info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
-            developer info: "Sources for probability result: Red Canary ATT&CK technique percentages (Top 50), https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1069/"
-
         # antivirus [Bernoulli(0.53)]
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
@@ -2195,7 +2216,6 @@ category Software {
                 domainFronting,
                 javaScriptOrJScript,
                 matchLegitimateNameOrLocation,
-                permissionGroupsDiscovery,
                 python,
                 remoteSystemDiscovery,    
                 runVirtualInstance, 
@@ -2266,9 +2286,11 @@ category Software {
             user info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
             ->  windows.attemptAppCertDLLs,
                 windows.attemptBITSJobs,
+                windows.attemptBootkit,
                 windows.cachedDomainCredentials,
                 windows.changeDefaultFileAssociation,
                 windows.attemptDistributedComponentObjectModel,
+                windows.componentFirmware,
                 windows.controlPanelItems,
                 windows.credentialAPIHooking,
                 windows.attemptExecutionThroughAPI,
@@ -2295,6 +2317,7 @@ category Software {
                 windows.sIPAndTrustProviderHijacking,
                 windows.systemServiceDiscovery,
                 windows.attemptServiceStop,
+                windows.attemptSystemFirmware,
                 windows.attemptTimeProviders,
                 windows.attemptWindowsManagementInstrumentationEventSubscription,
                 windows.attemptWinlogonHelperDLL,
@@ -3224,6 +3247,9 @@ category Software {
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/domain-trust-discovery/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             ->  trustedDomainInfo
 
+        | attemptBootkit @hidden
+            ->  bootkit
+
         & bootkit [Bernoulli(0.46)]
             developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx" 
             ->  persistence
@@ -3497,6 +3523,9 @@ category Software {
     }
 
     asset Linux extends OS {
+        | attemptBootkit @hidden
+            ->  bootkit
+
         & bootkit [Bernoulli(0.46)]
             developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx"
             ->  persistence
