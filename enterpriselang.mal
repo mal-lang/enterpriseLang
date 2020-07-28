@@ -2507,26 +2507,31 @@ category Software {
                 accountManipulation // hashes can then be used to change an account's password
 
         & dynamicLinkLibraryInjection
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Adversaries may inject dynamic-link libraries (DLLs) into processes in order to evade process-based defenses as well as possibly elevate privileges."
             ->  bypassAntivirus,
                 bypassApplicationControl
 
         & portableExecutableInjection
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Adversaries may inject portable executables (PE) into processes in order to evade process-based defenses as well as possibly elevate privileges." 
             ->  bypassAntivirus,
                 bypassApplicationControl
 
         & threadExecutionHijacking
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Adversaries may inject malicious code into hijacked processes in order to evade process-based defenses as well as possibly elevate privileges." 
             ->  bypassAntivirus,
                 bypassApplicationControl
 
         & asynchronousProcedureCall
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Adversaries may inject malicious code into processes via the asynchronous procedure call (APC) queue in order to evade process-based defenses as well as possibly elevate privileges."
             ->  bypassAntivirus,
                 bypassApplicationControl
 
         & threadLocalStorage
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Adversaries may inject malicious code into processes via thread local storage (TLS) callbacks in order to evade process-based defenses as well as possibly elevate privileges."
             ->  bypassAntivirus,
                 bypassApplicationControl
@@ -2889,11 +2894,12 @@ category Software {
                 persistence
 
         & processDoppelganging
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Process Doppelgänging involves replacing the memory of a legitimate process, enabling the veiled execution of malicious code that may evade defenses and detection."
             ->  bypassAntivirus,
                 bypassApplicationControl    
 
-        & processHollowing [Bernoulli(0.0122)*Exponential(1440)]
+        & processHollowing [Exponential(1440)]
             developer info: "Sources for distribution result: https://redcanary.com/threat-detection-report/techniques/, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://adalogics.com/blog/the-state-of-advanced-code-injections, https://www.youtube.com/watch?v=G6AoZ5F4CH8, https://www.youtube.com/watch?v=k2pLF56gXXw&feature=youtu.be&t=106"
             user info: "Execution of the malicious code is masked under a legitimate process and may evade defenses and detection analysis."
             ->  bypassAntivirus,
@@ -3679,6 +3685,7 @@ category Software {
             ->  collectHashInformation
 
         & ptraceSystemCalls
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Adversaries may inject malicious code into processes via ptrace (process trace) system calls in order to evade process-based defenses as well as possibly elevate privileges."
             ->  bypassAntivirus,
                 bypassApplicationControl
@@ -3687,6 +3694,7 @@ category Software {
             ->  procMemory
 
         & procMemory
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Adversaries may inject malicious code into processes via the /proc filesystem in order to evade process-based defenses as well as possibly elevate privileges."
             ->  bypassAntivirus,
                 bypassApplicationControl
@@ -3748,6 +3756,7 @@ category Software {
             ->  executeCode
 
         & vDSOHijacking
+            developer info: "Binary probability distribution. Probability carried by Process Injection main technique"
             user info: "Adversaries may inject malicious code into processes via VDSO hijacking in order to evade process-based defenses as well as possibly elevate privileges."
             ->  bypassAntivirus,
                 bypassApplicationControl

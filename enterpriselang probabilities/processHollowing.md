@@ -12,8 +12,10 @@ In [FireEye's 2020 Mtrends report](https://www.fireeye.com/current-threats/annua
 
 The average of these two is: (0.44 + 2 + 1.227) / 3 = ~1.22% -> ```Bernoulli(0.0122)```. 
 
+This value only gives the % of attacks in which this technique is being used. Considering code updates and process injection findings, we'll not assess any prevalence for any process injection sub techniques.
+
 ## Time to compromise
 I found a video tutorial [here](https://www.youtube.com/watch?v=G6AoZ5F4CH8) where the process hollowing seems to take approximately ~90 seconds to complete. Another tutorial [here](https://www.youtube.com/watch?v=k2pLF56gXXw&feature=youtu.be&t=106) seems to take ~45 seconds. I will estimate 60 seconds as the TTC. -> ```Exponential(1440)```. 
 
 ## Result
-```Bernoulli(0.0122)*Exponential(1440)```
+```Exponential(1440)```
