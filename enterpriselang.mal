@@ -80,7 +80,6 @@ category Software {
                 os.credentialStuffing,
                 os.passwordPolicyDiscovery,
                 os.privateKeys,
-                os.attemptProcessInjection,
                 os.processDiscovery,
                 os.redundantAccess,
                 os.remoteSystemDiscovery,
@@ -133,6 +132,7 @@ category Software {
                 os.windows.parentPIDSpoofing,
                 os.windows.peripheralDeviceDiscovery,
                 os.windows.powerShellUserProfile,
+                os.windows.portableExecutableInjection,
                 os.windows.processDoppelganging,
                 os.windows.processHollowing,
                 os.windows.registryRunKeysOrStartupFolder,
@@ -148,6 +148,7 @@ category Software {
                 os.windows.systemServiceDiscovery,
                 os.windows.attemptTaintSharedContent,
                 os.windows.templateInjection,
+                os.windows.threadExecutionHijacking,
                 os.windows.trustedDeveloperUtilities,
                 os.windows.attemptAccessTokenManipulation,
                 os.windows.securitySoftwareDiscovery,
@@ -434,7 +435,6 @@ category Software {
                 os.windows.domainControllerAuthentication,
                 os.windows.attemptExecutionThroughAPI,
                 os.windows.exchangeEmailDelegatePermissions,
-                os.windows.extraWindowMemoryInjection,
                 os.windows.fileSystemLogicalOffsets,
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.groupPolicyModification,
@@ -453,7 +453,6 @@ category Software {
                 os.windows.portMonitors,
                 os.windows.powerShell,
                 os.windows.powerShellAdminProfile,
-                os.windows.processDoppelganging,
                 os.windows.queryRegistry,
                 os.windows.remoteScheduledTask,
                 os.windows.registryRunKeysOrStartupFolder,
@@ -1152,7 +1151,7 @@ category Software {
         & processDiscovery [Bernoulli(0.17)*Exponential(346)]
             user info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
             developer info: "Sources used for distribution result: https://content.carbonblack.com/c/vmwcb-threat-report-?x=f_lWMB, https://www.researchgate.net/publication/332380784_How_many_words_do_we_read_per_minute_A_review_and_meta-analysis_of_reading_rate, https://attack.mitre.org/techniques/T1057/"
-            ->  attemptProcessInjection
+            ->  processInjection
 
         | collectHashInformation
             ->  attemptPasswordCracking, // leads to Brute Force: Password Cracking attack  
@@ -1615,7 +1614,7 @@ category Software {
         & systemInformationDiscovery [Bernoulli(0.7133)]
             user info: "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
             developer info: "TTC assumed instant. sources used for distribution result: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf, https://attack.mitre.org/techniques/T1082/"
-            ->  attemptProcessInjection,
+            ->  processInjection,
                 systemNetworkConfigurationDiscovery,
                 systemNetworkConnectionsDiscovery
 
@@ -1631,16 +1630,20 @@ category Software {
         | systemShutdownOrReboot {A}
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."
 
-        | attemptProcessInjection @hidden
-            ->  processInjection
-
-        & processInjection [Bernoulli(0.35)*Exponential(127.1)] 
+        | processInjection [Bernoulli(0.35)*Exponential(127.1)] 
             user info: "Process injection is a method of executing arbitrary code in the address space of a separate live process. It can be used for Defense Evasion and Privilege Escalation."
             developer info: "Sources used for probability distribution: https://redcanary.com/threat-detection-report/techniques/process-injection/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
-            ->  service.attemptExploitationForPrivilegeEscalation,
-                bypassAntivirus,
-                persistence,
-                bypassProcessWhitelisting
+            ->  windows.dynamicLinkLibraryInjection,
+                windows.portableExecutableInjection,
+                windows.threadExecutionHijacking,
+                windows.asynchronousProcedureCall,
+                windows.threadLocalStorage,
+                windows.extraWindowMemoryInjection,
+                windows.processHollowing,
+                windows.processDoppelganging,
+                linux.ptraceSystemCalls,
+                linux.attemptProcMemory,
+                linux.vDSOHijacking
 
         & redundantAccess
             user info: "Adversaries may use more than one remote access tool with varying command and control protocols as a hedge against detection. Adversaries may also attempt to gain access to Valid Accounts to use External Remote Services such as external VPNs as a way to maintain access despite interruptions to remote access tools deployed within a target network."
@@ -1714,6 +1717,8 @@ category Software {
         | bypassAntivirus
 
         | bypassAutorunsAnalysis
+
+        | bypassApplicationControl
 
         | bypassApplicationWhitelisting
 
@@ -2077,7 +2082,6 @@ category Software {
 
         # behaviorPreventionOnEndpoint
             user info: "https://attack.mitre.org/mitigations/M1040/"
-            ->  processInjection
 
         # bootIntegrity 
             user info: "https://attack.mitre.org/mitigations/M1046/"
@@ -2296,7 +2300,6 @@ category Software {
                 windows.controlPanelItems,
                 windows.credentialAPIHooking,
                 windows.attemptExecutionThroughAPI,
-                windows.extraWindowMemoryInjection,
                 windows.hooking,
                 windows.hypervisor,
                 windows.imageFileExecutionOptionsInjection,
@@ -2353,7 +2356,7 @@ category Software {
         & appCertDLLs
             developer info: "Binaries probability distribution. Source for distribution results : Process Injection result and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
-            ->  attemptProcessInjection
+            ->  processInjection
 
         | attemptAppInitDLLs @hidden
             ->  appInitDLLs
@@ -2434,7 +2437,7 @@ category Software {
 
         | componentObjectModelHijacking
             user info: "Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
-            ->  attemptProcessInjection,
+            ->  processInjection,
                 persistence            
 
         | componentFirmware [Bernoulli(0.0000934)*Exponential(360)]
@@ -2474,6 +2477,31 @@ category Software {
             user info: "Adversaries may attempt to access credentials and other sensitive information by abusing a Windows Domain Controller's application programming interface (API) to simulate the replication process from a remote domain controller using a technique called DCSync."
             ->  attemptGoldenTicket, // hashes can then in turn be used to create a Golden Ticket for use in Pass the Ticket
                 accountManipulation // hashes can then be used to change an account's password
+
+        & dynamicLinkLibraryInjection
+            user info: "Adversaries may inject dynamic-link libraries (DLLs) into processes in order to evade process-based defenses as well as possibly elevate privileges."
+            ->  bypassAntivirus,
+                bypassApplicationControl
+
+        & portableExecutableInjection
+            user info: "Adversaries may inject portable executables (PE) into processes in order to evade process-based defenses as well as possibly elevate privileges." 
+            ->  bypassAntivirus,
+                bypassApplicationControl
+
+        & threadExecutionHijacking
+            user info: "Adversaries may inject malicious code into hijacked processes in order to evade process-based defenses as well as possibly elevate privileges." 
+            ->  bypassAntivirus,
+                bypassApplicationControl
+
+        & asynchronousProcedureCall
+            user info: "Adversaries may inject malicious code into processes via the asynchronous procedure call (APC) queue in order to evade process-based defenses as well as possibly elevate privileges."
+            ->  bypassAntivirus,
+                bypassApplicationControl
+
+        & threadLocalStorage
+            user info: "Adversaries may inject malicious code into processes via thread local storage (TLS) callbacks in order to evade process-based defenses as well as possibly elevate privileges."
+            ->  bypassAntivirus,
+                bypassApplicationControl
 
         | attemptGoldenTicket @hidden
             ->  goldenTicket
@@ -2552,18 +2580,18 @@ category Software {
             user info: "Adversary tools may directly use the Windows application programming interface (API) to execute binaries." 
             developer info: "TTC assumed instant. Sources for probability distribution: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1106/"
             ->  executeCode,
-                attemptProcessInjection
+                processInjection
 
         & executionThroughModuleLoad [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources for distribution results: Results on spearphishing and https://community.broadcom.com/symantecenterprise/communities/community-home/librarydocuments/viewdocument?DocumentKey=bc9e2e2e-028c-4ba1-863f-72a4700dbdc2&CommunityKey=1ecf5f55-9545-44d6-b0f4-4e4a7f5f5e68&tab=librarydocuments, https://www.cybereason.com/blog/information-stealing-malware-targeting-brazil-full-research"
             user info: "Adversaries can use this functionality as a way to execute arbitrary code on a system."
             ->  executeCode    
         
-        | extraWindowMemoryInjection
+        & extraWindowMemoryInjection
             developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
-            ->  bypassHostIntrusionPrevention,
-                attemptProcessInjection
+            ->  bypassAntivirus,
+                bypassApplicationControl
 
         & windowsFileAndDirectoryPermissionsModification
             developer info: "Binary probability distribution."
@@ -2619,7 +2647,7 @@ category Software {
             developer info: "Binary probability distribution. Soucres for distribution results: process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Directly modifying IEFO and silent process exit Registry values may be abused to obtain persistence and privilege escalation by causing a malicious executable to be loaded and run in the context of separate processes on the computer."
             ->  bypassAutorunsAnalysis,
-                attemptProcessInjection
+                processInjection
 
         | indirectCommandExecution
             user info: "Adversaries may abuse the Windows system features for Defense Evasion."
@@ -2832,20 +2860,16 @@ category Software {
             ->  service.attemptExploitationForPrivilegeEscalation,
                 persistence
 
-        | processDoppelganging
+        & processDoppelganging
             user info: "Process Doppelgänging involves replacing the memory of a legitimate process, enabling the veiled execution of malicious code that may evade defenses and detection."
             ->  bypassAntivirus,
-                bypassProcessWhitelisting,
-                bypassSignatureBasedDetection,
-                bypassFileOrPathWhitelisting    
+                bypassApplicationControl    
 
-        | processHollowing [Bernoulli(0.0122)*Exponential(1440)]
+        & processHollowing [Bernoulli(0.0122)*Exponential(1440)]
             developer info: "Sources for distribution result: https://redcanary.com/threat-detection-report/techniques/, https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://adalogics.com/blog/the-state-of-advanced-code-injections, https://www.youtube.com/watch?v=G6AoZ5F4CH8, https://www.youtube.com/watch?v=k2pLF56gXXw&feature=youtu.be&t=106"
             user info: "Execution of the malicious code is masked under a legitimate process and may evade defenses and detection analysis."
             ->  bypassAntivirus,
-                bypassProcessWhitelisting,
-                bypassSignatureBasedDetection,
-                bypassFileOrPathWhitelisting   
+                bypassApplicationControl
 
         & codeProxyExecution
             ->  persistence
@@ -3117,7 +3141,7 @@ category Software {
             user info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
             ->  executeCode,
                 captureAPICalls,
-                attemptProcessInjection
+                processInjection
 
         | hypervisor           
             user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
@@ -3234,7 +3258,7 @@ category Software {
             developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
             user info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
             ->  persistence, // use application shim databases for persistence
-                attemptProcessInjection,
+                processInjection,
                 hooking, // the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS
                 attemptBypassUserAccessControl // certain shims can be used to Bypass User Account Control (UAC)
 
@@ -3317,7 +3341,15 @@ category Software {
 
         # behaviorPreventionOnEndpoint
             user info : "https://attack.mitre.org/mitigations/M1040/"
-            +>  dynamicDataExchange
+            +>  dynamicDataExchange,
+                dynamicLinkLibraryInjection,
+                extraWindowMemoryInjection,
+                portableExecutableInjection,
+                threadExecutionHijacking,
+                asynchronousProcedureCall,
+                threadLocalStorage,
+                processHollowing,
+                processDoppelganging
         
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
@@ -3586,7 +3618,8 @@ category Software {
 
         & lD_PRELOAD
             user info: "Adversaries may execute their own malicious payloads by hijacking the dynamic linker used to load libraries."
-            ->  os.service.attemptExploitationForPrivilegeEscalation
+            ->  os.service.attemptExploitationForPrivilegeEscalation,
+                attemptProcMemory // populate a target process with more available gadgets
 
         & localJobScheduling
             user info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence, to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
@@ -3607,6 +3640,19 @@ category Software {
         & procFilesystem
             user info: "Adversaries may gather credentials from information stored in the Proc filesystem or /proc."
             ->  collectHashInformation
+
+        & ptraceSystemCalls
+            user info: "Adversaries may inject malicious code into processes via ptrace (process trace) system calls in order to evade process-based defenses as well as possibly elevate privileges."
+            ->  bypassAntivirus,
+                bypassApplicationControl
+
+        | attemptProcMemory @hidden
+            ->  procMemory
+
+        & procMemory
+            user info: "Adversaries may inject malicious code into processes via the /proc filesystem in order to evade process-based defenses as well as possibly elevate privileges."
+            ->  bypassAntivirus,
+                bypassApplicationControl
 
         & serverSoftwareComponent
             user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
@@ -3664,6 +3710,11 @@ category Software {
             developer info: "Adversaries may abuse Unix shell commands and scripts for execution."
             ->  executeCode
 
+        & vDSOHijacking
+            user info: "Adversaries may inject malicious code into processes via VDSO hijacking in order to evade process-based defenses as well as possibly elevate privileges."
+            ->  bypassAntivirus,
+                bypassApplicationControl
+
         | executeCode 
             +>  computer.infectedLinuxComputer 
 
@@ -3675,6 +3726,12 @@ category Software {
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
             +>  serverSoftwareComponent
+
+        # behaviorPreventionOnEndpoint
+            user info : "https://attack.mitre.org/mitigations/M1040/"
+            +>  ptraceSystemCalls,
+                procMemory,
+                vDSOHijacking
 
         # bootIntegrity 
             user info: "https://attack.mitre.org/mitigations/M1046/"
@@ -3733,8 +3790,8 @@ category Software {
                 sshHijacking,
                 sudoAndSudoCaching,
                 pluggableAuthenticationModules,
-                processInjection,
                 procFilesystem,
+                ptraceSystemCalls,
                 linuxFileAndDirectoryPermissionsModification
 
         # restrictFileAndDirectoryPermissions
@@ -3746,6 +3803,7 @@ category Software {
                 sshHijacking,
                 sudoAndSudoCaching,
                 systemdService,
+                procMemory,
                 linuxFileAndDirectoryPermissionsModification
 
         # remoteDataStorage 
