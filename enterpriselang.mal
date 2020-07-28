@@ -169,7 +169,6 @@ category Software {
                 os.linux.attemptSetuidAndSetgid,
                 os.linux.spaceAfterFileName,
                 os.linux.source,
-                os.linux.sshHijacking,
                 os.linux.sudoAndSudoCaching,
                 os.linux.systemdService,
                 os.linux.trap,
@@ -198,7 +197,6 @@ category Software {
                 os.macOS.reopenedApplications,
                 os.macOS.attemptSetuidAndSetgid,
                 os.macOS.source,
-                os.macOS.sshHijacking,
                 os.macOS.sudoAndSudoCaching,
                 os.macOS.trap,
                 os.service.cloudInstanceMetadataAPI,
@@ -294,6 +292,7 @@ category Software {
                 os.windows.passTheHash,
                 os.windows.passTheTicket,
                 os.windows.accessTokenManipulation,
+                os.windows.rDPHijacking,
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduledTask,
                 os.windows.servicesFilePermissionsWeakness,
@@ -322,6 +321,8 @@ category Software {
     } 
 
     asset RemoteDesktopUser extends UserAccount {
+        | userCredentials
+
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             ->  os.windows.remoteDesktopProtocol
@@ -485,7 +486,7 @@ category Software {
                 os.linux.kernelModulesAndExtensions,
                 os.linux.masqueradeTaskOrService,
                 os.linux.serverSoftwareComponent,
-                os.linux.sshHijacking,
+                os.linux.sSHHijacking,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
                 os.linux.securitydMemory,
@@ -505,7 +506,7 @@ category Software {
                 os.macOS.attemptPlistModification,
                 os.macOS.rc_common,
                 os.macOS.securitydMemory,
-                os.macOS.sshHijacking,
+                os.macOS.sSHHijacking,
                 os.macOS.attemptStartupItems
     }
 
@@ -564,6 +565,12 @@ category Software {
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/"
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
             ->  os.computer.router.internalNetwork.c2Connected
+
+        | remoteServiceSessionHijacking
+            user info: "Adversaries may take control of preexisting sessions with remote services to move laterally in an environment."
+            ->  os.linux.sSHHijacking,
+                os.macOS.sSHHijacking,
+                os.windows.rDPHijacking
 
         & transmittedDataManipulation {I} [Exponential(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
@@ -1133,11 +1140,6 @@ category Software {
                 computer.peripheralDevice.removableMedia.infectedMedia,
                 service.thirdpartySoftware.attemptTrustedRelationship
 
-        & connectionProxy [Bernoulli(0.825)]
-            user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
-            developer info: "Sources used for probability distribution: https://jpcertcc.github.io/ToolAnalysisResultSheet/details/Htran.htm#ExecCondition, https://gs.statcounter.com/os-market-share/desktop/worldwide/#monthly-201905-202005, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/threat-detection-report/techniques/powershell/, https://www.scribd.com/document/406643981/Threat-Detection-Report, https://s3.eu-west-1.amazonaws.com/ncsc-content/files/Joint%20report%20on%20publicly%20available%20hacking%20tools%20%28NCSC%29.pdf)"
-            ->  computer.router.internalNetwork.c2Connected
-
         | attemptBinaryPadding @hidden
             ->  binaryPadding
 
@@ -1243,11 +1245,6 @@ category Software {
             user info: "Adversaries may perform calculations on addresses returned in DNS results to determine which port and IP address to use for command and control, rather than relying on a predetermined port number or the actual returned IP address."
             ->  bypassEgressFiltering
 
-        | domainFronting
-            user info: "Domain fronting takes advantage of routing schemes in Content Delivery Networks (CDNs) and other services which host multiple domains to obfuscate the intended destination of HTTPS traffic or traffic tunneled through HTTPS."
-            ->  computer.router.internalNetwork.obfuscateNetworkTraffic,
-                computer.router.externalNetwork.obfuscateNetworkTraffic          
-                 
         | executeCode 
             ->  computer.infectedComputer,
                 computer.router.internalNetwork.remoteAccess
@@ -1478,6 +1475,22 @@ category Software {
             user info: "Adversaries may match or approximate the name or location of legitimate files when naming/placing their files."
             ->  bypassFileOrPathWhitelisting
 
+        | proxy [Bernoulli(0.825)]
+            developer info: "Sources used for probability distribution: https://jpcertcc.github.io/ToolAnalysisResultSheet/details/Htran.htm#ExecCondition, https://gs.statcounter.com/os-market-share/desktop/worldwide/#monthly-201905-202005, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/threat-detection-report/techniques/powershell/, https://www.scribd.com/document/406643981/Threat-Detection-Report, https://s3.eu-west-1.amazonaws.com/ncsc-content/files/Joint%20report%20on%20publicly%20available%20hacking%20tools%20%28NCSC%29.pdf)"
+            user info: "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
+            ->  internalProxy,
+                externalProxy,
+                attemptMultiHopProxy,
+                domainFronting
+
+        & internalProxy
+            user info: "Adversaries may use an internal proxy to direct command and control traffic between two or more systems in a compromised environment."
+            ->  computer.router.internalNetwork.c2Connected
+
+        & externalProxy
+            user info: "Adversaries may use an external proxy to act as an intermediary for network communications to a command and control server to avoid direct connections to their infrastructure."
+            ->  computer.router.internalNetwork.c2Connected
+
         | attemptMultiHopProxy @hidden
             ->  multiHopProxy
 
@@ -1486,6 +1499,11 @@ category Software {
             user info: "To disguise the source of malicious traffic, adversaries may chain together multiple proxies."
             ->  computer.router.internalNetwork.c2Connected
 
+        & domainFronting
+            user info: "Domain fronting takes advantage of routing schemes in Content Delivery Networks (CDNs) and other services which host multiple domains to obfuscate the intended destination of HTTPS traffic or traffic tunneled through HTTPS."
+            ->  computer.router.internalNetwork.obfuscateNetworkTraffic,
+                computer.router.externalNetwork.obfuscateNetworkTraffic          
+                 
         | attemptMultilayerEncryption @hidden
             ->  multilayerEncryption
 
@@ -1550,7 +1568,7 @@ category Software {
 
         & communicationThroughRemovableMedia
 
-        & remoteSystemDiscovery
+        | remoteSystemDiscovery
             user info: "Adversaries will likely attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system."
 
         & detailedRemoteSystemDiscovery
@@ -1645,6 +1663,15 @@ category Software {
                 linux.attemptProcMemory,
                 linux.vDSOHijacking
 
+        | attemptProtocolTunneling @hidden
+            ->  protocolTunneling
+
+        & protocolTunneling
+            user info: "Adversaries may tunnel network communications to and from a victim system within a separate protocol to avoid detection/network filtering and/or enable access to otherwise unreachable systems."
+            ->  dynamicResolution, // DNS over HTTPS
+                proxy, // conceal C2 communications and infrastructure
+                computer.router.internalNetwork.attemptProtocolImpersonation // conceal C2 communications and infrastructure
+
         & redundantAccess
             user info: "Adversaries may use more than one remote access tool with varying command and control protocols as a hedge against detection. Adversaries may also attempt to gain access to Valid Accounts to use External Remote Services such as external VPNs as a way to maintain access despite interruptions to remote access tools deployed within a target network."
             ->  attemptValidAccounts,
@@ -1710,7 +1737,7 @@ category Software {
 
         & twoFactorAuthenticationInterception
             user info: "Adversaries may target authentication mechanisms, such as smart cards, to gain access to systems, services, and network resources."
-            ->  connectionProxy
+            ->  proxy
 
         | modifyAPICalls                
 
@@ -2219,11 +2246,9 @@ category Software {
                 dataCompressed,
                 detailedRemoteSystemDiscovery,
                 domainDiscovery,
-                domainFronting,
                 javaScriptOrJScript,
                 matchLegitimateNameOrLocation,
                 python,
-                remoteSystemDiscovery,    
                 runVirtualInstance, 
                 systemInformationDiscovery,
                 visualBasic,
@@ -2314,6 +2339,7 @@ category Software {
                 windows.attemptPasswordFilterDLL,
                 windows.portMonitors,
                 windows.processDoppelganging,
+                windows.rDPHijacking,
                 windows.securityAccountManager,
                 windows.serverSoftwareComponent,
                 windows.attemptServiceExecution,
@@ -2874,6 +2900,11 @@ category Software {
         & codeProxyExecution
             ->  persistence
 
+        & rDPHijacking
+            user info: "Adversaries may hijack a legitimate user’s remote desktop session to move laterally within an environment."
+            ->  userAccount.remoteDesktopUser.userCredentials,
+                remoteSystemDiscovery
+
         | rDPSessionHijacking
             user info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
 
@@ -3334,6 +3365,7 @@ category Software {
                 fileSystemPermissionsWeakness,
                 pathInterception,
                 remoteDesktopProtocol,
+                rDPHijacking,
                 serverSoftwareComponent,
                 servicesFilePermissionsWeakness,
                 scheduledTask,
@@ -3415,6 +3447,7 @@ category Software {
                 bITSJobs,
                 cachedDomainCredentials,
                 lSASSMemory,
+                rDPHijacking,
                 remoteDesktopProtocol,
                 scheduledTask,
                 securityAccountManager
@@ -3453,6 +3486,7 @@ category Software {
                 lSASecrets,
                 nTDS,
                 passTheHash,
+                rDPHijacking,
                 scheduledTask,
                 securityAccountManager,
                 windowsFileAndDirectoryPermissionsModification
@@ -3523,6 +3557,7 @@ category Software {
                 lLMNR_NBT_NS_PoisoningAndRelay,
                 mshta,
                 powerShell,
+                rDPHijacking,
                 registryKeysEnabled,
                 regsvcsOrRegasm,
                 remoteDesktopProtocol,
@@ -3683,7 +3718,7 @@ category Software {
             user info: "Adversaries may modify the SSH authorized_keys file to maintain persistence on a victim host."
             ->  persistence
 
-        & sshHijacking [Bernoulli(0.51)]
+        & sSHHijacking [Bernoulli(0.51)]
             developer info: "Sources for distribution results: http://book.itep.ru/depository/security/vulnerability/AST-0125626_Ponemon_2014_SSH_Security_Vulnerability_Report.pdf" 
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
@@ -3744,7 +3779,7 @@ category Software {
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
             +>  sSHAuthorizedKeys,
-                sshHijacking
+                sSHHijacking
 
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
@@ -3778,7 +3813,7 @@ category Software {
 
         # passwordPolicies // Set and enforce secure password policies for accounts 
             user info: "https://attack.mitre.org/mitigations/M1027/"
-            +>  sshHijacking,
+            +>  sSHHijacking,
                 procFilesystem,
                 _etc_passwdAND_etc_shadow
 
@@ -3787,7 +3822,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1026/"
             +>  bootkit,
                 _etc_passwdAND_etc_shadow,
-                sshHijacking,
+                sSHHijacking,
                 sudoAndSudoCaching,
                 pluggableAuthenticationModules,
                 procFilesystem,
@@ -3800,7 +3835,7 @@ category Software {
                 clearCommandHistory,
                 clearLinuxSystemLogs,
                 sSHAuthorizedKeys,
-                sshHijacking,
+                sSHHijacking,
                 sudoAndSudoCaching,
                 systemdService,
                 procMemory,
@@ -3812,7 +3847,6 @@ category Software {
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
-            +>  sshHijacking    
     }
 
     asset MacOS extends OS {
@@ -4049,7 +4083,7 @@ category Software {
             user info: "Adversaries may modify the SSH authorized_keys file to maintain persistence on a victim host."
             ->  persistence
 
-        & sshHijacking [Bernoulli(0.51)]
+        & sSHHijacking [Bernoulli(0.51)]
             developer info: "Sources for distribution results: http://book.itep.ru/depository/security/vulnerability/AST-0125626_Ponemon_2014_SSH_Security_Vulnerability_Report.pdf" 
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
@@ -4132,7 +4166,7 @@ category Software {
             +>  emond,
                 reopenedApplications,
                 sSHAuthorizedKeys,
-                sshHijacking
+                sSHHijacking
 
         # executionPrevention
             +>  appleScript,
@@ -4169,12 +4203,12 @@ category Software {
         # passwordPolicies // Set and enforce secure password policies for accounts 
             user info: "https://attack.mitre.org/mitigations/M1027/"
             +>  keychain,
-                sshHijacking
+                sSHHijacking
 
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            +>  sshHijacking,
+            +>  sSHHijacking,
                 macFileAndDirectoryPermissionsModification,
                 pluggableAuthenticationModules
 
@@ -4187,7 +4221,7 @@ category Software {
                 logonScripts,
                 plistModification,
                 sSHAuthorizedKeys,
-                sshHijacking,
+                sSHHijacking,
                 startupItems,
                 sudoAndSudoCaching,
                 macFileAndDirectoryPermissionsModification
@@ -4198,7 +4232,6 @@ category Software {
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
-            +>  sshHijacking
     }    
 }
 
@@ -4296,13 +4329,16 @@ category Network {
             developer info: "TTC instant/not applicable. sources used for probability distribution: https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://books.google.se/books?id=tHK6CAAAQBAJ&pg=PA175&lpg=PA175&dq=percent+of+malware+using+obfuscation&source=bl&ots=uAffxqpZX2&sig=ACfU3U2kkIrqzLLQ8ipOR2RwkRPzc8Jp1A&hl=en&sa=X&ved=2ahUKEwio69vRhZrqAhVMEncKHYwLAwsQ6AEwC3oECGQQAQ#v=onepage&q=percent%20of%20malware%20using%20obfuscation&f=false"
             ->  junkData,
                 router.computer.os.steganography,
-                protocolImpersonation
+                attemptProtocolImpersonation
 
         & junkData
             user info: "Adversaries may add junk data to protocols used for command and control to make detection more difficult."
             ->  bypassNetworkIntrusionDetection 
 
-        & protocolImpersonation     
+        | attemptProtocolImpersonation @hidden
+            ->  protocolImpersonation
+
+        & protocolImpersonation
             user info: "Adversaries may impersonate legitimate protocols or web service traffic to disguise command and control activity and thwart analysis efforts."
             ->  communicate
 
@@ -4326,6 +4362,7 @@ category Network {
                 router.computer.os.lateralToolTransfer,
                 router.computer.os.manInTheMiddle,
                 router.computer.os.dNS,
+                router.computer.os.protocolTunneling,
                 router.computer.os.multiHopProxy,
                 router.computer.os.reflectionAmplification,
                 router.computer.os.exfiltrationOverAternativeProtocol,
@@ -4337,6 +4374,7 @@ category Network {
                 router.computer.os.windows.remoteDesktopProtocol,
                 router.computer.os.windows.sharedWebroot,
                 router.computer.os.windows.windowsAdminShares,
+                router.computer.os.windows.rDPHijacking,
                 router.computer.hardwareAddition.hardwareAdditions,
                 router.computer.os.service.externalRemoteServices
 
@@ -4359,11 +4397,12 @@ category Network {
                 protocolImpersonation,
                 router.computer.os.service.browser.spearphishingAttachment,
                 router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.connectionProxy,
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.customCryptographicProtocol,
                 router.computer.os.dataCompressed,
                 router.computer.os.domainGenerationAlgorithms,
+                router.computer.os.internalProxy,
+                router.computer.os.externalProxy,
                 router.computer.os.exfiltrationOverAternativeProtocol,
                 router.computer.os.standardEncoding,
                 router.computer.os.nonStandardEncoding,
@@ -4373,6 +4412,7 @@ category Network {
                 router.computer.os.multilayerEncryption,
                 router.computer.os.multiStageChannels,
                 router.computer.os.networkServiceScan,
+                router.computer.os.protocolTunneling,
                 router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
                 router.computer.os.standardCryptographicProtocol,
@@ -4395,6 +4435,7 @@ category Network {
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.windows.domainTrustDiscovery,
                 router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
+                router.computer.os.windows.rDPHijacking,
                 router.computer.os.windows.serviceStop,
                 router.computer.os.windows.sharedWebroot,
                 router.computer.os.service.exploitationOfRemoteServices,
@@ -4410,7 +4451,8 @@ category Network {
         # sSLOrTLSInspection
             user info: "https://attack.mitre.org/mitigations/M1020/"
             ->  obfuscateNetworkTraffic,
-                router.computer.os.standardCryptographicProtocol
+                router.computer.os.standardCryptographicProtocol,
+                router.computer.os.domainFronting
 
         # vulnerabilityScanning [Bernoulli(0.653)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
             user info: "https://attack.mitre.org/mitigations/M1016/"
@@ -4505,7 +4547,6 @@ category Network {
                 router.internalNetwork.generateDomainNames,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.nonStandardPort,
-                router.computer.os.connectionProxy,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multilayerEncryption,
                 router.computer.os.multiStageChannels,
@@ -4656,6 +4697,7 @@ associations {
     User [user] * <--Logsin--> * [userAccount] UserAccount
     User [user] * <--Logsin--> * [adminAccount] AdminAccount
     AdminAccount [adminAccount] * <--Manages--> * [userAccount] UserAccount
+    RemoteDesktopUser [remoteDesktopUser] * <--Extends--> * [userAccount] UserAccount
     UserAccount [userAccount] * <--Access--> * [os] OS
     AdminAccount [adminAccount] * <--Access--> * [os] OS
     WindowsAdmin [windowsAdmin] * <--Extends--> * [adminAccount] AdminAccount
