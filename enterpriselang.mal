@@ -2007,6 +2007,7 @@ category Software {
             ->  systemShutdownOrReboot
 
         | screenCapture
+            developer info: "Binary probability distribution"
             user info: "Adversaries may attempt to take screen captures of the desktop to gather information over the course of an operation." 
             ->  dataCollected
 
