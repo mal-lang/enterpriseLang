@@ -101,7 +101,7 @@ category Software {
                 os.windows.compiledHTMLFile,
                 os.windows.cOR_PROFILER,
                 os.windows.componentObjectModelHijacking,
-                os.windows.controlPanelItems,
+                os.windows.controlPanel,
                 os.windows.deobfuscateOrDecodeFilesOrInformation,
                 os.windows.dLLSearchOrderHijacking,
                 os.windows.domainTrustDiscovery,
@@ -125,8 +125,10 @@ category Software {
                 os.windows.attemptLogonScripts,
                 os.windows.masqueradeTaskOrService,
                 os.windows.modifyRegistry,
+                os.windows.msiexec,
                 os.windows.networkShareConnectionRemoval,
                 os.windows.networkShareDiscovery,
+                os.windows.odbcconf,
                 os.windows.pathInterceptionBySearchOrderHijacking,
                 os.windows.parentPIDSpoofing,
                 os.windows.peripheralDeviceDiscovery,
@@ -140,7 +142,6 @@ category Software {
                 os.windows.rundll32,
                 os.windows.screensaver,
                 os.windows.attemptShortcutModification,
-                os.windows.signedBinaryProxyExecution,
                 os.windows.signedScriptProxyExecution,
                 os.windows.sIPAndTrustProviderHijacking,
                 os.windows.systemServiceDiscovery,
@@ -394,7 +395,6 @@ category Software {
                 os.windows.powerShell,
                 os.windows.remoteDesktopProtocol,
                 os.windows.serviceExecution,
-                os.windows.signedBinaryProxyExecution, 
                 os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
                 os.windows.accessTokenManipulation,
@@ -431,7 +431,6 @@ category Software {
                 os.windows.attemptBITSJobs,
                 os.windows.bootkit,   
                 os.windows.clearWindowsEventLogs,
-                os.windows.controlPanelItems,
                 os.windows.credentialAPIHooking,
                 os.windows.dCShadow,
                 os.windows.dCSync,
@@ -460,8 +459,6 @@ category Software {
                 os.windows.queryRegistry,
                 os.windows.remoteScheduledTask,
                 os.windows.registryRunKeysOrStartupFolder,
-                os.windows.regsvcsOrRegasm,
-                os.windows.regsvr32,
                 os.windows.securitySupportProvider,
                 os.windows.attemptServiceExecution,
                 os.windows.attemptServiceRegistryPermissionsWeakness,
@@ -933,7 +930,7 @@ category Software {
         & spearphishingAttachment
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
             ->  service.os.computer.user.spearphishingAttachmentDownload,
-                service.os.windows.controlPanelItems // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
+                service.os.windows.attemptControlPanel // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
 
         | browserBookmark
             ->  browserBookmarkDiscovery
@@ -1571,8 +1568,11 @@ category Software {
             developer info: "Sources for distribution results: "
             user info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
             ->  service.remoteServices,
-                inputCapture,
-                bruteForce  
+                privateKeysWithPassphrase
+
+        | privateKeysWithPassphrase
+            developer info: "Binary probability distribution. Probability carried by privateKeys and TTC by bruteForce/inputCapture"
+             ->  service.remoteServices
 
         | resourceHijacking {A} [Bernoulli(0.046)*Exponential(48)]
             developer info: "https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.ptsecurity.com/ww-en/analytics/cybersecurity-threatscape-2019-q1/, https://content.fireeye.com/apt-41/rpt-apt41, https://github.com/xmrig/xmrig, https://steemit.com/utopian-io/@afterglow/tutorial-how-to-install-configure-and-use-xmrig-cryptocurrency-miner-for-monero-on-your-computer"
@@ -2361,7 +2361,7 @@ category Software {
                 windows.changeDefaultFileAssociation,
                 windows.attemptDistributedComponentObjectModel,
                 windows.componentFirmware,
-                windows.controlPanelItems,
+                windows.attemptControlPanel,
                 windows.credentialAPIHooking,
                 windows.attemptExecutionThroughAPI,
                 windows.hooking,
@@ -2475,9 +2475,12 @@ category Software {
                 bypassLogAnalysis
 
         & cmstp
-            user info: "Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
+            user info: "Adversaries may abuse CMSTP to proxy execution of malicious code."
             developer info: "Binary probability distribution."
-            ->  attemptBypassUserAccessControl // leads to Bypass User Account Control attack          
+            ->  attemptBypassUserAccessControl, // leads to Bypass User Account Control attack
+                codeProxyExecution,
+                bypassAntivirus,
+                bypassApplicationControl
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
@@ -2499,11 +2502,15 @@ category Software {
             user info: "Adversaries may use Valid Accounts to interact with remote machines by taking advantage of Distributed Component Object Model (DCOM)."
             ->  computer.router.internalNetwork.remoteCOMExecution
 
-        & controlPanelItems [Bernoulli(0.00006)]
-            user info: "Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
+        | attemptControlPanel @hidden
+            ->  controlPanel
+
+        & controlPanel [Bernoulli(0.00006)]
+            user info: "Adversaries may abuse control.exe to proxy execution of malicious payloads."
             developer info: "TTC assumed instant, see mitreattacklang/enterpriselang probabilities/controlPanelItems.md for details. Sources used for probability distribution result: https://attack.mitre.org/software/S0172/, https://threatvector.cylance.com/en_us/home/reaver-mapping-connections-between-disparate-chinese-apt-groups.html, https://nvd.nist.gov/vuln/detail/CVE-2017-11882#vulnConfigurationsArea, https://unit42.paloaltonetworks.com/unit42-new-malware-with-ties-to-sunorcal-discovered/, https://community.spiceworks.com/software/articles/2873-data-snapshot-the-state-of-productivity-suites-in-the-workplace"
             ->  executeCode,
-                service.browser.spearphishingAttachment // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
+                bypassApplicationControl,
+                service.browser.phishing // malicious Control Panel items can be delivered via Phishing campaigns
 
         | componentObjectModelHijacking
             user info: "Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
@@ -2635,9 +2642,21 @@ category Software {
         & mshta [Bernoulli(0.3329)*Exponential(491)]
             user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
             developer info: "Sources used for distribution: https://lolbas-project.github.io/lolbas/Binaries/Mshta/, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/blog/microsoft-html-application-hta-abuse-part-deux/"
-            ->  executeCode,
+            ->  codeProxyExecution,
                 bypassDigitalCertificateValidation,
-                bypassApplicationWhitelisting
+                bypassApplicationControl
+
+        & msiexec
+            user info: "Adversaries may abuse msiexec.exe to proxy execution of malicious payloads."
+            ->  codeProxyExecution,
+                bypassDigitalCertificateValidation,
+                bypassApplicationControl      
+
+        & odbcconf
+            user info: "Adversaries may abuse odbcconf.exe to proxy execution of malicious payloads."
+            ->  codeProxyExecution,
+                bypassDigitalCertificateValidation,
+                bypassApplicationControl 
 
         & exchangeEmailDelegatePermissions
             user info: "Adversaries may grant additional permission levels, such as ReadPermission or FullAccess, to maintain persistent access to an adversary-controlled email account."
@@ -2744,9 +2763,8 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries may use InstallUtil to proxy execution of code through a trusted Windows utility."
             ->  bypassDigitalCertificateValidation,
-                bypassProcessWhitelisting,
-                signedBinaryProxyExecution,
-                signedScriptProxyExecution    
+                bypassApplicationControl,
+                codeProxyExecution  
 
         | interProcessCommunication
             user info: "Adversaries may abuse inter-process communication (IPC) mechanisms for local code or command execution."
@@ -2984,13 +3002,14 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries can use Regsvcs and Regasm to proxy execution of code through a trusted Windows utility. Both utilities may be used to bypass process whitelisting."
             ->  codeProxyExecution, 
-                bypassProcessWhitelisting,
-                bypassDigitalCertificateValidation
+                bypassApplicationControl,
+                bypassDigitalCertificateValidation,
+                attemptComponentObjectModel // register .NET Component Object Model (COM) assemblies
 
         & regsvr32
             developer info: "Binary probability distribution."
             user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
-            ->  bypassProcessWhitelisting,
+            ->  bypassApplicationControl,
                 bypassAntivirus,
                 bypassDigitalCertificateValidation,
                 codeProxyExecution,
@@ -3016,12 +3035,13 @@ category Software {
 
         & rundll32
             developer info: "Binary probability distribution."
-            user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Rundll32 can also been used to execute scripts."
+            user info: "Adversaries may abuse rundll32.exe to proxy execution of malicious code."
             ->  bypassAntivirus,
-                bypassApplicationWhitelisting,
+                bypassApplicationControl,
                 bypassDigitalCertificateValidation,
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
-                executeCode
+                codeProxyExecution,
+                attemptControlPanel // rundll32.exe can also be used to execute Control Panel Item files
 
         & screensaver [Bernoulli(0.01605)*Exponential(96)]
             user info: "Adversaries can use screensaver settings to maintain persistence by setting the screensaver to run malware after a certain timeframe of user inactivity."
@@ -3079,10 +3099,18 @@ category Software {
                 attemptWindowsAdminShares, // leads to Windows Admin Shares attack    
                 windowsRemoteManagement // leads to Windows Remote Management attack          
 
-        & signedBinaryProxyExecution
+        | signedBinaryProxyExecution
             user info: "Several Microsoft signed binaries that are default on Windows installations can be used to proxy execution of other files. This behavior may be abused by adversaries to execute malicious files that could bypass application whitelisting and signature validation on systems."
-            ->  bypassApplicationWhitelisting,
-                bypassDigitalCertificateValidation            
+            ->  compiledHTMLFile,
+                attemptControlPanel,
+                cmstp,
+                installUtil,
+                mshta,
+                msiexec,
+                odbcconf,
+                regsvcsOrRegasm,
+                regsvr32,
+                rundll32        
 
         & signedScriptProxyExecution
             user info: "Scripts signed with trusted certificates can be used to proxy execution of malicious files."
@@ -3470,7 +3498,7 @@ category Software {
                 appCertDLLs,
                 appInitDLLs,
                 cmstp,
-                controlPanelItems,
+                controlPanel,
                 compiledHTMLFile,
                 cOR_PROFILER,
                 dLLSearchOrderHijacking,
@@ -3479,11 +3507,11 @@ category Software {
                 installUtil,
                 mshta,
                 networkShareDiscovery,
+                odbcconf,
                 pathInterception,
                 queryRegistry,
                 regsvcsOrRegasm,
                 screensaver,
-                signedBinaryProxyExecution,
                 signedScriptProxyExecution,
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
@@ -3554,6 +3582,7 @@ category Software {
                 domainControllerAuthentication,
                 lSASSMemory,
                 lSASecrets,
+                msiexec,
                 nTDS,
                 passTheHash,
                 rDPHijacking,
@@ -3566,7 +3595,7 @@ category Software {
         # restrictFileAndDirectoryPermissions
             user info: "https://attack.mitre.org/mitigations/M1022/"
             +>  clearWindowsEventLogs,
-                controlPanelItems,
+                controlPanel,
                 cOR_PROFILER,
                 dLLSideLoading,
                 bootOrLogonInitializationScripts,
@@ -3628,6 +3657,7 @@ category Software {
                 installUtil,
                 lLMNR_NBT_NS_PoisoningAndRelay,
                 mshta,
+                odbcconf,
                 powerShell,
                 rDPHijacking,
                 registryKeysEnabled,
