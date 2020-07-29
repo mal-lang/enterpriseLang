@@ -15,3 +15,7 @@ What this does is to call the system command `launchctl` to add a plist entry in
 
 ## Result
 ... instant TTC. 
+
+## Discussion
+
+This technique may need review as it is a parent for many other techniques.
