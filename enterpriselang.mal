@@ -231,7 +231,7 @@ category Software {
             ->  userRights,
                 os.attemptValidAccounts,
                 os.computer.router.internalNetwork.exchangeServerCollection,
-                os.service.attemptRemoteServices
+                os.service.remoteServices
 
         & userExecution
             developer info: "Binary probability relation."
@@ -366,7 +366,7 @@ category Software {
         | adminCredentials
             ->  adminRights,
                 os.attemptValidAccounts,
-                os.service.attemptRemoteServices
+                os.service.remoteServices
 
         | attemptCreateAccount @hidden
             ->  createAccount
@@ -556,13 +556,16 @@ category Software {
 
         | serviceInformation 
 
-        | attemptRemoteServices @hidden
-             ->  remoteServices
-
-        & remoteServices [Bernoulli(0.04346)]
+        | remoteServices [Bernoulli(0.04346)]
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/"
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
-            ->  os.computer.router.internalNetwork.c2Connected
+            ->  os.vNC,
+                os.windows.attemptRemoteDesktopProtocol,
+                os.windows.attemptWindowsAdminShares,
+                os.windows.attemptDistributedComponentObjectModel,
+                os.windows.attemptWindowsRemoteManagement,
+                os.linux.sSH,
+                os.macOS.sSH
 
         | remoteServiceSessionHijacking
             user info: "Adversaries may take control of preexisting sessions with remote services to move laterally in an environment."
@@ -668,7 +671,7 @@ category Software {
             developer info: "Sources for distribution result: https://www.securitymetrics.com/blog/remote-access-attacks-how-protect-against-malware, https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://securitybrief.com.au/story/15-000-companies-still-critically-vulnerable-from-citrix-security-flaws-report"
             ->  os.computer.router.internalNetwork.persistence,
                 os.computer.router.internalNetwork.remoteAccess,
-                attemptRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
+                remoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
                 attemptExploitationOfRemoteServices
 
         # applicationIsolationAndSandboxing
@@ -1558,7 +1561,7 @@ category Software {
 
         & privateKeys
             user info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
-            ->  service.attemptRemoteServices,
+            ->  service.remoteServices,
                 inputCapture,
                 bruteForce  
 
@@ -1871,14 +1874,17 @@ category Software {
         & validAccounts
             developer info: "Binary probability relation."
             user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
-            ->  service.attemptRemoteServices,
+            ->  service.remoteServices,
                 service.attemptExternalRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
                 computer.router.internalNetwork.bypassNetworkIntrusionDetection,
                 bypassHostIntrusionPrevention,
                 bypassProcessWhitelisting,
                 bypassSystemAccessControls,
                 bypassAntivirus,
-                graphicalUserInterface 
+                graphicalUserInterface
+
+        & vNC
+            user info: "Adversaries may use Valid Accounts to remotely control machines using Virtual Network Computing (VNC)."
 
         | attemptCredentialsInRegistry @hidden
             ->  credentialsInRegistry
@@ -2179,6 +2185,7 @@ category Software {
                 exfiltrationOverBluetooth,
                 manInTheMiddle,
                 runVirtualInstance,
+                vNC,
                 service.exploitationOfRemoteServices,
                 service.externalRemoteServices,
                 computer.exfiltrationOverPhysicalMedium
@@ -2205,11 +2212,8 @@ category Software {
                 service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
-                python
-
-        # filterNetworkTraffic [Bernoulli(0.8217)]
-            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
-            user info: "https://attack.mitre.org/mitigations/M1037/"
+                python,
+                vNC
 
         # applicationDeveloperGuidance
             user info: "https://attack.mitre.org/mitigations/M1013/"
@@ -2291,6 +2295,7 @@ category Software {
         # limitSoftwareInstallation
             user info: "https://attack.mitre.org/mitigations/M1033/"
             ->  python,
+                vNC,
                 service.browser.browserExtensions
 
         # updateSoftware [Bernoulli(0.567125)]
@@ -3026,7 +3031,7 @@ category Software {
         & sIDHistoryInjection
             user info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
             ->  persistence,
-                service.attemptRemoteServices, // leads to Remote Services attack
+                service.remoteServices, // leads to Remote Services attack
                 attemptWindowsAdminShares, // leads to Windows Admin Shares attack    
                 windowsRemoteManagement // leads to Windows Remote Management attack          
 
@@ -3151,6 +3156,9 @@ category Software {
         & windowsManagementInstrumentationEventSubscription
             user info: "Adversaries may use the capabilities of WMI to subscribe to an event and execute arbitrary code when that event occurs, providing persistence on a system."
             ->  persistence
+
+        | attemptWindowsRemoteManagement @hidden
+            ->  windowsRemoteManagement
 
         & windowsRemoteManagement
             user info: "WinRM allows a user to interact with a remote system."
@@ -3582,12 +3590,6 @@ category Software {
                 dynamicDataExchange,
                 service.cloudService.officeTemplateMacros
 
-        # filterNetworkTraffic [Bernoulli(0.8217)] // Use host-based security software to block LLMNR/NetBIOS traffic.
-            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
-            user info: "https://attack.mitre.org/mitigations/M1037/"   
-            +>  lLMNR_NBT_NS_PoisoningAndRelay,
-                forcedAuthentication 
-
         # updateSoftware [Bernoulli(0.567125)]
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
@@ -3725,7 +3727,11 @@ category Software {
             developer info: "Binary probability distribution."
             user info:"The source command loads functions into the current shell or executes files in the current context."
             ->  executeCode
-            
+
+        & sSH
+            user info: "Adversaries may use Valid Accounts to log into remote machines using Secure Shell (SSH). The adversary may then perform actions as the logged-on user."
+            ->  computer.router.internalNetwork.c2Connected
+
         | attemptSSHAuthorizedKeys @hidden
             ->  sSHAuthorizedKeys
 
@@ -3794,7 +3800,8 @@ category Software {
 
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
-            +>  sSHAuthorizedKeys,
+            +>  sSH,
+                sSHAuthorizedKeys,
                 sSHHijacking
 
         # encryptSensitiveInformation
@@ -3818,7 +3825,8 @@ category Software {
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             user info: "https://attack.mitre.org/mitigations/M1032/"
-            +>  pluggableAuthenticationModules
+            +>  pluggableAuthenticationModules,
+                sSH
             
         # operatingSystemConfiguration
             user info: "https://attack.mitre.org/mitigations/M1028/" 
@@ -3860,9 +3868,6 @@ category Software {
         # remoteDataStorage 
             user info: "https://attack.mitre.org/mitigations/M1029/"
             +>  clearLinuxSystemLogs
-
-        # userAccountControl
-            user info: "https://attack.mitre.org/mitigations/M1052/"
     }
 
     asset MacOS extends OS {
@@ -4092,6 +4097,10 @@ category Software {
             developer info: "Binary probability distribution."
             ->  executeCode
 
+        & sSH
+            user info: "Adversaries may use Valid Accounts to log into remote machines using Secure Shell (SSH). The adversary may then perform actions as the logged-on user."
+            ->  computer.router.internalNetwork.c2Connected
+
         | attemptSSHAuthorizedKeys @hidden
             ->  sSHAuthorizedKeys
 
@@ -4182,6 +4191,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1042/"
             +>  emond,
                 reopenedApplications,
+                sSH,
                 sSHAuthorizedKeys,
                 sSHHijacking
 
@@ -4207,7 +4217,8 @@ category Software {
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             user info: "https://attack.mitre.org/mitigations/M1032/"
-            +>  pluggableAuthenticationModules
+            +>  pluggableAuthenticationModules,
+                sSH
 
         # operatingSystemConfiguration
             user info: "https://attack.mitre.org/mitigations/M1028/" 
@@ -4246,9 +4257,6 @@ category Software {
         # remoteDataStorage 
             user info: "https://attack.mitre.org/mitigations/M1029/"
             +>  clearMacSystemLogs
-
-        # userAccountControl
-            user info: "https://attack.mitre.org/mitigations/M1052/"
     }    
 }
 
@@ -4379,11 +4387,14 @@ category Network {
                 router.computer.os.lateralToolTransfer,
                 router.computer.os.manInTheMiddle,
                 router.computer.os.dNS,
+                router.computer.os.vNC,
                 router.computer.os.protocolTunneling,
                 router.computer.os.multiHopProxy,
                 router.computer.os.reflectionAmplification,
                 router.computer.os.exfiltrationOverAternativeProtocol,
-                router.computer.os.windows.bITSJobs
+                router.computer.os.windows.bITSJobs,
+                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
+                router.computer.os.windows.forcedAuthentication 
 
         # limitAccessToResourceOverNetwork
             user info: "https://attack.mitre.org/mitigations/M1035/"   
