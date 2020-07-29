@@ -958,6 +958,7 @@ category Software {
                 spearphishingLink,
                 service.spearphishingViaService,
                 driveByCompromise,
+                service.os.commandAndScriptingInterpreter,
                 service.os.domainGenerationAlgorithms,
                 service.os.windows.compiledHTMLFile,
                 service.os.computer.router.externalNetwork.webService,
@@ -1058,10 +1059,11 @@ category Software {
             ->  userAccount.userInformation,
                 persistence
 
-        | commandAndScriptingInterpreter [Bernoulli(0.24)]
+        & commandAndScriptingInterpreter [Bernoulli(0.24)]
             developer info: "Sources for distribution results: https://www.itjungle.com/2020/06/22/security-gaining-attention-on-ibm-i-but-more-progress-needed/"
             user info: "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries."
             ->  dataFromLocalSystem,
+                screenCapture,
                 visualBasic,
                 python,
                 javaScriptOrJScript,
@@ -2004,6 +2006,10 @@ category Software {
             user info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."    
             ->  systemShutdownOrReboot
 
+        | screenCapture
+            user info: "Adversaries may attempt to take screen captures of the desktop to gather information over the course of an operation." 
+            ->  dataCollected
+
         | scheduledExfiltration [Bernoulli(0.92)*Exponential(0.384)]
             developer info: "Sources for distribution results: https://www.welivesecurity.com/wp-content/uploads/2016/10/eset-sednit-part-2.pdf, https://www.welivesecurity.com/wp-content/uploads/2020/05/ESET_Turla_ComRAT.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
             ->  computer.router.internalNetwork.dataExfiltration         
@@ -2069,6 +2075,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1049/"
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average"
             ->  antivirusCheck,
+                commandAndScriptingInterpreter,
                 visualBasic,
                 python,
                 service.browser.spearphishingAttachment,
@@ -2167,6 +2174,7 @@ category Software {
                 scripting,
                 visualBasic,
                 communicationThroughRemovableMedia,
+                commandAndScriptingInterpreter,
                 exfiltrationOverBluetooth,
                 manInTheMiddle,
                 runVirtualInstance,
@@ -2207,7 +2215,8 @@ category Software {
 
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/" 
-            ->  matchLegitimateNameOrLocation,
+            ->  commandAndScriptingInterpreter,
+                matchLegitimateNameOrLocation,
                 service.applicationDeploymentSoftware,
                 service.implantContainerImage
 
@@ -2235,6 +2244,7 @@ category Software {
         # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
             user info: "https://attack.mitre.org/mitigations/M1038/"
             ->  applicationWindowDiscovery,
+                commandAndScriptingInterpreter,
                 binaryPadding,
                 service.browser.browserExtensions,
                 computer.collectAudio,
@@ -2253,6 +2263,7 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  credentialsInRegistry,
+                commandAndScriptingInterpreter,
                 webPortalCapture,
                 service.implantContainerImage,
                 service.cloudService.additionalAzureServicePrincipalCredentials,
@@ -4610,6 +4621,7 @@ category Hardware {
                 os.fileDeletion,
                 os.windows.attemptPowerShell,
                 os.accountManipulation,
+                os.screenCapture,
                 os.service.attemptExternalRemoteServices,
                 peripheralDevice.removableMedia.infectedMedia,
                 peripheralDevice.removableMedia.dataFromRemovableMedia
