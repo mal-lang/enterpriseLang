@@ -3327,7 +3327,8 @@ category Software {
             developer info: "TTC assumed instant, see Dropbox/enterpriselang probability findings/bootkit.md for more info. sources used for distribution result: https://www.eset.com/afr/about/newsroom/press-releases-afr/research/dissection-of-sednit-espionage-group-1/, https://gs.statcounter.com/os-version-market-share/windows/desktop/worldwide, https://netmarketshare.com/operating-system-market-share.aspx?, https://www.fireeye.com/blog/threat-research/2015/12/fin1-targets-boot-record.html, https://www.hanselman.com/blog/HowManyPCsInTheWorldHaveTheNETFrameworkInstalled.aspx" 
             ->  persistence
             
-        | videoCapture
+        | videoCapture [Bernoulli(0.74)*Exponential(0.1)]
+            developer info: "Sources for distribution results: http://www.storiprotection.fr/EagleEye.pdf, http://zugara.com/webcam-penetration-rates-adoption"
             ->  computer.collectVideo
 
         | virtualizationOrSandboxEvasion [Bernoulli(0.18)]
@@ -4116,7 +4117,8 @@ category Software {
             ->  executeCode,
                 persistence
 
-        | videoCapture
+        | videoCapture [Bernoulli(0.74)*Exponential(0.1)]
+            developer info: "Sources for distribution results: http://www.storiprotection.fr/EagleEye.pdf, http://zugara.com/webcam-penetration-rates-adoption"
             ->  computer.collectVideo     
 
         | spaceAfterFileName [Exponential(1)]
