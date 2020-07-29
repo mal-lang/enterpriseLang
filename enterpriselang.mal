@@ -138,7 +138,6 @@ category Software {
                 os.windows.regsvcsOrRegasm,
                 os.windows.regsvr32,
                 os.windows.rundll32,
-                os.windows.attemptScheduledTask,
                 os.windows.screensaver,
                 os.windows.attemptShortcutModification,
                 os.windows.signedBinaryProxyExecution,
@@ -172,6 +171,8 @@ category Software {
                 os.linux.systemdService,
                 os.linux.trap,
                 os.linux.attemptSSHAuthorizedKeys,
+                os.linux.cron,
+                os.macOS.cron,
                 os.macOS.attemptSSHAuthorizedKeys,
                 os.macOS.bash_profileAndBashrc,
                 os.macOS.clearCommandHistory,
@@ -231,7 +232,7 @@ category Software {
             ->  userRights,
                 os.attemptValidAccounts,
                 os.computer.router.internalNetwork.exchangeServerCollection,
-                os.service.attemptRemoteServices
+                os.service.remoteServices
 
         & userExecution
             developer info: "Binary probability relation."
@@ -280,6 +281,7 @@ category Software {
                 os.indicatorBlocking,
                 os.sharepoint,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
+                os.windows.at,
                 os.windows.serviceStop,
                 os.windows.bITSJobs,
                 os.windows.cOR_PROFILER,
@@ -301,10 +303,14 @@ category Software {
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
                 os.windows.winlogonHelperDLL,
+                os.linux.at,
                 os.linux.localJobScheduling,
                 os.linux.systemdService,
+                os.linux.cron,
+                os.macOS.cron,
                 os.macOS.launchAgent,
                 os.macOS.launchctl,
+                os.macOS.launchd,
                 os.macOS.launchDaemon,
                 os.macOS.localJobScheduling,
                 os.macOS.rc_common,
@@ -366,7 +372,7 @@ category Software {
         | adminCredentials
             ->  adminRights,
                 os.attemptValidAccounts,
-                os.service.attemptRemoteServices
+                os.service.remoteServices
 
         | attemptCreateAccount @hidden
             ->  createAccount
@@ -388,7 +394,6 @@ category Software {
                 os.windows.powerShell,
                 os.windows.remoteDesktopProtocol,
                 os.windows.serviceExecution,
-                os.windows.serverSoftwareComponent,
                 os.windows.signedBinaryProxyExecution, 
                 os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
@@ -398,7 +403,6 @@ category Software {
                 os.windows.windowsManagementInstrumentationEventSubscription,
                 os.windows.windowsRemoteManagement,
                 os.linux.kernelModulesAndExtensions,
-                os.linux.serverSoftwareComponent,
                 os.linux.sudoAndSudoCaching,
                 os.linux.systemdService,
                 os.macOS.kernelModulesAndExtensions,
@@ -417,6 +421,7 @@ category Software {
         | adminRights
             user info: "WindowsAdmin account is equivalent to Unix Root account."
             +>  os.windows.accessibilityFeatures,
+                os.windows.at,
                 os.windows.attemptAccessTokenManipulation,
                 os.windows.attemptServiceStop,
                 os.windows.appCertDLLs,
@@ -458,15 +463,16 @@ category Software {
                 os.windows.regsvcsOrRegasm,
                 os.windows.regsvr32,
                 os.windows.securitySupportProvider,
-                os.windows.serverSoftwareComponent,
                 os.windows.attemptServiceExecution,
                 os.windows.attemptServiceRegistryPermissionsWeakness,
                 os.windows.attemptShortcutModification,
                 os.windows.attemptSIDHistoryInjection,
-                os.windows.attemptScheduledTask,
+                os.windows.scheduledTask,
+                os.windows.sQLStoredProcedures,
                 os.windows.systemFirmware,
                 os.windows.systemServiceDiscovery,
                 os.windows.attemptTimeProviders,
+                os.windows.transportAgent,
                 os.windows.disableWindowsEventLogging,
                 os.windows.attemptWindowsAdminShares,
                 os.windows.windowsManagementInstrumentation,
@@ -483,11 +489,12 @@ category Software {
             +>  os.linux._etc_passwdAND_etc_shadow,
                 os.linux.kernelModulesAndExtensions,
                 os.linux.masqueradeTaskOrService,
-                os.linux.serverSoftwareComponent,
                 os.linux.sSHHijacking,
                 os.linux.bootkit,
                 os.linux.localJobScheduling,
                 os.linux.securitydMemory,
+                os.linux.sQLStoredProcedures,
+                os.linux.transportAgent,
                 os.linux.pluggableAuthenticationModules,
                 os.linux.procFilesystem,
                 os.macOS.pluggableAuthenticationModules,
@@ -500,6 +507,7 @@ category Software {
                 os.macOS.kernelModulesAndExtensions,
                 os.macOS.attemptLaunchAgent,
                 os.macOS.launchctl,
+                os.macOS.launchd,
                 os.macOS.launchDaemon,
                 os.macOS.attemptPlistModification,
                 os.macOS.rc_common,
@@ -556,13 +564,16 @@ category Software {
 
         | serviceInformation 
 
-        | attemptRemoteServices @hidden
-             ->  remoteServices
-
-        & remoteServices [Bernoulli(0.04346)]
+        | remoteServices [Bernoulli(0.04346)]
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/"
             user info: "An adversary may use Valid Accounts to log into a service specifically designed to accept remote connections."
-            ->  os.computer.router.internalNetwork.c2Connected
+            ->  os.vNC,
+                os.windows.attemptRemoteDesktopProtocol,
+                os.windows.attemptWindowsAdminShares,
+                os.windows.attemptDistributedComponentObjectModel,
+                os.windows.attemptWindowsRemoteManagement,
+                os.linux.sSH,
+                os.macOS.sSH
 
         | remoteServiceSessionHijacking
             user info: "Adversaries may take control of preexisting sessions with remote services to move laterally in an environment."
@@ -668,7 +679,7 @@ category Software {
             developer info: "Sources for distribution result: https://www.securitymetrics.com/blog/remote-access-attacks-how-protect-against-malware, https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://securitybrief.com.au/story/15-000-companies-still-critically-vulnerable-from-citrix-security-flaws-report"
             ->  os.computer.router.internalNetwork.persistence,
                 os.computer.router.internalNetwork.remoteAccess,
-                attemptRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
+                remoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
                 attemptExploitationOfRemoteServices
 
         # applicationIsolationAndSandboxing
@@ -1559,12 +1570,9 @@ category Software {
         & privateKeys [Bernoulli(0.51)]
             developer info: "Sources for distribution results: "
             user info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
-            ->  service.attemptRemoteServices,
-                privateKeysWithPassphrase
-
-        | privateKeysWithPassphrase
-            developer info: "Binary probability distribution. Probability carried by privateKeys and TTC by bruteForce/inputCapture"
-            ->  service.attemptRemoteServices
+            ->  service.remoteServices,
+                inputCapture,
+                bruteForce  
 
         | resourceHijacking {A} [Bernoulli(0.046)*Exponential(48)]
             developer info: "https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.ptsecurity.com/ww-en/analytics/cybersecurity-threatscape-2019-q1/, https://content.fireeye.com/apt-41/rpt-apt41, https://github.com/xmrig/xmrig, https://steemit.com/utopian-io/@afterglow/tutorial-how-to-install-configure-and-use-xmrig-cryptocurrency-miner-for-monero-on-your-computer"
@@ -1623,6 +1631,23 @@ category Software {
             user info: "An adversary may attempt to block indicators or events typically captured by sensors from being gathered and analyzed."
             ->  bypassAntivirus,
                 bypassHostIntrusionPrevention
+
+        | scheduledTaskOrJob
+            user info: "Adversaries may abuse task scheduling functionality to facilitate initial or recurring execution of malicious code."
+            ->  windows.attemptScheduledTask,
+                windows.at,
+                linux.at,
+                linux.cron,
+                macOS.cron,
+                macOS.launchd
+
+        | serverSoftwareComponent
+            user info: "Adversaries may abuse legitimate extensible development features of servers to establish persistent access to systems."
+            ->  computer.router.internalNetwork.webShell,
+                windows.attemptSQLStoredProcedures,
+                windows.attemptTransportAgent,
+                linux.attemptSQLStoredProcedures,
+                linux.attemptTransportAgent
 
         | softwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
@@ -1878,14 +1903,17 @@ category Software {
         & validAccounts
             developer info: "Binary probability relation."
             user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
-            ->  service.attemptRemoteServices,
+            ->  service.remoteServices,
                 service.attemptExternalRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
                 computer.router.internalNetwork.bypassNetworkIntrusionDetection,
                 bypassHostIntrusionPrevention,
                 bypassProcessWhitelisting,
                 bypassSystemAccessControls,
                 bypassAntivirus,
-                graphicalUserInterface 
+                graphicalUserInterface
+
+        & vNC
+            user info: "Adversaries may use Valid Accounts to remotely control machines using Virtual Network Computing (VNC)."
 
         | attemptCredentialsInRegistry @hidden
             ->  credentialsInRegistry
@@ -2186,6 +2214,7 @@ category Software {
                 exfiltrationOverBluetooth,
                 manInTheMiddle,
                 runVirtualInstance,
+                vNC,
                 service.exploitationOfRemoteServices,
                 service.externalRemoteServices,
                 computer.exfiltrationOverPhysicalMedium
@@ -2212,11 +2241,8 @@ category Software {
                 service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
-                python
-
-        # filterNetworkTraffic [Bernoulli(0.8217)]
-            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
-            user info: "https://attack.mitre.org/mitigations/M1037/"
+                python,
+                vNC
 
         # applicationDeveloperGuidance
             user info: "https://attack.mitre.org/mitigations/M1013/"
@@ -2276,8 +2302,7 @@ category Software {
                 service.implantContainerImage,
                 service.cloudService.additionalAzureServicePrincipalCredentials,
                 service.cloudService.exchangeEmailDelegatePermissions,
-                service.cloudService.addOffice365GlobalAdministratorRole,
-                computer.router.internalNetwork.webShell
+                service.cloudService.addOffice365GlobalAdministratorRole
 
         # encryptSensitiveInformation 
             user info: "https://attack.mitre.org/mitigations/M1041/"
@@ -2298,6 +2323,7 @@ category Software {
         # limitSoftwareInstallation
             user info: "https://attack.mitre.org/mitigations/M1033/"
             ->  python,
+                vNC,
                 service.browser.browserExtensions
 
         # updateSoftware [Bernoulli(0.567125)]
@@ -2306,8 +2332,7 @@ category Software {
                 service.browser.driveByCompromise,
                 service.exploitationForCredentialAccess,
                 service.exploitationForPrivilegeEscalation,
-                service.exploitationOfRemoteServices,
-                computer.router.internalNetwork.webShell  
+                service.exploitationOfRemoteServices 
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -2355,13 +2380,14 @@ category Software {
                 windows.processDoppelganging,
                 windows.rDPHijacking,
                 windows.securityAccountManager,
-                windows.serverSoftwareComponent,
                 windows.attemptServiceExecution,
                 windows.attemptServiceRegistryPermissionsWeakness,
                 windows.attemptSIDHistoryInjection,
                 windows.sIPAndTrustProviderHijacking,
                 windows.systemServiceDiscovery,
                 windows.attemptServiceStop,
+                windows.attemptSQLStoredProcedures,
+                windows.attemptTransportAgent,
                 windows.attemptSystemFirmware,
                 windows.attemptTimeProviders,
                 windows.attemptWindowsManagementInstrumentationEventSubscription,
@@ -2389,6 +2415,11 @@ category Software {
     }
     
     asset Windows extends OS {
+        & at
+            user info: "Adversaries may abuse the at.exe utility to perform task scheduling for initial or recurring execution of malicious code."
+            ->  attemptScheduledTask, // at can be used to schedule a task on a system
+                executeCode
+
         | attemptAppCertDLLs @hidden
             ->  appCertDLLs 
             
@@ -2869,6 +2900,20 @@ category Software {
             ->  os.service.attemptExploitationForPrivilegeEscalation,
                 persistence
 
+        | attemptSQLStoredProcedures @hidden
+            ->  sQLStoredProcedures
+
+        & sQLStoredProcedures
+            user info: "Adversaries may abuse Microsoft transport agents to establish persistent access to systems."
+            ->  persistence
+
+        | attemptTransportAgent @hidden
+            ->  transportAgent
+
+        & transportAgent
+            user info: "Adversaries may abuse SQL stored procedures to establish persistent access to systems."
+            ->  persistence
+
         | attemptPowerShell @hidden
             user info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
             ->  powerShell,
@@ -2976,11 +3021,7 @@ category Software {
                 bypassApplicationWhitelisting,
                 bypassDigitalCertificateValidation,
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
-                executeCode  
-
-        & serverSoftwareComponent
-            user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
-            ->  persistence
+                executeCode
 
         & screensaver [Bernoulli(0.01605)*Exponential(96)]
             user info: "Adversaries can use screensaver settings to maintain persistence by setting the screensaver to run malware after a certain timeframe of user inactivity."
@@ -3034,7 +3075,7 @@ category Software {
         & sIDHistoryInjection
             user info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
             ->  persistence,
-                service.attemptRemoteServices, // leads to Remote Services attack
+                service.remoteServices, // leads to Remote Services attack
                 attemptWindowsAdminShares, // leads to Windows Admin Shares attack    
                 windowsRemoteManagement // leads to Windows Remote Management attack          
 
@@ -3159,6 +3200,9 @@ category Software {
         & windowsManagementInstrumentationEventSubscription
             user info: "Adversaries may use the capabilities of WMI to subscribe to an event and execute arbitrary code when that event occurs, providing persistence on a system."
             ->  persistence
+
+        | attemptWindowsRemoteManagement @hidden
+            ->  windowsRemoteManagement
 
         & windowsRemoteManagement
             user info: "WinRM allows a user to interact with a remote system."
@@ -3377,7 +3421,8 @@ category Software {
 
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
-            +>  domainTrustDiscovery,
+            +>  at,
+                domainTrustDiscovery,
                 bypassUserAccessControl,
                 dLLSearchOrderHijacking,
                 dLLSideLoading,
@@ -3387,9 +3432,10 @@ category Software {
                 pathInterception,
                 remoteDesktopProtocol,
                 rDPHijacking,
-                serverSoftwareComponent,
                 servicesFilePermissionsWeakness,
                 scheduledTask,
+                sQLStoredProcedures,
+                transportAgent,
                 windowsService
 
         # behaviorPreventionOnEndpoint
@@ -3410,7 +3456,8 @@ category Software {
                 powerShell,
                 powerShellUserProfile,
                 powerShellAdminProfile,
-                serverSoftwareComponent        
+                sQLStoredProcedures,
+                transportAgent
 
         # credentialAccessProtection
             user info: "https://attack.mitre.org/mitigations/M1043/"
@@ -3464,7 +3511,8 @@ category Software {
 
         # operatingSystemConfiguration
             user info: "https://attack.mitre.org/mitigations/M1028/" 
-            +>  passwordFilterDLL,
+            +>  at,
+                passwordFilterDLL,
                 bITSJobs,
                 cachedDomainCredentials,
                 lSASSMemory,
@@ -3496,7 +3544,8 @@ category Software {
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            +>  bootkit,
+            +>  at,
+                bootkit,
                 bypassUserAccessControl,
                 cachedDomainCredentials,
                 componentObjectModel,
@@ -3510,6 +3559,8 @@ category Software {
                 rDPHijacking,
                 scheduledTask,
                 securityAccountManager,
+                sQLStoredProcedures,
+                transportAgent,
                 windowsFileAndDirectoryPermissionsModification
 
         # restrictFileAndDirectoryPermissions
@@ -3590,12 +3641,6 @@ category Software {
                 dynamicDataExchange,
                 service.cloudService.officeTemplateMacros
 
-        # filterNetworkTraffic [Bernoulli(0.8217)] // Use host-based security software to block LLMNR/NetBIOS traffic.
-            developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
-            user info: "https://attack.mitre.org/mitigations/M1037/"   
-            +>  lLMNR_NBT_NS_PoisoningAndRelay,
-                forcedAuthentication 
-
         # updateSoftware [Bernoulli(0.567125)]
             user info: "https://attack.mitre.org/mitigations/M1051/" 
             +>  appInitDLLs,
@@ -3617,6 +3662,10 @@ category Software {
     }
 
     asset Linux extends OS {
+        & at
+            user info: "Adversaries may abuse the at utility to perform task scheduling for initial or recurring execution of malicious code."
+            ->  executeCode
+
         | attemptBootkit @hidden
             ->  bootkit
 
@@ -3635,6 +3684,10 @@ category Software {
 
         & clearLinuxSystemLogs
             user info: "Adversaries may clear system logs to hide evidence of an intrusion. macOS and Linux both keep track of system or user-initiated actions via system logs."
+
+        & cron
+            user info: "Adversaries may abuse the cron utility to perform task scheduling for initial or recurring execution of malicious code."
+            ->  persistence
 
         & _etc_passwdAND_etc_shadow
             user info: "Adversaries may attempt to dump the contents of /etc/passwd and /etc/shadow to enable offline password cracking."
@@ -3712,10 +3765,6 @@ category Software {
             ->  bypassAntivirus,
                 bypassApplicationControl
 
-        & serverSoftwareComponent
-            user info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
-            ->  persistence
-
         | attemptSetuidAndSetgid @hidden
             ->  setuidAndSetgid      
 
@@ -3733,7 +3782,11 @@ category Software {
             developer info: "Binary probability distribution."
             user info:"The source command loads functions into the current shell or executes files in the current context."
             ->  executeCode
-            
+
+        & sSH
+            user info: "Adversaries may use Valid Accounts to log into remote machines using Secure Shell (SSH). The adversary may then perform actions as the logged-on user."
+            ->  computer.router.internalNetwork.c2Connected
+
         | attemptSSHAuthorizedKeys @hidden
             ->  sSHAuthorizedKeys
 
@@ -3746,6 +3799,13 @@ category Software {
             user info: "In order to move laterally from a compromised host, adversaries may take advantage of trust relationships established with other systems via public key authentication in active SSH sessions by hijacking an existing connection to another system."
             ->  sSHCredentialInterception
 
+        | attemptSQLStoredProcedures @hidden
+            ->  sQLStoredProcedures
+
+        & sQLStoredProcedures
+            user info: "Adversaries may abuse SQL stored procedures to establish persistent access to systems."
+            ->  persistence
+
         & sudoAndSudoCaching [Exponential(288)]
             developer info: "Sources for distribution results: https://www.sudo.ws/man/1.8.15/sudoers.man.html"
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
@@ -3756,6 +3816,13 @@ category Software {
 
         & systemdService
             user info: "Adversaries have used systemd functionality to establish persistent access to victim systems by creating and/or modifying service unit files that cause systemd to execute malicious commands at recurring intervals, such as at system boot."
+            ->  persistence
+
+        | attemptTransportAgent @hidden
+            ->  transportAgent
+
+        & transportAgent
+            user info: "Adversaries may abuse SQL stored procedures to establish persistent access to systems."
             ->  persistence
 
         | trap [Exponential(0.1)]
@@ -3784,7 +3851,10 @@ category Software {
 
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
-            +>  serverSoftwareComponent
+            +>  at,
+                cron,
+                sQLStoredProcedures,
+                transportAgent
 
         # behaviorPreventionOnEndpoint
             user info : "https://attack.mitre.org/mitigations/M1040/"
@@ -3798,11 +3868,13 @@ category Software {
 
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
-            +>  serverSoftwareComponent
+            +>  sQLStoredProcedures,
+                transportAgent
 
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
-            +>  sSHAuthorizedKeys,
+            +>  sSH,
+                sSHAuthorizedKeys,
                 sSHHijacking
 
         # encryptSensitiveInformation
@@ -3826,7 +3898,8 @@ category Software {
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             user info: "https://attack.mitre.org/mitigations/M1032/"
-            +>  pluggableAuthenticationModules
+            +>  pluggableAuthenticationModules,
+                sSH
             
         # operatingSystemConfiguration
             user info: "https://attack.mitre.org/mitigations/M1028/" 
@@ -3847,10 +3920,12 @@ category Software {
             +>  bootkit,
                 _etc_passwdAND_etc_shadow,
                 sSHHijacking,
+                sQLStoredProcedures,
                 sudoAndSudoCaching,
                 pluggableAuthenticationModules,
                 procFilesystem,
                 ptraceSystemCalls,
+                transportAgent,
                 linuxFileAndDirectoryPermissionsModification
 
         # restrictFileAndDirectoryPermissions
@@ -3868,9 +3943,6 @@ category Software {
         # remoteDataStorage 
             user info: "https://attack.mitre.org/mitigations/M1029/"
             +>  clearLinuxSystemLogs
-
-        # userAccountControl
-            user info: "https://attack.mitre.org/mitigations/M1052/"
     }
 
     asset MacOS extends OS {
@@ -3908,6 +3980,10 @@ category Software {
             user info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
             ->  bypassLogAnalysis, 
                 bypassHostForensicAnalysis
+
+        & cron
+            user info: "Adversaries may abuse the cron utility to perform task scheduling for initial or recurring execution of malicious code."
+            ->  persistence
 
         & dylibHijacking [Bernoulli(0.16)] 
             user info: "Adversaries can take advantage of ambiguous paths to plant dylibs to gain privilege escalation or persistence."
@@ -4012,6 +4088,11 @@ category Software {
                 bypassProcessWhitelisting,
                 bypassFileOrPathWhitelisting  
 
+        & launchd
+            user info: "Adversaries may abuse the Launchd daemon to perform task scheduling for initial or recurring execution of malicious code."
+            ->  executeCode,
+                persistence   
+
         | attemptLaunchDaemon @hidden
             ->  launchDaemon
 
@@ -4103,6 +4184,10 @@ category Software {
             developer info: "Binary probability distribution."
             ->  executeCode
 
+        & sSH
+            user info: "Adversaries may use Valid Accounts to log into remote machines using Secure Shell (SSH). The adversary may then perform actions as the logged-on user."
+            ->  computer.router.internalNetwork.c2Connected
+
         | attemptSSHAuthorizedKeys @hidden
             ->  sSHAuthorizedKeys
 
@@ -4180,7 +4265,9 @@ category Software {
 
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
-            +>  lC_LOAD_DYLIB_Addition
+            +>  lC_LOAD_DYLIB_Addition,
+                cron,
+                launchd
 
         # codeSigning [Bernoulli(0.28)]
             user info: "https://attack.mitre.org/mitigations/M1045/"  
@@ -4193,6 +4280,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1042/"
             +>  emond,
                 reopenedApplications,
+                sSH,
                 sSHAuthorizedKeys,
                 sSHHijacking
 
@@ -4218,7 +4306,8 @@ category Software {
         # multiFactorAuthentication [Bernoulli(0.99325)]
             developer info: "Sources for distribution result: https://security.googleblog.com/2019/05/new-research-how-effective-is-basic.html, https://www.zdnet.com/article/microsoft-using-multi-factor-authentication-blocks-99-9-of-account-hacks/"
             user info: "https://attack.mitre.org/mitigations/M1032/"
-            +>  pluggableAuthenticationModules
+            +>  pluggableAuthenticationModules,
+                sSH
 
         # operatingSystemConfiguration
             user info: "https://attack.mitre.org/mitigations/M1028/" 
@@ -4257,9 +4346,6 @@ category Software {
         # remoteDataStorage 
             user info: "https://attack.mitre.org/mitigations/M1029/"
             +>  clearMacSystemLogs
-
-        # userAccountControl
-            user info: "https://attack.mitre.org/mitigations/M1052/"
     }    
 }
 
@@ -4327,7 +4413,7 @@ category Network {
         | remoteSystemsConnection
             ->  router.computer.router.internalNetwork.networkSharedDrive.dataFromNetworkSharedDrive
 
-        & webShell [Bernoulli(0.1586)*Exponential(1)]
+        | webShell [Bernoulli(0.1586)*Exponential(1)]
             user info: "Web shells may serve as Redundant Access or as a persistence mechanism."
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://media.defense.gov/2020/Jun/09/2002313081/-1/-1/0/CSI-DETECT-AND-PREVENT-WEB-SHELL-MALWARE-20200422.PDF"
             ->  persistence
@@ -4390,11 +4476,14 @@ category Network {
                 router.computer.os.lateralToolTransfer,
                 router.computer.os.manInTheMiddle,
                 router.computer.os.dNS,
+                router.computer.os.vNC,
                 router.computer.os.protocolTunneling,
                 router.computer.os.multiHopProxy,
                 router.computer.os.reflectionAmplification,
                 router.computer.os.exfiltrationOverAternativeProtocol,
-                router.computer.os.windows.bITSJobs
+                router.computer.os.windows.bITSJobs,
+                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
+                router.computer.os.windows.forcedAuthentication 
 
         # limitAccessToResourceOverNetwork
             user info: "https://attack.mitre.org/mitigations/M1035/"   
