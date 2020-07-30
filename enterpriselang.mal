@@ -47,8 +47,7 @@ category Software {
                 os.bruteForce,
                 os.commandAndScriptingInterpreter,
                 os.compileAfterDelivery,
-                os.attemptCredentialsInFiles,
-                os.attemptCredentialsInRegistry,
+                os.credentialsInFiles,
                 os.dataEncoding,
                 os.attemptDataEncryptedForImpact,
                 os.dataDestruction,
@@ -103,6 +102,7 @@ category Software {
                 os.windows.cOR_PROFILER,
                 os.windows.componentObjectModelHijacking,
                 os.windows.controlPanel,
+                os.windows.credentialsInRegistry,
                 os.windows.deobfuscateOrDecodeFilesOrInformation,
                 os.windows.dLLSearchOrderHijacking,
                 os.windows.domainTrustDiscovery,
@@ -118,6 +118,7 @@ category Software {
                 os.windows.goldenTicket,
                 os.windows.gUIInputCapture,
                 os.windows.groupPolicyModification,
+                os.windows.groupPolicyPreferences,
                 os.windows.hiddenWindow,
                 os.windows.indirectCommandExecution,
                 os.windows.inputPrompt,
@@ -162,6 +163,7 @@ category Software {
                 os.windows.windowsRemoteManagement,
                 os.windows.xslScriptProcessing,
                 os.linux.bash_profileAndBashrc,
+                os.linux.bashHistory,
                 os.linux.clearCommandHistory,
                 os.linux.hISTCONTROL,
                 os.linux.localJobScheduling,
@@ -178,6 +180,7 @@ category Software {
                 os.macOS.cron,
                 os.macOS.attemptSSHAuthorizedKeys,
                 os.macOS.bash_profileAndBashrc,
+                os.macOS.bashHistory,
                 os.macOS.clearCommandHistory,
                 os.macOS.elevatedExecutionWithPrompt,
                 os.macOS.gatekeeperBypass,
@@ -201,7 +204,6 @@ category Software {
                 os.macOS.source,
                 os.macOS.sudoAndSudoCaching,
                 os.macOS.trap,
-                os.service.cloudInstanceMetadataAPI,
                 os.service.attemptExploitationForCredentialAccess,
                 os.service.attemptExploitationForDefenseEvasion,
                 os.service.attemptExploitationForPrivilegeEscalation,
@@ -348,7 +350,6 @@ category Software {
                 os.attemptDataEncryptedForImpact,
                 os.oSCredentialDumping,
                 os.attemptCredentialsInFiles,
-                os.attemptCredentialsInRegistry,
                 os.processDiscovery,
                 os.detailedRemoteSystemDiscovery,
                 os.fileAndDirectoryDiscovery,
@@ -459,7 +460,7 @@ category Software {
                 os.windows.remoteScheduledTask,
                 os.windows.registryRunKeysOrStartupFolder,
                 os.windows.securitySupportProvider,
-                os.windows.attemptServiceExecution,
+                os.windows.serviceExecution,
                 os.windows.attemptServiceRegistryPermissionsWeakness,
                 os.windows.attemptShortcutModification,
                 os.windows.attemptSIDHistoryInjection,
@@ -501,7 +502,6 @@ category Software {
                 os.macOS.hiddenUsers,
                 os.macOS.kernelModulesAndExtensions,
                 os.macOS.attemptLaunchAgent,
-                os.macOS.launchctl,
                 os.macOS.launchd,
                 os.macOS.launchDaemon,
                 os.macOS.attemptPlistModification,
@@ -547,10 +547,6 @@ category Software {
                 os.systemAccess
                 
         | blockUserAccess  
-
-        & cloudInstanceMetadataAPI
-            user info: "Adversaries may attempt to access the Cloud Instance Metadata API to collect credentials and other sensitive data."
-            ->  os.sensitiveDataCollected
 
         & implantContainerImage [Bernoulli(0.60)*Exponential(180)]
             user info: "Amazon Web Service (AWS) Amazon Machine Images (AMI), Google Cloud Platform (GCP) Images, and Azure Images as well as popular container runtimes such as Docker can be implanted or backdoored to include malicious code."
@@ -785,6 +781,10 @@ category Software {
 
         & cloudGroups
             user info: "Adversaries may attempt to find cloud groups and permission settings. The knowledge of cloud permission groups can help adversaries determine the particular roles of users and groups within an environment, as well as which users are associated with a particular group."
+
+        & cloudInstanceMetadataAPI
+            user info: "Adversaries may attempt to access the Cloud Instance Metadata API to collect credentials and other sensitive data."
+            ->  os.sensitiveDataCollected
 
         | cloudServiceDiscovery
             developer info: "Binary probability distribution, TTC assumed instant (few seconds) : https://www.etasr.com/index.php/ETASR/article/view/1577"
@@ -1055,6 +1055,8 @@ category Software {
         | infectedOS
             ->  clipboardData,
                 dataFromInformationRepositories,
+                linux.attemptBashHistory,
+                macOS.attemptBashHistory,
                 computer.infectedComputer
 
         & clipboardData [Exponential(1)]
@@ -1162,7 +1164,7 @@ category Software {
                 computer.router.internalNetwork.generateDomainNames
 
         | compromisedDataOrSystem // with probability
-            ->  privateKeys,
+            ->  attemptPrivateKeys,
                 systemNetworkConnectionsDiscovery,
                 service.browser.installExtensions,
                 computer.peripheralDevice.removableMedia.infectedMedia,
@@ -1210,15 +1212,6 @@ category Software {
                 windows.dCSync,
                 linux.procFilesystem,
                 linux._etc_passwdAND_etc_shadow
-
-        | attemptCredentialsInFiles @hidden
-            ->  credentialsInFiles
-
-        & credentialsInFiles [Bernoulli(0.0179)*Exponential(282)]
-            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://blog.talosintelligence.com/2018/07/smoking-guns-smoke-loader-learned-new.html#more, https://www.statista.com/statistics/751847/worldwide-seagate-western-digital-average-hard-drive-capacity/, https://www.hardware-revolution.com/how-much-storage-capacity-do-i-need-for-my-computer-2020/"
-            ->  userAccount.userCredentials,
-                adminAccount.adminCredentials,
-                windows.sysAdmin.systemCredentials   
 
         | attemptCustomCryptographicProtocol @hidden
             ->  customCryptographicProtocol   
@@ -1580,6 +1573,9 @@ category Software {
             user info: "Adversaries may use steganographic techniques to hide command and control traffic to make detection efforts more difficult."
             ->  computer.router.internalNetwork.bypassNetworkIntrusionDetection
 
+        | attemptPrivateKeys @hidden
+            ->  privateKeys
+
         & privateKeys [Bernoulli(0.51)]
             developer info: "Sources for distribution results: "
             user info: "Adversaries may gather private keys from compromised systems for use in authenticating to Remote Services like SSH or for use in decrypting other collected files such as email. Private keys should require a password or passphrase for operation, so an adversary may also use Input Capture for keylogging or attempt to Brute Force the passphrase off-line."
@@ -1693,6 +1689,11 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries may attempt to identify the primary user, currently logged in user, set of users that commonly uses a system, or whether a user is actively using the system."
             ->  userAccount.userInformation
+
+        | systemServices
+            user info: "Adversaries may abuse system services or daemons to execute commands or programs."
+            ->  macOS.launchctl,
+                windows.serviceExecution
 
         | systemShutdownOrReboot {A}
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."
@@ -1845,7 +1846,7 @@ category Software {
                 attemptPasswordCracking,
                 passwordSpraying,
                 credentialStuffing,
-                privateKeys
+                attemptPrivateKeys
 
         & passwordGuessing
             user info: "Adversaries with no prior knowledge of legitimate credentials within the system or environment may guess passwords to attempt access to accounts."
@@ -1931,6 +1932,23 @@ category Software {
             user info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
             ->  bypassDigitalCertificateValidation  
 
+        | unsecuredCredentials
+            user info: "Aversaries may search compromised systems to find and obtain insecurely stored credentials."
+            ->  credentialsInFiles,
+                privateKeys,
+                windows.credentialsInRegistry,
+                windows.groupPolicyPreferences,
+                linux.bashHistory,
+                macOS.bashHistory,
+                service.cloudService.cloudInstanceMetadataAPI
+
+        | attemptCredentialsInFiles @hidden
+            ->  credentialsInFiles
+
+        & credentialsInFiles [Bernoulli(0.0179)*Exponential(282)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://blog.talosintelligence.com/2018/07/smoking-guns-smoke-loader-learned-new.html#more, https://www.statista.com/statistics/751847/worldwide-seagate-western-digital-average-hard-drive-capacity/, https://www.hardware-revolution.com/how-much-storage-capacity-do-i-need-for-my-computer-2020/"
+            ->  userAccount.userCredentials  
+
         | attemptValidAccounts @hidden
             ->  validAccounts
 
@@ -1948,14 +1966,6 @@ category Software {
 
         & vNC
             user info: "Adversaries may use Valid Accounts to remotely control machines using Virtual Network Computing (VNC)."
-
-        | attemptCredentialsInRegistry @hidden
-            ->  credentialsInRegistry
-
-        & credentialsInRegistry [Bernoulli(0.02055)*Exponential(2618)]
-            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/techniques/T1552/002/"
-            ->  userAccount.userCredentials,
-                adminAccount.adminCredentials 
 
         | fileDeletion [Bernoulli(0.1238)]
             user info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
@@ -2225,7 +2235,6 @@ category Software {
                 passwordSpraying,
                 credentialStuffing,
                 credentialsInFiles,
-                credentialsInRegistry,
                 privateKeys,
                 service.browser.credentialsFromWebBrowsers,
                 service.thirdpartySoftware.useThirdpartySoftware
@@ -2266,7 +2275,6 @@ category Software {
                 confluence,
                 sharepoint,
                 credentialsInFiles,
-                credentialsInRegistry,
                 service.browser.browserExtensions,
                 service.cloudService.createSnapshot,
                 service.cloudService.createCloudInstance,
@@ -2331,8 +2339,7 @@ category Software {
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
-            ->  credentialsInRegistry,
-                commandAndScriptingInterpreter,
+            ->  commandAndScriptingInterpreter,
                 webPortalCapture,
                 service.implantContainerImage,
                 service.cloudService.additionalAzureServicePrincipalCredentials,
@@ -2581,6 +2588,10 @@ category Software {
             user info: "Adversaries may hook into Windows application programming interface (API) functions to collect user credentials."
             ->  userAccount.userCredentials
 
+        & credentialsInRegistry [Bernoulli(0.02055)*Exponential(2618)]
+            developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/techniques/T1552/002/"
+            ->  userAccount.userCredentials
+
         | dCShadow
             user info: "This technique may bypass system logging and security monitors such as security information and event management (SIEM) products."
             ->  attemptSIDHistoryInjection,
@@ -2751,6 +2762,10 @@ category Software {
                 adminAccount.attemptCreateAccount,
                 bypassSystemAccessControls,
                 bypassFileSystemAccessControls
+
+        & groupPolicyPreferences
+            user info: "Adversaries may attempt to find unsecured credentials in Group Policy Preferences (GPP)."
+            ->  userAccount.userCredentials   
 
         & gUIInputCapture
             user info: "Adversaries may mimic common operating system GUI components to prompt users for credentials with a seemingly legitimate prompt."
@@ -3209,13 +3224,14 @@ category Software {
             user info: "Adversaries may abuse Windows Time service to establish Persistence, specifically by registering and enabling a malicious DLL as a time provider."
             ->  persistence
 
-        & trustedDeveloperUtilities
+        | trustedDeveloperUtilities
             developer info: "Binary probability distribution."
             user info: "An adversary can use tracker.exe to proxy execution of an arbitrary DLL into another process. Since tracker.exe is also signed it can be used to bypass application whitelisting solutions."
-            ->  bypassApplicationWhitelisting,
-                executeCode,
-                signedBinaryProxyExecution,
-                signedScriptProxyExecution    
+            ->  mSBuild
+
+        & mSBuild
+            user info: "Adversaries may use MSBuild to proxy execution of code through a trusted Windows utility."
+            ->  codeProxyExecution
 
         | unquotedPaths
             user info: "An adversary can place an executable in a higher level directory of the path, and Windows will resolve that executable instead of the intended executable."
@@ -3478,6 +3494,7 @@ category Software {
             +>  cachedDomainCredentials,
                 dCSync,
                 goldenTicket,
+                groupPolicyPreferences,
                 passTheTicket
 
         # antivirus [Bernoulli(0.53)]
@@ -3496,6 +3513,7 @@ category Software {
         # audit 
             user info: "https://attack.mitre.org/mitigations/M1047/"
             +>  at,
+                credentialsInRegistry,
                 domainTrustDiscovery,
                 bypassUserAccessControl,
                 dLLSearchOrderHijacking,
@@ -3503,6 +3521,7 @@ category Software {
                 emailForwardingRule,
                 executableInstallerFilePermissionsWeakness,
                 fileSystemPermissionsWeakness,
+                groupPolicyPreferences,
                 pathInterception,
                 remoteDesktopProtocol,
                 rDPHijacking,
@@ -3561,7 +3580,6 @@ category Software {
                 screensaver,
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
-                trustedDeveloperUtilities,
                 windowsCommandShell,
                 winlogonHelperDLL,
                 xslScriptProcessing,
@@ -3598,6 +3616,7 @@ category Software {
         # passwordPolicies 
             user info: "https://attack.mitre.org/mitigations/M1027/" 
             +>  cachedDomainCredentials,
+                credentialsInRegistry,
                 dCSync,
                 kerberoasting,
                 lSASSMemory,
@@ -3625,6 +3644,7 @@ category Software {
                 bypassUserAccessControl,
                 cachedDomainCredentials,
                 componentObjectModel,
+                credentialsInRegistry,
                 dCSync,
                 distributedComponentObjectModel,
                 domainControllerAuthentication,
@@ -3719,7 +3739,7 @@ category Software {
                 replicationThroughRemovableMedia,
                 screensaver,
                 templateInjection,
-                trustedDeveloperUtilities,
+                mSBuild,
                 windowsRemoteManagement,
                 dynamicDataExchange,
                 service.cloudService.officeTemplateMacros
@@ -3729,6 +3749,7 @@ category Software {
             +>  appInitDLLs,
                 applicationShimming,
                 bypassUserAccessControl,
+                groupPolicyPreferences,
                 passTheHash,
                 service.cloudService.outlookForms,
                 service.cloudService.outlookHomePage,
@@ -3780,17 +3801,17 @@ category Software {
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
 
-        | infectedOS
-            +>  bashHistory
-
         & bash_profileAndBashrc
             developer info: "Binary probability distribution. With File permissions, the adversary may instantly perform this technique."
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
             ->  persistence
 
+        | attemptBashHistory @hidden
+            ->  bashHistory
+
         & bashHistory
+            user info: "Adversaries may search the bash command history on compromised systems for insecurely stored credentials."
             ->  indicatorRemovalOnHost,
-                adminAccount.windowsAdmin.adminCredentials,
                 userAccount.userCredentials
 
         & linuxFileAndDirectoryPermissionsModification
@@ -4029,7 +4050,11 @@ category Software {
     }
 
     asset MacOS extends OS {
+        | attemptBashHistory @hidden
+            ->  bashHistory
+
         & bashHistory
+            user info: "Adversaries may search the bash command history on compromised systems for insecurely stored credentials."
             ->  indicatorRemovalOnHost,
                 adminAccount.rootAdmin.adminCredentials,
                 userAccount.userCredentials
@@ -4129,9 +4154,6 @@ category Software {
             ->  bypassLogAnalysis,
                 bypassHostForensicAnalysis
 
-        | infectedOS
-            +>  bashHistory
-
         & inputPrompt
             developer info: "Binary probability distribution."
             user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
@@ -4155,12 +4177,8 @@ category Software {
         & launchctl
             developer info: "Binary probability distribution."
             user info: "Adversaries can abuse this functionality to execute code or even bypass whitelisting if launchctl is an allowed process."
-            ->  executeCode,
-                persistence,
-                attemptLaunchAgent,
-                bypassApplicationWhitelisting,
-                bypassProcessWhitelisting,
-                bypassFileOrPathWhitelisting  
+            ->  attemptLaunchAgent,
+                attemptLaunchDaemon 
 
         & launchd
             user info: "Adversaries may abuse the Launchd daemon to perform task scheduling for initial or recurring execution of malicious code."
@@ -4753,7 +4771,7 @@ category Network {
         # filterNetworkTraffic [Bernoulli(0.8217)] // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
             developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
-            ->  router.computer.os.service.cloudInstanceMetadataAPI,
+            ->  router.computer.os.service.cloudService.cloudInstanceMetadataAPI,
                 router.computer.os.windows.bITSJobs,
                 router.computer.os.linux.portKnocking,
                 router.computer.os.macOS.portKnocking
