@@ -609,13 +609,24 @@ category Software {
                 browser.attemptSpearphishingLink,
                 os.bruteForce // https://www.us-cert.gov/ncas/alerts/TA18-086A
 
-        | attemptSupplyChainCompromise @hidden [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
+        | supplyChainCompromise [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
             developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
-            ->  supplyChainCompromise
+            user info: "Adversaries may manipulate products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  compromiseSoftwareDependenciesAndDevelopmentTools,
+                compromiseSoftwareSupplyChain,
+                compromiseHardwareSupplyChain
 
-        & supplyChainCompromise 
-            user info: "Supply chain compromise is the manipulation of products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
-            ->  os.compromisedSystems
+        & compromiseSoftwareDependenciesAndDevelopmentTools
+            user info: "Adversaries may manipulate software dependencies and development tools prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  os.compromisedDataOrSystem
+
+        & compromiseSoftwareSupplyChain
+            user info: "Adversaries may manipulate application software prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  os.compromisedDataOrSystem
+
+        & compromiseHardwareSupplyChain
+            user info: "Adversaries may manipulate hardware components in products prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  os.compromisedDataOrSystem
 
         & exploitationForClientExecution
             developer info: "Binary probability distribution."
@@ -712,11 +723,20 @@ category Software {
                 exploitHighVulnerabilityPublicFacingApplication,
                 exploitMediumVulnerabilityPublicFacingApplication,
                 exploitLowVulnerabilityPublicFacingApplication,
-                supplyChainCompromise,
                 os.computer.router.internalNetwork.remoteAccess,              
                 os.windows.systemFirmware,
                 os.windows.dLLSideLoading,
-                os.service.thirdpartySoftware.useThirdpartySoftware                      
+                thirdpartySoftware.useThirdpartySoftware 
+
+        # vulnerabilityScanning [Bernoulli(0.653)]
+            user info: "https://attack.mitre.org/mitigations/M1016/"
+            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.scmagazineuk.com/one-fourth-global-organisations-faced-breaches-unpatched-vulnerabilities/article/1586349#:~:text=Vulnerability%20management%20starts%20with%20visibility,networks%20within%20minutes%20or%20hours., https://www.zdnet.com/article/zero-days-fileless-attacks-are-now-the-most-dangerous-threats-to-the-enterprise/, https://liu.diva-portal.org/smash/get/diva2:1348588/FULLTEXT01.pdf, https://pdfs.semanticscholar.org/775d/ed35d7940b94b5bc01d568d472e59fd24775.pdf, "
+            ->  compromiseSoftwareDependenciesAndDevelopmentTools,
+                compromiseSoftwareSupplyChain,
+                exploitHighVulnerabilityPublicFacingApplication,
+                exploitMediumVulnerabilityPublicFacingApplication,
+                exploitLowVulnerabilityPublicFacingApplication,
+                exploitationOfRemoteServices
     }
 
     asset ThirdpartySoftware extends Service {  
@@ -1140,7 +1160,7 @@ category Software {
                 computer.router.internalNetwork.communicate,
                 computer.router.internalNetwork.generateDomainNames
 
-        | compromisedSystems // with probability
+        | compromisedDataOrSystem // with probability
             ->  privateKeys,
                 systemNetworkConnectionsDiscovery,
                 service.browser.installExtensions,
@@ -2163,7 +2183,8 @@ category Software {
 
         # bootIntegrity 
             user info: "https://attack.mitre.org/mitigations/M1046/"
-            ->  firmwareCorruption
+            ->  firmwareCorruption,
+                service.compromiseHardwareSupplyChain
  
         # dataBackup [Bernoulli(0.4567)]
             user info: "https://attack.mitre.org/mitigations/M1053/"
@@ -2342,9 +2363,11 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  firmwareCorruption,
                 service.browser.driveByCompromise,
+                service.compromiseSoftwareDependenciesAndDevelopmentTools,
+                service.compromiseSoftwareSupplyChain,
                 service.exploitationForCredentialAccess,
                 service.exploitationForPrivilegeEscalation,
-                service.exploitationOfRemoteServices 
+                service.exploitationOfRemoteServices
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -4612,15 +4635,6 @@ category Network {
             ->  obfuscateNetworkTraffic,
                 router.computer.os.standardCryptographicProtocol,
                 router.computer.os.domainFronting
-
-        # vulnerabilityScanning [Bernoulli(0.653)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
-            user info: "https://attack.mitre.org/mitigations/M1016/"
-            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.scmagazineuk.com/one-fourth-global-organisations-faced-breaches-unpatched-vulnerabilities/article/1586349#:~:text=Vulnerability%20management%20starts%20with%20visibility,networks%20within%20minutes%20or%20hours., https://www.zdnet.com/article/zero-days-fileless-attacks-are-now-the-most-dangerous-threats-to-the-enterprise/, https://liu.diva-portal.org/smash/get/diva2:1348588/FULLTEXT01.pdf, https://pdfs.semanticscholar.org/775d/ed35d7940b94b5bc01d568d472e59fd24775.pdf, "
-            ->  router.computer.os.service.exploitHighVulnerabilityPublicFacingApplication,
-                router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
-                router.computer.os.service.exploitLowVulnerabilityPublicFacingApplication,
-                router.computer.os.service.exploitationOfRemoteServices,
-                router.computer.os.service.supplyChainCompromise
     }
 
     asset NetworkSharedDrive extends InternalNetwork {
