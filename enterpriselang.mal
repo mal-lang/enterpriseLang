@@ -180,8 +180,7 @@ category Software {
                 os.macOS.bash_profileAndBashrc,
                 os.macOS.clearCommandHistory,
                 os.macOS.elevatedExecutionWithPrompt,
-                os.macOS.gatekeeperBypassViaDriveByCompromise,
-                os.macOS.gatekeeperBypassViaHardwareAddition,
+                os.macOS.gatekeeperBypass,
                 os.macOS.gUIInputCapture,
                 os.macOS.hiddenWindow,
                 os.macOS.hISTCONTROL,
@@ -356,7 +355,6 @@ category Software {
                 os.firmwareCorruption, 
                 os.graphicalUserInterface,
                 os.inhibitSystemRecovery,
-                os.installRootCertificate,
                 os.networkServiceScan,
                 os.networkSniffing,
                 os.redundantAccess,
@@ -500,7 +498,6 @@ category Software {
                 os.macOS.emond,
                 os.macOS.keychain,
                 os.macOS.localJobScheduling,
-                os.macOS.gatekeeperBypassViaAdminRights,
                 os.macOS.hiddenUsers,
                 os.macOS.kernelModulesAndExtensions,
                 os.macOS.attemptLaunchAgent,
@@ -894,7 +891,7 @@ category Software {
                 crossSiteScripting,
                 service.os.computer.user.attemptUserExecution,
                 service.exploitationForClientExecution,
-                service.os.macOS.gatekeeperBypassViaDriveByCompromise
+                service.os.macOS.attemptGatekeeperBypass
 
 
         | malvertising [Gamma(9,0.167)]
@@ -1419,10 +1416,6 @@ category Software {
             ->  service.attemptExternalRemoteServices, // maintain network access
                 attemptValidAccounts
 
-        & installRootCertificate
-            user info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
-            ->  bypassDigitalCertificateValidation  
-
         | internalSpearphishing [Bernoulli(0.85)*Exponential(1)]
             developer info: "Sources for distribution results: https://er.educause.edu/articles/2005/1/fostering-email-security-awareness-the-west-point-carronade and other work on spearphishing." 
             user info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
@@ -1903,6 +1896,18 @@ category Software {
             developer info: "Sources used for distribution result: https://www.nexustek.com/blog/cyber-security-tip-detecting-attacks-over-low-traffic-ports/, https://krisk.io/publication/mitre-attack-securecomm19/, https://media.paloaltonetworks.com/documents/The-Modern-Malware-Review-March-2013.pdf, https://www.usenix.org/event/leet09/tech/full_papers/bayer/bayer.pdf, https://www.securityweek.com/rise-malware-using-encryption-shows-importance-network-traffic-inspection, "
             user info: "Adversaries may communicate using a protocol and port paring that are typically not associated."
             ->  computer.router.internalNetwork.c2Connected
+
+        | subvertTrustControls
+            user info: "Adversaries may undermine security controls that will either warn users of untrusted activity or prevent execution of untrusted programs."
+            ->  installRootCertificate,
+                windows.codeSigningCertificate,
+                windows.sIPAndTrustProviderHijacking,
+                macOS.codeSigningCertificate,  
+                macOS.gatekeeperBypass
+
+        & installRootCertificate
+            user info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
+            ->  bypassDigitalCertificateValidation  
 
         | attemptValidAccounts @hidden
             ->  validAccounts
@@ -2390,7 +2395,7 @@ category Software {
                 windows.attemptServiceExecution,
                 windows.attemptServiceRegistryPermissionsWeakness,
                 windows.attemptSIDHistoryInjection,
-                windows.sIPAndTrustProviderHijacking,
+                windows.attemptSIPAndTrustProviderHijacking,
                 windows.systemServiceDiscovery,
                 windows.attemptServiceStop,
                 windows.attemptSQLStoredProcedures,
@@ -2489,7 +2494,7 @@ category Software {
                 bypassAntivirus
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
-            user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            user info: "Adversaries may create, acquire, or steal code signing materials to sign their malware or tools."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
             ->  attemptBypassUserAccessControl
 
@@ -3134,12 +3139,14 @@ category Software {
             user info: "Adversaries may use the trusted PubPrn script to proxy execution of malicious files."
             ->  fileProxyExecution
 
+        | attemptSIPAndTrustProviderHijacking @hidden
+            ->  sIPAndTrustProviderHijacking
+
         & sIPAndTrustProviderHijacking
             user info: "Adversaries may abuse this architecture to subvert trust controls and bypass security policies that allow only legitimately signed code to execute on a system."
-            ->  bypassApplicationWhitelisting,
+            ->  bypassApplicationControl,
                 bypassAutorunsAnalysis,
                 bypassDigitalCertificateValidation,
-                bypassProcessWhitelisting,
                 bypassUserModeSignatureValidation 
 
         | attemptSoftwarePacking @hidden
@@ -4019,7 +4026,7 @@ category Software {
             user info: "Adversaries may clear system logs to hide evidence of an intrusion. macOS and Linux both keep track of system or user-initiated actions via system logs."
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
-            user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            user info: "Adversaries may create, acquire, or steal code signing materials to sign their malware or tools."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
 
         | attemptClearCommandHistory @hidden
@@ -4065,24 +4072,15 @@ category Software {
                 hijackExecutionFlow
 
         | executeCode 
-            +>  computer.infectedMacOSComputer   
+            +>  computer.infectedMacOSComputer
 
-        & gatekeeperBypassViaDriveByCompromise
-            -> attemptGatekeeperBypass
-        
-        & gatekeeperBypassViaHardwareAddition
-            -> attemptGatekeeperBypass
-
-        & gatekeeperBypassViaAdminRights
-            -> attemptGatekeeperBypass
-
-        | attemptGatekeeperBypass 
+        | attemptGatekeeperBypass @hidden
             -> gatekeeperBypass
 
         & gatekeeperBypass
             developer info: "Binary probability distribution."
             user info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won't set this flag. Additionally, other utilities or events like drive-by downloads don't necessarily set it either. This completely bypasses the built-in Gatekeeper check."
-            ->  bypassApplicationWhitelisting,
+            ->  bypassApplicationControl,
                 bypassAntivirus 
 
         & gUIInputCapture
@@ -4826,7 +4824,7 @@ category Hardware {
         & hardwareAdditions 
             user info: "Adversaries may introduce computer accessories, computers, or networking hardware into a system or network that can be used as a vector to gain access." 
             ->  os.executeCode,
-                os.macOS.gatekeeperBypassViaHardwareAddition
+                os.macOS.attemptGatekeeperBypass
     }
 
     asset PeripheralDevice {
