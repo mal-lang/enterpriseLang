@@ -7,16 +7,22 @@
 
 category Person {
     asset User {
-        & spearphishingLinkClicked [Bernoulli(0.712)*Exponential(1)]
-            developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887; https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968"
-            ->  attemptUserExecution,
-                computer.os.service.thirdpartySoftware.applicationAccessToken,
-                computer.os.service.exploitationForClientExecution
+        | attemptMaliciousLink @hidden
+            ->  maliciousLink    
 
-        & spearphishingAttachmentDownload [Bernoulli(0.93)*Exponential(1)]
+        & maliciousLink [Bernoulli(0.712)*Exponential(1)]
+            developer info: "Sources for distribution result: https://arxiv.org/pdf/1606.00887; https://dl.acm.org/doi/fullHtml/10.1145/1290958.1290968"
+            ->  computer.os.service.attemptExploitationForClientExecution,
+                attemptMaliciousFile, // links may lead users to download files that require execution via Malicious File
+                computer.os.executeCode
+
+        | attemptMaliciousFile @hidden
+            ->  maliciousFile
+
+        & maliciousFile [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources for distribution result: Based on attack step spearphishingLinkClicked and https://doi.org/10.1016/j.cose.2006.10.009"
-            ->  attemptUserExecution,
-                computer.os.windows.attemptDynamicDataExchange
+            ->  computer.os.windows.attemptDynamicDataExchange,
+                computer.os.executeCode
 
         | attemptUserExecution @hidden
             ->  userAccount.userExecution
@@ -30,8 +36,8 @@ category Person {
         # userTraining [Bernoulli(0.22)]
             user info: "https://attack.mitre.org/mitigations/M1017/"
             developer info: "Sources for distribution result: https://www.tandfonline.com/doi/abs/10.1080/10919392.2019.1552745; https://doi.org/10.1145/1572532.1572536; https://ieeexplore.ieee.org/abstract/document/6585241" 
-            ->  spearphishingAttachmentDownload, 
-                spearphishingLinkClicked, 
+            ->  maliciousFile,
+                maliciousLink,
                 userAccount.userExecution
     }
 }
@@ -222,7 +228,7 @@ category Software {
                 os.service.cloudService.outlookHomePage,
                 os.service.cloudService.outlookRules,
                 os.service.cloudService.addIns,
-                os.service.thirdpartySoftware.stealApplicationAccessToken,
+                os.service.cloudService.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
                 os.service.browser.driveByCompromise,
                 os.service.browser.installExtensions,
@@ -240,11 +246,8 @@ category Software {
 
         & userExecution
             developer info: "Binary probability relation."
-            ->  os.attemptMaliciousFile,
-                os.attemptMaliciousLink,
-                os.computer.infectedComputer,
-                os.computer.infectedWindowsComputer,
-                os.executeCode
+            ->  user.maliciousFile,
+                user.maliciousLink
 
         | userInformation
 
@@ -272,7 +275,7 @@ category Software {
                 os.service.browser.browserExtensions,
                 os.service.spearphishingViaService,
                 os.service.thirdpartySoftware.useThirdpartySoftware,
-                os.service.thirdpartySoftware.stealApplicationAccessToken   
+                os.service.cloudService.stealApplicationAccessToken   
 
         # userAccountManagement [Bernoulli(0.30)] 
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
@@ -325,7 +328,7 @@ category Software {
                 os.service.cloudService.createCloudInstance,
                 os.service.cloudService.deleteCloudInstance,
                 os.service.cloudService.disableOrModifyCloudFirewall,
-                os.service.thirdpartySoftware.stealApplicationAccessToken,
+                os.service.cloudService.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.useThirdpartySoftware
     } 
 
@@ -624,6 +627,9 @@ category Software {
             user info: "Adversaries may manipulate hardware components in products prior to receipt by a final consumer for the purpose of data or system compromise."
             ->  os.compromisedDataOrSystem
 
+        | attemptExploitationForClientExecution @hidden
+            ->  exploitationForClientExecution
+
         & exploitationForClientExecution
             developer info: "Binary probability distribution."
             user info: "Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution."
@@ -736,18 +742,6 @@ category Software {
     }
 
     asset ThirdpartySoftware extends Service {  
-        | applicationAccessToken
-            developer info: "Binary probability distribution. Once stolen or gathered, token can be used instantly."
-            user info: "Adversaries may use application access tokens to bypass the typical authentication process and access restricted accounts, information, or services on remote systems. These tokens are typically stolen from users and used in lieu of login credentials."
-            ->  accessCloudBasedServiceResources
-
-        | accessCloudBasedServiceResources
-
-        & stealApplicationAccessToken
-            user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
-            ->  browser.spearphishingLink, //  send a link through Spearphishing Link to the target user to entice them to grant access to the application
-                applicationAccessToken
-
         | attemptTrustedRelationship @hidden
             ->  trustedRelationship
 
@@ -771,6 +765,18 @@ category Software {
     }
 
     asset CloudService extends Service {
+        | applicationAccessToken
+            developer info: "Binary probability distribution. Once stolen or gathered, token can be used instantly."
+            user info: "Adversaries may use application access tokens to bypass the typical authentication process and access restricted accounts, information, or services on remote systems. These tokens are typically stolen from users and used in lieu of login credentials."
+            ->  accessCloudBasedServiceResources
+
+        | accessCloudBasedServiceResources
+
+        & stealApplicationAccessToken
+            user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
+            ->  browser.spearphishingLink, //  send a link through Spearphishing Link to the target user to entice them to grant access to the application
+                applicationAccessToken
+
         | persistence
 
         | cloudServiceInformationCollected
@@ -910,17 +916,17 @@ category Software {
             ->  malvertising,
                 crossSiteScripting,
                 service.os.computer.user.attemptUserExecution,
-                service.exploitationForClientExecution,
+                service.attemptExploitationForClientExecution,
                 service.os.macOS.attemptGatekeeperBypass
 
 
         | malvertising [Gamma(9,0.167)]
             developer info: "Sources for distribution result: https://www.adstage.io/resources/q1-2020-ppc-benchmark-report/; https://www.youtube.com/watch?v=rTg9l4d8MU4; https://www.facebook.com/business/help/204798856225114?id=649869995454285"
-            ->  service.thirdpartySoftware.stealApplicationAccessToken
+            ->  service.cloudService.stealApplicationAccessToken
 
         | crossSiteScripting [Bernoulli(0.32)*Exponential(1)]
             developer info: "Sources for distribution result: https://books.google.fr/books?id=biGsBwAAQBAJ&pg=PA104&lpg=PA104&dq=forum+posts,+comments+compromise+browser+malware&source=bl&ots=rzJQ6XY73h&sig=ACfU3U2wC6Muu7MfakP6MHJLk7IXJ76C0A&hl=fr&sa=X&ved=2ahUKEwiomdS20dbpAhV65OAKHaD4Dz8Q6AEwAHoECAoQAQ#v=onepage&q=forum%20posts%2C%20comments%20compromise%20browser%20malware&f=false; http://www.ijiser.com/paper/2017/vol4issue8/Aug2017p101.1.pdf; https://www.acunetix.com/acunetix-web-application-vulnerability-report-2019/#xss"
-            ->  service.thirdpartySoftware.stealApplicationAccessToken
+            ->  service.cloudService.stealApplicationAccessToken
 
         | executionThroughMaliciousContent
 
@@ -940,14 +946,14 @@ category Software {
 
         & spearphishingLink
             user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
-            ->  service.os.computer.user.spearphishingLinkClicked
+            ->  service.os.computer.user.attemptMaliciousLink
             
         | attemptSpearphishingAttachment @hidden      
             ->  spearphishingAttachment
       
         & spearphishingAttachment
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
-            ->  service.os.computer.user.spearphishingAttachmentDownload,
+            ->  service.os.computer.user.attemptMaliciousFile,
                 service.os.windows.attemptControlPanel // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
 
         | browserBookmark
@@ -969,12 +975,14 @@ category Software {
                 service.os.userAccount.userCredentials,
                 service.os.persistence
 
-        & stealWebSessionCookie [Bernoulli(0.93)]
+        & stealWebSessionCookie
             user info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
-            ->  webSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
+            ->  attemptWebSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
 
-        | webSessionCookie
-            developer info: "Binary probability distribution"
+        | attemptWebSessionCookie @hidden
+            ->  webSessionCookie
+
+        & webSessionCookie
             user info: "Adversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated."
             ->  service.os.sensitiveDataCollected
 
@@ -988,6 +996,8 @@ category Software {
                 service.os.commandAndScriptingInterpreter,
                 service.os.domainGenerationAlgorithms,
                 service.os.windows.compiledHTMLFile,
+                service.os.userAccount.userExecution,
+                service.os.computer.user.maliciousLink,
                 service.os.computer.router.externalNetwork.webService,
                 service.os.computer.router.externalNetwork.exfiltrationOverWebService
     }
@@ -1434,23 +1444,11 @@ category Software {
         | internalSpearphishing [Bernoulli(0.85)*Exponential(1)]
             developer info: "Sources for distribution results: https://er.educause.edu/articles/2005/1/fostering-email-security-awareness-the-west-point-carronade and other work on spearphishing." 
             user info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
-            ->  computer.user.attemptUserExecution,
-                computer.os.service.thirdpartySoftware.applicationAccessToken,
-                computer.os.service.exploitationForClientExecution,
+            ->  computer.user.attemptMaliciousFile,
+                computer.os.service.cloudService.applicationAccessToken,
+                computer.os.service.attemptExploitationForClientExecution,
                 computer.os.windows.attemptDynamicDataExchange,
                 inputCapture
-
-        | attemptMaliciousFile @hidden
-            ->  maliciousFile
-
-        & maliciousFile
-            user info: "An adversary may rely upon a user opening a malicious file in order to gain execution."
-
-        | attemptMaliciousLink @hidden
-            ->  maliciousLink
-
-        & maliciousLink
-            user info: "An adversary may rely upon a user clicking a malicious link in order to gain execution."
 
         & manInTheMiddle [Bernoulli(0.35)*Exponential(1)]
             developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/94.html, https://www.csoonline.com/article/3340117/what-is-a-man-in-the-middle-attack-how-mitm-attacks-work-and-how-to-prevent-them.html#:~:text=Though%20not%20as%20common%20as,are%20difficult%20to%20come%20by."
@@ -1484,7 +1482,7 @@ category Software {
         | rightToLeftOverride
             user info: "Adversaries may use the right-to-left override (RTLO or RLO) character (U+202E) as a means of tricking a user into executing what they think is a benign file type but is actually executable code. A common use of this technique is with Spearphishing Attachment/Malicious File since it can trick both end users and defenders if they are not aware of how their tools display and render the RTLO character."
             ->  service.browser.attemptSpearphishingAttachment, // employ various forms of Masquerading on the file to increase the likelihood that a user will open it
-                attemptMaliciousFile // employ various forms of Masquerading on the file to increase the likelihood that a user will open it
+                computer.user.attemptMaliciousFile // employ various forms of Masquerading on the file to increase the likelihood that a user will open it
 
         & renameSystemUtilities
             user info: "Adversaries may rename legitimate system utilities to try to evade security mechanisms concerning the usage of those utilities."
@@ -1894,7 +1892,7 @@ category Software {
 
         & antivirusCheck
             ->  executeCode,
-                service.exploitationForClientExecution
+                service.attemptExploitationForClientExecution
 
         | persistence
 
@@ -1906,7 +1904,7 @@ category Software {
             developer info: "Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/scripting/, https://www.labnol.org/code/20016-maximum-execution-time-limit, https://www.php.net/manual/en/function.set-time-limit.php, https://www.sitepoint.com/javascript-execution-browser-limits/"
             ->  attemptAutomatedCollection,
                 service.browser.spearphishingAttachment, 
-                service.exploitationForClientExecution,
+                service.attemptExploitationForClientExecution,
                 windows.virtualizationOrSandboxEvasion,
                 windows.templateInjection,
                 windows.attemptExecutionThroughAPI
@@ -2282,7 +2280,7 @@ category Software {
                 service.cloudService.createCloudInstance,
                 service.cloudService.deleteCloudInstance,
                 service.cloudService.disableOrModifyCloudFirewall,
-                service.thirdpartySoftware.stealApplicationAccessToken,
+                service.cloudService.stealApplicationAccessToken,
                 service.implantContainerImage,
                 computer.router.externalNetwork.dataFromCloudStorageObject,
                 privateKeys,
@@ -2318,7 +2316,8 @@ category Software {
         # softwareConfiguration
             user info: "https://attack.mitre.org/mitigations/M1054/"
             ->  installRootCertificate,
-                service.browser.stealWebSessionCookie      
+                service.browser.stealWebSessionCookie,
+                service.browser.webSessionCookie    
 
         # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
             user info: "https://attack.mitre.org/mitigations/M1038/"
@@ -2336,7 +2335,8 @@ category Software {
                 runVirtualInstance, 
                 systemInformationDiscovery,
                 visualBasic,
-                userAccount.userExecution          
+                userAccount.userExecution,
+                userAccount.user.maliciousFile
              
         # privilegedAccountManagement [Bernoulli(0.30)]
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
@@ -2862,6 +2862,10 @@ category Software {
 
         | useAlternateAuthenticationMaterial
             user info: "Adversaries may use alternate authentication material, such as password hashes, Kerberos tickets, and application access tokens, in order to move laterally within an environment and bypass normal system access controls."
+            ->  passTheHash,
+                passTheTicket,
+                service.browser.webSessionCookie,
+                service.cloudService.applicationAccessToken
 
         & manInTheBrowser
             user info: "Adversaries can take advantage of security vulnerabilities and inherent functionality in browser software to change content, modify behavior, and intercept information as part of various man in the browser techniques."
@@ -3268,7 +3272,7 @@ category Software {
         & systemTimeDiscovery [Bernoulli(0.19744)]
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://krisk.io/publication/mitre-attack-securecomm19/, https://attack.mitre.org/software/S0039/"
             user info: "The information could be useful for performing other techniques, such as executing a file with a Scheduled Task, or to discover locality information based on time zone to assist in victim targeting."
-            ->  attemptScheduledTask         
+            ->  attemptScheduledTask
 
         | attemptWindowsAdminShares @hidden
             ->  windowsAdminShares
@@ -4601,6 +4605,8 @@ category Network {
                 generateDomainNames,
                 junkData,
                 protocolImpersonation,
+                router.computer.os.userAccount.userExecution,
+                router.computer.user.maliciousLink,
                 router.computer.os.service.browser.spearphishingAttachment,
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.customCryptographicProtocol,
@@ -4881,7 +4887,7 @@ category Hardware {
     
     asset Microphone extends PeripheralDevice {
         | collectAudio [Bernoulli(0.74)*Exponential(0.1)]
-            developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/634.html and Video Capture results"
+             developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/634.html and Video Capture results"
             ->  computer.collectAudio
     }
 }
