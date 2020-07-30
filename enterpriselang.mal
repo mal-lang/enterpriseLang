@@ -85,6 +85,7 @@ category Software {
                 os.resourceHijacking,
                 os.rootkit,
                 os.runVirtualInstance,
+                os.securitySoftwareDiscovery,
                 os.attemptScripting,
                 os.softwareDiscovery,
                 os.systemInformationDiscovery,
@@ -114,13 +115,13 @@ category Software {
                 os.windows.executionThroughModuleLoad,
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
+                os.windows.goldenTicket,
                 os.windows.gUIInputCapture,
                 os.windows.groupPolicyModification,
                 os.windows.hiddenWindow,
                 os.windows.indirectCommandExecution,
                 os.windows.inputPrompt,
                 os.windows.installUtil,
-                os.windows.kerberoasting,
                 os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
                 os.windows.attemptLogonScripts,
                 os.windows.masqueradeTaskOrService,
@@ -136,6 +137,7 @@ category Software {
                 os.windows.portableExecutableInjection,
                 os.windows.processDoppelganging,
                 os.windows.processHollowing,
+                os.windows.pubPrn,
                 os.windows.registryRunKeysOrStartupFolder,
                 os.windows.regsvcsOrRegasm,
                 os.windows.regsvr32,
@@ -144,13 +146,13 @@ category Software {
                 os.windows.attemptShortcutModification,
                 os.windows.signedScriptProxyExecution,
                 os.windows.sIPAndTrustProviderHijacking,
+                os.windows.silverTicket,
                 os.windows.systemServiceDiscovery,
                 os.windows.attemptTaintSharedContent,
                 os.windows.templateInjection,
                 os.windows.threadExecutionHijacking,
                 os.windows.trustedDeveloperUtilities,
                 os.windows.attemptAccessTokenManipulation,
-                os.windows.securitySoftwareDiscovery,
                 os.windows.servicesFilePermissionsWeakness,
                 os.windows.servicesRegistryPermissionsWeakness,
                 os.windows.serviceStop,
@@ -178,8 +180,7 @@ category Software {
                 os.macOS.bash_profileAndBashrc,
                 os.macOS.clearCommandHistory,
                 os.macOS.elevatedExecutionWithPrompt,
-                os.macOS.gatekeeperBypassViaDriveByCompromise,
-                os.macOS.gatekeeperBypassViaHardwareAddition,
+                os.macOS.gatekeeperBypass,
                 os.macOS.gUIInputCapture,
                 os.macOS.hiddenWindow,
                 os.macOS.hISTCONTROL,
@@ -354,12 +355,10 @@ category Software {
                 os.firmwareCorruption, 
                 os.graphicalUserInterface,
                 os.inhibitSystemRecovery,
-                os.installRootCertificate,
                 os.networkServiceScan,
                 os.networkSniffing,
                 os.redundantAccess,
                 os.resourceHijacking,
-                os.softwareDiscovery,
                 os.systemNetworkConnectionsDiscovery,
                 os.systemOwnerOrUserDiscovery,
                 os.systemShutdownOrReboot,
@@ -499,7 +498,6 @@ category Software {
                 os.macOS.emond,
                 os.macOS.keychain,
                 os.macOS.localJobScheduling,
-                os.macOS.gatekeeperBypassViaAdminRights,
                 os.macOS.hiddenUsers,
                 os.macOS.kernelModulesAndExtensions,
                 os.macOS.attemptLaunchAgent,
@@ -611,13 +609,24 @@ category Software {
                 browser.attemptSpearphishingLink,
                 os.bruteForce // https://www.us-cert.gov/ncas/alerts/TA18-086A
 
-        | attemptSupplyChainCompromise @hidden [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
+        | supplyChainCompromise [Bernoulli(0.70)*(Uniform(8,30)+TruncatedNormal(0.042,0.021))]
             developer info: "Sources for distribution result: https://savvyapps.com/blog/how-often-should-you-update-your-app#:~:text=Most%20successful%20apps%20release%201,updates%20with%20longer%20feature%20releases"
-            ->  supplyChainCompromise
+            user info: "Adversaries may manipulate products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  compromiseSoftwareDependenciesAndDevelopmentTools,
+                compromiseSoftwareSupplyChain,
+                compromiseHardwareSupplyChain
 
-        & supplyChainCompromise 
-            user info: "Supply chain compromise is the manipulation of products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
-            ->  os.compromisedSystems
+        & compromiseSoftwareDependenciesAndDevelopmentTools
+            user info: "Adversaries may manipulate software dependencies and development tools prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  os.compromisedDataOrSystem
+
+        & compromiseSoftwareSupplyChain
+            user info: "Adversaries may manipulate application software prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  os.compromisedDataOrSystem
+
+        & compromiseHardwareSupplyChain
+            user info: "Adversaries may manipulate hardware components in products prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  os.compromisedDataOrSystem
 
         & exploitationForClientExecution
             developer info: "Binary probability distribution."
@@ -714,11 +723,20 @@ category Software {
                 exploitHighVulnerabilityPublicFacingApplication,
                 exploitMediumVulnerabilityPublicFacingApplication,
                 exploitLowVulnerabilityPublicFacingApplication,
-                supplyChainCompromise,
                 os.computer.router.internalNetwork.remoteAccess,              
                 os.windows.systemFirmware,
                 os.windows.dLLSideLoading,
-                os.service.thirdpartySoftware.useThirdpartySoftware                      
+                thirdpartySoftware.useThirdpartySoftware 
+
+        # vulnerabilityScanning [Bernoulli(0.653)]
+            user info: "https://attack.mitre.org/mitigations/M1016/"
+            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.scmagazineuk.com/one-fourth-global-organisations-faced-breaches-unpatched-vulnerabilities/article/1586349#:~:text=Vulnerability%20management%20starts%20with%20visibility,networks%20within%20minutes%20or%20hours., https://www.zdnet.com/article/zero-days-fileless-attacks-are-now-the-most-dangerous-threats-to-the-enterprise/, https://liu.diva-portal.org/smash/get/diva2:1348588/FULLTEXT01.pdf, https://pdfs.semanticscholar.org/775d/ed35d7940b94b5bc01d568d472e59fd24775.pdf, "
+            ->  compromiseSoftwareDependenciesAndDevelopmentTools,
+                compromiseSoftwareSupplyChain,
+                exploitHighVulnerabilityPublicFacingApplication,
+                exploitMediumVulnerabilityPublicFacingApplication,
+                exploitLowVulnerabilityPublicFacingApplication,
+                exploitationOfRemoteServices
     }
 
     asset ThirdpartySoftware extends Service {  
@@ -893,7 +911,7 @@ category Software {
                 crossSiteScripting,
                 service.os.computer.user.attemptUserExecution,
                 service.exploitationForClientExecution,
-                service.os.macOS.gatekeeperBypassViaDriveByCompromise
+                service.os.macOS.attemptGatekeeperBypass
 
 
         | malvertising [Gamma(9,0.167)]
@@ -1142,7 +1160,7 @@ category Software {
                 computer.router.internalNetwork.communicate,
                 computer.router.internalNetwork.generateDomainNames
 
-        | compromisedSystems // with probability
+        | compromisedDataOrSystem // with probability
             ->  privateKeys,
                 systemNetworkConnectionsDiscovery,
                 service.browser.installExtensions,
@@ -1418,10 +1436,6 @@ category Software {
             ->  service.attemptExternalRemoteServices, // maintain network access
                 attemptValidAccounts
 
-        & installRootCertificate
-            user info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
-            ->  bypassDigitalCertificateValidation  
-
         | internalSpearphishing [Bernoulli(0.85)*Exponential(1)]
             developer info: "Sources for distribution results: https://er.educause.edu/articles/2005/1/fostering-email-security-awareness-the-west-point-carronade and other work on spearphishing." 
             user info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
@@ -1653,7 +1667,13 @@ category Software {
         | softwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
             developer info: "TTC assumed instant. Sources used for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
-            ->  windows.securitySoftwareDiscovery 
+            ->  securitySoftwareDiscovery,
+                service.attemptExploitationForPrivilegeEscalation
+
+        & securitySoftwareDiscovery
+            user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            developer info: "Binary probability distribution."
+            ->  service.attemptExploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
         | systemAccess
 
@@ -1897,6 +1917,18 @@ category Software {
             developer info: "Sources used for distribution result: https://www.nexustek.com/blog/cyber-security-tip-detecting-attacks-over-low-traffic-ports/, https://krisk.io/publication/mitre-attack-securecomm19/, https://media.paloaltonetworks.com/documents/The-Modern-Malware-Review-March-2013.pdf, https://www.usenix.org/event/leet09/tech/full_papers/bayer/bayer.pdf, https://www.securityweek.com/rise-malware-using-encryption-shows-importance-network-traffic-inspection, "
             user info: "Adversaries may communicate using a protocol and port paring that are typically not associated."
             ->  computer.router.internalNetwork.c2Connected
+
+        | subvertTrustControls
+            user info: "Adversaries may undermine security controls that will either warn users of untrusted activity or prevent execution of untrusted programs."
+            ->  installRootCertificate,
+                windows.codeSigningCertificate,
+                windows.sIPAndTrustProviderHijacking,
+                macOS.codeSigningCertificate,  
+                macOS.gatekeeperBypass
+
+        & installRootCertificate
+            user info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
+            ->  bypassDigitalCertificateValidation  
 
         | attemptValidAccounts @hidden
             ->  validAccounts
@@ -2152,7 +2184,8 @@ category Software {
 
         # bootIntegrity 
             user info: "https://attack.mitre.org/mitigations/M1046/"
-            ->  firmwareCorruption
+            ->  firmwareCorruption,
+                service.compromiseHardwareSupplyChain
  
         # dataBackup [Bernoulli(0.4567)]
             user info: "https://attack.mitre.org/mitigations/M1053/"
@@ -2331,9 +2364,11 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1051/"
             ->  firmwareCorruption,
                 service.browser.driveByCompromise,
+                service.compromiseSoftwareDependenciesAndDevelopmentTools,
+                service.compromiseSoftwareSupplyChain,
                 service.exploitationForCredentialAccess,
                 service.exploitationForPrivilegeEscalation,
-                service.exploitationOfRemoteServices 
+                service.exploitationOfRemoteServices
 
         # userAccountControl
             user info: "https://attack.mitre.org/mitigations/M1052/"
@@ -2384,7 +2419,7 @@ category Software {
                 windows.attemptServiceExecution,
                 windows.attemptServiceRegistryPermissionsWeakness,
                 windows.attemptSIDHistoryInjection,
-                windows.sIPAndTrustProviderHijacking,
+                windows.attemptSIPAndTrustProviderHijacking,
                 windows.systemServiceDiscovery,
                 windows.attemptServiceStop,
                 windows.attemptSQLStoredProcedures,
@@ -2480,11 +2515,10 @@ category Software {
             developer info: "Binary probability distribution."
             ->  attemptBypassUserAccessControl, // leads to Bypass User Account Control attack
                 codeProxyExecution,
-                bypassAntivirus,
-                bypassApplicationControl
+                bypassAntivirus
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
-            user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            user info: "Adversaries may create, acquire, or steal code signing materials to sign their malware or tools."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
             ->  attemptBypassUserAccessControl
 
@@ -2554,6 +2588,7 @@ category Software {
         & dCSync
             user info: "Adversaries may attempt to access credentials and other sensitive information by abusing a Windows Domain Controller's application programming interface (API) to simulate the replication process from a remote domain controller using a technique called DCSync."
             ->  attemptGoldenTicket, // hashes can then in turn be used to create a Golden Ticket for use in Pass the Ticket
+                attemptSilverTicket,
                 accountManipulation // hashes can then be used to change an account's password
 
         & dynamicLinkLibraryInjection
@@ -2585,12 +2620,6 @@ category Software {
             user info: "Adversaries may inject malicious code into processes via thread local storage (TLS) callbacks in order to evade process-based defenses as well as possibly elevate privileges."
             ->  bypassAntivirus,
                 bypassApplicationControl
-
-        | attemptGoldenTicket @hidden
-            ->  goldenTicket
-
-        & goldenTicket
-            user info: "Adversaries who have the KRBTGT account password hash may forge Kerberos ticket-granting tickets (TGT), also known as a golden ticket."
 
         | deobfuscateOrDecodeFilesOrInformation 
             ->  bypassAntivirus,
@@ -2643,21 +2672,17 @@ category Software {
         & mshta [Bernoulli(0.3329)*Exponential(491)]
             user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
             developer info: "Sources used for distribution: https://lolbas-project.github.io/lolbas/Binaries/Mshta/, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/blog/microsoft-html-application-hta-abuse-part-deux/"
-            ->  codeProxyExecution,
+            ->  fileProxyExecution,
                 bypassDigitalCertificateValidation,
                 bypassApplicationControl
 
         & msiexec
             user info: "Adversaries may abuse msiexec.exe to proxy execution of malicious payloads."
-            ->  codeProxyExecution,
-                bypassDigitalCertificateValidation,
-                bypassApplicationControl      
+            ->  codeProxyExecution     
 
         & odbcconf
             user info: "Adversaries may abuse odbcconf.exe to proxy execution of malicious payloads."
-            ->  codeProxyExecution,
-                bypassDigitalCertificateValidation,
-                bypassApplicationControl 
+            ->  codeProxyExecution
 
         & exchangeEmailDelegatePermissions
             user info: "Adversaries may grant additional permission levels, such as ReadPermission or FullAccess, to maintain persistent access to an adversary-controlled email account."
@@ -2763,9 +2788,7 @@ category Software {
         & installUtil
             developer info: "Binary probability distribution."
             user info: "Adversaries may use InstallUtil to proxy execution of code through a trusted Windows utility."
-            ->  bypassDigitalCertificateValidation,
-                bypassApplicationControl,
-                codeProxyExecution  
+            ->  codeProxyExecution  
 
         | interProcessCommunication
             user info: "Adversaries may abuse inter-process communication (IPC) mechanisms for local code or command execution."
@@ -2775,9 +2798,30 @@ category Software {
         & invalidCodeSignature
             user info: "Adversaries may attempt to mimic features of valid code signatures to increase the chance of deceiving a user, analyst, or tool."
 
+        | stealOrForgeKerberosTickets
+            user info: "Adversaries may attempt to subvert Kerberos authentication by stealing or forging Kerberos tickets to enable Pass the Ticket."
+            ->  goldenTicket,
+                silverTicket,
+                kerberoasting
+
+        | attemptGoldenTicket @hidden
+            ->  goldenTicket
+
+        & goldenTicket
+            user info: "Adversaries who have the KRBTGT account password hash may forge Kerberos ticket-granting tickets (TGT), also known as a golden ticket."
+            ->  attemptPassTheTicket
+
+        | attemptSilverTicket @hidden
+            ->  silverTicket
+
+        & silverTicket
+            user info: "Adversaries who have the password hash of a target service account (e.g. SharePoint, MSSQL) may forge Kerberos ticket granting service (TGS) tickets, also known as silver tickets."
+            ->  attemptPassTheTicket
+            
         & kerberoasting
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
-            ->  bruteForce,
+            ->  attemptSilverTicket,
+                bruteForce,
                 persistence,
                 service.attemptExploitationForPrivilegeEscalation,
                 attemptValidAccounts
@@ -2871,8 +2915,7 @@ category Software {
 
         & passTheTicket
             user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
-            ->  oSCredentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
-                computer.router.internalNetwork.c2Connexion // gain remote access 
+            ->  computer.router.internalNetwork.remoteAccess // gain remote access 
 
         | parentPIDSpoofing
             user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
@@ -2982,8 +3025,13 @@ category Software {
             ->  bypassAntivirus,
                 bypassApplicationControl
 
-        & codeProxyExecution
-            ->  persistence
+        | codeProxyExecution
+            ->  bypassApplicationControl,
+                bypassDigitalCertificateValidation
+
+        | fileProxyExecution
+            ->  bypassApplicationControl,
+                bypassDigitalCertificateValidation
 
         & rDPHijacking
             user info: "Adversaries may hijack a legitimate user’s remote desktop session to move laterally within an environment."
@@ -3004,16 +3052,12 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries can use Regsvcs and Regasm to proxy execution of code through a trusted Windows utility. Both utilities may be used to bypass process whitelisting."
             ->  codeProxyExecution, 
-                bypassApplicationControl,
-                bypassDigitalCertificateValidation,
                 attemptComponentObjectModel // register .NET Component Object Model (COM) assemblies
 
         & regsvr32
             developer info: "Binary probability distribution."
             user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
-            ->  bypassApplicationControl,
-                bypassAntivirus,
-                bypassDigitalCertificateValidation,
+            ->  bypassAntivirus,
                 codeProxyExecution,
                 componentObjectModelHijacking // establish Persistence via Component Object Model Hijacking
 
@@ -3039,8 +3083,6 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries may abuse rundll32.exe to proxy execution of malicious code."
             ->  bypassAntivirus,
-                bypassApplicationControl,
-                bypassDigitalCertificateValidation,
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 codeProxyExecution,
                 attemptControlPanel // rundll32.exe can also be used to execute Control Panel Item files
@@ -3114,17 +3156,22 @@ category Software {
                 regsvr32,
                 rundll32        
 
-        & signedScriptProxyExecution
+        | signedScriptProxyExecution
             user info: "Scripts signed with trusted certificates can be used to proxy execution of malicious files."
-            ->  bypassApplicationWhitelisting,
-                bypassDigitalCertificateValidation          
+            ->  pubPrn
+
+        & pubPrn
+            user info: "Adversaries may use the trusted PubPrn script to proxy execution of malicious files."
+            ->  fileProxyExecution
+
+        | attemptSIPAndTrustProviderHijacking @hidden
+            ->  sIPAndTrustProviderHijacking
 
         & sIPAndTrustProviderHijacking
             user info: "Adversaries may abuse this architecture to subvert trust controls and bypass security policies that allow only legitimately signed code to execute on a system."
-            ->  bypassApplicationWhitelisting,
+            ->  bypassApplicationControl,
                 bypassAutorunsAnalysis,
                 bypassDigitalCertificateValidation,
-                bypassProcessWhitelisting,
                 bypassUserModeSignatureValidation 
 
         | attemptSoftwarePacking @hidden
@@ -3329,11 +3376,6 @@ category Software {
             user info: "Adversaries may make and impersonate tokens to escalate privileges and bypass access controls."
             ->  service.attemptExploitationForPrivilegeEscalation
 
-        & securitySoftwareDiscovery
-            user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            developer info: "Binary probability distribution."
-            ->  virtualizationOrSandboxEvasion
-
         | attemptBypassUserAccessControl @hidden
             ->  bypassUserAccessControl
 
@@ -3434,6 +3476,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1015/"
             +>  cachedDomainCredentials,
                 dCSync,
+                goldenTicket,
                 passTheTicket
 
         # antivirus [Bernoulli(0.53)]
@@ -3511,10 +3554,10 @@ category Software {
                 networkShareDiscovery,
                 odbcconf,
                 pathInterception,
+                pubPrn,
                 queryRegistry,
                 regsvcsOrRegasm,
                 screensaver,
-                signedScriptProxyExecution,
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
                 trustedDeveloperUtilities,
@@ -3555,12 +3598,14 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1027/" 
             +>  cachedDomainCredentials,
                 dCSync,
+                kerberoasting,
                 lSASSMemory,
                 lSASecrets,
                 nTDS,
                 passTheHash,
                 passTheTicket,
                 securityAccountManager,
+                silverTicket,
                 windowsAdminShares               
 
         # privilegedProcessIntegrity  
@@ -3582,6 +3627,8 @@ category Software {
                 dCSync,
                 distributedComponentObjectModel,
                 domainControllerAuthentication,
+                goldenTicket,
+                kerberoasting,
                 lSASSMemory,
                 lSASecrets,
                 msiexec,
@@ -3590,6 +3637,7 @@ category Software {
                 rDPHijacking,
                 scheduledTask,
                 securityAccountManager,
+                silverTicket,
                 sQLStoredProcedures,
                 transportAgent,
                 windowsFileAndDirectoryPermissionsModification
@@ -3646,9 +3694,11 @@ category Software {
 
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
-            +>  localEmailCollection,
+            +>  kerberoasting,
+                localEmailCollection,
                 nTDS,
                 remoteEmailCollection,
+                silverTicket,
                 emailForwardingRule,
                 clearWindowsEventLogs
 
@@ -4001,7 +4051,7 @@ category Software {
             user info: "Adversaries may clear system logs to hide evidence of an intrusion. macOS and Linux both keep track of system or user-initiated actions via system logs."
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
-            user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            user info: "Adversaries may create, acquire, or steal code signing materials to sign their malware or tools."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
 
         | attemptClearCommandHistory @hidden
@@ -4047,24 +4097,15 @@ category Software {
                 hijackExecutionFlow
 
         | executeCode 
-            +>  computer.infectedMacOSComputer   
+            +>  computer.infectedMacOSComputer
 
-        & gatekeeperBypassViaDriveByCompromise
-            -> attemptGatekeeperBypass
-        
-        & gatekeeperBypassViaHardwareAddition
-            -> attemptGatekeeperBypass
-
-        & gatekeeperBypassViaAdminRights
-            -> attemptGatekeeperBypass
-
-        | attemptGatekeeperBypass 
+        | attemptGatekeeperBypass @hidden
             -> gatekeeperBypass
 
         & gatekeeperBypass
             developer info: "Binary probability distribution."
             user info: "Apps loaded onto the system from USB flash drive, optical disk, external hard drive, or even from a drive shared over the local network won't set this flag. Additionally, other utilities or events like drive-by downloads don't necessarily set it either. This completely bypasses the built-in Gatekeeper check."
-            ->  bypassApplicationWhitelisting,
+            ->  bypassApplicationControl,
                 bypassAntivirus 
 
         & gUIInputCapture
@@ -4256,11 +4297,6 @@ category Software {
         & networkShareDiscovery [Bernoulli(0.0129)]
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/"
             ->  computer.router.internalNetwork.networkShareDiscovery
-
-        & securitySoftwareDiscovery
-            user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            developer info: "Binary probability distribution."
-            ->  service.attemptExploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
         & unixShell
             developer info: "Adversaries may abuse Unix shell commands and scripts for execution."
@@ -4572,8 +4608,7 @@ category Network {
 
         # networkSegmentation
             user info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  remoteAccess,
-                router.computer.os.service.applicationDeploymentSoftware,
+            ->  router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.manInTheMiddle,
                 router.computer.os.nonStandardPort,
@@ -4602,15 +4637,6 @@ category Network {
             ->  obfuscateNetworkTraffic,
                 router.computer.os.standardCryptographicProtocol,
                 router.computer.os.domainFronting
-
-        # vulnerabilityScanning [Bernoulli(0.653)] // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
-            user info: "https://attack.mitre.org/mitigations/M1016/"
-            developer info: "Sources for distribution result : https://static.tenable.com/marketing/research-reports/Research-Report-Ponemon-Institute-Measuring_and_Managing_the_Cyber_Risks_to_Business_Operations.pdf, https://www.scmagazineuk.com/one-fourth-global-organisations-faced-breaches-unpatched-vulnerabilities/article/1586349#:~:text=Vulnerability%20management%20starts%20with%20visibility,networks%20within%20minutes%20or%20hours., https://www.zdnet.com/article/zero-days-fileless-attacks-are-now-the-most-dangerous-threats-to-the-enterprise/, https://liu.diva-portal.org/smash/get/diva2:1348588/FULLTEXT01.pdf, https://pdfs.semanticscholar.org/775d/ed35d7940b94b5bc01d568d472e59fd24775.pdf, "
-            ->  router.computer.os.service.exploitHighVulnerabilityPublicFacingApplication,
-                router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
-                router.computer.os.service.exploitLowVulnerabilityPublicFacingApplication,
-                router.computer.os.service.exploitationOfRemoteServices,
-                router.computer.os.service.supplyChainCompromise
     }
 
     asset NetworkSharedDrive extends InternalNetwork {
@@ -4814,7 +4840,7 @@ category Hardware {
         & hardwareAdditions 
             user info: "Adversaries may introduce computer accessories, computers, or networking hardware into a system or network that can be used as a vector to gain access." 
             ->  os.executeCode,
-                os.macOS.gatekeeperBypassViaHardwareAddition
+                os.macOS.attemptGatekeeperBypass
     }
 
     asset PeripheralDevice {
