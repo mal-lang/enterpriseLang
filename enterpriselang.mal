@@ -85,6 +85,7 @@ category Software {
                 os.resourceHijacking,
                 os.rootkit,
                 os.runVirtualInstance,
+                os.securitySoftwareDiscovery,
                 os.attemptScripting,
                 os.softwareDiscovery,
                 os.systemInformationDiscovery,
@@ -114,13 +115,13 @@ category Software {
                 os.windows.executionThroughModuleLoad,
                 os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
+                os.windows.goldenTicket,
                 os.windows.gUIInputCapture,
                 os.windows.groupPolicyModification,
                 os.windows.hiddenWindow,
                 os.windows.indirectCommandExecution,
                 os.windows.inputPrompt,
                 os.windows.installUtil,
-                os.windows.kerberoasting,
                 os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
                 os.windows.attemptLogonScripts,
                 os.windows.masqueradeTaskOrService,
@@ -136,6 +137,7 @@ category Software {
                 os.windows.portableExecutableInjection,
                 os.windows.processDoppelganging,
                 os.windows.processHollowing,
+                os.windows.pubPrn,
                 os.windows.registryRunKeysOrStartupFolder,
                 os.windows.regsvcsOrRegasm,
                 os.windows.regsvr32,
@@ -144,13 +146,13 @@ category Software {
                 os.windows.attemptShortcutModification,
                 os.windows.signedScriptProxyExecution,
                 os.windows.sIPAndTrustProviderHijacking,
+                os.windows.silverTicket,
                 os.windows.systemServiceDiscovery,
                 os.windows.attemptTaintSharedContent,
                 os.windows.templateInjection,
                 os.windows.threadExecutionHijacking,
                 os.windows.trustedDeveloperUtilities,
                 os.windows.attemptAccessTokenManipulation,
-                os.windows.securitySoftwareDiscovery,
                 os.windows.servicesFilePermissionsWeakness,
                 os.windows.servicesRegistryPermissionsWeakness,
                 os.windows.serviceStop,
@@ -359,7 +361,6 @@ category Software {
                 os.networkSniffing,
                 os.redundantAccess,
                 os.resourceHijacking,
-                os.softwareDiscovery,
                 os.systemNetworkConnectionsDiscovery,
                 os.systemOwnerOrUserDiscovery,
                 os.systemShutdownOrReboot,
@@ -1652,7 +1653,13 @@ category Software {
         | softwareDiscovery [Bernoulli(0.83387)]
             user info: "Adversaries may attempt to get a listing of non-security related software that is installed on the system."
             developer info: "TTC assumed instant. Sources used for probability distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://attack.mitre.org/techniques/T1063/"
-            ->  windows.securitySoftwareDiscovery 
+            ->  securitySoftwareDiscovery,
+                service.attemptExploitationForPrivilegeEscalation
+
+        & securitySoftwareDiscovery
+            user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            developer info: "Binary probability distribution."
+            ->  service.attemptExploitationForDefenseEvasion // leads to exploitation for defense evasion attack
 
         | systemAccess
 
@@ -2479,8 +2486,7 @@ category Software {
             developer info: "Binary probability distribution."
             ->  attemptBypassUserAccessControl, // leads to Bypass User Account Control attack
                 codeProxyExecution,
-                bypassAntivirus,
-                bypassApplicationControl
+                bypassAntivirus
 
         | codeSigningCertificate [Bernoulli(0.72)*Exponential(96)]
             user info: "Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
@@ -2553,6 +2559,7 @@ category Software {
         & dCSync
             user info: "Adversaries may attempt to access credentials and other sensitive information by abusing a Windows Domain Controller's application programming interface (API) to simulate the replication process from a remote domain controller using a technique called DCSync."
             ->  attemptGoldenTicket, // hashes can then in turn be used to create a Golden Ticket for use in Pass the Ticket
+                attemptSilverTicket,
                 accountManipulation // hashes can then be used to change an account's password
 
         & dynamicLinkLibraryInjection
@@ -2584,12 +2591,6 @@ category Software {
             user info: "Adversaries may inject malicious code into processes via thread local storage (TLS) callbacks in order to evade process-based defenses as well as possibly elevate privileges."
             ->  bypassAntivirus,
                 bypassApplicationControl
-
-        | attemptGoldenTicket @hidden
-            ->  goldenTicket
-
-        & goldenTicket
-            user info: "Adversaries who have the KRBTGT account password hash may forge Kerberos ticket-granting tickets (TGT), also known as a golden ticket."
 
         | deobfuscateOrDecodeFilesOrInformation 
             ->  bypassAntivirus,
@@ -2642,21 +2643,17 @@ category Software {
         & mshta [Bernoulli(0.3329)*Exponential(491)]
             user info: "Mshta is a utility that executes Microsoft HTML Applications. It can be used to proxy execute malicious .hta files, and can also be used to bypass application whitelisting."
             developer info: "Sources used for distribution: https://lolbas-project.github.io/lolbas/Binaries/Mshta/, https://netmarketshare.com/operating-system-market-share.aspx?, https://redcanary.com/blog/microsoft-html-application-hta-abuse-part-deux/"
-            ->  codeProxyExecution,
+            ->  fileProxyExecution,
                 bypassDigitalCertificateValidation,
                 bypassApplicationControl
 
         & msiexec
             user info: "Adversaries may abuse msiexec.exe to proxy execution of malicious payloads."
-            ->  codeProxyExecution,
-                bypassDigitalCertificateValidation,
-                bypassApplicationControl      
+            ->  codeProxyExecution     
 
         & odbcconf
             user info: "Adversaries may abuse odbcconf.exe to proxy execution of malicious payloads."
-            ->  codeProxyExecution,
-                bypassDigitalCertificateValidation,
-                bypassApplicationControl 
+            ->  codeProxyExecution
 
         & exchangeEmailDelegatePermissions
             user info: "Adversaries may grant additional permission levels, such as ReadPermission or FullAccess, to maintain persistent access to an adversary-controlled email account."
@@ -2762,9 +2759,7 @@ category Software {
         & installUtil
             developer info: "Binary probability distribution."
             user info: "Adversaries may use InstallUtil to proxy execution of code through a trusted Windows utility."
-            ->  bypassDigitalCertificateValidation,
-                bypassApplicationControl,
-                codeProxyExecution  
+            ->  codeProxyExecution  
 
         | interProcessCommunication
             user info: "Adversaries may abuse inter-process communication (IPC) mechanisms for local code or command execution."
@@ -2774,9 +2769,30 @@ category Software {
         & invalidCodeSignature
             user info: "Adversaries may attempt to mimic features of valid code signatures to increase the chance of deceiving a user, analyst, or tool."
 
+        | stealOrForgeKerberosTickets
+            user info: "Adversaries may attempt to subvert Kerberos authentication by stealing or forging Kerberos tickets to enable Pass the Ticket."
+            ->  goldenTicket,
+                silverTicket,
+                kerberoasting
+
+        | attemptGoldenTicket @hidden
+            ->  goldenTicket
+
+        & goldenTicket
+            user info: "Adversaries who have the KRBTGT account password hash may forge Kerberos ticket-granting tickets (TGT), also known as a golden ticket."
+            ->  attemptPassTheTicket
+
+        | attemptSilverTicket @hidden
+            ->  silverTicket
+
+        & silverTicket
+            user info: "Adversaries who have the password hash of a target service account (e.g. SharePoint, MSSQL) may forge Kerberos ticket granting service (TGS) tickets, also known as silver tickets."
+            ->  attemptPassTheTicket
+            
         & kerberoasting
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
-            ->  bruteForce,
+            ->  attemptSilverTicket,
+                bruteForce,
                 persistence,
                 service.attemptExploitationForPrivilegeEscalation,
                 attemptValidAccounts
@@ -2869,8 +2885,7 @@ category Software {
 
         & passTheTicket
             user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
-            ->  oSCredentialDumping, // valid Kerberos tickets for Valid Accounts are captured by Credential Dumping
-                computer.router.internalNetwork.c2Connexion // gain remote access 
+            ->  computer.router.internalNetwork.remoteAccess // gain remote access 
 
         | parentPIDSpoofing
             user info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
@@ -2980,8 +2995,13 @@ category Software {
             ->  bypassAntivirus,
                 bypassApplicationControl
 
-        & codeProxyExecution
-            ->  persistence
+        | codeProxyExecution
+            ->  bypassApplicationControl,
+                bypassDigitalCertificateValidation
+
+        | fileProxyExecution
+            ->  bypassApplicationControl,
+                bypassDigitalCertificateValidation
 
         & rDPHijacking
             user info: "Adversaries may hijack a legitimate user’s remote desktop session to move laterally within an environment."
@@ -3002,16 +3022,12 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries can use Regsvcs and Regasm to proxy execution of code through a trusted Windows utility. Both utilities may be used to bypass process whitelisting."
             ->  codeProxyExecution, 
-                bypassApplicationControl,
-                bypassDigitalCertificateValidation,
                 attemptComponentObjectModel // register .NET Component Object Model (COM) assemblies
 
         & regsvr32
             developer info: "Binary probability distribution."
             user info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Regsvr32.exe can also be used to specifically bypass process whitelisting using functionality to load COM scriptlets to execute DLLs under user permissions."
-            ->  bypassApplicationControl,
-                bypassAntivirus,
-                bypassDigitalCertificateValidation,
+            ->  bypassAntivirus,
                 codeProxyExecution,
                 componentObjectModelHijacking // establish Persistence via Component Object Model Hijacking
 
@@ -3037,8 +3053,6 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries may abuse rundll32.exe to proxy execution of malicious code."
             ->  bypassAntivirus,
-                bypassApplicationControl,
-                bypassDigitalCertificateValidation,
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 codeProxyExecution,
                 attemptControlPanel // rundll32.exe can also be used to execute Control Panel Item files
@@ -3112,10 +3126,13 @@ category Software {
                 regsvr32,
                 rundll32        
 
-        & signedScriptProxyExecution
+        | signedScriptProxyExecution
             user info: "Scripts signed with trusted certificates can be used to proxy execution of malicious files."
-            ->  bypassApplicationWhitelisting,
-                bypassDigitalCertificateValidation          
+            ->  pubPrn
+
+        & pubPrn
+            user info: "Adversaries may use the trusted PubPrn script to proxy execution of malicious files."
+            ->  fileProxyExecution
 
         & sIPAndTrustProviderHijacking
             user info: "Adversaries may abuse this architecture to subvert trust controls and bypass security policies that allow only legitimately signed code to execute on a system."
@@ -3327,11 +3344,6 @@ category Software {
             user info: "Adversaries may make and impersonate tokens to escalate privileges and bypass access controls."
             ->  service.attemptExploitationForPrivilegeEscalation
 
-        & securitySoftwareDiscovery
-            user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            developer info: "Binary probability distribution."
-            ->  virtualizationOrSandboxEvasion
-
         | attemptBypassUserAccessControl @hidden
             ->  bypassUserAccessControl
 
@@ -3432,6 +3444,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1015/"
             +>  cachedDomainCredentials,
                 dCSync,
+                goldenTicket,
                 passTheTicket
 
         # antivirus [Bernoulli(0.53)]
@@ -3509,10 +3522,10 @@ category Software {
                 networkShareDiscovery,
                 odbcconf,
                 pathInterception,
+                pubPrn,
                 queryRegistry,
                 regsvcsOrRegasm,
                 screensaver,
-                signedScriptProxyExecution,
                 sIPAndTrustProviderHijacking,
                 systemTimeDiscovery,
                 trustedDeveloperUtilities,
@@ -3553,12 +3566,14 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1027/" 
             +>  cachedDomainCredentials,
                 dCSync,
+                kerberoasting,
                 lSASSMemory,
                 lSASecrets,
                 nTDS,
                 passTheHash,
                 passTheTicket,
                 securityAccountManager,
+                silverTicket,
                 windowsAdminShares               
 
         # privilegedProcessIntegrity  
@@ -3580,6 +3595,8 @@ category Software {
                 dCSync,
                 distributedComponentObjectModel,
                 domainControllerAuthentication,
+                goldenTicket,
+                kerberoasting,
                 lSASSMemory,
                 lSASecrets,
                 msiexec,
@@ -3588,6 +3605,7 @@ category Software {
                 rDPHijacking,
                 scheduledTask,
                 securityAccountManager,
+                silverTicket,
                 sQLStoredProcedures,
                 transportAgent,
                 windowsFileAndDirectoryPermissionsModification
@@ -3644,9 +3662,11 @@ category Software {
 
         # encryptSensitiveInformation
             user info: "https://attack.mitre.org/mitigations/M1041/"
-            +>  localEmailCollection,
+            +>  kerberoasting,
+                localEmailCollection,
                 nTDS,
                 remoteEmailCollection,
+                silverTicket,
                 emailForwardingRule,
                 clearWindowsEventLogs
 
@@ -4255,11 +4275,6 @@ category Software {
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/"
             ->  computer.router.internalNetwork.networkShareDiscovery
 
-        & securitySoftwareDiscovery
-            user info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
-            developer info: "Binary probability distribution."
-            ->  service.attemptExploitationForDefenseEvasion // leads to exploitation for defense evasion attack
-
         & unixShell
             developer info: "Adversaries may abuse Unix shell commands and scripts for execution."
             ->  executeCode
@@ -4570,8 +4585,7 @@ category Network {
 
         # networkSegmentation
             user info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  remoteAccess,
-                router.computer.os.service.applicationDeploymentSoftware,
+            ->  router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.manInTheMiddle,
                 router.computer.os.nonStandardPort,
