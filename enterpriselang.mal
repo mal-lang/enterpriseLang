@@ -1443,7 +1443,8 @@ category Software {
         & maliciousLink
             user info: "An adversary may rely upon a user clicking a malicious link in order to gain execution."
 
-        & manInTheMiddle
+        & manInTheMiddle [Bernoulli(0.35)*Exponential(1)]
+            developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/94.html, https://www.csoonline.com/article/3340117/what-is-a-man-in-the-middle-attack-how-mitm-attacks-work-and-how-to-prevent-them.html#:~:text=Though%20not%20as%20common%20as,are%20difficult%20to%20come%20by."
             user info: "Adversaries may attempt to position themselves between two or more networked devices using a man-in-the-middle (MiTM) technique to support follow-on behaviors such as Network Sniffing or Transmitted Data Manipulation."
             ->  networkSniffing,
                 computer.router.internalNetwork.attemptTransmittedDataManipulation,
@@ -2785,6 +2786,7 @@ category Software {
             ->  lLMNR_NBT_NS_PoisoningAndRelay
 
         & lLMNR_NBT_NS_PoisoningAndRelay
+            developer info: "Binary probability distribution. Probability carried by MiTM technique."
             user info: "AAdversaries can spoof an authoritative source for name resolution on a victim network by responding to LLMNR (UDP 5355)/NBT-NS (UDP 137) traffic. The adversary can then collect the hash information sent over the wire through tools that monitor the ports for traffic or through Network Sniffing and crack the hashes offline through Brute Force to obtain the plaintext passwords."
             ->  networkSniffing,
                 bruteForce
