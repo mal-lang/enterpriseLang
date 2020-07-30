@@ -1057,7 +1057,8 @@ category Software {
                 dataFromInformationRepositories,
                 computer.infectedComputer
 
-        & clipboardData
+        & clipboardData [Exponential(1)]
+            developer info: "Sources for distribution results: https://attack.mitre.org/techniques/T1115/ "
             ->  adminAccount.adminCredentials,
                 userAccount.userCredentials
 
