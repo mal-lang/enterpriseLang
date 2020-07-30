@@ -1173,6 +1173,7 @@ category Software {
             ->  binaryPadding
 
         & binaryPadding
+            developer info: "Binary probability distribution. Distribution carried by obfuscatedFilesOrInformation"
             ->  bypassSignatureBasedDetection,
                 bypassAntivirus
 
@@ -4809,7 +4810,8 @@ category Hardware {
             <-  peripheralDevice.microphone
             ->  peripheralDevice.microphone.collectAudio
 
-        & collectAudio
+        & collectAudio [Bernoulli(0.74)*Exponential(0.1)]
+            developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/634.html and Video Capture results"
             ->  os.dataCollected
         
         | peripheralDeviceDiscovery
@@ -4860,7 +4862,8 @@ category Hardware {
     }
     
     asset Microphone extends PeripheralDevice {
-        | collectAudio
+        | collectAudio [Bernoulli(0.74)*Exponential(0.1)]
+            developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/634.html and Video Capture results"
             ->  computer.collectAudio
     }
 }
