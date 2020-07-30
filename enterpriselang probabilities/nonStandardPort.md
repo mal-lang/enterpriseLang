@@ -19,8 +19,17 @@ The average of these values is (19.2 + 7 + 10 + 97 + 43 + 17 + 79.7 + 56)/8 = ~4
 ## Time to compromise
 This attack step is about which ports are chosen to communicate over. I think TTC could either be interpreted as how long it would take to finish communications over the port, or how long it would take for the software to begin using the port. The latter is probably instant, and this is the TTC I will use. For findings regarding the former TTC, I have listed further down below. 
 
+## Update 
+### 1 
+The only distribution that supports "success rate" in the MAL is the Bernoulli one. 
+Some of the values listed above represent the percentage of malware using non standard port and not the likelihood that one of those ports are opened and vulnerable.
+
+https://www.speedguide.net/ports_common.php
+According to this source, out of 1000000 recent security scans, there were 119818 (11.98%) systems with open ports (including commonly used ones).
+We'll assume that this value can be used to assess the prevalence for this technique regardless.
+
 ## Results
-```TruncatedNormal(41.11,31.68)```
+```Bernoulli(0.1198)```
 
 ## Discussion
 It doesn't feel great to me that all the values are so different. Using a normal distribution probably isn't ideal because of this, but it's the best idea I have at the moment. If this is deemed too poor, perhaps we could just use the average. 

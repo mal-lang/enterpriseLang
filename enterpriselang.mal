@@ -1188,10 +1188,6 @@ category Software {
                 windows.passTheHash, // leads to Pass the Hash attack
                 windows.networkSniffing // leads to Network Sniffing attack
 
-        & commonlyUsedPortsConnection
-            user info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
-            ->  computer.router.internalNetwork.c2Connected
-
         & compileAfterDelivery    
             developer info: "Binary probability distribution. Probability carried by obfuscatedFilesOrInformation" 
             user info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
@@ -1917,8 +1913,8 @@ category Software {
             developer info: "Binary probability distribution."
             user info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."    
 
-        & nonStandardPort [TruncatedNormal(41.11,31.68)]
-            developer info: "Sources used for distribution result: https://www.nexustek.com/blog/cyber-security-tip-detecting-attacks-over-low-traffic-ports/, https://krisk.io/publication/mitre-attack-securecomm19/, https://media.paloaltonetworks.com/documents/The-Modern-Malware-Review-March-2013.pdf, https://www.usenix.org/event/leet09/tech/full_papers/bayer/bayer.pdf, https://www.securityweek.com/rise-malware-using-encryption-shows-importance-network-traffic-inspection, "
+        & nonStandardPort [Bernoulli(0.1198)]
+            developer info: "Sources used for distribution result: https://www.speedguide.net/ports_common.php"
             user info: "Adversaries may communicate using a protocol and port paring that are typically not associated."
             ->  computer.router.internalNetwork.c2Connected
 
@@ -4585,7 +4581,6 @@ category Network {
                 junkData,
                 protocolImpersonation,
                 router.computer.os.service.browser.spearphishingAttachment,
-                router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.customCommandAndControlProtocol,
                 router.computer.os.customCryptographicProtocol,
                 router.computer.os.dataCompressed,
@@ -4613,7 +4608,6 @@ category Network {
         # networkSegmentation
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  router.computer.os.service.applicationDeploymentSoftware,
-                router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.manInTheMiddle,
                 router.computer.os.nonStandardPort,
                 router.computer.os.customCommandAndControlProtocol,
@@ -4724,7 +4718,6 @@ category Network {
                 router.internalNetwork.dataObfuscation,
                 router.internalNetwork.exfiltrationOverC2Channel,
                 router.internalNetwork.generateDomainNames,
-                router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.nonStandardPort,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multilayerEncryption,
@@ -4741,7 +4734,6 @@ category Network {
                 router.computer.os.service.exploitLowVulnerabilityPublicFacingApplication,
                 router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.service.exploitationOfRemoteServices,
-                router.computer.os.commonlyUsedPortsConnection,
                 router.computer.os.nonStandardPort,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation        
@@ -4767,8 +4759,7 @@ category Network {
 
         # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
             user info: "https://attack.mitre.org/mitigations/M1030/"
-            ->  router.computer.os.commonlyUsedPortsConnection,
-                router.computer.os.nonStandardPort,
+            ->  router.computer.os.nonStandardPort,
                 router.computer.os.service.externalRemoteServices,
                 router.computer.os.windows.remoteDesktopProtocol,
                 router.computer.os.windows.distributedComponentObjectModel,
