@@ -59,16 +59,17 @@ category Software {
                 os.dataDestruction,
                 os.dataManipulation,
                 os.dataFromInformationRepositories,
+                os.defaultAccounts,
                 os.diskWipe,
                 os.disableOrModifyTools,
                 os.dynamicResolution,
+                os.domainAccounts,
                 os.domainDiscovery,
                 os.domainGroups,
                 os.executionGuardrails,
                 os.fileDeletion,
                 os.fileAndDirectoryDiscovery,
                 os.fileAndDirectoryPermissionsModification,
-                os.graphicalUserInterface,
                 os.hiddenFileSystem,
                 os.hiddenFilesAndDirectories,
                 os.indicatorRemovalOnHost,
@@ -76,6 +77,7 @@ category Software {
                 os.internalSpearphishing,
                 os.installRootCertificate,
                 os.lateralToolTransfer,
+                os.localAccounts,
                 os.localGroups,
                 os.manInTheMiddle,
                 os.passwordGuessing,
@@ -217,6 +219,7 @@ category Software {
                 os.service.attemptExternalRemoteServices,
                 os.service.implantContainerImage,
                 os.service.remoteAccessSoftware,
+                os.service.cloudService.cloudAccounts,
                 os.service.cloudService.cloudGroups,
                 os.service.cloudService.cloudServiceDiscovery,
                 os.service.cloudService.cloudServiceDashboard,
@@ -234,13 +237,15 @@ category Software {
                 os.service.browser.installExtensions,
                 os.service.browser.stealWebSessionCookie,
                 os.computer.router.internalNetwork.transmittedDataManipulation,
+                os.computer.router.externalNetwork.bidirectionaCommunication,
                 os.computer.router.externalNetwork.dataFromCloudStorageObject,
-                os.computer.router.externalNetwork.transmittedDataManipulation,
-                os.computer.router.externalNetwork.webService
+                os.computer.router.externalNetwork.deadDropResolver,
+                os.computer.router.externalNetwork.oneWayCommunication,
+                os.computer.router.externalNetwork.transmittedDataManipulation
 
         | userCredentials
             ->  userRights,
-                os.attemptValidAccounts,
+                os.validAccounts,
                 os.computer.router.internalNetwork.exchangeServerCollection,
                 os.service.remoteServices
 
@@ -357,7 +362,6 @@ category Software {
                 os.detailedRemoteSystemDiscovery,
                 os.fileAndDirectoryDiscovery,
                 os.firmwareCorruption, 
-                os.graphicalUserInterface,
                 os.inhibitSystemRecovery,
                 os.networkServiceScan,
                 os.networkSniffing,
@@ -375,7 +379,7 @@ category Software {
              
         | adminCredentials
             ->  adminRights,
-                os.attemptValidAccounts,
+                os.validAccounts,
                 os.service.remoteServices
 
         | attemptCreateAccount @hidden
@@ -748,7 +752,7 @@ category Software {
         & trustedRelationship [Bernoulli(0.40)*TruncatedNormal(0.042,0.021)]
             user info: "Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network." 
             developer info: "Sources for distribution result: accenture.com/_acnmedia/PDF-116/Accenture-Cybersecurity-Report-2020.pdf, https://enterprise.verizon.com/resources/reports/DBIR_2018_Report_execsummary.pdf" 
-            ->  os.attemptValidAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
+            ->  os.validAccounts // Valid Accounts used by the other party for access to internal network systems may be compromised
 
         | attemptUseThirdpartySoftware @hidden [Bernoulli(0.70)]
             user info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
@@ -784,6 +788,18 @@ category Software {
         | cloudAccount
             user info: "Adversaries may attempt to get a listing of cloud accounts."
             ->  os.persistence
+
+        & cloudAccounts
+            user info: "Adversaries may obtain and abuse credentials of a cloud account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion."
+            ->  thirdpartySoftware.attemptTrustedRelationship,
+                remoteServices,
+                attemptExternalRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
+                os.computer.router.internalNetwork.bypassNetworkIntrusionDetection,
+                os.computer.router.firewall.bypassFirewall,
+                os.bypassHostIntrusionPrevention,
+                os.bypassApplicationControl,
+                os.bypassSystemAccessControls,
+                os.bypassAntivirus
 
         & cloudGroups
             user info: "Adversaries may attempt to find cloud groups and permission settings. The knowledge of cloud permission groups can help adversaries determine the particular roles of users and groups within an environment, as well as which users are associated with a particular group."
@@ -998,7 +1014,9 @@ category Software {
                 service.os.windows.compiledHTMLFile,
                 service.os.userAccount.userExecution,
                 service.os.computer.user.maliciousLink,
-                service.os.computer.router.externalNetwork.webService,
+                service.os.computer.router.externalNetwork.bidirectionaCommunication,
+                service.os.computer.router.externalNetwork.deadDropResolver,
+                service.os.computer.router.externalNetwork.oneWayCommunication,
                 service.os.computer.router.externalNetwork.exfiltrationOverWebService
     }
 
@@ -1439,7 +1457,7 @@ category Software {
         & webPortalCapture
             user info: "Adversaries may install code on externally facing portals, such as a VPN login page, to capture and transmit credentials of users who attempt to log into the service."
             ->  service.attemptExternalRemoteServices, // maintain network access
-                attemptValidAccounts
+                validAccounts
 
         | internalSpearphishing [Bernoulli(0.85)*Exponential(1)]
             developer info: "Sources for distribution results: https://er.educause.edu/articles/2005/1/fostering-email-security-awareness-the-west-point-carronade and other work on spearphishing." 
@@ -1608,11 +1626,6 @@ category Software {
                 macOS.macFileAndDirectoryPermissionsModification,
                 linux.linuxFileAndDirectoryPermissionsModification
 
-        | graphicalUserInterface
-            developer info: "Binary probability distribution."
-            user info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
-            ->  windows.attemptSystemFirmware
-
         | impareDefenses
             user info: "Adversaries may maliciously modify components of a victim environment in order to hinder or disable defensive mechanisms."
             ->  disableOrModifyTools,
@@ -1678,6 +1691,7 @@ category Software {
             user info: "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
             developer info: "TTC assumed instant. sources used for distribution result: https://www.recordedfuture.com/mitre-attack-tactics/, https://krisk.io/post/sok-attack-securecomm19.pdf, https://attack.mitre.org/techniques/T1082/"
             ->  processInjection,
+                systemChecks,
                 systemNetworkConfigurationDiscovery,
                 systemNetworkConnectionsDiscovery
 
@@ -1724,7 +1738,7 @@ category Software {
 
         & redundantAccess
             user info: "Adversaries may use more than one remote access tool with varying command and control protocols as a hedge against detection. Adversaries may also attempt to gain access to Valid Accounts to use External Remote Services such as external VPNs as a way to maintain access despite interruptions to remote access tools deployed within a target network."
-            ->  attemptValidAccounts,
+            ->  validAccounts,
                 bypassAntivirus,
                 computer.router.internalNetwork.webShell, // Web shells may serve as Redundant Access or as a persistence mechanism in case an adversary's primary access methods are detected and removed
                 computer.router.externalNetwork.bypassNetworkIntrusionDetection,
@@ -1903,9 +1917,9 @@ category Software {
             user info: "Adversaries may use scripts to aid in operations and perform multiple actions that would otherwise be manual."
             developer info: "Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/scripting/, https://www.labnol.org/code/20016-maximum-execution-time-limit, https://www.php.net/manual/en/function.set-time-limit.php, https://www.sitepoint.com/javascript-execution-browser-limits/"
             ->  attemptAutomatedCollection,
+                virtualizationOrSandboxEvasion,
                 service.browser.spearphishingAttachment, 
                 service.attemptExploitationForClientExecution,
-                windows.virtualizationOrSandboxEvasion,
                 windows.templateInjection,
                 windows.attemptExecutionThroughAPI
 
@@ -1949,20 +1963,82 @@ category Software {
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://blog.talosintelligence.com/2018/07/smoking-guns-smoke-loader-learned-new.html#more, https://www.statista.com/statistics/751847/worldwide-seagate-western-digital-average-hard-drive-capacity/, https://www.hardware-revolution.com/how-much-storage-capacity-do-i-need-for-my-computer-2020/"
             ->  userAccount.userCredentials  
 
-        | attemptValidAccounts @hidden
-            ->  validAccounts
-
-        & validAccounts
+        | validAccounts
             developer info: "Binary probability relation."
             user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
+            ->  defaultAccounts,
+                domainAccounts,
+                localAccounts,
+                service.cloudService.cloudAccounts
+
+        & defaultAccounts
+            user info: "Adversaries may obtain and abuse credentials of a default account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion."
             ->  service.remoteServices,
                 service.attemptExternalRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
                 computer.router.internalNetwork.bypassNetworkIntrusionDetection,
+                computer.router.firewall.bypassFirewall,
                 bypassHostIntrusionPrevention,
-                bypassProcessWhitelisting,
+                bypassApplicationControl,
                 bypassSystemAccessControls,
+                bypassAntivirus
+
+        | attemptDomainAccounts @hidden
+            ->  domainAccounts
+
+        & domainAccounts
+            user info: "Adversaries may obtain and abuse credentials of a domain account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion."
+            ->  service.remoteServices,
+                service.attemptExternalRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
+                computer.router.internalNetwork.bypassNetworkIntrusionDetection,
+                computer.router.firewall.bypassFirewall,
+                bypassHostIntrusionPrevention,
+                bypassApplicationControl,
+                bypassSystemAccessControls,
+                bypassAntivirus
+
+        | attemptLocalAccounts @hidden
+            ->  localAccounts
+
+        & localAccounts
+            user info: "Adversaries may obtain and abuse credentials of a local account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion."
+            ->  service.remoteServices,
+                service.attemptExternalRemoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
+                computer.router.internalNetwork.bypassNetworkIntrusionDetection,
+                computer.router.firewall.bypassFirewall,
+                bypassHostIntrusionPrevention,
+                bypassApplicationControl,
+                bypassSystemAccessControls,
+                bypassAntivirus
+
+        | virtualizationOrSandboxEvasion [Bernoulli(0.18)]
+            user info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
+            developer info: "Sources for distribution result: http://www.sharetech-me.com/wp-content/uploads/2015/06/21347932_GA-internet-security-threat-report-volume-20-2015-social_v2.pdf, https://docs.broadcom.com/docs/threats-to-virtual-environments-14-en"
+            ->  systemChecks,
+                userActivityBasedChecks,
+                timeBasedEvasion
+
+        | systemChecks
+            user info: "Adversaries may employ various system checks to detect and avoid virtualization and analysis environments."
+            ->  bypassAntivirus,
+                bypassHostForensicAnalysis,    
+                bypassSignatureBasedDetection,  
+                bypassStaticFileAnalysis
+
+        | userActivityBasedChecks
+            user info: "Adversaries may employ various user activity checks to detect and avoid virtualization and analysis environments."
+            ->  bypassAntivirus,
+                bypassHostForensicAnalysis,    
+                bypassSignatureBasedDetection,  
+                bypassStaticFileAnalysis
+
+        | timeBasedEvasion
+            user info: "Adversaries may employ various time-based methods to detect and avoid virtualization and analysis environments."
+            ->  scheduledTaskOrJob,
+                attemptMultiStageChannels,
                 bypassAntivirus,
-                graphicalUserInterface
+                bypassHostForensicAnalysis,    
+                bypassSignatureBasedDetection,  
+                bypassStaticFileAnalysis
 
         & vNC
             user info: "Adversaries may use Valid Accounts to remotely control machines using Virtual Network Computing (VNC)."
@@ -2068,7 +2144,7 @@ category Software {
         & dataEncryptedForImpact {A} [Bernoulli(0.366)*Exponential(12)]
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
-            ->  attemptValidAccounts,
+            ->  validAccounts,
                 oSCredentialDumping,
                 inhibitSystemRecovery,
                 windows.attemptWindowsAdminShares
@@ -2215,6 +2291,7 @@ category Software {
             ->  credentialStuffing,
                 localAccount,
                 domainAccount,
+                domainAccounts,
                 passwordGuessing,
                 passwordCracking,
                 passwordSpraying,
@@ -2235,8 +2312,11 @@ category Software {
                 passwordSpraying,
                 credentialStuffing,
                 credentialsInFiles,
+                defaultAccounts,
+                localAccounts,
                 privateKeys,
                 service.browser.credentialsFromWebBrowsers,
+                service.cloudService.cloudAccounts,
                 service.thirdpartySoftware.useThirdpartySoftware
 
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
@@ -2342,9 +2422,12 @@ category Software {
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1026/"
             ->  commandAndScriptingInterpreter,
+                domainAccounts,
+                localAccounts,
                 webPortalCapture,
                 service.implantContainerImage,
                 service.cloudService.additionalAzureServicePrincipalCredentials,
+                service.cloudService.cloudAccounts,
                 service.cloudService.exchangeEmailDelegatePermissions,
                 service.cloudService.addOffice365GlobalAdministratorRole
 
@@ -2445,7 +2528,6 @@ category Software {
                 windows.os.fileAndDirectoryDiscovery,
                 windows.os.fileAndDirectoryPermissionsModification,
                 windows.os.firmwareCorruption,
-                windows.os.graphicalUserInterface,
                 windows.os.inhibitSystemRecovery,
                 windows.os.networkSniffing,
                 windows.os.redundantAccess,
@@ -2677,7 +2759,8 @@ category Software {
 
         & cachedDomainCredentials
             user info: "Adversaries may attempt to access cached domain credentials used to allow authentication to occur in the event a domain controller is unavailable."
-            ->  collectHashInformation
+            ->  collectHashInformation,
+                attemptDomainAccounts
 
         & lSASecrets
             user info: "Adversaries with SYSTEM access to a host may attempt to access Local Security Authority (LSA) secrets, which can contain a variety of different credential materials, such as credentials for service accounts."
@@ -2842,7 +2925,7 @@ category Software {
                 bruteForce,
                 persistence,
                 service.attemptExploitationForPrivilegeEscalation,
-                attemptValidAccounts
+                validAccounts
 
         | attemptLLMNR_NBT_NS_PoisoningAndRelay @hidden
             ->  lLMNR_NBT_NS_PoisoningAndRelay
@@ -2973,7 +3056,8 @@ category Software {
 
         & securityAccountManager
             user info: "Adversaries may attempt to extract credential material from the Security Account Manager (SAM) database either through in-memory techniques or through the Windows Registry where the SAM database is stored." 
-            ->  collectHashInformation
+            ->  collectHashInformation,
+                attemptLocalAccounts
 
         & servicesFilePermissionsWeakness
             user info: "Adversaries may execute their own malicious payloads by hijacking the binaries used by services."
@@ -3013,6 +3097,7 @@ category Software {
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
                 attemptIndicatorBlocking, // tampering settings that control the collection and flow of event telemetry
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
+                systemChecks,
                 persistence,
                 attemptHiddenWindow // make windows hidden
 
@@ -3092,7 +3177,6 @@ category Software {
             ->  attemptAccessibilityFeatures,
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
-                graphicalUserInterface,
                 computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
         & replicationThroughRemovableMedia [Bernoulli(0.45)*Exponential(3.429)]
@@ -3290,6 +3374,7 @@ category Software {
             user info: "An adversary can use WMI to interact with local and remote systems and use it as a means to perform many tactic functions."
             developer info: "TTC is upper bound of likely time needed. Sources used for probability distribution result: https://redcanary.com/threat-detection-report/techniques/windows-management-instrumentation/, https://www.fireeye.com/content/dam/fireeye-www/global/en/current-threats/pdfs/wp-windows-management-instrumentation.pdf, https://www.microsoft.com/security/blog/2017/06/27/new-ransomware-old-techniques-petya-adds-worm-capabilities/, https://securelist.com/olympicdestroyer-is-here-to-trick-the-industry/84295/"
             ->  systemInformationDiscovery, // extract information about the operating system
+                systemChecks,
                 executeCode,
                 inhibitSystemRecovery,
                 attemptIndicatorBlocking // tampering settings that control the collection and flow of event telemetry
@@ -3369,6 +3454,7 @@ category Software {
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/software/S0075/, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc742028(v=ws.11), https://www.welivesecurity.com/wp-content/uploads/2020/05/ESET_Turla_ComRAT.pdf"
             user info: "The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
             ->  attemptScripting,
+                systemChecks,
                 systemInformationDiscovery
 
         & networkShareDiscovery [Bernoulli(0.0129)]
@@ -3476,15 +3562,7 @@ category Software {
             
         | videoCapture [Bernoulli(0.74)*Exponential(0.1)]
             developer info: "Sources for distribution results: http://www.storiprotection.fr/EagleEye.pdf, http://zugara.com/webcam-penetration-rates-adoption"
-            ->  computer.collectVideo
-
-        | virtualizationOrSandboxEvasion [Bernoulli(0.18)]
-            user info: "Adversaries may check for the presence of a virtual machine environment (VME) or sandbox to avoid potential detection of tools and activities."
-            developer info: "Sources for distribution result: http://www.sharetech-me.com/wp-content/uploads/2015/06/21347932_GA-internet-security-threat-report-volume-20-2015-social_v2.pdf, https://docs.broadcom.com/docs/threats-to-virtual-environments-14-en"
-            ->  bypassAntivirus,
-                bypassHostForensicAnalysis,    
-                bypassSignatureBasedDetection,  
-                bypassStaticFileAnalysis              
+            ->  computer.collectVideo            
 
         & xslScriptProcessing [Bernoulli(0.93)*Exponential(1)]
             developer info: "Sources used for probability distribution: https://reaqta.com/2018/03/spear-phishing-campaign-leveraging-msxsl/"
@@ -4710,12 +4788,24 @@ category Network {
             user info: "Adversaries may exfiltrate data to a cloud storage service rather than over their primary command and control channel."
             ->  dataExfiltration
 
-        & webService [Bernoulli(0.0445)]
+        | webService [Bernoulli(0.0445)]
             developer info: "Sources used for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.fireeye.com/blog/threat-research/2019/04/pick-six-intercepting-a-fin6-intrusion.html"
             user info: "Adversaries may use an existing, legitimate external Web service as a means for relaying commands to a compromised system."
-            ->  router.computer.os.bypassBinaryAnalysis,
-                router.computer.os.bypassLogAnalysis,
-                router.internalNetwork.c2Connected
+            ->  deadDropResolver,
+                bidirectionaCommunication,
+                oneWayCommunication
+
+        & deadDropResolver
+            user info: "Adversaries may use an existing, legitimate external Web service to host information that points to additional command and control (C2) infrastructure."
+            ->  router.internalNetwork.c2Connected
+
+        & bidirectionaCommunication
+            user info: "Adversaries may use an existing, legitimate external Web service as a means for sending commands to and receiving output from a compromised system over the Web service channel."
+            ->  router.internalNetwork.c2Connected
+            
+        & oneWayCommunication
+            user info: "Adversaries may use an existing, legitimate external Web service as a means for sending commands to a compromised system without receiving return output over the Web service channel."
+            ->  router.internalNetwork.c2Connected
 
         | attemptTransmittedDataManipulation @hidden {I}
             ->  transmittedDataManipulation
@@ -4740,7 +4830,9 @@ category Network {
 
         # networkIntrusionPrevention
             user info: "https://attack.mitre.org/mitigations/M1031/"
-            ->  webService,
+            ->  bidirectionaCommunication,
+                deadDropResolver,
+                oneWayCommunication,
                 router.computer.os.service.browser.spearphishingAttachment,
                 router.internalNetwork.dataObfuscation,
                 router.internalNetwork.exfiltrationOverC2Channel,
@@ -4887,7 +4979,7 @@ category Hardware {
     
     asset Microphone extends PeripheralDevice {
         | collectAudio [Bernoulli(0.74)*Exponential(0.1)]
-             developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/634.html and Video Capture results"
+            developer info: "Sources for distribution results: https://capec.mitre.org/data/definitions/634.html and Video Capture results"
             ->  computer.collectAudio
     }
 }
