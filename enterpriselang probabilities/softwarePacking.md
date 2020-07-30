@@ -9,8 +9,12 @@ According to vmware's Carbon Black [2020 Cyber Security Outlook Report](https://
 ## Time to compromise
 According to the MITRE ATT&CK page on software packing, one utility that is commonly used to pack software is called [MPRESS](http://www.matcode.com/mpress.htm). This can apparently achieve the following: "Very fast decompression: ~210 MB/sec on an AMD 2500+". Another packing utility according to MITRE ATT&CK is called [UPX](https://upx.github.io/). This can achieve "~200 MB/sec on an Athlon XP 2000+". The two processors used to measure the speed are according to [cpuboss.com](http://cpuboss.com/cpus/AMD-Athlon-XP-M-2500-vs-AMD-Athlon-XP-2000) around the same speed, with a difference of only 0.2GHz in clock speed. According to research by [fortiguard](https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf), malware is typically "found within files that are less than one MB in size." So it seems that most semi-modern processors can achieve software packing in a fraction of a second. Thus I will assume TTC is instant.
 
+## Update
+### 1
+The TruncatedNormal distribuiton output is days in the MAL. The only distribution that supports  "success rate" is Bernoulli.
+
 ## Result
-```TruncatedNormal(0.56784,0.25219)```
+```Bernoulli(0.56784)```
 
 ## Discussion
 The white paper from fortiguard is quite old, being published in late 2006, but I think as an estimate it should still be OK for our TTC as even if it was 100x that size, it would still result in a TTC of less than a second. 

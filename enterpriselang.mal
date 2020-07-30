@@ -1175,6 +1175,7 @@ category Software {
                 bypassAntivirus
 
         & applicationWindowDiscovery
+            developer info: "Binary probability distribution. https://attack.mitre.org/techniques/T1010/ no mitigation, some malware can do this"
             user info: "get a listing of opened application windows"
 
         & processDiscovery [Bernoulli(0.17)*Exponential(346)]
@@ -1191,7 +1192,8 @@ category Software {
             user info: "Adversaries may communicate over a commonly used port to bypass firewalls or network detection systems and to blend with normal network activity to avoid more detailed inspection."
             ->  computer.router.internalNetwork.c2Connected
 
-        & compileAfterDelivery     
+        & compileAfterDelivery    
+            developer info: "Binary probability distribution. Probability carried by obfuscatedFilesOrInformation" 
             user info: "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Spearphishing Attachment."
             ->  service.browser.phishing, // source code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a Phishing.
                 bypassStaticFileAnalysis,
@@ -1390,6 +1392,7 @@ category Software {
                 linux.lD_PRELOAD
 
         | indicatorRemovalFromTools
+            developer info: "Binary probability distribution"
             user info: "An adversary may be able to modify the tool by removing the indicator that is no longer detected by the target's defensive systems."
             ->  bypassHostIntrusionPrevention,
                 bypassLogAnalysis,
@@ -1576,6 +1579,7 @@ category Software {
                 indicatorRemovalFromTools   
 
         | steganography
+            developer info: "Binary probability dsitribution."
             user info: "Adversaries may use steganographic techniques to hide command and control traffic to make detection efforts more difficult."
             ->  computer.router.internalNetwork.bypassNetworkIntrusionDetection
 
@@ -3177,7 +3181,7 @@ category Software {
         | attemptSoftwarePacking @hidden
             ->  softwarePacking
 
-        & softwarePacking [TruncatedNormal(0.56784,0.25219)]
+        & softwarePacking [Bernoulli(0.56784)]
             user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
             developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf, https://www.researchgate.net/publication/301902892_Entropy_analysis_to_classify_unknown_packing_algorithms_for_malware_detection, https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://www.lastline.com/labsblog/malware-packing/, www.blackhat.com/presentations/bh-usa-06/BH-US-06-Morgenstern.pdf"
             ->  indicatorRemovalFromTools,
@@ -4245,7 +4249,7 @@ category Software {
         | attemptSoftwarePacking @hidden
             ->  softwarePacking
 
-        & softwarePacking [TruncatedNormal(0.56784,0.25219)]
+        & softwarePacking [Bernoulli(0.56784)]
             user info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
             developer info: "Sources for distribution result: https://www.carbonblack.com/resources/threat-research/cybersecurity-outlook-report/#download, https://attack.mitre.org/techniques/T1045/, http://www.matcode.com/mpress.htm, https://upx.github.io/, https://d3gpjj9d20n0p3.cloudfront.net/fortiguard/research/DetectingMalwareThreats.pdf, https://www.researchgate.net/publication/301902892_Entropy_analysis_to_classify_unknown_packing_algorithms_for_malware_detection, https://www.academia.edu/7383312/Obfuscation_The_Hidden_Malware, https://www.lastline.com/labsblog/malware-packing/, www.blackhat.com/presentations/bh-usa-06/BH-US-06-Morgenstern.pdf"
             ->  indicatorRemovalFromTools,
