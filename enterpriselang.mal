@@ -87,13 +87,11 @@ category Software {
                 os.passwordPolicyDiscovery,
                 os.privateKeys,
                 os.processDiscovery,
-                os.redundantAccess,
                 os.remoteSystemDiscovery,
                 os.resourceHijacking,
                 os.rootkit,
                 os.runVirtualInstance,
                 os.securitySoftwareDiscovery,
-                os.attemptScripting,
                 os.softwareDiscovery,
                 os.systemInformationDiscovery,
                 os.systemNetworkConfigurationDiscovery,
@@ -121,7 +119,6 @@ category Software {
                 os.windows.emailCollection,
                 os.windows.executableInstallerFilePermissionsWeakness,
                 os.windows.executionThroughModuleLoad,
-                os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.forcedAuthentication,
                 os.windows.goldenTicket,
                 os.windows.gUIInputCapture,
@@ -129,9 +126,8 @@ category Software {
                 os.windows.groupPolicyPreferences,
                 os.windows.hiddenWindow,
                 os.windows.indirectCommandExecution,
-                os.windows.inputPrompt,
                 os.windows.installUtil,
-                os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
+                os.windows.lLMNR_NBT_NS_PoisoningAndSMBRelay,
                 os.windows.attemptLogonScripts,
                 os.windows.masqueradeTaskOrService,
                 os.windows.modifyRegistry,
@@ -174,12 +170,10 @@ category Software {
                 os.linux.bashHistory,
                 os.linux.clearCommandHistory,
                 os.linux.hISTCONTROL,
-                os.linux.localJobScheduling,
                 os.linux.masqueradeTaskOrService,
                 os.linux.portKnocking,
                 os.linux.attemptSetuidAndSetgid,
                 os.linux.spaceAfterFileName,
-                os.linux.source,
                 os.linux.sudoAndSudoCaching,
                 os.linux.systemdService,
                 os.linux.trap,
@@ -195,12 +189,9 @@ category Software {
                 os.macOS.gUIInputCapture,
                 os.macOS.hiddenWindow,
                 os.macOS.hISTCONTROL,
-                os.macOS.inputPrompt,
                 os.macOS.attemptLaunchAgent,
                 os.macOS.launchctl,
                 os.macOS.lC_LOAD_DYLIB_Addition,
-                os.macOS.lC_MAINHijacking,
-                os.macOS.localJobScheduling,
                 os.macOS.attemptLogonScripts,
                 os.macOS.attemptPlistModification,
                 os.macOS.portKnocking,
@@ -233,6 +224,7 @@ category Software {
                 os.service.cloudService.addIns,
                 os.service.cloudService.stealApplicationAccessToken,
                 os.service.thirdpartySoftware.attemptUseThirdpartySoftware,
+                os.service.browser.browserBookmarkDiscovery,
                 os.service.browser.driveByCompromise,
                 os.service.browser.installExtensions,
                 os.service.browser.stealWebSessionCookie,
@@ -266,14 +258,12 @@ category Software {
                 os.twoFactorAuthenticationInterception, // remove smart cards when not in use
                 os.windows.cachedDomainCredentials,
                 os.windows.gUIInputCapture,
-                os.windows.inputPrompt,
                 os.windows.manInTheBrowser,
                 os.windows.nTDS,
                 os.windows.lSASSMemory,
                 os.windows.lSASecrets,
                 os.windows.securityAccountManager,
                 os.windows.templateInjection,
-                os.macOS.inputPrompt, 
                 os.macOS.gUIInputCapture,
                 os.macOS.reopenedApplications,
                 os.macOS.plistModification,
@@ -285,10 +275,9 @@ category Software {
         # userAccountManagement [Bernoulli(0.30)] 
             developer info: "Sources for distribution results : https://lp.alpha-gen.co.uk/2018-global-state-of-pam/"
             user info: "https://attack.mitre.org/mitigations/M1018/"     
-            ->  os.disablingSecurityTools,
-                os.credentialStuffing,
+            ->  os.credentialStuffing,
                 os.confluence,
-                os.disablingSecurityTools,
+                os.disableOrModifyTools,
                 os.disableOrModifySystemFirewall,
                 os.indicatorBlocking,
                 os.sharepoint,
@@ -299,7 +288,6 @@ category Software {
                 os.windows.cOR_PROFILER,
                 os.windows.disableWindowsEventLogging,
                 os.windows.executableInstallerFilePermissionsWeakness,
-                os.windows.fileSystemPermissionsWeakness,
                 os.windows.scheduledTask,
                 os.windows.manInTheBrowser,
                 os.windows.passTheHash,
@@ -309,14 +297,12 @@ category Software {
                 os.windows.remoteDesktopProtocol,
                 os.windows.remoteScheduledTask,
                 os.windows.servicesFilePermissionsWeakness,
-                os.windows.sharedWebroot,
                 os.windows.shortcutModification,
                 os.windows.windowsService,
                 os.windows.windowsManagementInstrumentation,
                 os.windows.windowsManagementInstrumentationEventSubscription,
                 os.windows.winlogonHelperDLL,
                 os.linux.at,
-                os.linux.localJobScheduling,
                 os.linux.systemdService,
                 os.linux.cron,
                 os.macOS.cron,
@@ -324,7 +310,6 @@ category Software {
                 os.macOS.launchctl,
                 os.macOS.launchd,
                 os.macOS.launchDaemon,
-                os.macOS.localJobScheduling,
                 os.macOS.rc_common,
                 os.macOS.attemptStartupItems,
                 os.service.remoteServices,
@@ -354,7 +339,7 @@ category Software {
                 os.abuseElevationControlMechanism,
                 os.attemptAutomatedCollection,
                 os.credentialsFromPasswordStores,
-                os.dataDestruction,
+                os.attemptDataDestruction,
                 os.attemptDataEncryptedForImpact,
                 os.oSCredentialDumping,
                 os.attemptCredentialsInFiles,
@@ -365,7 +350,6 @@ category Software {
                 os.inhibitSystemRecovery,
                 os.networkServiceScan,
                 os.networkSniffing,
-                os.redundantAccess,
                 os.resourceHijacking,
                 os.systemNetworkConnectionsDiscovery,
                 os.systemOwnerOrUserDiscovery,
@@ -402,7 +386,6 @@ category Software {
                 os.windows.powerShell,
                 os.windows.remoteDesktopProtocol,
                 os.windows.serviceExecution,
-                os.windows.sharedWebroot,  
                 os.windows.systemFirmware,
                 os.windows.accessTokenManipulation,
                 os.windows.windowsAdminShares,
@@ -413,7 +396,6 @@ category Software {
                 os.linux.sudoAndSudoCaching,
                 os.linux.systemdService,
                 os.macOS.kernelModulesAndExtensions,
-                os.macOS.lC_MAINHijacking,
                 os.macOS.sudoAndSudoCaching,
                 os.service.applicationDeploymentSoftware,
                 os.service.exploitationOfRemoteServices,
@@ -446,10 +428,7 @@ category Software {
                 os.windows.attemptExecutionThroughAPI,
                 os.windows.exchangeEmailDelegatePermissions,
                 os.windows.fileSystemLogicalOffsets,
-                os.windows.attemptFileSystemPermissionsWeakness,
                 os.windows.groupPolicyModification,
-                os.windows.hooking,
-                os.windows.hypervisor,
                 os.windows.imageFileExecutionOptionsInjection,
                 os.windows.lSASSDriver,
                 os.windows.lSASSMemory,
@@ -469,6 +448,7 @@ category Software {
                 os.windows.securitySupportProvider,
                 os.windows.serviceExecution,
                 os.windows.attemptServiceRegistryPermissionsWeakness,
+                os.windows.attemptServicesFilePermissionsWeakness,
                 os.windows.attemptShortcutModification,
                 os.windows.attemptSIDHistoryInjection,
                 os.windows.scheduledTask,
@@ -495,7 +475,6 @@ category Software {
                 os.linux.masqueradeTaskOrService,
                 os.linux.sSHHijacking,
                 os.linux.bootkit,
-                os.linux.localJobScheduling,
                 os.linux.securitydMemory,
                 os.linux.sQLStoredProcedures,
                 os.linux.transportAgent,
@@ -505,7 +484,6 @@ category Software {
                 os.macOS.attemptElevatedExecutionWithPrompt,
                 os.macOS.emond,
                 os.macOS.keychain,
-                os.macOS.localJobScheduling,
                 os.macOS.hiddenUsers,
                 os.macOS.kernelModulesAndExtensions,
                 os.macOS.attemptLaunchAgent,
@@ -944,8 +922,6 @@ category Software {
             developer info: "Sources for distribution result: https://books.google.fr/books?id=biGsBwAAQBAJ&pg=PA104&lpg=PA104&dq=forum+posts,+comments+compromise+browser+malware&source=bl&ots=rzJQ6XY73h&sig=ACfU3U2wC6Muu7MfakP6MHJLk7IXJ76C0A&hl=fr&sa=X&ved=2ahUKEwiomdS20dbpAhV65OAKHaD4Dz8Q6AEwAHoECAoQAQ#v=onepage&q=forum%20posts%2C%20comments%20compromise%20browser%20malware&f=false; http://www.ijiser.com/paper/2017/vol4issue8/Aug2017p101.1.pdf; https://www.acunetix.com/acunetix-web-application-vulnerability-report-2019/#xss"
             ->  service.cloudService.stealApplicationAccessToken
 
-        | executionThroughMaliciousContent
-
         & credentialsFromWebBrowsers [Bernoulli(0.625)]
             user info: "Adversaries may acquire credentials from web browsers by reading files specific to the target browser."
             developer info: "Sources for distribution result: https://link.springer.com/book/10.1007/978-3-319-94376-3, https://attack.mitre.org/techniques/T1503/, https://www.proofpoint.com/us/threat-insight/post/new-vega-stealer-shines-brightly-targeted-campaign"
@@ -971,9 +947,6 @@ category Software {
             user info: "Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email." 
             ->  service.os.computer.user.attemptMaliciousFile,
                 service.os.windows.attemptControlPanel // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns
-
-        | browserBookmark
-            ->  browserBookmarkDiscovery
 
         | browserBookmarkDiscovery [Bernoulli(0.03065)*Exponential(4)]
             user info: "Adversaries may enumerate browser bookmarks to learn more about compromised hosts. Browser bookmarks may reveal personal information about users (ex: banking sites, interests, social media, etc.) as well as details about internal network resources such as servers, tools/dashboards, or other related infrastructure."
@@ -1243,19 +1216,13 @@ category Software {
                 linux.procFilesystem,
                 linux._etc_passwdAND_etc_shadow
 
-        | attemptCustomCryptographicProtocol @hidden
-            ->  customCryptographicProtocol   
+        | attemptEncryptedChannel @hidden
+            ->  encryptedChannel
 
-        & customCryptographicProtocol
+        & encryptedChannel [Bernoulli(0.60)*Exponential(5400)]
+            developer info: "Sources for distribution results : https://www.jscape.com/blog/bid/84422/symmetric-vs-asymmetric-encryption#:~:text=Symmetric%20key%20encryption%20doesn't,to%20speed%2C%20symmetric%20trumps%20asymmetric.&text=For%20as%20long%20as%20you,to%20decrypt%20your%20encrypted%20file., https://www.cse.wustl.edu/~jain/cse567-06/ftp/encryption_perf/, https://arxiv.org/ftp/arxiv/papers/1312/1312.3183.pdf, https://www.cisco.com/c/dam/en/us/solutions/collateral/enterprise-networks/enterprise-network-security/nb-09-encrytd-traf-anlytcs-wp-cte-en.pdf"
             user info: "Adversaries may use a custom cryptographic protocol or algorithm to hide command and control traffic."
             ->  computer.router.internalNetwork.c2Connected  
-
-        | attemptCustomCommandAndControlProtocol @hidden
-            ->  customCommandAndControlProtocol
-
-        & customCommandAndControlProtocol
-            user info: "Adversaries may communicate using a custom command and control protocol instead of encapsulating commands/data in an existing Standard Application Layer Protocol."
-            ->  computer.router.internalNetwork.c2Connected
 
         | dataEncoding [Bernoulli(0.0614)]
             developer info: "TTC instant/not applicable. Sources used for probability distribution result: https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/powershell-threats-grow-further-and-operate-plain-sight, https://docs.broadcom.com/docs/increased-use-of-powershell-in-attacks-16-en"
@@ -1269,15 +1236,6 @@ category Software {
         & nonStandardEncoding            
             user info: "Adversaries may encode data with a non-standard data encoding system to make the content of command and control traffic more difficult to detect."
             ->  computer.router.internalNetwork.communicate
-
-        & disablingSecurityTools [Bernoulli(0.23)*Exponential(111.55)]
-            user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
-            developer info: "Sources for probability distribution: https://redcanary.com/threat-detection-report/techniques/disabling-security-tools/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
-            ->  bypassFileMonitoring,
-                bypassHostIntrusionPrevention,
-                bypassSignatureBasedDetection,
-                bypassLogAnalysis,
-                bypassAntivirus
 
         | dynamicResolution
             user info: "Adversaries may dynamically establish connections to command and control infrastructure to evade common detections and remediations."
@@ -1339,10 +1297,10 @@ category Software {
                 windows.powerShellUserProfile,
                 windows.powerShellAdminProfile,             
                 windows.componentObjectModelHijacking,
-                linux.bash_profileAndBashrc,
+                linux.attemptBash_profileAndBashrc,
                 linux.trap,
                 macOS.attemptEmond,
-                macOS.bash_profileAndBashrc,
+                macOS.attemptBash_profileAndBashrc,
                 macOS.trap,
                 macOS.lC_LOAD_DYLIB_Addition
 
@@ -1406,7 +1364,7 @@ category Software {
                 windows.dLLSideLoading,
                 windows.executableInstallerFilePermissionsWeakness,
                 windows.pathInterception,
-                windows.servicesFilePermissionsWeakness,
+                windows.attemptServicesFilePermissionsWeakness,
                 windows.servicesRegistryPermissionsWeakness,
                 macOS.dylibHijacking,
                 linux.lD_PRELOAD
@@ -1442,8 +1400,8 @@ category Software {
             ->  keylogging,
                 webPortalCapture,
                 windows.credentialAPIHooking,
-                windows.gUIInputCapture,
-                macOS.gUIInputCapture
+                windows.attemptGUIInputCapture,
+                macOS.attemptGUIInputCapture
                
         | keylogging
             user info: "Adversaries may log user keystrokes to intercept credentials as the user types them."
@@ -1474,7 +1432,7 @@ category Software {
             ->  networkSniffing,
                 computer.router.internalNetwork.attemptTransmittedDataManipulation,
                 computer.router.externalNetwork.attemptTransmittedDataManipulation,
-                windows.attemptLLMNR_NBT_NS_PoisoningAndRelay
+                windows.attemptLLMNR_NBT_NS_PoisoningAndSMBRelay
 
         | masquerading [Bernoulli(0.34)*Exponential(1)]
             user info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
@@ -1538,14 +1496,6 @@ category Software {
             user info: "Domain fronting takes advantage of routing schemes in Content Delivery Networks (CDNs) and other services which host multiple domains to obfuscate the intended destination of HTTPS traffic or traffic tunneled through HTTPS."
             ->  computer.router.internalNetwork.obfuscateNetworkTraffic,
                 computer.router.externalNetwork.obfuscateNetworkTraffic          
-                 
-        | attemptMultilayerEncryption @hidden
-            ->  multilayerEncryption
-
-        & multilayerEncryption [Bernoulli(0.60)*Exponential(5400)]
-            developer info: "Sources for distribution results : https://www.jscape.com/blog/bid/84422/symmetric-vs-asymmetric-encryption#:~:text=Symmetric%20key%20encryption%20doesn't,to%20speed%2C%20symmetric%20trumps%20asymmetric.&text=For%20as%20long%20as%20you,to%20decrypt%20your%20encrypted%20file., https://www.cse.wustl.edu/~jain/cse567-06/ftp/encryption_perf/, https://arxiv.org/ftp/arxiv/papers/1312/1312.3183.pdf, https://www.cisco.com/c/dam/en/us/solutions/collateral/enterprise-networks/enterprise-network-security/nb-09-encrytd-traf-anlytcs-wp-cte-en.pdf"
-            user info: "An adversary performs C2 communications using multiple layers of encryption, typically (but not exclusively) tunneling a custom encryption scheme within a protocol encryption scheme such as HTTPS or SMTPS."
-            ->  computer.router.internalNetwork.c2Connected
 
         | attemptMultiStageChannels @hidden
             ->  multiStageChannels
@@ -1628,7 +1578,7 @@ category Software {
 
         | impareDefenses
             user info: "Adversaries may maliciously modify components of a victim environment in order to hinder or disable defensive mechanisms."
-            ->  disableOrModifyTools,
+            ->  attemptDisableOrModifyTools,
                 disableOrModifySystemFirewall,
                 attemptIndicatorBlocking,
                 service.cloudService.disableOrModifyCloudFirewall,
@@ -1636,7 +1586,11 @@ category Software {
                 linux.hISTCONTROL,
                 macOS.hISTCONTROL
 
-        & disableOrModifyTools
+        | attemptDisableOrModifyTools @hidden
+            ->  disableOrModifyTools
+
+        & disableOrModifyTools [Bernoulli(0.23)*Exponential(111.55)]
+            developer info: "Sources for probability distribution: https://redcanary.com/threat-detection-report/techniques/disabling-security-tools/, https://labs.sentinelone.com/trickbot-update-brief-analysis-of-a-recent-trickbot-payload/, https://www.esentire.com/assets/resourcefiles/eSentire-2019-Annual-Threat-Intelligence-Report-2019-Perspectives-and-2020-Predictions.pdf, https://www.wilbursecurity.com/2020/03/trickbot-to-ryuk-in-two-hours/, https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/tale-of-the-two-payloads-trickbot-and-nitol/"
             user info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
             ->  bypassAntivirus,
                 bypassFileMonitoring,
@@ -1658,6 +1612,7 @@ category Software {
                 bypassHostIntrusionPrevention
 
         | scheduledTaskOrJob
+            developer info: "Binary probability distribution."
             user info: "Adversaries may abuse task scheduling functionality to facilitate initial or recurring execution of malicious code."
             ->  windows.attemptScheduledTask,
                 windows.at,
@@ -1736,14 +1691,6 @@ category Software {
                 proxy, // conceal C2 communications and infrastructure
                 computer.router.internalNetwork.attemptProtocolImpersonation // conceal C2 communications and infrastructure
 
-        & redundantAccess
-            user info: "Adversaries may use more than one remote access tool with varying command and control protocols as a hedge against detection. Adversaries may also attempt to gain access to Valid Accounts to use External Remote Services such as external VPNs as a way to maintain access despite interruptions to remote access tools deployed within a target network."
-            ->  validAccounts,
-                bypassAntivirus,
-                computer.router.internalNetwork.webShell, // Web shells may serve as Redundant Access or as a persistence mechanism in case an adversary's primary access methods are detected and removed
-                computer.router.externalNetwork.bypassNetworkIntrusionDetection,
-                computer.router.internalNetwork.bypassNetworkIntrusionDetection 
-
         | rootkit [Bernoulli(0.01255)]
             user info: "Adversaries may use rootkits to hide the presence of programs, files, network connections, services, drivers, and other system components."
             developer info: "Sources used for distribution: https://www.csoonline.com/article/3222066/how-to-detect-and-remove-a-rootkit-in-windows-10.html, https://investors.fireeye.com/static-files/56c2c6ec-3cdc-4fd2-967e-29205d2e982e, https://intezer.com/blog/linux/hiddenwasp-malware-targeting-linux-systems/"
@@ -1755,18 +1702,12 @@ category Software {
                 bypassHostIntrusionPrevention,
                 bypassSystemAccessControls,
                 bypassFileOrPathWhitelisting,
-                windows.hooking, // leads to hooking attack
-                windows.hypervisor, // leads to hypervisor attack
+                windows.credentialAPIHooking, // leads to hooking attack
                 windows.attemptSystemFirmware // leads to system firmware attack
 
         & runtimeDataManipulation {I}
             developer info: "Binary probability distribution."
             user info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
-
-        & standardCryptographicProtocol [TruncatedNormal(26.82,15.913)]
-            user info: "Adversaries may explicitly employ a known encryption algorithm to conceal command and control traffic rather than relying on any inherent protections provided by a communication protocol."
-            developer info: "TTC assumed instant. Sources for distribution result: https://krisk.io/post/sok-attack-securecomm19.pdf, https://www.recordedfuture.com/mitre-attack-tactics/, https://blogs.cisco.com/security/malwares-use-of-tls-and-encryption, https://news.sophos.com/en-us/2020/02/18/nearly-a-quarter-of-malware-now-communicates-using-tls/, https://www.cyren.com/blog/articles/over-one-third-of-malware-uses-https, https://istlsfastyet.com/, https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/"
-            ->  computer.router.internalNetwork.c2Connected
 
         | attemptApplicationLayerProtocol @hidden
             ->  applicationLayerProtocol    
@@ -1778,6 +1719,13 @@ category Software {
                 fileTransferProtocols,
                 mailProtocols,
                 dNS
+
+        | attemptNonApplicationLayerProtocol @hidden
+            ->  nonApplicationLayerProtocol
+
+        & nonApplicationLayerProtocol
+            user info: "Adversaries may use a non-application layer protocol for communication between host and C2 server or among infected hosts within a network."
+            ->  computer.router.internalNetwork.c2Connected
 
         | webProtocols
             user info: "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic."
@@ -1910,19 +1858,6 @@ category Software {
 
         | persistence
 
-        | attemptScripting @hidden
-            ->  scripting
-
-        & scripting [Bernoulli(0.38)*Exponential(1097)]
-            user info: "Adversaries may use scripts to aid in operations and perform multiple actions that would otherwise be manual."
-            developer info: "Sources used for probability result: https://redcanary.com/threat-detection-report/techniques/scripting/, https://www.labnol.org/code/20016-maximum-execution-time-limit, https://www.php.net/manual/en/function.set-time-limit.php, https://www.sitepoint.com/javascript-execution-browser-limits/"
-            ->  attemptAutomatedCollection,
-                virtualizationOrSandboxEvasion,
-                service.browser.spearphishingAttachment, 
-                service.attemptExploitationForClientExecution,
-                windows.templateInjection,
-                windows.attemptExecutionThroughAPI
-
         | sSHCredentialInterception
 
         & storedDataManipulation {I}
@@ -1961,7 +1896,8 @@ category Software {
 
         & credentialsInFiles [Bernoulli(0.0179)*Exponential(282)]
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://krisk.io/publication/mitre-attack-securecomm19/, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://blog.talosintelligence.com/2018/07/smoking-guns-smoke-loader-learned-new.html#more, https://www.statista.com/statistics/751847/worldwide-seagate-western-digital-average-hard-drive-capacity/, https://www.hardware-revolution.com/how-much-storage-capacity-do-i-need-for-my-computer-2020/"
-            ->  userAccount.userCredentials  
+            ->  userAccount.userCredentials,
+                service.browser.browserBookmarkDiscovery // associated with logins cached by a browser provides additional targets 
 
         | validAccounts
             developer info: "Binary probability relation."
@@ -2133,7 +2069,10 @@ category Software {
                 scheduledExfiltration,
                 dataCompressed,
                 dataEncrypted
-        
+     
+        | attemptDataDestruction @hidden
+            ->  dataDestruction
+                    
         & dataDestruction {A}
             developer info: "Binary probability distribution."
             ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
@@ -2241,7 +2180,7 @@ category Software {
         # restrictFileAndDirectoryPermissions 
             user info: "https://attack.mitre.org/mitigations/M1022/"
             ->  credentialsInFiles,
-                disablingSecurityTools,
+                disableOrModifyTools,
                 disableOrModifySystemFirewall,
                 indicatorRemovalOnHost,
                 matchLegitimateNameOrLocation,
@@ -2256,7 +2195,7 @@ category Software {
 
         # restrictRegistryPermissions
             user info: "https://attack.mitre.org/mitigations/M1024/"
-            ->  disablingSecurityTools,
+            ->  disableOrModifyTools,
                 disableOrModifySystemFirewall
 
         # accountUsePolicies // Set account lockout policies after a certain number of failed login attempts to prevent passwords from being guessed. Too strict a policy may create a denial of service condition and render environments un-usable, with all accounts used in the brute force being locked-out.
@@ -2321,8 +2260,7 @@ category Software {
 
         # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
             user info: "https://attack.mitre.org/mitigations/M1048/"
-            ->  scripting,
-                service.browser.driveByCompromise
+            ->  service.browser.driveByCompromise
 
         # doNotMitigate // Execution Guardrails likely should not be mitigated with preventative controls because it may protect unintended targets from being compromised.
             user info: "https://attack.mitre.org/mitigations/M1055/"
@@ -2331,7 +2269,6 @@ category Software {
         # disableOrRemoveFeatureOrProgram 
             user info: "https://attack.mitre.org/techniques/T1064/"
             ->  javaScriptOrJScript,
-                scripting,
                 visualBasic,
                 communicationThroughRemovableMedia,
                 commandAndScriptingInterpreter,
@@ -2493,8 +2430,6 @@ category Software {
                 windows.attemptControlPanel,
                 windows.credentialAPIHooking,
                 windows.attemptExecutionThroughAPI,
-                windows.hooking,
-                windows.hypervisor,
                 windows.imageFileExecutionOptionsInjection,
                 windows.attemptLSASSDriver,
                 windows.attemptLSASSMemory,
@@ -2530,9 +2465,8 @@ category Software {
                 windows.os.firmwareCorruption,
                 windows.os.inhibitSystemRecovery,
                 windows.os.networkSniffing,
-                windows.os.redundantAccess,
                 windows.os.rootkit,
-                windows.os.dataDestruction,
+                windows.os.attemptDataDestruction,
                 windows.os.systemShutdownOrReboot,
                 windows.os.timestomp,
                 windows.os.twoFactorAuthenticationInterception,
@@ -2668,7 +2602,8 @@ category Software {
                 attemptComponentObjectModel,
                 impareDefenses
 
-        | credentialAPIHooking
+        | credentialAPIHooking          
+            developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"  
             user info: "Adversaries may hook into Windows application programming interface (API) functions to collect user credentials."
             ->  userAccount.userCredentials
 
@@ -2841,7 +2776,7 @@ category Software {
         & groupPolicyModification
             user info: "Malicious GPO modifications can be used to implement Scheduled Task, Disabling Security Tools, Remote File Copy, Create Account, Service Execution and more."
             ->  attemptScheduledTask, // leads to Scheduled Task attack
-                disablingSecurityTools, // leads to Disabling Security Tools attack
+                attemptDisableOrModifyTools, // leads to Disabling Security Tools attack
                 remoteFileCopy, // leads to Remote File Copy attack
                 attemptServiceExecution, // leads to Service Execution attack
                 adminAccount.attemptCreateAccount,
@@ -2850,9 +2785,13 @@ category Software {
 
         & groupPolicyPreferences
             user info: "Adversaries may attempt to find unsecured credentials in Group Policy Preferences (GPP)."
-            ->  userAccount.userCredentials   
+            ->  userAccount.userCredentials
+
+        | attemptGUIInputCapture @hidden
+            ->  gUIInputCapture
 
         & gUIInputCapture
+            developer info: "Binary probability distribution."
             user info: "Adversaries may mimic common operating system GUI components to prompt users for credentials with a seemingly legitimate prompt."
             ->  bypassUserAccessControl,
                 userAccount.userCredentials,
@@ -2877,14 +2816,7 @@ category Software {
                 bypassStaticFileAnalysis,
                 bypassApplicationWhitelisting,
                 bypassProcessWhitelisting,
-                bypassFileOrPathWhitelisting     
-
-        & inputPrompt
-            user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
-            developer info: "Binary probability distribution."
-            ->  attemptBypassUserAccessControl, // leads to Bypass User Account Control attack
-                powerShell, // leads to PowerShell attack
-                userAccount.userCredentials       
+                bypassFileOrPathWhitelisting
 
         & installUtil
             developer info: "Binary probability distribution."
@@ -2927,10 +2859,10 @@ category Software {
                 service.attemptExploitationForPrivilegeEscalation,
                 validAccounts
 
-        | attemptLLMNR_NBT_NS_PoisoningAndRelay @hidden
-            ->  lLMNR_NBT_NS_PoisoningAndRelay
+        | attemptLLMNR_NBT_NS_PoisoningAndSMBRelay @hidden
+            ->  lLMNR_NBT_NS_PoisoningAndSMBRelay
 
-        & lLMNR_NBT_NS_PoisoningAndRelay
+        & lLMNR_NBT_NS_PoisoningAndSMBRelay
             developer info: "Binary probability distribution. Probability carried by MiTM technique."
             user info: "AAdversaries can spoof an authoritative source for name resolution on a victim network by responding to LLMNR (UDP 5355)/NBT-NS (UDP 137) traffic. The adversary can then collect the hash information sent over the wire through tools that monitor the ports for traffic or through Network Sniffing and crack the hashes offline through Brute Force to obtain the plaintext passwords."
             ->  networkSniffing,
@@ -3028,7 +2960,7 @@ category Software {
                 bypassHeuristicDetection,
                 service.browser.attemptSpearphishingAttachment,
                 service.attemptExploitationForPrivilegeEscalation,
-                attemptScripting
+                commandAndScriptingInterpreter
 
         & executableInstallerFilePermissionsWeakness
             user info: "Adversaries may execute their own malicious payloads by hijacking the binaries used by an installer."
@@ -3059,7 +2991,11 @@ category Software {
             ->  collectHashInformation,
                 attemptLocalAccounts
 
-        & servicesFilePermissionsWeakness
+        | attemptServicesFilePermissionsWeakness @hidden
+            ->  servicesFilePermissionsWeakness
+
+        & servicesFilePermissionsWeakness [Exponential(1)]
+            developer info: "Sources for distribution result: https://www.csoonline.com/article/3390663/check-your-access-control-permissions-before-hackers-do.html, https://www.varonis.com/blog/data-breach-statistics/,https://capec.mitre.org/data/definitions/17.html"
             user info: "Adversaries may execute their own malicious payloads by hijacking the binaries used by services."
             ->  os.service.attemptExploitationForPrivilegeEscalation,
                 persistence
@@ -3088,7 +3024,7 @@ category Software {
             ->  powerShell,
                 windowsRemoteManagement, // call with the winrm
                 computer.user.attemptUserExecution,
-                attemptScripting
+                commandAndScriptingInterpreter
 
         & powerShell [Bernoulli(0.55)]
             user info: "Administrator permissions are required to use PowerShell to connect to remote systems."    
@@ -3096,6 +3032,7 @@ category Software {
             ->  computer.router.internalNetwork.remoteSystemsConnection,
                 os.computer.router.externalNetwork.attemptTransmittedDataManipulation,
                 attemptIndicatorBlocking, // tampering settings that control the collection and flow of event telemetry
+                attemptGUIInputCapture, // collect credentials
                 parentPIDSpoofing, // spoof the PPID of PowerShell/Rundll32 to be explorer.exe rather than an Office document delivered as part of Spearphishing Attachment
                 systemChecks,
                 persistence,
@@ -3221,13 +3158,6 @@ category Software {
             user info: "When the service starts or is restarted, then the adversary-controlled program will execute, allowing the adversary to gain persistence and/or privilege escalation to the account context the service is set to execute."
             ->  service.attemptExploitationForPrivilegeEscalation
 
-        | attemptSharedWebroot @hidden
-            ->  sharedWebroot
-
-        & sharedWebroot
-            user info: "Adversaries may add malicious content to an internally accessible website through an open network file share that contains the website's webroot or Web content directory and then browse to that content with a Web browser to cause the server to execute the malicious content."
-            ->  service.browser.executionThroughMaliciousContent
-
         | attemptShortcutModification @hidden
             ->  shortcutModification
 
@@ -3333,7 +3263,7 @@ category Software {
         & serviceStop {A} [Bernoulli(0.0837)]
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://blog.talosintelligence.com/2018/02/olympic-destroyer.html, https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-changeserviceconfigw, https://www.fireeye.com/blog/threat-research/2017/05/wannacry-malware-profile.html, https://www.crowdstrike.com/blog/big-game-hunting-with-ryuk-another-lucrative-targeted-ransomware/"
             user info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
-            ->  dataDestruction,
+            ->  attemptDataDestruction,
                 attemptDataEncryptedForImpact
 
         | attemptScheduledTask @hidden
@@ -3414,18 +3344,7 @@ category Software {
             developer info: "Sources for distribution results : https://www.fortinet.com/blog/threat-research/cybercriminals-exploiting-microsoft-s-vulnerable-dynamic-data-exchange-protocol"
             user info: "Windows Dynamic Data Exchange (DDE) is a client-server protocol for one-time and/or continuous inter-process communication (IPC) between applications."
             ->  commandAndScriptingInterpreter,
-                executeCode 
-            
-        | hooking           
-            developer info:"Binary probability distribution. Sources for distribution results : Process Injection findings and https://www.elastic.co/fr/blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"  
-            user info: "Adversaries may use hooking to load and execute malicious code within the context of another process; malicious hooking mechanisms may also capture API calls that include parameters that reveal user authentication credentials for Credential Access."
-            ->  executeCode,
-                captureAPICalls,
-                processInjection
-
-        | hypervisor           
-            user info: "A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
-            ->  persistence
+                executeCode
 
         | captureAPICalls
             user info: "Some API calls include parameters that reveal user authentication credentials for Credential Access."
@@ -3445,7 +3364,8 @@ category Software {
         
         & systemFirmware
             user info: "System firmware may be modified by an adversary to perform or assist in malicious activity."
-            ->  systemShutdownOrReboot
+            ->  systemShutdownOrReboot,
+                attemptDataDestruction
 
         | systemShutdownOrReboot {A}
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."  
@@ -3453,7 +3373,7 @@ category Software {
         & queryRegistry [Bernoulli(0.05226)]
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.crowdstrike.com/resources/reports/observations-from-the-front-lines-of-threat-hunting-2019/, https://attack.mitre.org/software/S0075/, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc742028(v=ws.11), https://www.welivesecurity.com/wp-content/uploads/2020/05/ESET_Turla_ComRAT.pdf"
             user info: "The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
-            ->  attemptScripting,
+            ->  commandAndScriptingInterpreter,
                 systemChecks,
                 systemInformationDiscovery
 
@@ -3535,7 +3455,7 @@ category Software {
             user info: "Utilizing these shims may allow an adversary to perform several malicious acts such as elevate privileges, install backdoors, disable defenses like Windows Defender, etc."
             ->  persistence, // use application shim databases for persistence
                 processInjection,
-                hooking, // the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS
+                credentialAPIHooking, // the shim database uses Hooking to redirect the code as necessary in order to communicate with the OS
                 attemptBypassUserAccessControl // certain shims can be used to Bypass User Account Control (UAC)
 
         & authenticationPackage
@@ -3604,7 +3524,6 @@ category Software {
                 dLLSideLoading,
                 emailForwardingRule,
                 executableInstallerFilePermissionsWeakness,
-                fileSystemPermissionsWeakness,
                 groupPolicyPreferences,
                 pathInterception,
                 remoteDesktopProtocol,
@@ -3760,7 +3679,6 @@ category Software {
                 pathInterception,
                 powerShellUserProfile,
                 powerShellAdminProfile,
-                sharedWebroot,
                 sIPAndTrustProviderHijacking,
                 serviceStop,
                 serviceExecution,
@@ -3812,7 +3730,7 @@ category Software {
             +>  cmstp,
                 distributedComponentObjectModel,
                 installUtil,
-                lLMNR_NBT_NS_PoisoningAndRelay,
+                lLMNR_NBT_NS_PoisoningAndSMBRelay,
                 mshta,
                 odbcconf,
                 powerShell,
@@ -3844,7 +3762,6 @@ category Software {
             +>  applicationShimming, 
                 bypassUserAccessControl,
                 executableInstallerFilePermissionsWeakness,
-                fileSystemPermissionsWeakness,
                 servicesFilePermissionsWeakness,
                 passTheHash
     }
@@ -3885,6 +3802,9 @@ category Software {
             developer info: "Binary probability distribution. Based on the abuse of system features. Sources: https://attack.mitre.org/techniques/T1151/, https://www.welivesecurity.com/2016/07/06/new-osxkeydnap-malware-hungry-credentials/"
             ->  computer.user.attemptUserExecution
 
+        | attemptBash_profileAndBashrc @hidden
+            ->  bash_profileAndBashrc
+
         & bash_profileAndBashrc
             developer info: "Binary probability distribution. With File permissions, the adversary may instantly perform this technique."
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
@@ -3901,7 +3821,7 @@ category Software {
         & linuxFileAndDirectoryPermissionsModification
             developer info: "Binary probability distribution."
             user info: "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files."
-            ->  bash_profileAndBashrc,
+            ->  attemptBash_profileAndBashrc,
                 hijackExecutionFlow
 
         & hISTCONTROL
@@ -3917,11 +3837,6 @@ category Software {
             user info: "Adversaries may execute their own malicious payloads by hijacking the dynamic linker used to load libraries."
             ->  os.service.attemptExploitationForPrivilegeEscalation,
                 attemptProcMemory // populate a target process with more available gadgets
-
-        & localJobScheduling
-            user info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence, to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
-            ->  persistence,
-                adminAccount.rootAdmin.adminRights
 
         | masqueradeTaskOrService
             user info: "Adversaries may attempt to manipulate the name of a task or service to make it appear legitimate or benign."
@@ -3965,11 +3880,6 @@ category Software {
             user info: "If an adversary can obtain root access (allowing them to read securityd's memory), then they can scan through memory to find the correct sequence of keys in relatively few tries to decrypt the user's logon keychain."
             developer info: "Sources used for distribution result: https://attack.mitre.org/software/S0276/, https://macos.checkpoint.com/, https://juusosalonen.com/post/30923743427/breaking-into-the-os-x-keychain, https://github.com/juuso/keychaindump"
             ->  userAccount.userCredentials
-
-        | source
-            developer info: "Binary probability distribution."
-            user info:"The source command loads functions into the current shell or executes files in the current context."
-            ->  executeCode
 
         & sSH
             user info: "Adversaries may use Valid Accounts to log into remote machines using Secure Shell (SSH). The adversary may then perform actions as the logged-on user."
@@ -4143,6 +4053,9 @@ category Software {
                 adminAccount.rootAdmin.adminCredentials,
                 userAccount.userCredentials
 
+        | attemptBash_profileAndBashrc @hidden
+            ->  bash_profileAndBashrc
+
         & bash_profileAndBashrc
             developer info: "Binary probability distribution."
             user info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
@@ -4203,7 +4116,7 @@ category Software {
         & macFileAndDirectoryPermissionsModification
             developer info: "Binary probability distribution."
             user info: "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files."
-            ->  bash_profileAndBashrc,
+            ->  attemptBash_profileAndBashrc,
                 hijackExecutionFlow
 
         | executeCode 
@@ -4218,7 +4131,11 @@ category Software {
             ->  bypassApplicationControl,
                 bypassAntivirus 
 
+        | attemptGUIInputCapture @hidden
+            ->  gUIInputCapture
+
         & gUIInputCapture
+            developer info: "Binary probability distribution."
             user info: "Adversaries may mimic common operating system GUI components to prompt users for credentials with a seemingly legitimate prompt."
             ->  userAccount.userCredentials
 
@@ -4237,11 +4154,6 @@ category Software {
             user info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
             ->  bypassLogAnalysis,
                 bypassHostForensicAnalysis
-
-        & inputPrompt
-            developer info: "Binary probability distribution."
-            user info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
-            ->  userAccount.userCredentials
 
         & invalidCodeSignature
             user info: "Adversaries may attempt to mimic features of valid code signatures to increase the chance of deceiving a user, analyst, or tool."
@@ -4282,18 +4194,6 @@ category Software {
         & lC_LOAD_DYLIB_Addition
             user info: "Adversaries can remediate the issue that any changes will invalidate digital signatures on binaries because the binary is being modified by simply removing the LC_CODE_SIGNATURE command from the binary so that the signature isn't checked at load time."
             ->  persistence
-
-        & lC_MAINHijacking
-            user info: "LC_MAIN that points to the binary's entry point for execution and can be hijacked so that initial execution flows to a malicious addition. By modifying a binary in this way, application whitelisting can be bypassed because the file name or application path is still the same."
-            ->  bypassApplicationWhitelisting,
-                bypassProcessWhitelisting,
-                bypassFileOrPathWhitelisting 
-
-        & localJobScheduling
-            developer info: "Binary probability distribution."
-            user info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence,  to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
-            ->  persistence,
-                adminAccount.rootAdmin.adminRights 
 
         | attemptLogonScripts @hidden
             ->  logonScripts
@@ -4379,7 +4279,8 @@ category Software {
         | attemptSudoAndSudoCaching @hidden
             ->  sudoAndSudoCaching
             
-        & sudoAndSudoCaching
+        & sudoAndSudoCaching [Exponential(288)]
+            developer info: "Sources for distribution results: https://www.sudo.ws/man/1.8.15/sudoers.man.html"
             user info: "Adversaries can abuse poor configurations of this to escalate privileges without needing the user's password."
             ->  service.attemptExploitationForPrivilegeEscalation
 
@@ -4406,7 +4307,7 @@ category Software {
             ->  executeCode
 
         | windowsManagementInstrumentation
-            ->  attemptScripting 
+            ->  commandAndScriptingInterpreter
 
         | attemptKeychain @hidden
             ->  keychain
@@ -4418,7 +4319,7 @@ category Software {
         & appleScript
             developer info: "Binary probability distribution."
             ->  executeCode,
-                inputPrompt // leads to Input Prompt attack
+                attemptGUIInputCapture // collect credentials
                 
         | attemptStartupItems @hidden
             ->  startupItems
@@ -4444,8 +4345,7 @@ category Software {
             user info: "https://attack.mitre.org/mitigations/M1045/"  
             +>  appleScript,
                 invalidCodeSignature,
-                lC_LOAD_DYLIB_Addition,
-                lC_MAINHijacking
+                lC_LOAD_DYLIB_Addition
 
         # disableOrRemoveFeatureOrProgram
             user info: "https://attack.mitre.org/mitigations/M1042/"
@@ -4641,7 +4541,7 @@ category Network {
         # filterNetworkTraffic [Bernoulli(0.8217)]
             developer info: "Sources for distribution result: https://www.cmu.edu/mits/files/breaking-the-ddos-attack-chain.pdf, https://www.researchgate.net/publication/220240884_An_Effective_DDoS_Attack_Detection_and_Packet-Filtering_Scheme, https://www.akamai.com/us/en/multimedia/documents/report/trends-in-the-cost-of-web-application-ddos-attacks-apac-ponemon-report.pdf, https://uk.pcmag.com/encryption/127134/trend-micro-home-network-security, http://www.securenetconsulting.co.uk/2016/06/why-you-need-dns-firewall-in-your.html, https://www.itproportal.com/2011/04/19/firewalls-only-60-cent-effective-against-malware/"
             user info: "https://attack.mitre.org/mitigations/M1037/"   
-            ->  router.computer.os.customCommandAndControlProtocol,
+            ->  router.computer.os.nonApplicationLayerProtocol,
                 router.computer.os.directNetworkFlood,
                 router.computer.os.endpointDenialOfService,
                 router.computer.os.lateralToolTransfer,
@@ -4653,14 +4553,13 @@ category Network {
                 router.computer.os.reflectionAmplification,
                 router.computer.os.exfiltrationOverAternativeProtocol,
                 router.computer.os.windows.bITSJobs,
-                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
+                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndSMBRelay,
                 router.computer.os.windows.forcedAuthentication 
 
         # limitAccessToResourceOverNetwork
             user info: "https://attack.mitre.org/mitigations/M1035/"   
             ->  router.computer.os.manInTheMiddle,
                 router.computer.os.windows.remoteDesktopProtocol,
-                router.computer.os.windows.sharedWebroot,
                 router.computer.os.windows.windowsAdminShares,
                 router.computer.os.windows.rDPHijacking,
                 router.computer.hardwareAddition.hardwareAdditions,
@@ -4686,8 +4585,8 @@ category Network {
                 router.computer.os.userAccount.userExecution,
                 router.computer.user.maliciousLink,
                 router.computer.os.service.browser.spearphishingAttachment,
-                router.computer.os.customCommandAndControlProtocol,
-                router.computer.os.customCryptographicProtocol,
+                router.computer.os.nonApplicationLayerProtocol,
+                router.computer.os.encryptedChannel,
                 router.computer.os.dataCompressed,
                 router.computer.os.domainGenerationAlgorithms,
                 router.computer.os.internalProxy,
@@ -4698,33 +4597,29 @@ category Network {
                 router.computer.os.fallbackChannels,
                 router.computer.os.lateralToolTransfer,
                 router.computer.os.manInTheMiddle,
-                router.computer.os.multilayerEncryption,
                 router.computer.os.multiStageChannels,
                 router.computer.os.networkServiceScan,
                 router.computer.os.protocolTunneling,
-                router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
-                router.computer.os.standardCryptographicProtocol,
                 router.computer.os.applicationLayerProtocol,
                 router.computer.os.nonStandardPort,
                 router.computer.os.windows.templateInjection,
-                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndRelay
+                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndSMBRelay
 
         # networkSegmentation
             user info: "https://attack.mitre.org/mitigations/M1030/"
             ->  router.computer.os.service.applicationDeploymentSoftware,
                 router.computer.os.manInTheMiddle,
                 router.computer.os.nonStandardPort,
-                router.computer.os.customCommandAndControlProtocol,
+                router.computer.os.nonApplicationLayerProtocol,
                 router.computer.os.domainAccount,
                 router.computer.os.exfiltrationOverAternativeProtocol,
                 router.computer.os.privateKeys,
                 router.computer.os.runtimeDataManipulation,
                 router.computer.os.windows.domainTrustDiscovery,
-                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndRelay,
+                router.computer.os.windows.lLMNR_NBT_NS_PoisoningAndSMBRelay,
                 router.computer.os.windows.rDPHijacking,
                 router.computer.os.windows.serviceStop,
-                router.computer.os.windows.sharedWebroot,
                 router.computer.os.service.exploitationOfRemoteServices,
                 router.computer.os.service.exploitHighVulnerabilityPublicFacingApplication,
                 router.computer.os.service.exploitMediumVulnerabilityPublicFacingApplication,
@@ -4738,7 +4633,7 @@ category Network {
         # sSLOrTLSInspection
             user info: "https://attack.mitre.org/mitigations/M1020/"
             ->  obfuscateNetworkTraffic,
-                router.computer.os.standardCryptographicProtocol,
+                router.computer.os.encryptedChannel,
                 router.computer.os.domainFronting
     }
 
@@ -4839,11 +4734,8 @@ category Network {
                 router.internalNetwork.generateDomainNames,
                 router.computer.os.nonStandardPort,
                 router.computer.os.fallbackChannels,
-                router.computer.os.multilayerEncryption,
                 router.computer.os.multiStageChannels,
-                router.computer.os.redundantAccess,
                 router.computer.os.remoteFileCopy,
-                router.computer.os.standardCryptographicProtocol,
                 router.computer.os.applicationLayerProtocol
 
         # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
@@ -4859,8 +4751,7 @@ category Network {
 
         # sSLOrTLSInspection
             user info: "https://attack.mitre.org/mitigations/M1020/"
-            ->  obfuscateNetworkTraffic,
-                router.computer.os.standardCryptographicProtocol
+            ->  obfuscateNetworkTraffic
     }
 
     asset Firewall {
