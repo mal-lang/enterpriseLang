@@ -9,9 +9,8 @@ public class TestSpearphishing extends EnterpriseLangTest {
         /*
             Browser ------ Service
                               |  
-                              |  
                               |
-                              OS -----   UserAccount
+                              OS ------- UserAccount
                               |               |              
                               |               |
                             Computer ------  User
@@ -20,8 +19,8 @@ public class TestSpearphishing extends EnterpriseLangTest {
         */
 
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false);
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount");
+        public final Browser browser = new Browser("browser");
         public final Computer computer = new Computer("computer");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
@@ -43,9 +42,9 @@ public class TestSpearphishing extends EnterpriseLangTest {
             attacker.addAttackPoint(model.browser.spearphishingAttachment);
             attacker.attack();
 
-            model.user.spearphishingAttachmentDownload.assertCompromisedInstantaneously();
-            model.user.attemptUserExecution.assertCompromisedInstantaneously();
-            model.userAccount.userExecution.assertCompromisedInstantaneously();
+            model.user.attemptMaliciousFile.assertCompromisedInstantaneously();
+            model.user.maliciousFile.assertCompromisedInstantaneously();
+            model.os.executeCode.assertCompromisedInstantaneously();         
             model.computer.infectedComputer.assertCompromisedInstantaneously();
     }  
 
@@ -53,7 +52,6 @@ public class TestSpearphishing extends EnterpriseLangTest {
 
         /*
             Browser ------ Service
-                              |  
                               |  
                               |
                               OS -----   UserAccount
@@ -65,11 +63,12 @@ public class TestSpearphishing extends EnterpriseLangTest {
         */
 
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false);
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount");
+        public final Browser browser = new Browser("browser");
         public final Computer computer = new Computer("computer");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
+
 
         public SpearphishingLinkModel() {
             browser.addService(service);
@@ -88,10 +87,9 @@ public class TestSpearphishing extends EnterpriseLangTest {
             attacker.addAttackPoint(model.browser.spearphishingLink);
             attacker.attack();
 
-            //model.browser.spearphishingLink.assertCompromisedInstantaneously();
-            model.user.spearphishingLinkClicked.assertCompromisedInstantaneously();
-            model.user.attemptUserExecution.assertCompromisedInstantaneously();
-            model.userAccount.userExecution.assertCompromisedInstantaneously();
+            model.user.attemptMaliciousLink.assertCompromisedInstantaneously();
+            model.user.maliciousLink.assertCompromisedInstantaneously();
+            model.os.executeCode.assertCompromisedInstantaneously();         
             model.computer.infectedComputer.assertCompromisedInstantaneously();
     }  
 
@@ -100,7 +98,6 @@ public class TestSpearphishing extends EnterpriseLangTest {
 
         /*
                            Service
-                              |  
                               |  
                               |
                               OS -----   UserAccount
@@ -112,11 +109,11 @@ public class TestSpearphishing extends EnterpriseLangTest {
         */
 
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false);
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount");
+        public final Browser browser = new Browser("browser");
         public final Computer computer = new Computer("computer");
-        public final Service service = new Service("service",false,false,false,false,false,false);
-        public final OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true);
+        public final Service service = new Service("service");
+        public final OS os = new OS("os");
 
         public SpearphishingViaServiceModel() {
             browser.addService(service);
@@ -139,9 +136,10 @@ public class TestSpearphishing extends EnterpriseLangTest {
             model.service.spearphishingViaSocialMedia.assertCompromisedInstantaneously();
             model.browser.attemptSpearphishingAttachment.assertCompromisedInstantaneously();
             model.browser.attemptSpearphishingLink.assertCompromisedInstantaneously();    
-            model.user.attemptUserExecution.assertCompromisedInstantaneously();
-            model.userAccount.userExecution.assertUncompromised();
-            model.computer.infectedComputer.assertUncompromised();
+            model.user.maliciousFile.assertCompromisedInstantaneously();    
+            model.user.maliciousLink.assertCompromisedInstantaneously();
+            model.os.executeCode.assertCompromisedInstantaneously();         
+            model.computer.infectedComputer.assertCompromisedInstantaneously();
     }  
 
 }

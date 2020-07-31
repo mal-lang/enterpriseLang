@@ -18,9 +18,7 @@ public class TestCredentialAccess extends EnterpriseLangTest {
 
         public final UserAccount userAccount = new UserAccount("userAccount");
         public final AdminAccount adminAccount = new AdminAccount("adminAccount");    
-        public final OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false); // We assume all defenses are disabled for OS. We can enable some of them, then the corresponding attack steps can not be reached.
-        //public final OS os = OS os = new OS("os");
-        //os.limitSoftwareInstallation.defaultValue = true;
+        public final OS os = new OS("os"); // We assume all defenses are disabled for OS. We can enable some of them, then the corresponding attack steps can not be reached.
         public final Windows windows = new Windows("windows");
 
         public AdminRightsUserCredentialAccessModel() {
@@ -30,7 +28,7 @@ public class TestCredentialAccess extends EnterpriseLangTest {
         }
     }
 
-    @Test // Test an adversary holds adminRights can access userCredentials through credentialDumping and passTheHash/bruteForce.
+    @Test // Test an adversary holds adminRights can move laterally within an environment through OS credentialDumping and passTheHash/bruteForce.
     public void testCredentialAccessWithAdminRights() {
             var model = new AdminRightsUserCredentialAccessModel();
 
@@ -38,12 +36,11 @@ public class TestCredentialAccess extends EnterpriseLangTest {
             attacker.addAttackPoint(model.adminAccount.adminRights);
             attacker.attack();
 
-            model.os.attemptCredentialDumping.assertCompromisedInstantaneously();
-            model.os.credentialDumping.assertCompromisedInstantaneously();
-            model.os.collectHashInformation.assertCompromisedInstantaneously();
-            model.os.bruteForce.assertCompromisedInstantaneously();
+            model.os.oSCredentialDumping.assertCompromisedInstantaneously();
+            model.windows.cachedDomainCredentials.assertCompromisedInstantaneously();
+            model.windows.collectHashInformation.assertCompromisedInstantaneously();
             model.windows.passTheHash.assertCompromisedInstantaneously();
-            model.userAccount.userCredentials.assertCompromisedInstantaneously();
+            model.windows.bypassSystemAccessControls.assertCompromisedInstantaneously();
     } 
 
 
@@ -63,7 +60,7 @@ public class TestCredentialAccess extends EnterpriseLangTest {
         public final UserAccount userAccount = new UserAccount("userAccount");
         public final AdminAccount adminAccount = new AdminAccount("adminAccount");    
         public final Service service = new Service("service");
-        public final OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
+        public final OS os = new OS("os");
         public final Windows windows = new Windows("windows");
 
         public UserRightsUserCredentialAccessModel() {
@@ -74,7 +71,7 @@ public class TestCredentialAccess extends EnterpriseLangTest {
         }
     }
 
-    @Test // Test an adversary holds userRights can access userCredentials through ExploitationForPrivilegeEscalation, credentialDumping and passTheHash/bruteForce.
+    @Test // Test an adversary holds userRights can  move laterally within an environment through ExploitationForPrivilegeEscalation, OS credentialDumping and passTheHash/bruteForce.
     public void testCredentialAccessWithUserRights() {
             var model = new UserRightsUserCredentialAccessModel();
 
@@ -85,12 +82,11 @@ public class TestCredentialAccess extends EnterpriseLangTest {
             model.service.attemptExploitationForPrivilegeEscalation.assertCompromisedInstantaneously();
             model.service.exploitationForPrivilegeEscalation.assertCompromisedInstantaneously();
             model.adminAccount.adminRights.assertCompromisedInstantaneously();
-            model.os.attemptCredentialDumping.assertCompromisedInstantaneously();
-            model.os.credentialDumping.assertCompromisedInstantaneously();
-            model.os.collectHashInformation.assertCompromisedInstantaneously();
-            model.os.bruteForce.assertCompromisedInstantaneously();
+            model.os.oSCredentialDumping.assertCompromisedInstantaneously();
+            model.windows.cachedDomainCredentials.assertCompromisedInstantaneously();
+            model.windows.collectHashInformation.assertCompromisedInstantaneously();
             model.windows.passTheHash.assertCompromisedInstantaneously();
-            model.userAccount.userCredentials.assertCompromisedInstantaneously();
+            model.windows.bypassSystemAccessControls.assertCompromisedInstantaneously();
     } 
 }
 

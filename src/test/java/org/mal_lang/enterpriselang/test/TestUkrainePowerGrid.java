@@ -48,14 +48,14 @@ public class TestUkrainePowerGrid extends EnterpriseLangTest {
             attacker.addAttackPoint(model.browser.spearphishingAttachment);
             attacker.attack();
 
-            model.user.spearphishingAttachmentDownload.assertCompromisedInstantaneously();
-            model.user.attemptUserExecution.assertCompromisedInstantaneously();
-            model.userAccount.userExecution.assertCompromisedInstantaneously();
+            model.user.attemptMaliciousFile.assertCompromisedInstantaneously();
+            model.user.maliciousFile.assertCompromisedInstantaneously();
+            model.os.executeCode.assertCompromisedInstantaneously();         
             model.computer.infectedComputer.assertCompromisedInstantaneously();
             model.os.fileDeletion.assertCompromisedInstantaneously(); // fileDeletion reached
-            model.service.externalRemoteServices.assertCompromisedInstantaneously();
             model.os.validAccounts.assertCompromisedInstantaneously();
-            model.os.graphicalUserInterface.assertCompromisedInstantaneously();
+            model.os.domainAccounts.assertCompromisedInstantaneously();
+            model.service.externalRemoteServices.assertCompromisedInstantaneously();
             model.windows.attemptSystemFirmware.assertCompromisedInstantaneously();
             model.windows.systemFirmware.assertCompromisedInstantaneously();
             model.windows.systemShutdownOrReboot.assertCompromisedInstantaneously(); // systemShutdown reached
@@ -87,7 +87,7 @@ public class TestUkrainePowerGrid extends EnterpriseLangTest {
             attacker.addAttackPoint(model.os.endpointDenialOfService);
             attacker.attack();
 
-            model.windows.attemptServiceStop.assertCompromisedInstantaneously();
+            model.os.serviceExhaustionFlood.assertCompromisedInstantaneously();
             model.windows.serviceStop.assertCompromisedInstantaneously();
     } 
 }

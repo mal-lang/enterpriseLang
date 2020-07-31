@@ -25,7 +25,7 @@ public class TestRansomwareImpacting extends EnterpriseLangTest {
         public final UserAccount userAccount = new UserAccount("userAccount",false,false);      
         public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
-        public final OS os = new OS("os",false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false); // We assume all defenses are disabled for OS. We can enable some of them, then the corresponding attack steps can not be reached.
+        public final OS os = new OS("os"); // We assume all defenses are disabled for OS. We can enable some of them, then the corresponding attack steps can not be reached.
         public final Computer computer = new Computer("computer");
         public final InternalNetwork itNetwork = new InternalNetwork("ITNetwork");
         public final ExternalNetwork otNetwork = new ExternalNetwork("OTNetwork");
@@ -51,9 +51,9 @@ public class TestRansomwareImpacting extends EnterpriseLangTest {
             attacker.addAttackPoint(model.browser.attemptSpearphishingLink);
             attacker.attack();
 
-            model.user.spearphishingLinkClicked.assertCompromisedInstantaneously();
-            model.user.attemptUserExecution.assertCompromisedInstantaneously();
-            model.userAccount.userExecution.assertCompromisedInstantaneously();
+            model.user.attemptMaliciousLink.assertCompromisedInstantaneously();
+            model.user.maliciousLink.assertCompromisedInstantaneously();
+            model.os.executeCode.assertCompromisedInstantaneously();         
             model.computer.infectedComputer.assertCompromisedInstantaneously();
             model.itNetwork.dataEncryptedForImpact.assertCompromisedInstantaneously();
             model.otNetwork.dataEncryptedForImpact.assertCompromisedInstantaneously();
