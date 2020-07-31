@@ -669,6 +669,7 @@ category Software {
             developer info: "Sources for distribution result: https://www.securitymetrics.com/blog/remote-access-attacks-how-protect-against-malware, https://cdn2.hubspot.net/hubfs/4595665/Acunetix_web_application_vulnerability_report_2019.pdf, https://securitybrief.com.au/story/15-000-companies-still-critically-vulnerable-from-citrix-security-flaws-report"
             ->  os.computer.router.internalNetwork.persistence,
                 os.computer.router.internalNetwork.remoteAccess,
+                os.windows.attemptSystemFirmware,
                 remoteServices, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
                 attemptExploitationOfRemoteServices
 
@@ -1191,7 +1192,7 @@ category Software {
 
         | collectHashInformation
             ->  attemptPasswordCracking, // leads to Brute Force: Password Cracking attack  
-                windows.passTheHash, // leads to Pass the Hash attack
+                windows.attemptPassTheHash, // leads to Pass the Hash attack
                 windows.networkSniffing // leads to Network Sniffing attack
 
         & compileAfterDelivery    
@@ -1903,8 +1904,8 @@ category Software {
             developer info: "Binary probability relation."
             user info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
             ->  defaultAccounts,
-                domainAccounts,
-                localAccounts,
+                attemptDomainAccounts,
+                attemptLocalAccounts,
                 service.cloudService.cloudAccounts
 
         & defaultAccounts
@@ -2942,10 +2943,14 @@ category Software {
             ->  sysAdmin.systemCredentials,
                 adminAccount.windowsAdmin.adminCredentials
 
+        | attemptPassTheHash @hidden
+            ->  passTheHash
+
         & passTheHash [Bernoulli(0.16)*Exponential(480)]
             user info: "This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash."
             developer info: "Sources used for distribution result: https://www.securityweek.com/pass-hash-remains-poorly-defended-threat-vector, https://www.youtube.com/watch?v=6em5TUASfHM, https://www.youtube.com/watch?v=bTYR_xYSDIk"
-            ->  computer.router.internalNetwork.remoteSystemsConnection // PtH may be used to perform actions on local or remote systems
+            ->  computer.router.internalNetwork.remoteSystemsConnection, // PtH may be used to perform actions on local or remote systems
+                bypassSystemAccessControls
 
         | attemptPassTheTicket @hidden
             ->  passTheTicket
@@ -4788,7 +4793,7 @@ category Hardware {
                 os.windows.attemptPowerShell,
                 os.accountManipulation,
                 os.screenCapture,
-                os.service.attemptExternalRemoteServices,
+                os.validAccounts,
                 peripheralDevice.removableMedia.infectedMedia,
                 peripheralDevice.removableMedia.dataFromRemovableMedia
 
