@@ -1215,7 +1215,8 @@ category Software {
                 windows.cachedDomainCredentials,
                 windows.dCSync,
                 linux.procFilesystem,
-                linux._etc_passwdAND_etc_shadow
+                linux._etc_passwdAND_etc_shadow,
+                stealOrForgeKerberosTickets
 
         | attemptEncryptedChannel @hidden
             ->  encryptedChannel
@@ -2121,14 +2122,17 @@ category Software {
                 exfiltrationOverUnencryptedOrObfuscatedNonC2Protocol
 
         | exfiltrationOverAsymmetricEncryptedNonC2Protocol
+            developer info: "Binary probability distribution. Probability carried by exfiltrationOverAternativeProtocol "
             user info: "Adversaries may steal data by exfiltrating it over an asymmetrically encrypted network protocol other than that of the existing command and control channel."
             ->  computer.router.internalNetwork.dataExfiltration
 
         | exfiltrationOverSymmetricEncryptedNonC2Protocol
+            developer info: "Binary probability distribution. Probability carried by exfiltrationOverAternativeProtocol "
             user info: "Adversaries may steal data by exfiltrating it over a symmetrically encrypted network protocol other than that of the existing command and control channel."
             ->  computer.router.internalNetwork.dataExfiltration
 
         | exfiltrationOverUnencryptedOrObfuscatedNonC2Protocol
+            developer info: "Binary probability distribution. Probability carried by exfiltrationOverAternativeProtocol "
             user info: "Adversaries may steal data by exfiltrating it over an un-encrypted network protocol other than that of the existing command and control channel."  
             ->  computer.router.internalNetwork.dataExfiltration
 
@@ -2613,6 +2617,7 @@ category Software {
             ->  userAccount.userCredentials
 
         | dCShadow
+            developer info: "Binary probability distribution."
             user info: "This technique may bypass system logging and security monitors such as security information and event management (SIEM) products."
             ->  attemptSIDHistoryInjection,
                 bypassLogAnalysis
@@ -2833,6 +2838,7 @@ category Software {
             user info: "Adversaries may attempt to mimic features of valid code signatures to increase the chance of deceiving a user, analyst, or tool."
 
         | stealOrForgeKerberosTickets
+            developer info: "Binary probability dsitribution. Distribution carried by oSCredentialDumping"
             user info: "Adversaries may attempt to subvert Kerberos authentication by stealing or forging Kerberos tickets to enable Pass the Ticket."
             ->  goldenTicket,
                 silverTicket,
@@ -2842,17 +2848,21 @@ category Software {
             ->  goldenTicket
 
         & goldenTicket
+            developer info: "Binary probability dsitribution. carried by oSCredentialDumping"
             user info: "Adversaries who have the KRBTGT account password hash may forge Kerberos ticket-granting tickets (TGT), also known as a golden ticket."
-            ->  attemptPassTheTicket
+            ->  attemptPassTheTicket,
+                DCShadow
 
         | attemptSilverTicket @hidden
             ->  silverTicket
 
         & silverTicket
+            developer info: "Binary probability dsitribution. carried by oSCredentialDumping"
             user info: "Adversaries who have the password hash of a target service account (e.g. SharePoint, MSSQL) may forge Kerberos ticket granting service (TGS) tickets, also known as silver tickets."
             ->  attemptPassTheTicket
             
         & kerberoasting
+            developer info: "Binary probability dsitribution. carried by oSCredentialDumping"
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
             ->  attemptSilverTicket,
                 bruteForce,
@@ -2956,6 +2966,7 @@ category Software {
             ->  passTheTicket
 
         & passTheTicket
+            developer info: "Binary probability distribution"
             user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
             ->  computer.router.internalNetwork.remoteAccess // gain remote access 
 
@@ -3178,6 +3189,7 @@ category Software {
             ->  sIDHistoryInjection
 
         & sIDHistoryInjection
+            developer info: "Binary probability dsitribution. Distribution carried by parents"
             user info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
             ->  persistence,
                 service.remoteServices, // leads to Remote Services attack
@@ -3185,6 +3197,7 @@ category Software {
                 windowsRemoteManagement // leads to Windows Remote Management attack          
 
         | signedBinaryProxyExecution
+            developer info: "Binary probability distribution."
             user info: "Several Microsoft signed binaries that are default on Windows installations can be used to proxy execution of other files. This behavior may be abused by adversaries to execute malicious files that could bypass application whitelisting and signature validation on systems."
             ->  compiledHTMLFile,
                 attemptControlPanel,
@@ -3198,6 +3211,7 @@ category Software {
                 rundll32        
 
         | signedScriptProxyExecution
+            developer info: "Binary probability distribution."
             user info: "Scripts signed with trusted certificates can be used to proxy execution of malicious files."
             ->  pubPrn
 
@@ -3317,7 +3331,8 @@ category Software {
         | attemptWindowsManagementInstrumentationEventSubscription @hidden
             ->  windowsManagementInstrumentationEventSubscription
 
-        & windowsManagementInstrumentationEventSubscription
+        & windowsManagementInstrumentationEventSubscription [Bernoulli(0.26)*Exponential(43.49)]
+            developer info: "We assume the dsitribution to be the same as for windowsManagementInstrumentation"
             user info: "Adversaries may use the capabilities of WMI to subscribe to an event and execute arbitrary code when that event occurs, providing persistence on a system."
             ->  persistence
 
@@ -3325,6 +3340,7 @@ category Software {
             ->  windowsRemoteManagement
 
         & windowsRemoteManagement
+            developer info: "Binary probability distribution. Use of Valid Acounts"
             user info: "WinRM allows a user to interact with a remote system."
             ->  computer.router.internalNetwork.remoteExecution,
                 service.externalRemoteServices // Windows Remote Management can also be used externally  
@@ -4458,8 +4474,9 @@ category Network {
         | attemptExfiltrationOverC2Channel @hidden
              ->  exfiltrationOverC2Channel
 
-         & exfiltrationOverC2Channel
-             user info: " Data exfiltration is performed over the Command and Control channel."
+         & exfiltrationOverC2Channel [Bernoulli(0.79224)*Exponential(1878)]
+            developer info: "Sources for distribution results: https://repo.zenk-security.com/Techniques%20d.attaques%20%20.%20%20Failles/Exfiltration%20Techniques%20-%20An%20examination%20And%20Emulation.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
+            user info: " Data exfiltration is performed over the Command and Control channel."
              ->  dataExfiltration
 
         E firewallExists
