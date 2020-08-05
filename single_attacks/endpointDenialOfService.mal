@@ -1,0 +1,56 @@
+category Software {
+    asset Service {
+        | serviceExhaustionFlood
+
+        | blockUserAccess
+
+
+    }       
+    abstractAsset OS{
+        | osExhaustionFlood
+
+        & endpointDenialOfService 
+            info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
+            ->  applicationExhaustionFlood,
+                osExhaustionFlood,
+                service.serviceExhaustionFlood
+
+        | applicationExhaustionFlood   
+            ->  service.blockUserAccess       
+    } 
+}
+
+category Network {
+    asset ExternalNetwork {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  os.endpointDenialOfService   
+
+    }
+
+    asset InternalNetwork {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  os.endpointDenialOfService  
+
+    } 
+}
+
+associations{
+
+    OS [os] 1 <--Contain--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1-* [os] OS
+
+}
+
+
+
+
+
+
+
+
+
+
+

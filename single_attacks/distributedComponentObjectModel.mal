@@ -1,0 +1,69 @@
+category Person {    
+    asset Administrator {
+        | adminRights
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.modifyRegistry
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.distributedComponentObjectModel
+
+    }
+    
+    asset SYSTEM {
+        | systemRights
+            ->  windows.distributedComponentObjectModel
+
+    }
+}
+
+category Software {
+    asset OS {
+        # disableOrRemoveFeatureOrProgram
+
+        # applicationIsolationAndSandboxing
+    }
+
+    asset Windows extends OS {    
+        & modifyRegistry
+            ->  distributedComponentObjectModel      
+
+        & distributedComponentObjectModel          
+            info:"Through DCOM, adversaries operating in the context of an appropriately privileged user can remotely obtain arbitrary and even direct shellcode execution through Office applications as well as other Windows objects that contain insecure methods. DCOM can also execute macros and may also invoke Dynamic Data Exchange."
+            ->  dynamicDataExchange
+
+        | dynamicDataExchange 
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  distributedComponentObjectModel   
+
+        # applicationIsolationAndSandboxing
+            info: "https://attack.mitre.org/mitigations/M1048/"
+            +>  distributedComponentObjectModel
+    }
+}
+
+category Network {
+    asset Firewall {
+        # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  windows.distributedComponentObjectModel
+
+    }
+}
+
+associations {
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    Windows [windows] 1 <--Protect--> 1 [firewall] Firewall
+
+} 
+
+
+
+

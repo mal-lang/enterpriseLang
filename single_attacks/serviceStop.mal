@@ -1,0 +1,109 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.userServiceStop
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.userServiceStop,
+                windows.adminServiceStop
+    }     
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+    }    
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.adminServiceStop
+    }    
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.systemServiceStop
+    } 
+}
+
+category Software {
+    abstractAsset OS {
+        & userDataDestruction
+
+        & adminDataDestruction
+
+        & systemDataDestruction
+
+        & userDataEncryptedForImpact
+   
+        & adminDataEncryptedForImpact
+
+        & systemDataEncryptedForImpact
+    } 
+
+    asset Windows extends OS {   
+        & userServiceStop
+            info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
+            ->  userDataDestruction,
+                userDataEncryptedForImpact
+
+        & adminServiceStop
+            ->  adminDataDestruction,
+                adminDataEncryptedForImpact
+
+        & systemServiceStop
+            ->  systemDataDestruction,
+                systemDataEncryptedForImpact
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  userServiceStop,
+                adminServiceStop,
+                systemServiceStop
+
+        # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
+            info: "https://attack.mitre.org/mitigations/M1024/"
+            ->  userServiceStop,
+                adminServiceStop,
+                systemServiceStop
+    } 
+}
+
+category Network {
+    asset InternalNetwork {
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  windows.userServiceStop,
+                windows.adminServiceStop,
+                windows.systemServiceStop
+    } 
+
+    asset ExternalNetwork {
+        # networkSegmentation // Segment networks and systems appropriately to reduce access to critical systems and services to controlled methods.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  windows.userServiceStop,
+                windows.adminServiceStop,
+                windows.systemServiceStop
+    } 
+}
+
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows  
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    InternalNetwork [internalNetworkWindows] 1 <--Connect--> 1 [windows] Windows
+    ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

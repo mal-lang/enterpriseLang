@@ -1,30 +1,44 @@
 category Person {
-    asset Administrator{
-        | adminRights
-            -> windows.createService
-        
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.newService
     }
 
-    asset WindowsAdmin {
-        | systemRights
-            -> windows.executeService
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."   
     }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.newService
+    }        
 }
 
 category Software {
-    asset Windows {
-        & createService
-            -> executeService
-        # whitelisting
-            -> createService
-        & executeService
-            -> persistance
-        | persistance
+    asset Service {
+        & _exploitationForPrivilegeEscalation
+    }  
+
+    abstractAsset OS {  
+        & masquerading
+    }  
+
+    asset Windows extends OS {   
+        & serviceExecution
+            info: "Adversaries may execute a binary, command, or script via a method that interacts with Windows services, such as the Service Control Manager."
+            ->  newService // Adversaries may also directly start services through Service Execution
+
+        & newService
+            info: "Adversaries may install a new service that can be configured to execute at startup by using utilities to interact with services or by directly modifying the Registry."
+            ->  service._exploitationForPrivilegeEscalation, // an adversary may also use a service to escalate privileges from administrator to SYSTEM
+                masquerading // benign software with Masquerading
     }
 }
 associations {
-    //User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
-    WindowsAdmin [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
-    Administrator [Administrator] 1 <--ui--> 1-* [windows] Windows
-
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
 }

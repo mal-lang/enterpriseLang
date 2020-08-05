@@ -1,0 +1,37 @@
+category Person {    
+    asset Administrator {
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | systemRights
+            ->  windows.hypervisor
+    }
+    
+    asset SYSTEM {
+        | systemRights
+            ->  windows.hypervisor
+    }
+}
+
+category Software {
+    asset OS {
+        | rootkit
+            info:"Rootkits are programs that hide the existence of malware by intercepting (i.e., Hooking) and modifying operating system API calls that supply system information."
+            ->  windows.hypervisor
+    }
+
+    asset Windows extends OS {        
+        | hypervisor           
+            info:"A type-1 hypervisor operates at a level below the operating system and could be designed with Rootkit functionality to hide its existence from the guest operating system."
+            -> persistance
+
+        | persistance
+    }
+}
+
+
+associations {
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windows] Windows
+    SYSTEM [systemWindows] 1-* <-- Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+} 

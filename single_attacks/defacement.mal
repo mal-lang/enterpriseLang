@@ -1,0 +1,40 @@
+category Person {
+    asset Employee {
+        | pageVisited
+    }
+}
+
+category Software {
+    abstractAsset OS {  
+        # dataBackup
+            info: "https://attack.mitre.org/mitigations/M1053/"
+            ->  internalNetwork.defacement,
+                externalNetwork.defacement
+    }
+}
+
+category Network {
+    asset Browser {
+        | _websiteDefacement
+            info: "This is a helper attack step that websites are a common victim of defacement. Website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise."
+            ->  employee.pageVisited // Belongs to Drive-by Compromise attack
+    }
+
+    asset InternalNetwork {
+        & defacement
+            info: "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users."
+    }
+
+    asset ExternalNetwork{
+        & defacement
+            info: "Websites are a common victim of defacement that often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda."
+            ->  browser._websiteDefacement
+    }
+}
+
+associations {
+    Employee [employee] 1 <--Use--> 1-* [browser] Browser
+    Browser [browser] 1-* <--Connect--> 1-* [externalNetwork] ExternalNetwork 
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+}

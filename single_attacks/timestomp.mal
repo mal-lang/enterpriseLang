@@ -1,0 +1,65 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.timestomp,
+                linux.timestomp
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.timestomp
+    }
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  linux.timestomp
+    }
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.timestomp
+    }
+}
+
+category Software {
+    abstractAsset OS { 
+        | bypassHostForensicAnalysis
+    }
+
+    asset Windows extends OS {   
+        | timestomp
+            info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            ->  bypassHostForensicAnalysis
+    }
+
+    asset Linux extends OS {
+        | timestomp
+            info: "Timestomp is done on files that have been modified or created by the adversary so that they do not appear conspicuous to forensic investigators or file analysis tools."
+            ->  bypassHostForensicAnalysis
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    User [linuxUser] 1 <--Ui--> 1-* [linux] Linux  
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    Root [rootLinux] 1 <--Ui--> 1-* [linux] Linux
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+    OS [os] 1 <--Contain--> 1 [linux] Linux
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+

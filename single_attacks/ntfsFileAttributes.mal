@@ -1,0 +1,51 @@
+category Software {
+    abstractAsset OS {
+        # restrictFileAndDirectoryPermissions
+    
+        | bypassSignatureBasedDetection
+
+        | bypassHostForensicAnalysis
+
+        | bypassAntivirus
+    } 
+
+    asset Windows extends OS {   
+        & ntfsFileAttributes
+            info: "Adversaries may store malicious data or binaries in file attribute metadata instead of directly in files, to evade some defenses, such as static indicator scanning tools and anti-virus."
+            ->  bypassSignatureBasedDetection,
+                bypassHostForensicAnalysis,
+                bypassAntivirus
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  ntfsFileAttributes
+    } 
+}
+
+category Hardware {
+    asset Computer {
+
+    } 
+
+    asset NTFSPartition extends Computer {
+        E nftsPartitionExists
+            <-  nftsPartition
+            ->  windows.ntfsFileAttributes
+    } 
+}
+
+associations {    
+    NTFSPartition [nftsPartition] 1-* <--Hardware--> 1 [windows] Windows
+    NTFSPartition [nftsPartition] 1-* <--Extends--> 1 [windowsComputer] Computer
+}
+
+
+
+
+
+
+
+
+
+
+

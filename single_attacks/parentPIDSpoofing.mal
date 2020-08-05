@@ -1,0 +1,53 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.parentPIDSpoofing
+    }
+
+    asset Administrator {
+        | adminRights
+    }
+   
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.parentPIDSpoofing
+    }    
+}
+
+category Software{
+    asset Service {
+        | _exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS{
+        | bypassHostForensicAnalysis    
+
+        | bypassHeuristicDetection
+    }
+    
+    asset Windows extends OS {   
+        | parentPIDSpoofing
+            info: "Adversaries may spoof the parent process identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges."
+            ->  bypassHostForensicAnalysis,
+                bypassHeuristicDetection,
+                service._exploitationForPrivilegeEscalation
+    } 
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+

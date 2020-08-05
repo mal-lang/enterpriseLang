@@ -1,0 +1,53 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows._taintSharedContent
+    }
+}
+
+category Software {
+    asset OS {
+        # executionPrevention
+
+        # exploitProtection
+
+        # restrictFileAndDirectoryPermissions
+    }
+
+    asset Windows extends OS{
+        | _taintSharedContent
+            info: "This is a helper attack step that requires access to shared folders."
+            ->  networkSharedDrive.taintSharedContent  
+
+        | executeCode
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  networkSharedDrive.taintSharedContent
+
+        # exploitProtection
+            info: "https://attack.mitre.org/mitigations/M1050/"
+            +>  networkSharedDrive.taintSharedContent
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  networkSharedDrive.taintSharedContent
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+
+    }
+
+    asset NetworkSharedDrive extends InternalNetwork {
+        & taintSharedContent
+            info: "Once a user opens the shared tainted content, the malicious portion can be executed to run the adversary's code on a remote system."
+            ->  windows.executeCode
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    NetworkSharedDrive [networkSharedDrive] 1-* <--SystemAccess--> 1 [windows] Windows
+}

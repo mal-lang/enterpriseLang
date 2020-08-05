@@ -1,0 +1,54 @@
+category Person {
+    asset User {
+        | userRights
+            ->  linux.portKnocking,
+                macOS.portKnocking
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+
+        | bypassDefensiveNetworkServiceScanning
+
+    } 
+
+    asset Linux extends OS {
+        & portKnocking
+            info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
+            ->  bypassDefensiveNetworkServiceScanning
+    } 
+
+    asset MacOS extends OS {
+        & portKnocking
+            info: "This technique has been observed to both for the dynamic opening of a listening port as well as the initiating of a connection to a listening server on a different system."
+            ->  bypassDefensiveNetworkServiceScanning
+    } 
+}
+
+category Network {
+    asset Firewall {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  linux.portKnocking,
+                macOS.portKnocking
+    } 
+}
+
+associations {    
+    User [linuxUser] 1 <--Ui--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Firewall [firewall] 0-1 <--Protect--> 1-* [linux] Linux   
+    Firewall [firewall] 0-1 <--Protect--> 1-* [macOS] MacOS 
+}
+
+
+
+
+
+
+
+
+
+
+

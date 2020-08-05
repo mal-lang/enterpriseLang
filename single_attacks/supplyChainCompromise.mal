@@ -1,0 +1,28 @@
+category Software {
+    asset Service {
+        & supplyChainCompromise
+            info: "Supply chain compromise is the manipulation of products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise."
+            ->  os.compromisedSystems
+
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/"
+            ->  supplyChainCompromise
+    }
+
+    abstractAsset OS {   
+        | compromisedSystems
+    }  
+}
+
+category Network {
+    asset InternalNetwork {
+        # vulnerabilityScanning // Regularly scan the internal network for available services to identify new and potentially vulnerable services.
+            info: "https://attack.mitre.org/mitigations/M1016/"
+            ->  service.supplyChainCompromise   
+    }
+}
+
+associations {
+    OS [os] 1 <--Contain--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
+}

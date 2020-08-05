@@ -1,0 +1,49 @@
+category Person {
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.winlogonHelperDLL
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.winlogonHelperDLL
+    }
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.winlogonHelperDLL
+    }              
+}
+
+category Software {
+    asset OS {
+        | persistence
+
+        # executionPrevention
+    }
+
+    asset Windows extends OS{
+        & winlogonHelperDLL
+            info: "Adversaries may take advantage of these features to repeatedly execute malicious code and establish Persistence."
+            ->  persistence
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  winlogonHelperDLL
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}

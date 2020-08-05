@@ -1,20 +1,34 @@
 category Person {
     asset User {
         | userRights
-            -> computer.fileDiscovery, computer.directoryDiscovery
+            ->  os.fileAndDirectoryDiscovery
    }
-}
+   
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+            ->  os.fileAndDirectoryDiscovery
+   }
 
-category Hardware {
-    asset Computer {
-        & fileDiscovery
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  os.fileAndDirectoryDiscovery
+   }
+}  
 
-        & directoryDiscovery
+category Software {
+    abstractAsset OS {       
+        | fileAndDirectoryDiscovery
+            info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system."
+            ->  _automatedCollection
+            
+        | _automatedCollection
+   }
+} 
 
-        # whitelisting
-            -> fileDiscovery, directoryDiscovery
-    }
-}
 associations{
-    User [user] 1 <-- ui--> 1 [computer] Computer
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS   
 }

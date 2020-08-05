@@ -1,0 +1,48 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.indirectCommandExecution
+    } 
+}           
+
+category Software {
+    abstractAsset OS{
+
+        | bypassStaticFileAnalysis
+
+        | bypassApplicationWhitelisting
+
+        | bypassProcessWhitelisting
+
+        | bypassFileOrPathWhitelisting    
+    } 
+
+    asset Windows extends OS {   
+        | indirectCommandExecution
+            info: "Adversaries may abuse the Windows system features for Defense Evasion."
+            ->  executeCode,
+                bypassStaticFileAnalysis,
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting 
+
+        | executeCode 
+    } 
+}
+
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+category Software {
+    asset OS {
+        & exfiltrationOverOtherNetworkMedium 
+            info: "Adversaries could choose to do exfiltration over a WiFi connection, modem, cellular data connection, Bluetooth, or another radio frequency (RF) channel if they have sufficient access or proximity, and the connection might not be secured or defended as well as the primary Internet-connected channel because it is not routed through the same enterprise network."     
+            ->  otherNetworkMedium.transmit
+
+        #  operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  exfiltrationOverOtherNetworkMedium
+    }
+}
+
+category Network {
+    asset C2Server {
+    }
+
+    asset OtherNetworkMedium extends C2Server {
+        | transmit
+    }
+} 
+
+associations {
+    OtherNetworkMedium [otherNetworkMedium] 1-* <--Ui--> 1-* [os] OS
+}

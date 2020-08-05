@@ -29,7 +29,10 @@ public class credentialsInRegistryTest{
         // Section 1: Asset instantiation
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os",false,false,false,true,false,false,true,false,false,true,true,true,true,false,false,false);
+        OS os = new OS("os" ,false,false,false,true,false
+                            ,false,true,false,false,true
+                            ,true,true,true,false,false
+                            ,false,false,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addOs(os);

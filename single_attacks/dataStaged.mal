@@ -1,21 +1,19 @@
-category Hardware {
-    asset Computer {
-        | dataCollected
-            -> dataStaged
+category Software {
+    abstractAsset OS {   
+        & dataCollected
+            ->  dataStaged,
+                dataCompressed
 
-        | dataCompressed
-            -> dataStaged
+        & sensitiveDataCollected
+            ->  dataStaged
+            
+        | dataStaged  
+            info: "Collected data is staged in a central location or directory prior to Exfiltration. Data may be kept in separate files or combined into one file through techniques such as Data Compressed or Data Encrypted."
+            ->  dataCompressed,
+                dataEncrypted
+
+        & dataCompressed
 
         | dataEncrypted
-            -> dataStaged
-
-        | dataStaged    
-            -> _dataStaged
-
-        & _dataStaged 
-            //-> all exfiltration attacks
-
-        # whitelisting
-            -> _dataStaged
     }
 }

@@ -1,0 +1,48 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.rundll32
+    } 
+}
+
+category Software {
+    abstractAsset OS {
+        | bypassAntivirus
+
+        | bypassApplicationWhitelisting
+
+        | bypassDigitalCertificateValidation
+
+        # exploitProtection
+    } 
+
+    asset Windows extends OS {   
+        & rundll32
+            info: "Adversaries may take advantage of this functionality to proxy execution of code to avoid triggering security tools. Rundll32 can also been used to execute scripts."
+            ->  bypassAntivirus,
+                bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation,
+                executeCode   
+
+        | executeCode 
+
+        # exploitProtection
+            info: "https://attack.mitre.org/mitigations/M1050/"
+            +>  rundll32
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

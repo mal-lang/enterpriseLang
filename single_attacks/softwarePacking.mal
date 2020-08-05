@@ -1,0 +1,41 @@
+category Software {
+    abstractAsset OS{
+        | indicatorRemovalFromTools
+
+        | bypassSignatureBasedDetection
+
+        | bypassHeuristicDetection
+
+        | bypassAntivirus
+
+        # antivirus
+    } 
+
+    asset Windows extends OS {   
+        & softwarePacking
+            info: "Packing an executable changes the file signature in an attempt to avoid signature-based detection."
+            ->  indicatorRemovalFromTools,
+                bypassSignatureBasedDetection,
+                bypassAntivirus,
+                bypassHeuristicDetection
+
+        # antivirus
+            info: "https://attack.mitre.org/mitigations/M1049/"
+            +>  softwarePacking
+    } 
+}
+
+associations{
+
+}
+
+
+
+
+
+
+
+
+
+
+

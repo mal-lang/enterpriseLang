@@ -1,0 +1,36 @@
+category Software{
+    abstractAsset OS{
+        | fallbackChannels  
+            info:" Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
+            ->  c2Server.communicate                 
+    }
+}
+
+category Network {
+ asset ExternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.fallbackChannels  
+
+    }
+        asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.fallbackChannels  
+    }
+}
+
+category Hardware {
+    asset C2Server {
+        | communicate   
+    }
+}
+
+
+associations{
+
+    OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1 [os] OS 
+    InternalNetwork [internalNetwork] 1 <--Connect--> 1 [os] OS
+    
+}

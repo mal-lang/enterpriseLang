@@ -1,0 +1,60 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.modifyRegistry
+    } 
+
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.modifyRegistry
+    }    
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.modifyRegistry
+    }                
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassHostForensicAnalysis
+
+        | persistence
+        
+        # restrictFileAndDirectoryPermissions
+    } 
+
+    asset Windows extends OS {   
+        & modifyRegistry
+            info: "Adversaries may interact with the Windows Registry to hide configuration information within Registry keys, remove information as part of cleaning up, or as part of other techniques to aid in Persistence and Execution."
+            ->  persistence,
+                bypassHostForensicAnalysis
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  modifyRegistry
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows   
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

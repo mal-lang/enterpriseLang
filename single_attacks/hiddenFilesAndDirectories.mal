@@ -1,0 +1,34 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.hiddenFilesAndDirectories
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | hiddenFilesAndDirectories
+            info: "To prevent normal users from accidentally changing special files on a system, most operating systems have the concept of a ‘hidden’ file. Adversaries can use this to their advantage to hide files and folders anywhere on the system for persistence and evading a typical user or system analysis that does not incorporate investigation of hidden files."
+            ->  bypassHostForensicAnalysis,
+                persistence
+
+        | bypassHostForensicAnalysis
+
+        | persistence
+    } 
+}
+
+associations {    
+    User [user] 1 <--Ui--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

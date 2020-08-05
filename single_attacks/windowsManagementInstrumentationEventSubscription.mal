@@ -1,0 +1,47 @@
+category Person {
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.windowsManagementInstrumentationEventSubscription
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+
+        # privilegedAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.windowsManagementInstrumentationEventSubscription
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.windowsManagementInstrumentationEventSubscription
+    }
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.windowsManagementInstrumentationEventSubscription
+    }              
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+
+    asset Windows extends OS{
+        & windowsManagementInstrumentationEventSubscription
+            info: "Adversaries may use the capabilities of WMI to subscribe to an event and execute arbitrary code when that event occurs, providing persistence on a system."
+            ->  persistence
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}

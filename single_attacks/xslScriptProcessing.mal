@@ -1,0 +1,51 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.xslScriptProcessing
+    }               
+}
+
+category Software {
+    abstractAsset OS {
+        | bypassAntivirus
+
+        | bypassApplicationWhitelisting
+
+        | bypassDigitalCertificateValidation
+
+        # executionPrevention
+    } 
+
+    asset Windows extends OS {   
+        & xslScriptProcessing
+            info: "Adversaries may abuse this functionality to execute arbitrary files while potentially bypassing application whitelisting defenses."
+            ->  executeCode,
+                windowsManagementInstrumentation, // leads to Windows Management Instrumentation attack
+                bypassAntivirus,
+                bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation
+
+        | executeCode
+
+        | windowsManagementInstrumentation
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  xslScriptProcessing
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

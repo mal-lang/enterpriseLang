@@ -1,0 +1,28 @@
+category Software {
+    abstractAsset OS { 
+        & redundantAccess
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  internalNetwork.webShell
+
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/"
+            ->  internalNetwork.webShell
+    }   
+}
+
+category Network {
+    asset InternalNetwork {
+        | webShell
+            info: "Web shells may serve as Redundant Access or as a persistence mechanism."
+            ->  os.redundantAccess, // use a Web Shell to maintain access 
+                persistence
+
+        | persistence
+    }
+}
+
+associations {
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+}

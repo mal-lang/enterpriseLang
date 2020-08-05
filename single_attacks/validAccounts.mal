@@ -1,40 +1,65 @@
 category Person {
     asset User{
         | userCredential //it is the end point of a credential access attack
-            -> service.userRemoteServicesLogin,
-               internalNetwork.bypassAccessControl
-        
-        | userRights
+            ->  os._validAccounts       
     }
 
     asset Administrator{
         | adminCredential
-            -> service.adminRemoteServicesLogin,
-               internalNetwork.bypassAccessControl
-
-        | adminRights
+            ->  os._validAccounts
     }
 }
+
 category Software {
     asset Service {
         & userRemoteServicesLogin
 
         & adminRemoteServicesLogin
-
-        # whitelisting
-            -> userRemoteServicesLogin,
-               adminRemoteServicesLogin
     }
+
+    abstractAsset OS{
+        | _validAccounts
+            ->  validAccounts    
+
+        & validAccounts
+            info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
+            ->  service.userRemoteServicesLogin,
+                service.adminRemoteServicesLogin,
+                internalNetwork.bypassFirewall,
+                internalNetwork.bypassNetworkIntrusionDetection,
+                bypassHostIntrusionPrevention,
+                bypassProcessWhitelisting,
+                bypassSystemAccessControls,
+                bypassAntivirus
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            ->  validAccounts
+
+        # privilegedAccountManagement // Limit credential overlap across systems to prevent access if account credentials are obtained.
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  validAccounts  
+
+        | bypassHostIntrusionPrevention
+
+        | bypassProcessWhitelisting
+
+        | bypassSystemAccessControls 
+        
+        | bypassAntivirus            
+    } 
+
 }
 category Network {
     asset InternalNetwork {
-        | bypassAccessControl
+        | bypassFirewall
 
+        | bypassNetworkIntrusionDetection 
     }
 }
 associations {
-    User [user] 1-* <--use--> 1-* [service] Service
-    Administrator [administrator] 1-* <--use--> 1-* [service] Service
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
-    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    OS [os] 1 <--Contain--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
 }

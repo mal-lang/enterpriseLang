@@ -1,0 +1,32 @@
+category Software {
+    abstractAsset OS {   
+        & masquerading
+            info: "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation."
+            ->  bypassFileOrPathWhitelisting
+
+        | bypassFileOrPathWhitelisting
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/" 
+            ->  masquerading
+
+        # executionPrevention // Block execution of code on a system through application whitelisting, blacklisting, and/or script blocking.            
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  masquerading
+
+        # restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  masquerading
+    }
+}
+
+associations {
+
+}
+
+
+
+
+
+
+

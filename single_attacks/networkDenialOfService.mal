@@ -1,0 +1,42 @@
+category Software {
+    asset Service {
+        | serviceExhaustionFlood
+    }   
+
+    abstractAsset OS{
+        & networkDenialOfService
+            info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
+            ->  applicationExhaustionFlood,
+                service.serviceExhaustionFlood
+
+        | applicationExhaustionFlood   
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        # filterNetworkTraffic
+            ->  os.networkDenialOfService
+    } 
+
+    asset ExternalNetwork {
+        # filterNetworkTraffic
+            ->  os.networkDenialOfService
+    }
+}
+
+associations {    
+    OS [os] 1 <--Contain--> 1-* [service] Service
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,100 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows._bITSJobs 
+
+        # userAccountManagement 
+            ->  windows._bITSJobs
+    }
+
+    asset Administrator {
+        | adminRights
+    }
+   
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin._bITSJobs
+    }    
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows._bITSJobs
+    } 
+}
+
+category Software{
+    abstractAsset OS{
+        # operatingSystemConfiguration 
+
+        | bypassHostForensicAnalysis          
+
+    }
+    asset Windows extends OS {   
+        & _bITSJobs  
+            ->  bITSJobs
+
+        & bITSJobs 
+            info: "Adversaries may abuse BITS to download, execute, and even clean up after running malicious code."
+            ->  executeCode,
+                os.bypassHostForensicAnalysis,
+                firewall.bypassFirewall
+
+        | executeCode  
+
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            +>  bITSJobs
+    } 
+}
+
+category Network {
+    asset ExternalNetwork {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  windows.bITSJobs  
+    }
+
+    asset InternalNetwork {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  windows.bITSJobs 
+
+    }
+
+
+    asset Firewall {
+        # filterNetworkTraffic // Modify network and/or host firewall rules, as well as other network controls, to only allow legitimate BITS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  windows.bITSJobs
+
+        | bypassFirewall
+    }   
+}
+
+associations{
+
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    //Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1-* <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+    ExternalNetwork [externalNetwork] 1 <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
+    ExternalNetwork [externalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
+    Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows 
+    InternalNetwork [internalNetwork] 1 <--Protect--> 0-1 [firewall] Firewall
+    ExternalNetwork [externalNetwork] 1 <--Protect--> 0-1 [firewall] Firewall
+}
+
+
+
+
+
+
+
+
+
+
+

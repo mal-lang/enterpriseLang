@@ -1,0 +1,85 @@
+category Person {
+    asset Administrator {
+        | adminRights 
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.serverSoftwareComponent,
+                linux.serverSoftwareComponent
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.serverSoftwareComponent
+    } 
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  linux.serverSoftwareComponent
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.serverSoftwareComponent
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | persistence
+
+        # audit 
+
+        # codeSigning
+    } 
+
+    asset Windows extends OS {   
+        & serverSoftwareComponent
+            info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
+            ->  persistence
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  serverSoftwareComponent
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  serverSoftwareComponent
+    } 
+
+    asset Linux extends OS {   
+        & serverSoftwareComponent
+            info: "Adversaries may abuse legitimate extensible development features of server applications to establish persistent access to systems."
+            ->  persistence
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  serverSoftwareComponent
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  serverSoftwareComponent
+    } 
+}
+
+associations{
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    Root [rootLinux] 1 <--Ui--> 1-* [linux] Linux
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

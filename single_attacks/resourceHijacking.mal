@@ -1,0 +1,42 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.resourceHijacking
+    } 
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+            ->  os.resourceHijacking
+    }       
+}
+
+category Software {
+    abstractAsset OS {
+        | resourceHijacking
+            info: "Adversaries may consume enough system resources to negatively impact and/or cause affected machines to become unresponsive."
+            ->  computer.unresponsive       
+    } 
+}
+
+category Hardware {
+    asset Computer {
+        | unresponsive
+    } 
+}     
+associations {    
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    OS [os] 1 <--System--> 1-* [computer] Computer
+}
+
+
+
+
+
+
+
+
+
+
+

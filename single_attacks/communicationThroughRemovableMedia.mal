@@ -1,0 +1,33 @@
+category Hardware {
+    asset RemovableMedia{
+        | infectedMedia
+            -> os.replicationThroughRemovableMedia
+    }
+}
+
+category Software {
+    abstractAsset OS{
+        | compromisedSystems //with probability
+            ->  removableMedia.infectedMedia
+
+        | replicationThroughRemovableMedia
+            -> communicationThroughRemovableMedia
+
+        & communicationThroughRemovableMedia
+
+        # operatingSystemConfiguration 
+            -> communicationThroughRemovableMedia
+
+        # disableOrRemoveFeatureOrProgram 
+            -> communicationThroughRemovableMedia
+    }
+}   
+
+associations{
+    RemovableMedia [removableMedia] 1-* <-- Use --> 1 [os] OS
+
+}
+
+
+
+

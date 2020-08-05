@@ -1,0 +1,72 @@
+category Person{
+    asset User {
+        | userRights
+            ->  windows._componentObjectModelAndDistributedCOM
+    }
+
+    asset Administrator {
+        | adminRights
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.componentObjectModelAndDistributedCOM
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows._componentObjectModelAndDistributedCOM
+    }
+}
+
+category Software {
+    asset OS {
+        # applicationIsolationAndSandboxing 
+
+        # disableOrRemoveFeatureOrProgram
+        
+        # privilegedAccountManagement
+    }
+
+    asset Windows extends OS{
+        & _componentObjectModelAndDistributedCOM
+            info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
+            ->  componentObjectModelAndDistributedCOM
+
+        & componentObjectModelAndDistributedCOM
+            info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
+            ->  internalNetwork.remoteCOMExecution
+
+        # applicationIsolationAndSandboxing // Restrict execution of code to a virtual environment on or in transit to an endpoint system.
+            info: "https://attack.mitre.org/mitigations/M1048/"
+            +>  _componentObjectModelAndDistributedCOM
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  _componentObjectModelAndDistributedCOM
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            +>  componentObjectModelAndDistributedCOM
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        | remoteCOMExecution
+            info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) to execute on remote systems as part of lateral movement."
+
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  windows.componentObjectModelAndDistributedCOM
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
+}

@@ -1,50 +1,47 @@
 category Person {
     asset User {
         | userRights
-            -> computer.automatedCollection
+            ->  os._automatedCollection
                 
     }
     asset Administrator {
         | adminRights
-            -> computer.automatedCollection,
-               computer.sensitiveDataCollected 
+            ->  os._automatedCollection
     }
 }
 
-category Hardware {
-    asset Computer {
+category Software {
+    asset OS {
         & scripting // from scripting attack
-            -> automatedCollection
+            ->  _automatedCollection
             
-        & fileDiscovery
-            -> automatedCollection
+        | fileAndDirectoryDiscovery
+            ->  _automatedCollection
 
-        & directoryDiscovery
-            -> automatedCollection
-
-        & uploadRemoteFile
-            -> automatedCollection
-
+        & uploadRemoteFile // combined with Remote File Copy attack
+            ->  _automatedCollection
         
-        | automatedCollection
-            -> _automatedCollection
-
-
         | _automatedCollection
-            -> dataCollected, 
-               sensitiveDataCollected
+            ->  automatedCollection
+
+        & automatedCollection
+            info: "Once established within a system or network, an adversary may use automated techniques for collecting internal data."
+            ->  dataCollected, 
+                sensitiveDataCollected
 
         | dataCollected
 
         & sensitiveDataCollected
         
-        # whitelisting
-            -> _automatedCollection
-         
+        # encryptSensitiveInformation
+            ->  sensitiveDataCollected
+
+        # remoteDataStorage
+            ->  automatedCollection
     }
 }
 
 associations {
-    User [user] 1-* <--use--> 1 [computer] Computer
-    Administrator [administrator] 1-* <--use--> 1 [computer] Computer
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
 }

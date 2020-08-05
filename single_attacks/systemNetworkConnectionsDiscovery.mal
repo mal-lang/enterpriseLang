@@ -1,0 +1,30 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.systemNetworkConnectionsDiscovery
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+            ->  os.systemNetworkConnectionsDiscovery
+    }          
+}
+
+category Software {
+    asset OS {
+        | compromisedSystems //with probability
+            ->  systemNetworkConnectionsDiscovery
+
+        | systemNetworkConnectionsDiscovery
+            info: "Adversaries may attempt to get a listing of network connections to or from the compromised system they are currently accessing or from remote systems by querying for information over the network."
+
+        & systemInformationDiscovery
+            ->  systemNetworkConnectionsDiscovery
+    }
+}
+
+associations {
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+}

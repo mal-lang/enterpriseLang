@@ -1,0 +1,46 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.installRootCertificate
+    } 
+
+    asset Administrator {
+        | adminRights
+            ->  os.installRootCertificate
+
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        & installRootCertificate
+            info: "Installation of a root certificate on a compromised system would give an adversary a way to degrade the security of that system."
+            ->  bypassDigitalCertificateValidation
+
+        | bypassDigitalCertificateValidation 
+
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            ->  installRootCertificate
+
+        # softwareConfiguration
+            info: "https://attack.mitre.org/mitigations/M1054/" 
+            ->  installRootCertificate
+    } 
+}
+
+associations{
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

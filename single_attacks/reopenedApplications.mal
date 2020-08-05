@@ -1,0 +1,45 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.reopenedApplications
+    }
+
+    asset Employee {
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  macOS.reopenedApplications
+    }            
+}
+
+category Software {
+    abstractAsset OS{
+        | persistence
+    } 
+
+    asset MacOS extends OS {
+        & reopenedApplications
+            info: "An adversary can modify one of these files directly to include a link to their malicious executable to provide a persistence mechanism each time the user reboots their machine."
+            ->  persistence 
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  reopenedApplications
+    } 
+}
+
+associations {    
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+    Employee [employee] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

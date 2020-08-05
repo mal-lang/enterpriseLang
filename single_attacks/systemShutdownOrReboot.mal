@@ -1,0 +1,38 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.systemShutdownOrReboot
+    }
+
+    asset Administrator {
+        | adminRights
+            ->  os.systemShutdownOrReboot
+    }
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  os.systemShutdownOrReboot
+    }
+}
+
+category Software {
+    asset OS {
+        | systemShutdownOrReboot
+            info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."
+
+        & diskStructureWipe
+            info: "Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources."
+            ->  systemShutdownOrReboot // adversaries may attempt to shutdown/reboot a system after impacting it in Disk Structure Wipe or Inhibit System Recovery, to hasten the intended effects on system availability
+
+        & inhibitSystemRecovery
+            info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."    
+            ->  systemShutdownOrReboot // adversaries may attempt to shutdown/reboot a system after impacting it in Disk Structure Wipe or Inhibit System Recovery, to hasten the intended effects on system availability
+    }
+}
+
+associations {
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS 
+}

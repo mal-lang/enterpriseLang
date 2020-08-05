@@ -1,0 +1,32 @@
+category Person {
+    asset Administrator {
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | bypassWindowsUserAccountControl
+    }
+}
+
+
+category Software{
+    abstractAsset OS{                
+    }
+
+    asset Windows extends OS {   
+        | codeSigning
+            info: " Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+            ->  windowsAdmin.bypassWindowsUserAccountControl
+    }
+    
+    asset MacOS extends OS {
+        | codeSigning
+            info: " Adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries. Code signing certificates may be used to bypass security policies that require signed code to execute on a system."
+   }
+}
+
+
+
+associations{
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows  
+    
+}

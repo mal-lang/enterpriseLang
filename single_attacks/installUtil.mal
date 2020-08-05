@@ -1,0 +1,53 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.installUtil
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassDigitalCertificateValidation
+
+        | bypassProcessWhitelisting
+
+        # disableOrRemoveFeatureOrProgram
+
+        # executionPrevention
+    } 
+    
+    asset Windows extends OS {   
+        & installUtil
+            info: "Adversaries may use InstallUtil to proxy execution of code through a trusted Windows utility."
+            ->  bypassDigitalCertificateValidation,
+                bypassProcessWhitelisting,
+                signedBinaryProxyExecution,
+                signedScriptProxyExecution
+
+        & signedBinaryProxyExecution
+
+        & signedScriptProxyExecution
+
+        # disableOrRemoveFeatureOrProgram 
+            info: "https://attack.mitre.org/techniques/T1064/"
+            +>  installUtil
+
+        # executionPrevention
+            +>  installUtil
+    } 
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

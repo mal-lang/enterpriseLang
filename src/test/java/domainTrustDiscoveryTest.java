@@ -9,7 +9,11 @@ public class domainTrustDiscoveryTest{
     public void test1(){
         // Section 1: Asset instantiation
         User user = new User("user");
-        Windows windows = new Windows("windows",false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false);
+        Windows windows = new Windows("windows" ,false,false,false,false,false
+                                                ,false,true,false,false,false
+                                                ,false,false,false,false,false
+                                                ,false,false,false,false,false
+                                                ,false,false,false);
 
         // Section 2: Asset connections and attacker creation
         user.addWindows(windows);

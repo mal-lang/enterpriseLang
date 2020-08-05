@@ -1,0 +1,57 @@
+category Person {
+    asset Administrator {
+        | adminRights
+            -> os.rootkit          
+    }
+
+    asset SYSTEM {
+        | systemRights
+            -> os.rootkit
+    }
+}
+
+category Software {
+    abstractAsset OS{
+        | rootkit
+            info: "Adversaries may use rootkits to hide the presence of programs, files, network connections, services, drivers, and other system components."
+            ->  modifyAPICalls, 
+                bypassAntivirus,
+                bypassFileMonitoring,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection, 
+                bypassHostIntrusionPrevention,
+                bypassSystemAccessControls,
+                bypassFileOrPathWhitelisting,
+                windows.hooking, // leads to hooking attack
+                windows.hypervisor, // leads to hypervisor attack
+                windows.systemFirmware // leads to system firmware attack
+
+        | modifyAPICalls  
+        | bypassAntivirus
+        | bypassFileMonitoring
+        | bypassHostIntrusionPrevention
+        | bypassProcessWhitelisting 
+        | bypassSignatureBasedDetection  
+        | bypassSystemAccessControls  
+        | bypassFileOrPathWhitelisting
+
+    }
+
+    asset Windows extends OS{
+
+        | hypervisor
+        | hooking
+        & systemFirmware    
+    }
+
+
+}
+
+
+associations{
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS 
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+

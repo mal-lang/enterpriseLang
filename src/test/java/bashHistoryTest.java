@@ -45,7 +45,11 @@ public class bashHistoryTest {
   @Test
   public void linuxTestWithDefense() {
     User user = new User("user");
-    Linux linux= new Linux("linux",false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false);//turnOfBashHistory in win is the defens
+    Linux linux= new Linux("linux"  ,false,false,true,false,false 
+                                    ,false,false,false,false,false
+                                    ,false,false,false,false,false
+                                    ,false,false,false,false,false
+                                    ,false);//turnOfBashHistory in win is the defens
     Administrator admin = new Administrator("admin");
 
     user.addLinux(linux);
@@ -64,7 +68,11 @@ public class bashHistoryTest {
   @Test
   public void macOSTestwithDefense() {
     User user = new User("user");
-    MacOS macOS= new MacOS("macOS",false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false);
+    MacOS macOS= new MacOS("macOS"  ,false,false,false,false,true
+                                    ,false,false,false,false,false
+                                    ,false,false,false,false,false
+                                    ,false,false,false,false,false
+                                    ,false);
     Administrator admin = new Administrator("admin");
 
     user.addMacOS(macOS);

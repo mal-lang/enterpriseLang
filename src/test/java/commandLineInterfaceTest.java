@@ -10,7 +10,10 @@ public class commandLineInterfaceTest{
     public void test1(){
         User user = new User("user");
         Administrator administrator = new Administrator("administrator");
-        OS os = new OS("os",false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
+        OS os = new OS("os" ,false,true,false,false,false
+                            ,false,false,false,false,false
+                            ,false,false,false,false,false
+                            ,false,false,false,false,false);
 
 
         user.addOs(os);

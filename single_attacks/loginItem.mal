@@ -1,0 +1,44 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.loginItem
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  macOS.loginItem // Restrict users from being able to create their own login items.
+    } 
+
+    asset Employee {
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  macOS.loginItem // Holding the shift key during login prevents apps from opening automatically.
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | persistence
+    } 
+
+    asset MacOS extends OS {
+        & loginItem
+            info: "If an adversary can register their own login item or modified an existing one, then they can use it to execute their code for a persistence mechanism each time the user logs in."
+            ->  persistence
+    } 
+}
+
+associations{
+    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
+    Employee [employee] 1 <--Use--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

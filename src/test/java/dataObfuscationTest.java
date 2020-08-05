@@ -8,7 +8,7 @@ public class dataObfuscationTest{
     @Test
     public void test1(){
         ExternalNetwork externalNetwork = new ExternalNetwork("externalNetwork",true);
-        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,false,true,false,false);
+        InternalNetwork internalNetwork = new InternalNetwork("internalNetwork",false,false,false,true,false,false);
         C2Server c2Server = new C2Server("c2Server");
 
         externalNetwork.addC2Server(c2Server);

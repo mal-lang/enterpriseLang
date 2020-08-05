@@ -1,0 +1,62 @@
+category Person {
+    asset User {
+        | userRights
+            ->  linux.localJobScheduling,
+                macOS.localJobScheduling
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  linux.localJobScheduling,
+                macOS.localJobScheduling
+    } 
+
+    asset Administrator {
+        | adminRights
+    } 
+ 
+    asset Root extends Administrator {
+        | rootRights
+            ->  linux.localJobScheduling,
+                macOS.localJobScheduling
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | persistence
+    } 
+
+    asset Linux extends OS { 
+        & localJobScheduling
+            info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence, to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
+            ->  persistence,
+                root.rootRights
+    } 
+
+    asset MacOS extends OS {
+        & localJobScheduling
+            info: "An adversary may use job scheduling to execute programs at system startup or on a scheduled basis for Persistence,  to conduct Execution as part of Lateral Movement, to gain root privileges, or to run a process under the context of a specific account."
+            ->  persistence,
+                root.rootRights
+    } 
+}
+
+associations{
+    User [linuxUser] 1 <--Use--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
+    Root [root] 1 <--Use--> 1-* [os] OS
+    Root [rootLinux] 1 <--Use--> 1-* [linux] Linux
+    Root [rootMac] 1 <--Use--> 1-* [macOS] MacOS
+
+}
+
+
+
+
+
+
+
+
+
+
+

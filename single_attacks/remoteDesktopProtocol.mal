@@ -1,0 +1,104 @@
+category Person {
+    asset User {
+        | userRights
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.remoteDesktopProtocol
+    } 
+
+    asset RemoteDesktopUser extends User {
+        | userRights
+            +>  windows.remoteDesktopProtocol   
+
+        # multiFactorAuthentication
+            +>  windows.remoteDesktopProtocol
+    }   
+
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.remoteDesktopProtocol
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+    }
+}
+
+category Software {
+    abstractAsset OS {
+        | persistence
+        
+        # restrictFileAndDirectoryPermissions
+
+        & remoteSystemDiscovery
+    } 
+
+    asset Windows extends OS {   
+        & remoteDesktopProtocol
+            info: "Adversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session. It can also lead to Remote System Discovery and Privilege Escalation by stealing a Domain Admin or higher privileged account session."
+            ->  _remoteDesktopProtocol,
+                remoteSystemDiscovery,
+                rDPSessionHijacking
+
+        & _remoteDesktopProtocol
+            rationale: "This is a helper attack step. It requires all its parent attack steps to compromise - Accessibility Features when connected over Remote Desktop Protocol will cause the replaced file to be executed with SYSTEM privileges."
+            ->  persistence,
+                system.systemRights
+
+        | rDPSessionHijacking
+            info: "Adversaries may also perform RDP session hijacking which involves stealing a legitimate user's remote session."
+
+        & accessibilityFeatures
+            ->  _remoteDesktopProtocol
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  remoteDesktopProtocol
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  remoteDesktopProtocol
+
+        # operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            +>  remoteDesktopProtocol
+
+    } 
+}
+
+category Network {
+    asset InternalNetwork {
+        # limitAccessToResourceOverNetwork
+            info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  windows.remoteDesktopProtocol    
+    } 
+
+    asset Firewall {
+        # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  windows.remoteDesktopProtocol 
+    } 
+}
+
+associations {  
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows  
+    RemoteDesktopUser [windowsRemoteDestopUser] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS 
+    InternalNetwork [internalNetworkWindows] 1 <--Connect--> 1 [windows] Windows
+    Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows 
+}
+
+
+
+
+
+
+
+
+
+
+

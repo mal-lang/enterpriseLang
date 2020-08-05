@@ -1,0 +1,23 @@
+category Person {
+    asset Adversary {
+        | internalSpearphishingAttack
+            info: "Adversaries may use internal spearphishing to gain access to additional information or exploit other users within the same organization after they already have access to accounts or systems within the environment." 
+            ->  spearphishingLinkAttack,
+                spearphishingAttachmentAttack,
+                os.inputCapture // capture credentials through Input Capture on sites that mimic email login interfaces
+
+        | spearphishingAttachmentAttack
+
+        | spearphishingLinkAttack
+    }
+}
+                
+category Software {      
+    abstractAsset OS {  
+        | inputCapture
+    }
+}
+
+associations {
+    Adversary [adversary] 1 <--Attack--> 1-* [os] OS 
+}

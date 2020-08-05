@@ -1,0 +1,53 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.registryRunKeysOrStartupFolder
+    } 
+
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.registryRunKeysOrStartupFolder
+    }              
+}
+
+category Software {
+    asset Service {
+        | remoteAccessTools
+    }  
+
+    abstractAsset OS {
+        & masquerading
+
+        | persistence
+    } 
+
+    asset Windows extends OS {   
+        & registryRunKeysOrStartupFolder
+            info: "Adversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs."
+            ->  masquerading, // leads to Masquerading attack
+                service.remoteAccessTools,
+                persistence
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+

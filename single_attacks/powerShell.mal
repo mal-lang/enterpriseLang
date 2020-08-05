@@ -1,0 +1,83 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows._powerShell
+    } 
+
+    asset Administrator {
+        # privilegedAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.powerShell        
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin._powerShell
+    } 
+}   
+
+category Software {
+    abstractAsset OS{
+        # codeSigning
+        
+        # disableOrRemoveFeatureOrProgram
+    } 
+
+    asset Windows extends OS {  
+        & _powerShell
+            info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
+            ->  powerShell,
+                executeCode
+
+        & powerShell
+            info: "Administrator permissions are required to use PowerShell to connect to remote systems."      
+            ->  internalNetwork.remoteSystemsConnection
+
+        | executeCode 
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  powerShell
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  _powerShell
+
+    }    
+}
+
+category Network {
+    asset InternalNetwork {
+        | remoteSystemsConnection
+    }    
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetworkWindows] 1 <--Connect--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

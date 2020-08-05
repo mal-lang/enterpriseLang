@@ -1,0 +1,59 @@
+category Person {
+    asset User {
+        | userRights
+            ->  thirdpartySoftware.stealApplicationAccessToken
+
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  thirdpartySoftware.stealApplicationAccessToken
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  thirdpartySoftware.stealApplicationAccessToken
+    }
+}
+
+category Software {
+    asset Service {
+
+    }
+
+    asset ThirdpartySoftware extends Service {      
+        & stealApplicationAccessToken
+            info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
+            ->  browser.spearphishingLink, //  send a link through Spearphishing Link to the target user to entice them to grant access to the application
+                applicationAccessToken
+
+        & applicationAccessToken
+            info: "Adversaries may use application access tokens to bypass the typical authentication process and access restricted accounts, information, or services on remote systems. These tokens are typically stolen from users and used in lieu of login credentials."
+            ->  bypassLogonCredentials,
+                bypassMultiFactorAuthentication
+
+        | bypassLogonCredentials
+
+        | bypassMultiFactorAuthentication  
+    }
+
+    abstractAsset OS {   
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            ->  thirdpartySoftware.stealApplicationAccessToken
+    }
+}      
+
+category Network {
+    asset Browser {
+        & spearphishingLink
+            ->  thirdpartySoftware.applicationAccessToken  
+
+        # restrictWebBasedContent // Block unknown or unused attachments by default that should not be transmitted over email.
+          info: "https://attack.mitre.org/mitigations/M1021/"
+            ->  spearphishingLink
+    }
+}  
+
+associations {
+    User [user] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
+    OS [os] 1 <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware  
+    Browser [browser] 1-* <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware 
+}

@@ -1,0 +1,58 @@
+category Person {
+    asset User {
+        | userRights
+            ->  linux._clearCommandHistory,
+                macOS._clearCommandHistory
+    }
+}
+
+
+category Software{
+    abstractAsset OS{
+        # restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  linux._clearCommandHistory,
+                macOS._clearCommandHistory
+
+        | bypassLogAnalysis
+          
+        | bypassHostForensicAnalysis      
+    }
+
+    asset Linux extends OS {
+        & _clearCommandHistory
+            ->  clearCommandHistory       
+
+        & clearCommandHistory
+            info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
+            ->  bypassLogAnalysis, 
+                bypassHostForensicAnalysis
+
+        # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
+            info: "https://attack.mitre.org/mitigations/M1039/"
+            ->  clearCommandHistory
+    }
+
+    asset MacOS extends OS {
+        & _clearCommandHistory
+            ->  clearCommandHistory       
+
+        & clearCommandHistory
+            info: "Adversaries can abuse this by searching these files for cleartext passwords. Additionally, adversaries can use a variety of methods to prevent their own commands from appear in these logs." 
+            ->  bypassLogAnalysis, 
+                bypassHostForensicAnalysis
+
+        # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
+            info: "https://attack.mitre.org/mitigations/M1039/"
+            ->  clearCommandHistory
+    }
+}
+
+
+associations{
+    User [linuxUser] 1-* <--Use--> 1 [linux] Linux   
+    User [macOSUser] 1-* <--Use--> 1 [macOS] MacOS
+    OS [os] 1 <--Contain--> 1 [linux] Linux 
+    OS [os] 1 <--Contain--> 1 [macOS] MacOS
+    
+}

@@ -1,0 +1,47 @@
+category Person {
+    asset Administrator {
+        | adminRights
+            ->  os.firmwareCorruption
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  os.firmwareCorruption
+
+    }            
+
+    asset SYSTEM {
+        | systemRights
+            ->  os.firmwareCorruption
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        & firmwareCorruption
+            info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot."
+
+        # bootIntegrity 
+            info: "https://attack.mitre.org/mitigations/M1046/"
+            ->  firmwareCorruption            
+
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/"
+            ->  firmwareCorruption
+    } 
+}
+
+associations{
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS 
+}
+
+
+
+
+
+
+
+
+
+
+

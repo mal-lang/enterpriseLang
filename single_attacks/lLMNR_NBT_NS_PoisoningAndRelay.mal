@@ -1,0 +1,51 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.lLMNR_NBT_NS_PoisoningAndRelay
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        & networkSniffing
+
+        & bruteForce
+
+        # disableOrRemoveFeatureOrProgram
+    } 
+
+    
+    asset Windows extends OS {   
+        & lLMNR_NBT_NS_PoisoningAndRelay
+            info: "AAdversaries can spoof an authoritative source for name resolution on a victim network by responding to LLMNR (UDP 5355)/NBT-NS (UDP 137) traffic. The adversary can then collect the hash information sent over the wire through tools that monitor the ports for traffic or through Network Sniffing and crack the hashes offline through Brute Force to obtain the plaintext passwords."
+            ->  collectHashInformation
+
+        | collectHashInformation    
+            ->  networkSniffing, // leads to Network Sniffing attack
+                bruteForce // leads to Brute Force attack
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  lLMNR_NBT_NS_PoisoningAndRelay
+
+        # filterNetworkTraffic // Use host-based security software to block LLMNR/NetBIOS traffic.
+            info: "https://attack.mitre.org/mitigations/M1037/"   
+            ->  lLMNR_NBT_NS_PoisoningAndRelay
+    }          
+}
+
+associations{
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

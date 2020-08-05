@@ -1,0 +1,33 @@
+category Software {
+    abstractAsset OS {   
+        # limitHardwareInstallation
+            info: "https://attack.mitre.org/mitigations/M1034/"   
+            ->  hardwareAddition.hardwareAdditions
+
+        | executeCode  
+    }
+}        
+
+category Network {
+    asset InternalNetwork {
+        # limitAccessToResourceOverNetwork
+            info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  hardwareAddition.hardwareAdditions
+    }
+}
+
+category Hardware {
+    asset Computer {
+    }
+
+    asset HardwareAddition extends Computer {
+        & hardwareAdditions
+            info: "Computer accessories, computers, or networking hardware may be introduced into a system as a vector to gain execution." 
+            ->  os.executeCode  
+    }
+}
+
+associations {
+    HardwareAddition [hardwareAddition] 1-* <--Ui--> 1 [os] OS
+    InternalNetwork [internalNetwork] 1 <--Connect--> 1-* [hardwareAddition] HardwareAddition
+}

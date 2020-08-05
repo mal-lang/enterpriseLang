@@ -1,0 +1,44 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.signedScriptProxyExecution
+    } 
+}
+
+
+category Software {
+    abstractAsset OS{
+        | bypassApplicationWhitelisting
+
+        | bypassDigitalCertificateValidation  
+
+        # executionPrevention 
+    } 
+
+    asset Windows extends OS {   
+        & signedScriptProxyExecution
+            info: "Scripts signed with trusted certificates can be used to proxy execution of malicious files."
+            ->  bypassApplicationWhitelisting,
+                bypassDigitalCertificateValidation  
+
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  signedScriptProxyExecution
+    } 
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
+}
+
+
+
+
+
+
+
+
+
+
+
