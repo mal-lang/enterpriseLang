@@ -762,6 +762,8 @@ category Software {
 
         | persistence
 
+        | sensitiveDataCollected
+
         | cloudServiceInformationCollected
 
         | cloudAccount
@@ -785,7 +787,7 @@ category Software {
 
         & cloudInstanceMetadataAPI
             user info: "Adversaries may attempt to access the Cloud Instance Metadata API to collect credentials and other sensitive data."
-            ->  os.sensitiveDataCollected
+            ->  sensitiveDataCollected
 
         | cloudServiceDiscovery
             developer info: "Binary probability distribution, TTC assumed instant (few seconds) : https://www.etasr.com/index.php/ETASR/article/view/1577"
@@ -806,8 +808,6 @@ category Software {
             ->  emailAddressCollected
 
         | emailAddressCollected
-
-        | sensitiveDataCollected
 
         & additionalAzureServicePrincipalCredentials
             user info: "Adversaries may add adversary-controlled credentials for Azure Service Principals in addition to existing legitimate credentials to maintain persistent access to victim Azure accounts."         
@@ -1214,9 +1214,9 @@ category Software {
                 windows.lSASecrets,
                 windows.cachedDomainCredentials,
                 windows.dCSync,
+                windows.stealOrForgeKerberosTickets,
                 linux.procFilesystem,
-                linux._etc_passwdAND_etc_shadow,
-                stealOrForgeKerberosTickets
+                linux._etc_passwdAND_etc_shadow
 
         | attemptEncryptedChannel @hidden
             ->  encryptedChannel
@@ -2011,7 +2011,7 @@ category Software {
                 computer.user.attemptUserExecution, // leads to file execution attacks
                 attemptAutomatedCollection // combined with Remote File Copy attack
         
-        & sensitiveDataCollected
+        | sensitiveDataCollected
             ->  dataCompressed,
                 computer.attemptExfiltrationOverPhysicalMedium,
                 dataSizedTransfer,
@@ -2022,7 +2022,7 @@ category Software {
                 dataEncrypted, 
                 dataStaged    
 
-        & dataCollected
+        | dataCollected
             ->  dataCompressed,
                 computer.attemptExfiltrationOverPhysicalMedium,
                 attemptExfiltrationOverAternativeProtocol,
@@ -2375,8 +2375,7 @@ category Software {
 
         # encryptSensitiveInformation 
             user info: "https://attack.mitre.org/mitigations/M1041/"
-            ->  sensitiveDataCollected,
-                indicatorRemovalOnHost,
+            ->  indicatorRemovalOnHost,
                 networkSniffing,
                 privateKeys,
                 storedDataManipulation,
@@ -2851,7 +2850,7 @@ category Software {
             developer info: "Binary probability dsitribution. carried by oSCredentialDumping"
             user info: "Adversaries who have the KRBTGT account password hash may forge Kerberos ticket-granting tickets (TGT), also known as a golden ticket."
             ->  attemptPassTheTicket,
-                DCShadow
+                dCShadow
 
         | attemptSilverTicket @hidden
             ->  silverTicket
