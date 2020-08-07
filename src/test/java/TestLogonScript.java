@@ -3,14 +3,14 @@ package org.mal_lang.enterpriselang.test;
 import core.Attacker;
 import org.junit.jupiter.api.Test;
 
-public class  TestLogonScript extends EnterpriseLangTest{ /*
-                              OS -----   UserAccount
+public class  TestLogonScript extends EnterpriseLangTest{ 
+    /*
+                             Windows  -----   AdminAccount
       
-        Attacker's entry point: userAccount.userRights 
+        Attacker's entry point: os.attemptLogonScripts
     */
     
     
-    //  rootkit no defens aktiv.
     private static class logonScriptWin{
         public final Windows win = new Windows("win");
         public final WindowsAdmin admin = new WindowsAdmin("admin");
@@ -37,7 +37,6 @@ public class  TestLogonScript extends EnterpriseLangTest{ /*
 
     
 
-    //  rootkit no defens aktiv.
     private static class logonScriptWin2{
         public final Windows win = new Windows("win",true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true);
         public final WindowsAdmin admin = new WindowsAdmin("admin");
@@ -63,8 +62,12 @@ public class  TestLogonScript extends EnterpriseLangTest{ /*
     }
 
     //----------------------------------------------------------------------------------------------
+    /*
+                             MacOS  -----   AdminAccount
+      
+        Attacker's entry point: userAccount.userRights 
+    */
     
-    //  rootkit no defens aktiv.
     private static class logonScriptMac{
         public final MacOS mac = new MacOS("mac");
         public final Root root = new Root("root");
@@ -90,7 +93,6 @@ public class  TestLogonScript extends EnterpriseLangTest{ /*
 
     
 
-    //  rootkit no defens aktiv.
     private static class logonScriptMac2{
         public final MacOS mac = new MacOS("mac",true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true);
         public final Root root = new Root("root");
