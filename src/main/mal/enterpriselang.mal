@@ -2021,7 +2021,7 @@ category Software {
                 dataEncrypted, 
                 dataStaged    
 
-        & dataCollected
+        | dataCollected
             ->  dataCompressed,
                 computer.attemptExfiltrationOverPhysicalMedium,
                 attemptExfiltrationOverAternativeProtocol,
