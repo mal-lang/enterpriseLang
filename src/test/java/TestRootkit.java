@@ -54,16 +54,6 @@ public class  TestRootkit extends EnterpriseLangTest{
 	model.win.bypassSystemAccessControls.assertCompromisedInstantaneously();
 	model.win.credentialAPIHooking.assertCompromisedInstantaneously();
 	model.win.attemptSystemFirmware.assertCompromisedInstantaneously();
-            //->  modifyAPICalls, 
-                //bypassAntivirus,
-                //bypassFileMonitoring,
-                //bypassProcessWhitelisting,
-                //bypassSignatureBasedDetection, 
-                //bypassHostIntrusionPrevention,
-                //bypassSystemAccessControls,
-                //bypassFileOrPathWhitelisting,
-                //windows.credentialAPIHooking, // leads to hooking attack
-                //windows.attemptSystemFirmware // leads to system firmware attack
     }
 
 
