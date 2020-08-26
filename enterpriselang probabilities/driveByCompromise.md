@@ -1,4 +1,4 @@
-# Summary of findings on speaphishing via service
+# Summary of findings on drive-by compromise
 
 I worked on Drive-By Compromise attackStep.
 
