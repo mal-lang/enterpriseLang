@@ -1734,7 +1734,8 @@ category Software {
 
         | fileTransferProtocols
             user info: "Adversaries may communicate using application layer protocols associated with transferring files to avoid detection/network filtering by blending in with existing traffic."
-            ->  computer.router.internalNetwork.c2Connexion
+            ->  computer.router.internalNetwork.c2Connexion,
+                computer.router.internalNetwork.attemptExfiltrationOverC2Channel
 
         | mailProtocols
             user info: "Adversaries may communicate using application layer protocols associated with electronic map delivery to avoid detection/network filtering by blending in with existing traffic."
@@ -3119,7 +3120,7 @@ category Software {
             ->  attemptAccessibilityFeatures,
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel
+                os.fileTransferProtocols
 
         & replicationThroughRemovableMedia //(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
