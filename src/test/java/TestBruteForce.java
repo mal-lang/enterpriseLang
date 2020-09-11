@@ -51,6 +51,7 @@ public class TestBruteForce extends EnterpriseLangTest {
             model.userAccount.userCredentials.assertCompromisedInstantaneously();
             model.windows.emailCollection.assertCompromisedInstantaneously();
             model.windows.remoteDesktopProtocol.assertCompromisedInstantaneously();
+            model.os.fileTransferProtocols.assertCompromisedInstantaneously();
             model.victimNetwork.exfiltrationOverC2Channel.assertCompromisedInstantaneously();
     }  
 }
