@@ -50,7 +50,6 @@ category Software {
                 os.applicationWindowDiscovery,
                 os.attemptAutomatedCollection,
                 os.abuseElevationControlMechanism,
-                os.bruteForce,
                 os.commandAndScriptingInterpreter,
                 os.compileAfterDelivery,
                 os.credentialsInFiles,
@@ -80,10 +79,10 @@ category Software {
                 os.localAccounts,
                 os.localGroups,
                 os.manInTheMiddle,
-                os.passwordGuessing,
-                os.passwordCracking,
-                os.passwordSpraying,
-                os.credentialStuffing,
+                os.attemptPasswordGuessing,
+                os.attemptPasswordCracking,
+                os.attemptPasswordSpraying,
+                os.attemptCredentialStuffing,
                 os.passwordPolicyDiscovery,
                 os.privateKeys,
                 os.processDiscovery,
@@ -115,7 +114,7 @@ category Software {
                 os.windows.dynamicDataExchange,
                 os.windows.mshta,
                 os.windows.attemptExecutionThroughAPI,
-                os.windows.remoteDesktopProtocol,
+                os.windows.attemptRemoteDesktopProtocol,
                 os.windows.emailCollection,
                 os.windows.executableInstallerFilePermissionsWeakness,
                 os.windows.executionThroughModuleLoad,
@@ -238,7 +237,8 @@ category Software {
         | userCredentials
             ->  userRights,
                 os.validAccounts,
-                os.computer.router.internalNetwork.exchangeServerCollection,
+                os.windows.emailCollection,
+                //os.computer.router.internalNetwork.exchangeServerCollection,
                 os.service.remoteServices
 
         & userExecution
@@ -557,7 +557,7 @@ category Software {
                 os.macOS.sSHHijacking,
                 os.windows.rDPHijacking
 
-        & transmittedDataManipulation {I} //(24)]
+        & transmittedDataManipulation // //(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
         | informationRepositories
@@ -762,6 +762,8 @@ category Software {
 
         | persistence
 
+        | sensitiveDataCollected
+
         | cloudServiceInformationCollected
 
         | cloudAccount
@@ -785,7 +787,7 @@ category Software {
 
         & cloudInstanceMetadataAPI
             user info: "Adversaries may attempt to access the Cloud Instance Metadata API to collect credentials and other sensitive data."
-            ->  os.sensitiveDataCollected
+            ->  sensitiveDataCollected
 
         | cloudServiceDiscovery
             developer info: "Binary probability distribution, TTC assumed instant (few seconds) : https://www.etasr.com/index.php/ETASR/article/view/1577"
@@ -806,8 +808,6 @@ category Software {
             ->  emailAddressCollected
 
         | emailAddressCollected
-
-        | sensitiveDataCollected
 
         & additionalAzureServicePrincipalCredentials
             user info: "Adversaries may add adversary-controlled credentials for Azure Service Principals in addition to existing legitimate credentials to maintain persistent access to victim Azure accounts."         
@@ -861,15 +861,15 @@ category Software {
             user info: "Adversaries may setup email forwarding rules to collect sensitive information."
             ->  sensitiveDataCollected
 
-        | applicationExhaustionFlood {A}
+        | applicationExhaustionFlood //
             user info: "Adversaries may target resource intensive features of web applications to cause a denial of service (DoS)." 
             ->  blockUserAccess
 
-        | serviceExhaustionFlood {A}
+        | serviceExhaustionFlood //
             user info: "Adversaries may target the different network services provided by systems to conduct a DoS."
             ->  os.windows.attemptServiceStop
 
-        | applicationOrSystemExploitation {A}
+        | applicationOrSystemExploitation //
             user info: "Adversaries may exploit software vulnerabilities that can cause an application or system to crash and deny availability to users."
 
         & officeTemplateMacros
@@ -1037,7 +1037,7 @@ category Software {
                 macOS.sudoAndSudoCaching,
                 macOS.attemptElevatedExecutionWithPrompt
 
-        | accountAccessRemoval {A}
+        | accountAccessRemoval //
             developer info: "Binary probability distribution. Once they have access, adversaries may perform this technique."
             user info: "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts. Adversaries may also subsequently log off and/or reboot boxes to set malicious changes into place."
 
@@ -1214,6 +1214,7 @@ category Software {
                 windows.lSASecrets,
                 windows.cachedDomainCredentials,
                 windows.dCSync,
+                windows.stealOrForgeKerberosTickets,
                 linux.procFilesystem,
                 linux._etc_passwdAND_etc_shadow
 
@@ -1257,10 +1258,10 @@ category Software {
             ->  computer.infectedComputer,
                 computer.router.internalNetwork.remoteAccess
 
-        | attemptEndpointDenialOfService @hidden {A}
+        | attemptEndpointDenialOfService @hidden //
             ->  endpointDenialOfService
 
-        & endpointDenialOfService {A}
+        & endpointDenialOfService //
             user info: "Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users."
             ->  applicationExhaustionFlood,
                 oSExhaustionFlood,
@@ -1270,18 +1271,18 @@ category Software {
                 service.cloudService.serviceExhaustionFlood,
                 service.cloudService.applicationOrSystemExploitation
 
-        | applicationExhaustionFlood {A}
+        | applicationExhaustionFlood //
             user info: "Adversaries may target resource intensive features of web applications to cause a denial of service (DoS)." 
             ->  service.blockUserAccess
 
-        | oSExhaustionFlood {A}
+        | oSExhaustionFlood //
             user info: "Adversaries may target the operating system (OS) for a DoS attack, since the (OS) is responsible for managing the finite resources on a system." 
 
-        | serviceExhaustionFlood {A}
+        | serviceExhaustionFlood //
             user info: "Adversaries may target the different network services provided by systems to conduct a DoS."
             ->  windows.attemptServiceStop
 
-        | applicationOrSystemExploitation {A}
+        | applicationOrSystemExploitation //
             user info: "Adversaries may exploit software vulnerabilities that can cause an application or system to crash and deny availability to users."
 
         | eventTriggeredExecution
@@ -1331,7 +1332,7 @@ category Software {
             user info: "Adversaries may use fallback or alternate communication channels if the primary channel is compromised or inaccessible in order to maintain reliable command and control and to avoid data transfer thresholds." 
             ->  computer.router.internalNetwork.communicate  
 
-        & firmwareCorruption {A} //(0.8)*Exponential(2880)]
+        & firmwareCorruption // //(0.8)*Exponential(2880)]
             user info: "Adversaries may overwrite or corrupt the flash memory contents of system BIOS or other firmware in devices attached to a system in order to render them inoperable or unable to boot." 
             developer info: "TTC assumed instant, one source states 30s. Sources used for probability distribution result: https://www.wired.com/2015/03/researchers-uncover-way-hack-bios-undermine-secure-operating-systems/, https://www.gillware.com/hard-drive-data-recovery/data-recovery-101-firmware/"
 
@@ -1506,18 +1507,18 @@ category Software {
             ->  computer.router.internalNetwork.c2Connected,
                 fallbackChannels
 
-        | networkDenialOfService {A} //(0.4863)*Exponential(6.6)]
+        | networkDenialOfService // //(0.4863)*Exponential(6.6)]
             user info: "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources to users."
             developer info: "Sources used for probability distribution: https://www.netscout.com/news/press-release/complexity-ddos-attacks, https://securelist.com/ddos-attacks-in-q4-2018/89565/, European Application and Network Security Report 2016-17, https://www.globaldots.com/ddos-distributed-denial-of-service-explained"
             ->  directNetworkFlood,
                 reflectionAmplification
 
-        & directNetworkFlood {A} 
+        & directNetworkFlood // 
             user info: "Adversaries may attempt to cause a denial of service (DoS) by directly sending a high-volume of network traffic to a target."
             ->  applicationExhaustionFlood,
                 service.serviceExhaustionFlood
 
-        & reflectionAmplification {A}
+        & reflectionAmplification //
             user info: "Adversaries may attempt to cause a denial of service by reflecting a high-volume of network traffic to a target."
             ->  applicationExhaustionFlood,
                 service.serviceExhaustionFlood
@@ -1555,7 +1556,7 @@ category Software {
             developer info: "Binary probability distribution. Probability carried by privateKeys and TTC by bruteForce/inputCapture"
              ->  service.remoteServices
 
-        | resourceHijacking {A} //(0.046)*Exponential(48)]
+        | resourceHijacking // //(0.046)*Exponential(48)]
             developer info: "https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://www.ptsecurity.com/ww-en/analytics/cybersecurity-threatscape-2019-q1/, https://content.fireeye.com/apt-41/rpt-apt41, https://github.com/xmrig/xmrig, https://steemit.com/utopian-io/@afterglow/tutorial-how-to-install-configure-and-use-xmrig-cryptocurrency-miner-for-monero-on-your-computer"
             user info: "Adversaries may consume enough system resources to negatively impact and/or cause affected machines to become unresponsive."
             ->  computer.unresponsive  
@@ -1665,7 +1666,7 @@ category Software {
             ->  macOS.launchctl,
                 windows.serviceExecution
 
-        | systemShutdownOrReboot {A}
+        | systemShutdownOrReboot //
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."
 
         | processInjection //(0.35)*Exponential(127.1)] 
@@ -1706,7 +1707,7 @@ category Software {
                 windows.credentialAPIHooking, // leads to hooking attack
                 windows.attemptSystemFirmware // leads to system firmware attack
 
-        & runtimeDataManipulation {I}
+        & runtimeDataManipulation //
             developer info: "Binary probability distribution."
             user info: "By manipulating runtime data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
 
@@ -1806,11 +1807,14 @@ category Software {
         | bruteForce //(0.42)*Exponential(0.3)]
             user info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
             developer info: "Sources for distribution result: Filip Wilén and Andreas Westman. 'IoT-lang: Threat modeling for Internet of Things'. Unpublished paper."
-            ->  passwordGuessing,
+            ->  attemptPasswordGuessing,
                 attemptPasswordCracking,
-                passwordSpraying,
-                credentialStuffing,
+                attemptPasswordSpraying,
+                attemptCredentialStuffing,
                 attemptPrivateKeys
+
+        | attemptPasswordGuessing @hidden
+            ->  passwordGuessing
 
         & passwordGuessing
             user info: "Adversaries with no prior knowledge of legitimate credentials within the system or environment may guess passwords to attempt access to accounts."
@@ -1823,9 +1827,15 @@ category Software {
             user info: "Adversaries may use password cracking to attempt to recover usable credentials, such as plaintext passwords, when credential material such as password hashes are obtained."
             ->  userAccount.userCredentials
 
+        | attemptPasswordSpraying
+            ->  passwordSpraying
+
         & passwordSpraying
             user info: "Adversaries may use a single or small list of commonly used passwords against many different accounts to attempt to acquire valid account credentials."
-            ->  userAccount.userCredentials        
+            ->  userAccount.userCredentials
+
+        | attemptCredentialStuffing @hidden
+            ->  credentialStuffing
 
         & credentialStuffing
             user info: "Adversaries may use credentials obtained from breach dumps of unrelated accounts to gain access to target accounts through credential overlap."
@@ -1862,7 +1872,7 @@ category Software {
 
         | sSHCredentialInterception
 
-        & storedDataManipulation {I}
+        & storedDataManipulation //
             developer info: "Binary probability distribution."
             user info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."    
 
@@ -1991,16 +2001,16 @@ category Software {
             user info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system."
             ->  attemptAutomatedCollection
 
-        | diskWipe {A}
+        | diskWipe //
             user info: "Adversaries may wipe or corrupt raw disk data on specific systems or in large numbers in a network to interrupt availability to system and network resources."
             ->  diskContentWipe,
                 diskStructureWipe
 
-        & diskContentWipe {A} //(0.5433)*Exponential(126.437)]
+        & diskContentWipe // //(0.5433)*Exponential(126.437)]
             user info: "Adversaries may erase the contents of storage devices on specific systems as well as large numbers of systems in a network to interrupt availability to system and network resources."
             developer info: "Sources used for probability distribution: https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://threatpost.com/secrets-of-the-wiper-inside-the-worlds-most-destructive-malware/131836/, https://www.statista.com/statistics/795748/worldwide-seagate-average-hard-disk-drive-capacity/, https://hdd.userbenchmark.com/"
        
-        & diskStructureWipe {A}
+        & diskStructureWipe //
             user info: "Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources."
 
         & remoteFileCopy //(0.29)]
@@ -2011,13 +2021,12 @@ category Software {
                 computer.user.attemptUserExecution, // leads to file execution attacks
                 attemptAutomatedCollection // combined with Remote File Copy attack
         
-        & sensitiveDataCollected
+        | sensitiveDataCollected
             ->  dataCompressed,
                 computer.attemptExfiltrationOverPhysicalMedium,
                 dataSizedTransfer,
                 attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 automatedExfiltration,
                 dataEncrypted, 
                 dataStaged    
@@ -2027,7 +2036,6 @@ category Software {
                 computer.attemptExfiltrationOverPhysicalMedium,
                 attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 dataEncrypted,
                 dataStaged,
                 automatedExfiltration,
@@ -2039,7 +2047,6 @@ category Software {
             ->  computer.attemptExfiltrationOverPhysicalMedium,
                 attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 automatedExfiltration
 
         | dataSizedTransfer
@@ -2056,7 +2063,6 @@ category Software {
             user info: "Adversaries may stage collected data in a central location or directory on the local system prior to Exfiltration."
             ->  archiveCollectedData, // Data may be kept in separate files or combined into one file through techniques such as Archive Collected Data
                 computer.attemptExfiltrationOverPhysicalMedium, // leads to exfiltration attacks
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
                 dataCompressed,
@@ -2066,7 +2072,6 @@ category Software {
             user info: "Adversaries may stage data collected from multiple systems in a central location or directory on one system prior to Exfiltration."
             ->  archiveCollectedData,
                 computer.attemptExfiltrationOverPhysicalMedium, // leads to exfiltration attacks
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 attemptExfiltrationOverAternativeProtocol,
                 scheduledExfiltration,
                 dataCompressed,
@@ -2075,14 +2080,14 @@ category Software {
         | attemptDataDestruction @hidden
             ->  dataDestruction
                     
-        & dataDestruction {A}
+        & dataDestruction //
             developer info: "Binary probability distribution."
             ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
 
         | attemptDataEncryptedForImpact @hidden
             ->  dataEncryptedForImpact
 
-        & dataEncryptedForImpact {A} //(0.366)*Exponential(12)]
+        & dataEncryptedForImpact // //(0.366)*Exponential(12)]
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
             ->  validAccounts,
@@ -2095,10 +2100,9 @@ category Software {
             ->  dataEncrypted,
                 automatedExfiltration,
                 computer.attemptExfiltrationOverPhysicalMedium,
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel,
                 scheduledExfiltration
 
-        & inhibitSystemRecovery {A}
+        & inhibitSystemRecovery //
             user info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."    
             ->  systemShutdownOrReboot
 
@@ -2122,14 +2126,17 @@ category Software {
                 exfiltrationOverUnencryptedOrObfuscatedNonC2Protocol
 
         | exfiltrationOverAsymmetricEncryptedNonC2Protocol
+            developer info: "Binary probability distribution. Probability carried by exfiltrationOverAternativeProtocol "
             user info: "Adversaries may steal data by exfiltrating it over an asymmetrically encrypted network protocol other than that of the existing command and control channel."
             ->  computer.router.internalNetwork.dataExfiltration
 
         | exfiltrationOverSymmetricEncryptedNonC2Protocol
+            developer info: "Binary probability distribution. Probability carried by exfiltrationOverAternativeProtocol "
             user info: "Adversaries may steal data by exfiltrating it over a symmetrically encrypted network protocol other than that of the existing command and control channel."
             ->  computer.router.internalNetwork.dataExfiltration
 
         | exfiltrationOverUnencryptedOrObfuscatedNonC2Protocol
+            developer info: "Binary probability distribution. Probability carried by exfiltrationOverAternativeProtocol "
             user info: "Adversaries may steal data by exfiltrating it over an un-encrypted network protocol other than that of the existing command and control channel."  
             ->  computer.router.internalNetwork.dataExfiltration
 
@@ -2160,8 +2167,7 @@ category Software {
 
         | automatedExfiltration
             developer info: "Binary probability distribution."
-            ->  attemptExfiltrationOverAternativeProtocol,
-                computer.router.internalNetwork.attemptExfiltrationOverC2Channel
+            ->  attemptExfiltrationOverAternativeProtocol
 
         & networkServiceScan //(72)]
             developer info: "Sources for distribution results: https://www.acunetix.com/blog/docs/how-long-does-a-scan-take-to-complete/#:~:text=The%20duration%20of%20a%20scan,between%202%20and%204%20hours."
@@ -2372,8 +2378,7 @@ category Software {
 
         # encryptSensitiveInformation 
             user info: "https://attack.mitre.org/mitigations/M1041/"
-            ->  sensitiveDataCollected,
-                indicatorRemovalOnHost,
+            ->  indicatorRemovalOnHost,
                 networkSniffing,
                 privateKeys,
                 storedDataManipulation,
@@ -2614,6 +2619,7 @@ category Software {
             ->  userAccount.userCredentials
 
         | dCShadow
+            developer info: "Binary probability distribution."
             user info: "This technique may bypass system logging and security monitors such as security information and event management (SIEM) products."
             ->  attemptSIDHistoryInjection,
                 bypassLogAnalysis
@@ -2686,10 +2692,10 @@ category Software {
         & domainControllerAuthentication
             user info: "Adversaries may patch the authentication process on a domain control to bypass the typical authentication mechanisms and enable access to accounts."
 
-        | attemptLSASSDriver @hidden //(0.5)*Exponential(0.1)]
+        | attemptLSASSDriver @hidden 
             ->  lSASSDriver
 
-        & lSASSDriver
+        & lSASSDriver //(0.5)*Exponential(0.1)]
             user info: "Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations."
             ->  executeCode,
                 persistence
@@ -2834,6 +2840,7 @@ category Software {
             user info: "Adversaries may attempt to mimic features of valid code signatures to increase the chance of deceiving a user, analyst, or tool."
 
         | stealOrForgeKerberosTickets
+            developer info: "Binary probability dsitribution. Distribution carried by oSCredentialDumping"
             user info: "Adversaries may attempt to subvert Kerberos authentication by stealing or forging Kerberos tickets to enable Pass the Ticket."
             ->  goldenTicket,
                 silverTicket,
@@ -2843,17 +2850,21 @@ category Software {
             ->  goldenTicket
 
         & goldenTicket
+            developer info: "Binary probability dsitribution. carried by oSCredentialDumping"
             user info: "Adversaries who have the KRBTGT account password hash may forge Kerberos ticket-granting tickets (TGT), also known as a golden ticket."
-            ->  attemptPassTheTicket
+            ->  attemptPassTheTicket,
+                dCShadow
 
         | attemptSilverTicket @hidden
             ->  silverTicket
 
         & silverTicket
+            developer info: "Binary probability dsitribution. carried by oSCredentialDumping"
             user info: "Adversaries who have the password hash of a target service account (e.g. SharePoint, MSSQL) may forge Kerberos ticket granting service (TGS) tickets, also known as silver tickets."
             ->  attemptPassTheTicket
             
         & kerberoasting
+            developer info: "Binary probability dsitribution. carried by oSCredentialDumping"
             user info: "Adversaries possessing a valid Kerberos ticket-granting ticket (TGT) may request one or more Kerberos ticket-granting service (TGS) service tickets for any SPN from a domain controller (DC)."
             ->  attemptSilverTicket,
                 bruteForce,
@@ -2879,7 +2890,7 @@ category Software {
 
         | useAlternateAuthenticationMaterial
             user info: "Adversaries may use alternate authentication material, such as password hashes, Kerberos tickets, and application access tokens, in order to move laterally within an environment and bypass normal system access controls."
-            ->  attemptPassTheHash,
+            ->  passTheHash,
                 passTheTicket,
                 service.browser.webSessionCookie,
                 service.cloudService.applicationAccessToken
@@ -2957,6 +2968,7 @@ category Software {
             ->  passTheTicket
 
         & passTheTicket
+            developer info: "Binary probability distribution"
             user info: "Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password."
             ->  computer.router.internalNetwork.remoteAccess // gain remote access 
 
@@ -3120,7 +3132,7 @@ category Software {
             ->  attemptAccessibilityFeatures,
                 remoteSystemDiscovery,
                 rDPSessionHijacking,
-                os.fileTransferProtocols
+                os.attemptApplicationLayerProtocol // https://us-cert.cisa.gov/ncas/alerts/TA18-086A
 
         & replicationThroughRemovableMedia //(0.45)*Exponential(3.429)]
             user info: "Adversaries may move onto systems, possibly those on disconnected or air-gapped networks, by copying malware to removable media and taking advantage of Autorun features when the media is inserted into a system and executes."
@@ -3179,6 +3191,7 @@ category Software {
             ->  sIDHistoryInjection
 
         & sIDHistoryInjection
+            developer info: "Binary probability dsitribution. Distribution carried by parents"
             user info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
             ->  persistence,
                 service.remoteServices, // leads to Remote Services attack
@@ -3186,6 +3199,7 @@ category Software {
                 windowsRemoteManagement // leads to Windows Remote Management attack          
 
         | signedBinaryProxyExecution
+            developer info: "Binary probability distribution."
             user info: "Several Microsoft signed binaries that are default on Windows installations can be used to proxy execution of other files. This behavior may be abused by adversaries to execute malicious files that could bypass application whitelisting and signature validation on systems."
             ->  compiledHTMLFile,
                 attemptControlPanel,
@@ -3199,6 +3213,7 @@ category Software {
                 rundll32        
 
         | signedScriptProxyExecution
+            developer info: "Binary probability distribution."
             user info: "Scripts signed with trusted certificates can be used to proxy execution of malicious files."
             ->  pubPrn
 
@@ -3263,10 +3278,10 @@ category Software {
             user info: "An adversary can place an executable in a higher level directory of the path, and Windows will resolve that executable instead of the intended executable."
             ->  executeCode   
 
-        | attemptServiceStop @hidden {A}
+        | attemptServiceStop @hidden //
             ->  serviceStop
 
-        & serviceStop {A} //(0.0837)]
+        & serviceStop // //(0.0837)]
             developer info: "Sources for distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://blog.talosintelligence.com/2018/02/olympic-destroyer.html, https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-changeserviceconfigw, https://www.fireeye.com/blog/threat-research/2017/05/wannacry-malware-profile.html, https://www.crowdstrike.com/blog/big-game-hunting-with-ryuk-another-lucrative-targeted-ransomware/"
             user info: "Adversaries may stop services in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server."
             ->  attemptDataDestruction,
@@ -3318,7 +3333,8 @@ category Software {
         | attemptWindowsManagementInstrumentationEventSubscription @hidden
             ->  windowsManagementInstrumentationEventSubscription
 
-        & windowsManagementInstrumentationEventSubscription
+        & windowsManagementInstrumentationEventSubscription //(0.26)*Exponential(43.49)]
+            developer info: "We assume the dsitribution to be the same as for windowsManagementInstrumentation"
             user info: "Adversaries may use the capabilities of WMI to subscribe to an event and execute arbitrary code when that event occurs, providing persistence on a system."
             ->  persistence
 
@@ -3326,6 +3342,7 @@ category Software {
             ->  windowsRemoteManagement
 
         & windowsRemoteManagement
+            developer info: "Binary probability distribution. Use of Valid Acounts"
             user info: "WinRM allows a user to interact with a remote system."
             ->  computer.router.internalNetwork.remoteExecution,
                 service.externalRemoteServices // Windows Remote Management can also be used externally  
@@ -3373,7 +3390,7 @@ category Software {
             ->  systemShutdownOrReboot,
                 attemptDataDestruction
 
-        | systemShutdownOrReboot {A}
+        | systemShutdownOrReboot //
             user info: "Adversaries may shutdown/reboot systems to interrupt access to, or aid in the destruction of, those systems."  
 
         & queryRegistry //(0.05226)]
@@ -3465,6 +3482,7 @@ category Software {
                 attemptBypassUserAccessControl // certain shims can be used to Bypass User Account Control (UAC)
 
         & authenticationPackage
+            developer info: "Binary probability distribution"
             user info: "Adversaries can use Windows Authentication Packages for persistence for persistence."
             ->  persistence   
 
@@ -3819,7 +3837,8 @@ category Software {
         | attemptBashHistory @hidden
             ->  bashHistory
 
-        & bashHistory
+        & bashHistory //(0.5)*Exponential(1)]
+            developer info: "Sources for distribution results: https://www.darkreading.com/endpoint/average-employee-manages-nearly-200-passwords/d/d-id/1330304, http://blog.lastpass.com/2017/11/lastpass-reveals-8-truths-about-passwords-in-the-new-password-expose/ "
             user info: "Adversaries may search the bash command history on compromised systems for insecurely stored credentials."
             ->  indicatorRemovalOnHost,
                 userAccount.userCredentials
@@ -4053,7 +4072,7 @@ category Software {
         | attemptBashHistory @hidden
             ->  bashHistory
 
-        & bashHistory
+        & bashHistory //(0.5)*Exponential(1)]
             user info: "Adversaries may search the bash command history on compromised systems for insecurely stored credentials."
             ->  indicatorRemovalOnHost,
                 adminAccount.rootAdmin.adminCredentials,
@@ -4442,23 +4461,24 @@ category Network {
         | attemptDataEncryptedForImpact @hidden
             ->  dataEncryptedForImpact
 
-        & dataEncryptedForImpact {A} //(0.366)*Exponential(12)]
+        & dataEncryptedForImpact // //(0.366)*Exponential(12)]
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
 
         & dataExfiltration
             ->  router.externalNetwork.dataExfiltration
 
-        & internalDefacement {I} //(0.31)*Exponential(10.67)]
+        & internalDefacement // //(0.31)*Exponential(10.67)]
             user info: "An adversary may deface systems internal to an organization in an attempt to intimidate or mislead users."
             developer info: "Time here is: assumed time defacement will last. Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi5m_fWpY7qAhUaxMQBHU6yBxoQFjAKegQIMhAB&url=https%3A%2F%2Fdocuments.trendmicro.com%2Fassets%2Fwhite_papers%2Fwp-a-deep-dive-into-defacement.pdf&usg=AOvVaw2zOWHBoWsMXdfxK_fLTP_G, https://www.internetlivestats.com/total-number-of-websites/, https://www.helpnetsecurity.com/2020/04/03/back-up-data/, https://books.google.se/books?id=c7CpBAAAQBAJ&printsec=frontcover&dq=Cyber+Blockades&hl=en&sa=X&ved=0ahUKEwj4qsnGq47qAhVRXpoKHWACBqkQ6AEIKDAA#v=onepage&q=Cyber%20Blockades&f=false"
             ->  router.computer.os.service.browser.driveByCompromise // website defacement may also be used as setup, or a precursor, for future attacks such as Drive-by Compromise
 
         | attemptExfiltrationOverC2Channel @hidden
-             ->  exfiltrationOverC2Channel
+            ->  exfiltrationOverC2Channel
 
-         & exfiltrationOverC2Channel
-             user info: " Data exfiltration is performed over the Command and Control channel."
+        & exfiltrationOverC2Channel
+            developer info: "Sources for distribution results: https://repo.zenk-security.com/Techniques%20d.attaques%20%20.%20%20Failles/Exfiltration%20Techniques%20-%20An%20examination%20And%20Emulation.pdf, https://www.mcafee.com/enterprise/en-us/assets/reports/rp-data-exfiltration.pdf"
+            user info: " Data exfiltration is performed over the Command and Control channel."
              ->  dataExfiltration
 
         E firewallExists
@@ -4472,10 +4492,10 @@ category Network {
         | attemptTransmittedDataManipulation @hidden
             ->  transmittedDataManipulation
 
-        & transmittedDataManipulation {I} //(24)]
+        & transmittedDataManipulation // //(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
 
-        & c2Connexion
+        | c2Connexion
             ->  c2Connected
 
         & exchangeServerCollection
@@ -4508,8 +4528,7 @@ category Network {
             ->  communicate,
                 dataObfuscation,
                 packetCapture,
-                dataEncryptedForImpact, // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
-                attemptExfiltrationOverC2Channel // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
+                dataEncryptedForImpact // https://us-cert.cisa.gov/ncas/alerts/aa20-107a
 
         | communicate 
 
@@ -4582,7 +4601,6 @@ category Network {
         # networkIntrusionPrevention
             user info: "https://attack.mitre.org/mitigations/M1031/"
             ->  applicationLayerConnexion,
-                c2Connexion,
                 dataExfiltration,
                 exfiltrationOverC2Channel,
                 generateDomainNames,
@@ -4669,11 +4687,11 @@ category Network {
         | attemptDataEncryptedForImpact @hidden
             ->  dataEncryptedForImpact
 
-        & dataEncryptedForImpact {A} //(0.366)*Exponential(12)]
+        & dataEncryptedForImpact // //(0.366)*Exponential(12)]
             user info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
             developer info: "Sources used for probability distribution result: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwje19GOp5rqAhXnl4sKHSJbDFcQFjANegQIMBAB&url=https%3A%2F%2Fwww.checkpoint.com%2Fdownloads%2Fproducts%2Fransomware-defense-survey-for-enterprise.pdf&usg=AOvVaw1Om5gqIJ3-Gcf7efzgIby9, https://news.sophos.com/en-us/2020/05/12/the-state-of-ransomware-2020/, https://www.exabeam.com/library/anatomy-ransomware-attack/"
 
-        & externalDefacement {I}
+        & externalDefacement //
             user info: "Websites are a common victim of defacement that often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda."
 
         & exfiltrationOverWebService
@@ -4708,10 +4726,10 @@ category Network {
             user info: "Adversaries may use an existing, legitimate external Web service as a means for sending commands to a compromised system without receiving return output over the Web service channel."
             ->  router.internalNetwork.c2Connected
 
-        | attemptTransmittedDataManipulation @hidden {I}
+        | attemptTransmittedDataManipulation @hidden //
             ->  transmittedDataManipulation
  
-        & transmittedDataManipulation {I} //(24)]
+        & transmittedDataManipulation // //(24)]
             user info: "By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making."
             developer info: "Sources used for distribution: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiW28Dmk4vqAhXS4KYKHZvADy4QFjABegQIAhAB&url=https%3A%2F%2Fgo.thalesesecurity.com%2Frs%2F480-LWA-970%2Fimages%2F2019-DTR-Global-USL-Web.pdf&usg=AOvVaw2rKeGVWQgkIV7M0vjnCo1g, https://secure2.sophos.com/en-us/medialibrary/Gated%20Assets/white%20papers/the-state-of-encryption-today-wpna.pdf?cmp=701j0000001WskZAAS, www.businesswire.com/news/home/20190221005061/en/Survey-83-Percent-U.S.-Organizations-Accidentally-Exposed, https://content.fireeye.com/apt/rpt-apt38"
             
@@ -4735,9 +4753,6 @@ category Network {
                 deadDropResolver,
                 oneWayCommunication,
                 router.computer.os.service.browser.spearphishingAttachment,
-                router.internalNetwork.dataObfuscation,
-                router.internalNetwork.exfiltrationOverC2Channel,
-                router.internalNetwork.generateDomainNames,
                 router.computer.os.nonStandardPort,
                 router.computer.os.fallbackChannels,
                 router.computer.os.multiStageChannels,
