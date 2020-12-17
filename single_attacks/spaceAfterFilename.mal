@@ -1,0 +1,31 @@
+category Person {
+    asset User {
+        | userRights 
+            -> macOS.spaceAfterFileName,
+               linux.spaceAfterFileName
+            
+    }
+}
+
+category Software {
+    asset MacOS {
+        & spaceAfterFileName
+            -> employee.userExecution
+        
+        # fileMonitoring
+            -> spaceAfterFileName
+    }
+    asset Linux {
+        & spaceAfterFileName
+            -> employee.userExecution
+        
+        # fileMonitoring
+            -> spaceAfterFileName
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [macOS] MacOS
+    User [user] 1-* <--use--> 1 [linux] Linux
+
+}

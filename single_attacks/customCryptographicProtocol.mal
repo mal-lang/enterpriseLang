@@ -1,0 +1,28 @@
+category Software {
+    asset OS {
+        & customCryptographicProtocol
+            info:"AAdversaries may use a custom cryptographic protocol or algorithm to hide command and control traffic."
+            ->  c2Server.c2Connected   
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.customCryptographicProtocol
+
+    }
+}
+
+category Hardware {
+    asset C2Server {
+        | c2Connected 
+    }
+}
+
+
+associations {
+    InternalNetwork [internalNetwork] 1-* <-- Contain --> 1-* [os] OS
+    OS [os] 1-* <--Ui--> 1-* [c2Server] C2Server
+} 

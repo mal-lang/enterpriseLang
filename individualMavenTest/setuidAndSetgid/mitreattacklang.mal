@@ -1,0 +1,59 @@
+category Person{
+    asset User {
+        
+        | userRights
+            -> os.runUnderUser
+
+    }
+
+    asset Admin {
+        | adminRights
+            -> os.runUnderAdmin
+    }
+}
+
+category Software {
+    asset OS {
+        & runUnderUser
+
+        & runUnderAdmin
+            ->  persistence
+        | persistence
+
+    }
+   
+    asset MacOS extends OS {
+        | runFile
+            -> setuidAndSetgidManipulation
+        
+        & setuidAndSetgidManipulation 
+            ->  runUnderAdmin,
+                runUnderUser 
+       
+        # setuidAndSetgidManipulationDefense
+            info: "Applications with known vulnerabilities or known shell escapes should not have the setuid or 
+                setgid bits set to reduce potential damage if an application is compromised. 
+                Additionally, the number of programs with setuid or setgid bits set should be minimized across a system."
+            ->  setuidAndSetgidManipulation
+    }
+
+    asset Linux extends OS {
+        | runFile
+            -> setuidAndSetgidManipulation
+        
+        & setuidAndSetgidManipulation 
+            ->  runUnderAdmin,
+                runUnderUser 
+       
+        # setuidAndSetgidManipulationDefense
+            info: "Applications with known vulnerabilities or known shell escapes should not have the setuid or 
+                setgid bits set to reduce potential damage if an application is compromised. 
+                Additionally, the number of programs with setuid or setgid bits set should be minimized across a system."
+            ->  setuidAndSetgidManipulation
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [os] OS
+    Admin [admin] 1 <-- ui--> 1-* [os] OS
+}

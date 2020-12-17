@@ -1,0 +1,28 @@
+category Person {
+    asset User {
+        | userRights 
+            -> os.bruteForce
+        | userCredentials
+    }
+}
+
+category Software {
+    asset OS {
+        & bruteForce   
+            -> user.userCredentials
+
+        #  accountUsePolicies
+            info: "https://attack.mitre.org/mitigations/M1036/" 
+            -> bruteForce
+        #  multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/" 
+            -> bruteForce
+        #   PasswordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            -> bruteForce
+        
+    }
+}
+associations {
+    User [user] 1 <-- ui--> 1-* [os] OS
+}

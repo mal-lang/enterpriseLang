@@ -1,0 +1,83 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows._fileSystemPermissionsWeakness
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.fileSystemPermissionsWeakness
+    }  
+
+    asset Administrator {
+
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            ->  windowsWindowsAdmin._fileSystemPermissionsWeakness
+    }
+
+    asset SYSTEM {
+        | systemRights
+
+    }
+}               
+
+category Software {
+
+    abstractAsset OS{
+        # audit 
+
+        # userAccountControl       
+    } 
+
+    asset Windows extends OS {
+        | _fileSystemPermissionsWeakness
+            ->  fileSystemPermissionsWeakness      
+
+        & fileSystemPermissionsWeakness
+            info: "Adversaries may use this technique to replace legitimate binaries with malicious ones as a means of executing code at a higher permissions level."
+            ->  executeCode,
+                windowsAdmin.adminRights,
+                systemWindows.systemRights
+
+        | executeCode
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  fileSystemPermissionsWeakness
+               
+        # userAccountControl
+            info: "https://attack.mitre.org/mitigations/M1052/"
+            +>  fileSystemPermissionsWeakness         
+    }    
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows  
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

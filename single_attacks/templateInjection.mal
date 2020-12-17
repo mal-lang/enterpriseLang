@@ -1,0 +1,69 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.templateInjection 
+    } 
+
+    asset Employee {
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  windows.templateInjection 
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassStaticFileAnalysis
+    } 
+
+    asset Windows extends OS {   
+        & templateInjection
+            info: "Adversaries may abuse this technology to initially conceal malicious code to be executed."
+            ->  bypassStaticFileAnalysis, 
+                forcedAuthentication, // leads to Forced Authentication attack
+                browser.spearphishingAttachment, // can be delivered via Spearphishing Attachment
+                taintSharedContent // can be delivered via Taint Shared Content
+
+        & forcedAuthentication    
+
+        & taintSharedContent    
+
+        # antivirus
+            info: "https://attack.mitre.org/mitigations/M1049/"
+            +>  templateInjection
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  templateInjection
+    } 
+}
+
+category Network {
+    asset Browser {
+        & spearphishingAttachment
+    } 
+
+    asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  windows.templateInjection
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Employee [employee] 1 <--Ui--> 1-* [windows] Windows
+    Browser [browser] 1-* <--Software--> 1 [windows] Windows
+    InternalNetwork [internalNetworkWindows] 1 <--Connect--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

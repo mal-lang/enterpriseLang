@@ -1,0 +1,60 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.processDoppelganging
+    } 
+    
+    asset Administrator {
+
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.processDoppelganging
+    }       
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.processDoppelganging
+    }               
+}
+
+category Software {
+    abstractAsset OS {
+        | bypassProcessWhitelisting
+
+        | bypassAntivirus
+
+        | bypassFileOrPathWhitelisting  
+
+        | bypassSignatureBasedDetection
+    } 
+
+    asset Windows extends OS {   
+        | processDoppelganging
+            info: "Process Doppelgänging involves replacing the memory of a legitimate process, enabling the veiled execution of malicious code that may evade defenses and detection."
+            ->  bypassAntivirus,
+                bypassProcessWhitelisting,
+                bypassSignatureBasedDetection,
+                bypassFileOrPathWhitelisting    
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

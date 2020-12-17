@@ -1,0 +1,33 @@
+category Person{
+    asset User {
+        & userCredentials
+
+        # MultiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/"
+            ->  userCredentials 
+    }
+    asset Adversary {
+        | useNetworkSniffing
+            -> internalNetwork.networkSniffing
+    }
+}
+
+category Network {
+    abstractAsset Network{
+        //-> firewall
+    }
+    asset InternalNetwork extends Network {
+        | discovery
+        & networkSniffing
+            ->  user.userCredentials,
+                discovery
+        # encryptSensitiveInformation 
+            info: "https://attack.mitre.org/mitigations/M1041/"
+            ->  networkSniffing
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [internalNetwork] InternalNetwork
+    Adversary [adversary] 1-* <-- ui--> 1-* [internalNetwork] InternalNetwork
+}

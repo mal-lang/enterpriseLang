@@ -1,0 +1,58 @@
+category Person {
+    asset Administrator {
+        | adminRights
+    } 
+ 
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.sIDHistoryInjection
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.sIDHistoryInjection
+    } 
+}
+
+category Software {
+    asset Service {
+        & adminRemoteServicesLogin
+    } 
+
+    abstractAsset OS{
+        # activeDirectoryConfiguration // use SID Filtering
+            info: "https://attack.mitre.org/mitigations/M1015/"     
+            ->  windows.sIDHistoryInjection 
+
+    } 
+
+    asset Windows extends OS {   
+        & sIDHistoryInjection
+            info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
+            ->  service.adminRemoteServicesLogin, // leads to Remote Services attack
+                windowsAdminShares, // leads to Windows Admin Shares attack    
+                windowsRemoteManagement // leads to Windows Remote Management attack
+
+        & windowsAdminShares
+
+        & windowsRemoteManagement                 
+    } 
+}
+
+associations{
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows  
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+category Person {
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.securitySupportProvider
+    }                    
+}
+
+category Software {
+    abstractAsset OS {
+        | persistence
+        
+        # privilegedProcessIntegrity  
+    } 
+
+    asset Windows extends OS {  
+        & modifyRegistry
+            info: "An adversary may modify these Registry keys to add new SSPs."
+            ->  securitySupportProvider
+
+        & securitySupportProvider
+            info: "An adversary may modify these Registry keys to add new SSPs."
+            ->  persistence
+
+        # privilegedProcessIntegrity  
+            info: "https://attack.mitre.org/mitigations/M1025/"
+            +>  securitySupportProvider
+    } 
+}
+
+associations {    
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows   
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,63 @@
+#id: "org.mal_lang.attacklang"
+#version: "1.0.0"
+
+category Person {
+    asset User {
+        & spearphishingAttachmentDownload
+            ->  userExecution 
+            
+        & userExecution
+            ->  computer.infectedComputer
+            
+        # userTraining 
+            ->  spearphishingAttachmentDownload,
+                userExecution
+    }
+}
+
+category Software {
+    asset Browser {
+        | attemptSpearhishingAttachment
+            ->  spearphishingAttachment 
+
+        & spearphishingAttachment 
+            ->  user.spearphishingAttachmentDownload
+            
+        # restrictWebBasedContent
+            ->  spearphishingAttachment
+    }
+
+    asset OS { 
+        # antivirus
+            user info: "https://attack.mitre.org/mitigations/M1049/"
+            ->  browser1.spearphishingAttachment
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedComputer
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        # networkIntrusionPrevention
+            ->  browser6.spearphishingAttachment
+    }
+
+    asset ExternalNetwork {
+        # networkIntrusionPrevention
+            ->  browser7.spearphishingAttachment
+    }
+}
+
+associations {
+    User [user] 1 <--Use--> * [computer] Computer
+    User [user] * <--Use--> * [browser] Browser
+    Browser [computerBrowser] * <--Run--> 1..* [computer] Computer
+    Browser [browser1] * <--Software--> * [os] OS
+    Browser [browser6] * <--Connect--> * [internalNetwork1] InternalNetwork
+    Browser [browser7] * <--Connect--> * [externalNetwork1] ExternalNetwork 
+}  
+

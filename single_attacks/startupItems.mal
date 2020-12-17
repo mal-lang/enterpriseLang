@@ -1,0 +1,59 @@
+category Person {
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  macOS._startupItems
+    } 
+
+    asset Administrator {
+    }  
+
+    asset Root extends Administrator {
+        | rootRights
+            ->  macOS._startupItems
+    }
+}
+
+category Software {   
+    asset Service {
+        | _exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS{
+        # restrictFileAndDirectoryPermissions  
+    } 
+
+    asset MacOS extends OS {
+        & _startupItems
+            ->  startupItems
+
+        & startupItems
+            info: "An adversary can create the appropriate folders/files in the StartupItems directory to register their own persistence mechanism."
+            ->  persistence,
+                service._exploitationForPrivilegeEscalation // leads to Exploitation for Privilege Escalation attack
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  startupItems
+
+        | persistence               
+    } 
+}
+
+associations{
+
+    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Use--> 1-* [macOS] MacOS
+    MacOS [macOS] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+

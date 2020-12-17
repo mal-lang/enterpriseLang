@@ -1,0 +1,49 @@
+category Person  {
+    asset User {
+        | userRights 
+            -> services.remoteAccessTools
+    }
+}
+
+category Software {
+    asset Services {
+        | remoteAccessTools
+            -> internalNetwork.c2Connexion
+
+        # whitelisting
+            -> remoteAccessTools
+    }
+}
+
+category Hardware {
+    asset C2Server {
+
+        | c2Connected
+
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        & c2Connexion
+            -> c2Server.c2Connected
+
+        E firewall
+            <- firewall
+            -> firewall.bypassFirewall
+
+        # networkIntrusionDetection
+            -> c2Connexion
+    }
+    asset Firewall {
+        | bypassFirewall
+            -> internalNetwork.c2Connexion
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1-* [services] Services
+    C2Server [c2Server] 1 <--use--> 1-* [services] Services
+    InternalNetwork [internalNetwork] 1 <--Protect--> 1 [firewall] Firewall
+    InternalNetwork [internalNetwork] 1 <--contains--> 1 [c2Server] C2Server
+}

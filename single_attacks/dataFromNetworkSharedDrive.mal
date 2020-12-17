@@ -1,0 +1,24 @@
+category Software {
+    abstractAsset OS {   
+        & sensitiveDataCollected
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        | remoteSystemsConnection
+            ->  networkSharedDrive.dataFromNetworkSharedDrive  
+    }
+
+    asset NetworkSharedDrive extends InternalNetwork {
+        | dataFromNetworkSharedDrive
+            info: "Adversaries may search network shares on computers they have compromised to find files of interest."
+            ->  os.sensitiveDataCollected
+    }
+}
+
+
+associations {
+    NetworkSharedDrive [networkSharedDrive] 1-* <--SystemAccess--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [networkSharedDrive] NetworkSharedDrive
+}

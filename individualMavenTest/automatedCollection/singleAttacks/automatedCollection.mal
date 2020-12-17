@@ -1,0 +1,55 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.automatedCollection
+                
+    }
+    asset Administrator {
+        | adminRights
+            -> os.automatedCollection,
+               os.sensitiveDataCollected 
+    }
+}
+
+category Software {
+    asset OS {
+        & scripting // from scripting attack
+            -> automatedCollection
+            
+        & fileDiscovery
+            -> automatedCollection
+
+        & directoryDiscovery
+            -> automatedCollection
+
+        & uploadRemoteFile
+            -> automatedCollection
+
+        
+        | automatedCollection
+            -> _automatedCollection
+
+
+        & _automatedCollection
+            -> dataCollected, 
+               sensitiveDataCollected
+
+        | dataCollected
+
+        & sensitiveDataCollected
+        
+        #  encryptSensitiveInformation 
+            info: "https://attack.mitre.org/mitigations/M1041/"
+            -> _automatedCollection
+
+        #  remoteDataStorage 
+            info: "https://attack.mitre.org/mitigations/M1029/"
+            -> _automatedCollection
+         
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [os] OS
+    Administrator [administrator] 1-* <--use--> 1 [os] OS
+}

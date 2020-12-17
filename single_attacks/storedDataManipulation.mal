@@ -1,0 +1,58 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.storedDataManipulation
+    }
+
+
+    asset Administrator {
+        | adminRights
+            ->  os.storedDataManipulation
+    }
+
+
+    asset SYSTEM {
+        | systemRights
+            ->  os.storedDataManipulation
+    }
+}
+
+
+
+category Software {      
+    abstractAsset OS{
+        & storedDataManipulation
+            info: "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity."
+
+        # encryptSensitiveInformation
+            info: "https://attack.mitre.org/mitigations/M1041/"
+            ->  storedDataManipulation     
+
+        # remoteDataStorage 
+            info: "https://attack.mitre.org/mitigations/M1029/"
+            ->  storedDataManipulation          
+
+        # restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  storedDataManipulation
+    } 
+}
+
+associations{
+
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    OS [os] 1-* <--Ui--> 1 [system] SYSTEM
+
+}
+
+
+
+
+
+
+
+
+
+
+

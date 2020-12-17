@@ -1,0 +1,38 @@
+category Person {
+    asset User {
+        | userRights
+            -> macOS.networkShareDiscovery,
+               windows.networkShareDiscovery
+    }
+}
+
+category Software {
+    asset MacOS {
+        & networkShareDiscovery
+            -> internalNetwork.networkShareDiscovery
+        # whitelisting
+            -> networkShareDiscovery
+
+    }
+    asset Windows {
+        & networkShareDiscovery
+            -> internalNetwork.networkShareDiscovery
+        # whitelisting
+            -> networkShareDiscovery
+    }
+}
+category Network {
+    asset InternalNetwork {
+        | networkShareDiscovery
+            info:"Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. "
+        
+    
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [macOS] MacOS
+    User [user] 1-* <--use--> 1 [windows] Windows
+    InternalNetwork [internalNetwork] 1 <--contains--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
+}

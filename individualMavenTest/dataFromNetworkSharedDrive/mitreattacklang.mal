@@ -1,0 +1,26 @@
+
+category Network {
+    abstractAsset Network{
+    }
+    asset InternalNetwork extends Network {
+        | connectedToNetwork
+            ->  networkSharedDrive.connectToDrive
+    }
+    asset C2Server extends Network {
+        | obfuscatedData
+            -> bypassNetwordDetection
+        | bypassNetwordDetection
+    }
+    asset NetworkSharedDrive {
+        | data
+            -> c2Server.obfuscatedData
+        & connectToDrive
+            -> data
+    }
+}
+
+associations {
+    InternalNetwork [internalNetwork] 1 <-- ui--> 1-* [networkSharedDrive] NetworkSharedDrive
+    NetworkSharedDrive [networkSharedDrive] 1 <-- ui--> 1-* [c2Server] C2Server
+
+}

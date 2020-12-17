@@ -1,0 +1,63 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.videoCapture,
+                macOS.videoCapture
+    }
+}
+
+category Software {
+    abstractAsset OS {  
+        & dataCollected
+    }
+    
+    asset Windows extends OS {
+        | videoCapture
+            -> computer.collectVideo
+    }
+    
+    asset MacOS extends OS {
+        | videoCapture
+            -> computer.collectVideo
+
+    }
+    
+    asset Service {
+    }
+    
+    asset videoCallApplication extends Service {
+        | _collectVideo
+            ->  computer.collectVideo
+    }
+}
+
+category Hardware {
+    asset Computer {
+        E webcamExists
+            <- webcam
+            -> webcam._collectVideo
+
+        E videoCallApplicationExists
+            <- videoCallApplication
+            -> videoCallApplication._collectVideo
+
+        | collectVideo
+            info: "An adversary can leverage a computer's peripheral devices (e.g., integrated cameras or webcams) or applications (e.g., video call services) to capture video recordings for the purpose of gathering information. Images may also be captured from devices or applications, potentially in specified intervals, in lieu of video files."
+            ->  os.dataCollected
+    }
+    
+    asset Webcam {
+        | _collectVideo
+            -> computer.collectVideo
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows 
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    OS [os] 1 <--System--> 1-* [computer] Computer
+    Computer [computer] 1 <--Software--> 1 [windows] Windows
+    Computer [computer] 1 <--Software--> 1 [macOS] MacOS
+    VideoCallApplication [videoCallApplication] 1-* <--Software--> 1 [computer] Computer
+    Webcam [webcam] 1 <--Hardware--> 1 [computer] Computer
+}

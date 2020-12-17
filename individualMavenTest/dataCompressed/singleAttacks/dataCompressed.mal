@@ -1,0 +1,23 @@
+
+category Software {
+    asset OS {
+        | dataCollected
+            -> compressData
+            
+        & compressData
+            //-> // exfiltration attack entry points
+        
+    }
+}
+
+category Network {
+    asset InternalNetwork { 
+        #  networkIntrusionPrevention 
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            -> os.compressData 
+    }
+}
+
+associations {       
+    OS [os] 1-* <-- attack --> 1-* [internalNetwork] InternalNetwork 
+}

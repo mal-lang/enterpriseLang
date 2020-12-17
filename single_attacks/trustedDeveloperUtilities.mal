@@ -1,0 +1,51 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.trustedDeveloperUtilities
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassApplicationWhitelisting
+    } 
+
+    asset Windows extends OS {   
+        | executeCode
+
+        & trustedDeveloperUtilities
+            info: "An adversary can use tracker.exe to proxy execution of an arbitrary DLL into another process. Since tracker.exe is also signed it can be used to bypass application whitelisting solutions."
+            ->  bypassApplicationWhitelisting,
+                executeCode,
+                signedBinaryProxyExecution,
+                signedScriptProxyExecution
+
+        & signedBinaryProxyExecution
+
+        & signedScriptProxyExecution
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  trustedDeveloperUtilities
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  trustedDeveloperUtilities    
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

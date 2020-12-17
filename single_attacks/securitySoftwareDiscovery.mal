@@ -1,0 +1,46 @@
+category Person {
+    asset User {
+        | userRights
+            -> macOS.userSecuritySoftwareDiscovery
+               windows.userSecuritySoftwareDiscovery
+    }
+    asset WindowsAdministrator {
+        | systemRights
+            -> windows.adminSecuritySoftwareDiscovery
+    }
+    asset Root {
+        | rootRights
+            -> macOS.adminSecuritySoftwareDiscovery
+    }
+}
+
+category Software {
+    asset Windows {
+        & userSecuritySoftwareDiscovery
+            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            // -> leads to exploitation for defense evasion attack
+        & adminSecuritySoftwareDiscovery
+            //-> leads to exploitation for defense evasion attack
+        # whitelisting
+            -> userSecuritySoftwareDiscovery,
+               adminSecuritySoftwareDiscovery
+    }
+
+    asset MacOS {
+        & userSecuritySoftwareDiscovery
+            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            // -> leads to exploitation for defense evasion attack
+        & adminSecuritySoftwareDiscovery
+            // -> leads to exploitation for defense evasion attack
+        # whitelisting
+            -> userSecuritySoftwareDiscovery,
+               adminSecuritySoftwareDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [macOS] MacOS
+    User [user] 1-* <--use--> 1 [windows] Windows
+    WindowsAdministrator [windowsAdministrator] 1-* <--use--> 1 [windows] Windows
+    Root [root] 1-* <--use--> 1 [macOS] MacOS
+}

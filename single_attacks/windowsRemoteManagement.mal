@@ -1,0 +1,61 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.windowsRemoteManagement
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."
+
+        # privilegedAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.windowsRemoteManagement
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.windowsRemoteManagement
+    }
+}
+
+category Software {
+    asset OS {
+
+    }
+
+    asset Windows extends OS{
+        & windowsRemoteManagement
+            info: "WinRM allows a user to interact with a remote system."
+            ->  internalNetwork.remoteExecution
+
+        & powerShell
+            info: "Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code."
+            ->  windowsRemoteManagement // call with the winrm
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  windowsRemoteManagement
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        | remoteExecution
+    }
+
+    asset Firewall {
+        # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  windows.windowsRemoteManagement
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    Firewall [firewall] 0-1 <--Protect--> 1-* [windows] Windows
+}

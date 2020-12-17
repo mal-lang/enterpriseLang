@@ -1,0 +1,52 @@
+category Person {
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.extraWindowMemoryInjection
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.extraWindowMemoryInjection
+    } 
+
+    asset Adversary {
+        | maliciousCodeInserted
+            ->  windows.executeCode  
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+
+    } 
+
+    asset Windows extends OS {   
+        | extraWindowMemoryInjection
+            info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
+            ->  adversary.maliciousCodeInserted
+
+        | executeCode 
+    } 
+}
+
+
+associations{
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows  
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    Adversary [adversary] 1 <--Attack--> 1 [windows] Windows 
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+category Software {
+    asset Services {
+        | informationRepositories
+            -> os.dataCollected
+    }
+    asset OS {
+        | infectedOS
+            -> dataFromInformationRepositories
+        | dataFromInformationRepositories 
+            -> services.informationRepositories
+        | dataCollected
+    }
+}
+
+associations {
+    Services [services] 1 <-- ui--> 1-* [os] OS
+}

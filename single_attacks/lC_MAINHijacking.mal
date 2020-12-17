@@ -1,0 +1,51 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.lC_MAINHijacking
+    } 
+
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  macOS.lC_MAINHijacking
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        # codeSigning
+        | bypassApplicationWhitelisting
+        | bypassProcessWhitelisting
+        | bypassFileOrPathWhitelisting    
+    } 
+
+
+    asset MacOS extends OS {
+        & lC_MAINHijacking
+            info: "LC_MAIN that points to the binary’s entry point for execution and can be hijacked so that initial execution flows to a malicious addition. By modifying a binary in this way, application whitelisting can be bypassed because the file name or application path is still the same."
+            ->  bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting   
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/"  
+            +>  lC_MAINHijacking
+
+    } 
+}
+
+associations{
+    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
+    Administrator [macosAdministrator] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

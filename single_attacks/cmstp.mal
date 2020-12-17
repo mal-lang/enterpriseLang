@@ -1,0 +1,39 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.cmstp            
+    }
+}
+
+category Software {
+    asset Service {
+        # executionPrevention
+            -> windows.cmstp 
+
+        | bypassAntivirus      
+    }
+
+    abstractAsset OS{
+        | bypassApplicationWhitelisting
+    }
+                           
+    asset Windows extends OS {  
+        & cmstp
+            info:"Microsoft Connection Manager Profile Installer (CMSTP.exe) is a command-line program used to install Connection Manager service profiles."
+            -> bypassUserAccountControl, //Lead to Bypass User Account Control attack
+               os.bypassApplicationWhitelisting,
+               service.bypassAntivirus
+
+        | bypassUserAccountControl
+        
+        # disableOrRemoveFeatureOrProgram
+            -> cmstp
+
+    }
+}
+
+associations {
+    User [windowsUser] 1 <-- Ui--> 1-* [windows] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}

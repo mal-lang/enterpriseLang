@@ -1,0 +1,40 @@
+category Person {
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.fileSystemLogicalOffsets
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassFileMonitoring
+
+        | bypassFileSystemAccessControls
+    } 
+
+    asset Windows extends OS {   
+        | fileSystemLogicalOffsets
+            info: "Windows allows programs to have direct access to logical volumes. This technique bypasses Windows file access controls as well as file system monitoring tools."
+            ->  bypassFileMonitoring,
+                bypassFileSystemAccessControls
+    } 
+}
+
+associations{
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows   
+}
+
+
+
+
+
+
+
+
+
+
+

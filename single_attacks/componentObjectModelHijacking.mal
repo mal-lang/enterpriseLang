@@ -1,0 +1,43 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.componentObjectModelHijacking
+    }
+
+    asset Adversary {
+        | maliciousCodeInserted
+            -> windows.executeCode
+    }
+}
+
+category Software{
+    abstractAsset OS{
+
+        | bypassAutorunsAnalysis
+    }
+
+    asset Windows extends OS{
+        | componentObjectModelHijacking
+            info:" Adversaries can use Component Object Model (COM) system to insert malicious code that can be executed. When that system component is executed through normal system operation the adversary's code will be executed instead."
+            -> adversary.maliciousCodeInserted,
+               os.bypassAutorunsAnalysis
+
+        | executeCode 
+            +> computer.infectedWindowsComputer
+
+
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedWindowsComputer
+
+    }
+}    
+
+associations{
+    User [windowsUser] 1 <-- Ui--> 1-* [windows] Windows
+    Computer [computer] 1 <--Software--> 1 [windows] Windows
+    Adversary [adversary] 1 <-- Attack --> 1 [windows] Windows 
+}

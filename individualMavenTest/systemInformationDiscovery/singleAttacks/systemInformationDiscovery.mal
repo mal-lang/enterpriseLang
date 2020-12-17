@@ -1,0 +1,19 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.systemInformationDiscovery
+    }
+}
+
+category Software {
+    asset OS {
+        & systemInformationDiscovery
+            info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+        # whitelisting
+            -> systemInformationDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1 [os] OS
+}

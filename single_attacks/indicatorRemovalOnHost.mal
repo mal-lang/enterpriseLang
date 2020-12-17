@@ -1,0 +1,52 @@
+category Software {
+    abstractAsset OS{
+        & indicatorRemovalOnHost
+            info: "Adversaries may delete or alter generated artifacts on a host system, including logs and potentially captured files such as quarantined malware."
+            ->  bypassHostIntrusionPrevention,
+                bypassLogAnalysis,
+                bypassAntivirus
+
+        | bypassHostIntrusionPrevention
+
+        | bypassLogAnalysis
+
+        | bypassAntivirus
+
+        # encryptSensitiveInformation 
+            info: "https://attack.mitre.org/mitigations/M1041/"
+            ->  indicatorRemovalOnHost
+
+        # remoteDataStorage 
+            info: "https://attack.mitre.org/mitigations/M1029/"
+            ->  indicatorRemovalOnHost
+                
+        # restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  indicatorRemovalOnHost 
+    } 
+
+    asset Linux extends OS {
+        & bashHistory 
+            ->  indicatorRemovalOnHost
+    } 
+
+    asset MacOS extends OS {
+        & bashHistory 
+            ->  indicatorRemovalOnHost
+    } 
+}
+
+associations{
+ 
+}
+
+
+
+
+
+
+
+
+
+
+

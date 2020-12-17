@@ -1,0 +1,54 @@
+#id: "org.mal_lang.attacklang"
+#version: "1.0.0"
+
+category Person {
+    asset User {
+        & spearphishingLinkClicked [Uniform(1,20)]
+            developer info: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
+            ->  attemptUserExecution
+            
+        | attemptUserExecution
+            ->  userExecution
+
+        & userExecution
+            ->  computer.infectedComputer
+            
+        # userTraining 
+            ->  spearphishingLinkClicked, 
+                userExecution
+    }
+}
+
+category Software {
+    asset Browser {
+        | attemptSpearphishingLink       
+            ->  spearphishingLink
+
+        & spearphishingLink
+            user info: "The links will be accompanied by social engineering text and require the user to actively click or copy and paste a URL into a browser, leveraging User Execution."
+            ->  user5.spearphishingLinkClicked
+            
+        # restrictWebBasedContent
+            ->  spearphishingLink
+    }
+
+    asset OS { 
+        # antivirus
+            user info: "https://attack.mitre.org/mitigations/M1049/"
+            ->  browser1.spearphishingLink
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedComputer
+    }
+}
+
+associations {
+    User [user2] * <--Use--> * [computer] Computer
+    User [user5] * <--Use--> * [browser] Browser
+    Browser [browser11] * <--Run--> 1..* [computer11] Computer
+    Browser [browser1] * <--Software--> * [os4] OS
+}  
+

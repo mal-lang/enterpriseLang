@@ -1,0 +1,65 @@
+category Person {
+    asset Administrator {
+        | adminRights
+
+        # privilegedAccountManagement
+            ->  windows.windowsAdminShares
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.windowsAdminShares
+
+    }
+}
+
+category Software {
+    abstractAsset OS {  
+        & userDataEncryptedForImpact
+            info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  windows.windowsAdminShares
+
+        & adminDataEncryptedForImpact
+            info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  windows.windowsAdminShares
+
+        & systemDataEncryptedForImpact
+            info: "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. To maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, Credential Dumping, and Windows Admin Shares."
+            ->  windows.windowsAdminShares
+
+        # passwordPolicies 
+
+        # privilegedAccountManagement
+    }
+
+    asset Windows extends OS {
+        & sIDHistoryInjection
+            info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
+            ->  windowsAdminShares // leads to Windows Admin Shares attack    
+
+        & windowsAdminShares
+            ->  networkShareConnectionRemoval, // leads to Network Share Connection Removal attack
+                windowsManagementInstrumentation // leads to Windows Management Instrumentation attack
+
+        | networkShareConnectionRemoval
+
+        | windowsManagementInstrumentation
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            +>  windowsAdminShares     
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            +>  windowsAdminShares 
+    }
+}
+
+associations {    
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+

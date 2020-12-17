@@ -1,0 +1,43 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.userDataDestruction
+    }
+    asset Administrator {
+        | adminRights
+            -> os.adminDataDestruction
+    }
+    asset Root extends Administrator{
+        | rootRights
+            -> os.rootDataDestruction
+    }
+    asset SYSTEM {
+        | systemRights
+            ->  os.systemDataDestruction    
+    }
+}
+
+category Software {
+    asset OS {
+        & userDataDestruction
+
+        & adminDataDestruction
+
+        & rootDataDestruction
+
+        & systemDataDestruction
+
+        #  dataBackup  
+            info: "https://attack.mitre.org/mitigations/M1053/"
+            ->  userDataDestruction,
+                adminDataDestruction,
+                rootDataDestruction,
+                systemDataDestruction
+    }
+}
+
+associations{
+    User [user] 1-* <-- ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <--ui--> 1-* [os] OS
+    SYSTEM [system] 1-* <-- ui--> 1-* [os] OS
+}

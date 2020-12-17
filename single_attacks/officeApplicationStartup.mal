@@ -1,0 +1,57 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.officeApplicationStartup
+    } 
+
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.officeApplicationStartup
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+
+    } 
+
+    asset Windows extends OS {   
+        & officeApplicationStartup
+            info: "There are multiple mechanisms that can be used with Office for persistence when an Office-based application is started."
+            ->  persistence
+
+        | persistence         
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  officeApplicationStartup
+
+        # softwareConfiguration
+            info: "https://attack.mitre.org/mitigations/M1054/"
+            +>  officeApplicationStartup
+
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/" 
+            +>  officeApplicationStartup 
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
+}
+
+
+
+
+
+
+
+
+
+
+

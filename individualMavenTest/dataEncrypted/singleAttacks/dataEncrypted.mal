@@ -1,0 +1,13 @@
+category Software {
+    asset OS {
+        | dataCollected
+            -> dataEncrypted
+        | dataCompressed
+            -> dataEncrypted
+        | dataEncrypted
+            info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
+            -> _dataEncrypted
+        & _dataEncrypted
+            //-> exfiltration attacks
+    }
+}

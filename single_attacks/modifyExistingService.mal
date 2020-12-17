@@ -1,0 +1,55 @@
+category Person{
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.modifyExistingService
+    }       
+                
+    asset Administrator {
+        | adminRights
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.modifyExistingService
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.modifyExistingService
+    }
+}
+
+category Software {
+    asset OS {
+        & masquerading
+
+        | persistence
+
+        | executeCode  
+        
+        # audit
+    }
+
+    asset Windows extends OS{
+        & modifyExistingService
+            info: "Adversaries can modify an existing service to persist malware on a system by using system utilities or by using custom tools to interact with the Windows API. Adversaries may also intentionally corrupt or kill services to execute malicious recovery programs/commands."
+            ->  persistence,
+                masquerading, // Use of existing services is a type of Masquerading that may make detection analysis more challenging
+                executeCode,
+                serviceExecution
+
+        & serviceExecution
+                
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  modifyExistingService
+    }
+}
+
+associations { 
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}

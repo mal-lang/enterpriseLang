@@ -1,0 +1,57 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.launchctl
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  macOS.launchctl // Prevent users from installing their own launch agents or launch daemons and instead require them to be pushed out by group policy.
+    }
+
+    asset Administrator {
+
+    } 
+
+    asset Root extends Administrator {
+        | rootRights
+            ->  macOS.launchctl
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassApplicationWhitelisting
+
+        | bypassProcessWhitelisting
+
+        | bypassFileOrPathWhitelisting
+    } 
+
+    asset MacOS extends OS {
+        & launchctl
+            info: "Adversaries can abuse this functionality to execute code or even bypass whitelisting if launchctl is an allowed process."
+            ->  executeCode, 
+                bypassApplicationWhitelisting,
+                bypassProcessWhitelisting,
+                bypassFileOrPathWhitelisting          
+
+        | executeCode 
+
+    } 
+}
+
+associations{
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

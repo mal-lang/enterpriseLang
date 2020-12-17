@@ -1,0 +1,30 @@
+category Person {
+    asset Administrator {
+        | adminRights
+            -> computer.networkServiceScan
+        
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | networkServiceScan
+             info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation"
+
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        # networkIntrusionDetection
+            -> computer.networkServiceScan
+        # whitelisting
+            -> computer.networkServiceScan
+    }
+    
+}
+
+associations {
+    Administrator [administrator] 1-* <--use--> 1 [computer] Computer
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
+}

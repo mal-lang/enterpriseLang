@@ -1,0 +1,67 @@
+category Person {
+    asset User {
+        | userRights
+            ->  service.externalRemoteServices
+    }     
+}
+
+category Software {
+    asset Service {
+        & externalRemoteServices
+            info: "Adversaries may use remote services to initially access and/or persist within a network."
+            ->  internalNetwork.persistence,
+                internalNetwork.remoteAccess
+    } 
+
+    abstractAsset OS {  
+        & _validAccounts
+            info: "Adversaries may steal the credentials of a specific user or service account using Credential Access techniques or capture credentials earlier in their reconnaissance process through social engineering for means of gaining Initial Access."
+            ->  service.externalRemoteServices
+
+        # disableOrRemoveFeatureOrProgram 
+            info: "https://attack.mitre.org/techniques/T1064/"
+            ->  service.externalRemoteServices
+    } 
+
+    asset Windows extends OS {  
+        & windowsRemoteManagement
+            ->  service.externalRemoteServices // Windows Remote Management can also be used externally  
+    } 
+}
+
+category Network {
+    asset InternalNetwork {
+        | persistence 
+
+        | remoteAccess
+
+        # limitAccessToResourceOverNetwork
+            info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  service.externalRemoteServices
+
+        # multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/"
+            ->  service.externalRemoteServices
+
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  service.externalRemoteServices
+    } 
+}            
+
+associations {    
+    User [user] 1 <--Use--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
+    OS [os] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+

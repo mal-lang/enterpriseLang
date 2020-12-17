@@ -1,0 +1,64 @@
+category Person {
+    asset Administrator {
+        | adminRights
+            ->  windows.sIPAndTrustProviderHijacking
+    } 
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.sIPAndTrustProviderHijacking
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassApplicationWhitelisting
+
+        | bypassAutorunsAnalysis
+
+        | bypassDigitalCertificateValidation 
+
+        | bypassProcessWhitelisting
+
+        | bypassUserModeSignatureValidation
+    } 
+
+    asset Windows extends OS {   
+        & sIPAndTrustProviderHijacking
+            info: "Adversaries may abuse this architecture to subvert trust controls and bypass security policies that allow only legitimately signed code to execute on a system."
+            ->  bypassApplicationWhitelisting,
+                bypassAutorunsAnalysis,
+                bypassDigitalCertificateValidation,
+                bypassProcessWhitelisting,
+                bypassUserModeSignatureValidation  
+
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  sIPAndTrustProviderHijacking
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  sIPAndTrustProviderHijacking
+            
+        # restrictRegistryPermissions // Restrict the ability to modify certain hives or keys in the Windows Registry.
+            info: "https://attack.mitre.org/mitigations/M1024/"
+            ->  sIPAndTrustProviderHijacking
+    } 
+}
+
+associations{
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

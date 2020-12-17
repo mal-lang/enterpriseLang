@@ -1,0 +1,43 @@
+category Person{
+    asset User {
+        | userRights
+            ->  linux.bash_profileAndBashrc,
+                macOS.bash_profileAndBashrc
+    }
+     asset Administrator {
+        | adminRights
+            ->  linux.bash_profileAndBashrc,
+                macOS.bash_profileAndBashrc
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+    asset Linux extends OS {
+        |  bash_profileAndBashrc
+            -> _bash_profileAndBashrc
+        &  _bash_profileAndBashrc 
+            ->  persistence
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  _bash_profileAndBashrc
+    }
+    asset MacOS extends OS{
+        |  bash_profileAndBashrc
+            -> _bash_profileAndBashrc
+        &  _bash_profileAndBashrc 
+            ->  persistence
+        #  restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/" 
+            -> _bash_profileAndBashrc 
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [linux] Linux
+    User [user] 1 <-- ui--> 1-* [macOS] MacOS
+    Administrator [administrator] 1 <-- ui--> 1-* [linux] Linux
+    Administrator [administrator] 1 <-- ui--> 1-* [macOS] MacOS
+}

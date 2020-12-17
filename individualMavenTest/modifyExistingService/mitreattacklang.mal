@@ -1,0 +1,34 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            ->  windows.modifyExistingService
+    }
+    asset SYSTEM {
+        | systemRights
+            ->  windows.modifyExistingService
+    }
+}
+
+category Software {
+    asset OS {
+        # whitelisting
+        | persistence
+
+    }
+    asset Windows extends OS{
+        | modifyExistingService
+            ->  _modifyExistingService
+        & _modifyExistingService
+            ->  persistence
+        # whitelisting
+            +> modifyExistingService
+
+    }
+}
+
+associations {
+    Administrator [administrator] 1-* <-- ui--> 1-* [windows] Windows
+    SYSTEM [system] 1-* <-- ui--> 1-* [windows] Windows
+    Administrator [administrator] 1-* <-- ui--> 1-* [os] OS
+    SYSTEM [system] 1-* <-- ui--> 1-* [os] OS
+}

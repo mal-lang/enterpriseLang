@@ -1,0 +1,56 @@
+category Person {
+    asset User {
+        | userRights
+            ->  browser.installExtensions
+
+        | userCredentials
+
+        | userInformation  
+    }
+
+    asset Employee {
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  browser.browserExtensions
+    }
+}
+
+category Network {
+    asset Browser {
+        | installExtensions
+            ->  browserExtensions
+
+        & browserExtensions
+            info: "Once the extension is installed, it can browse to websites in the background, steal all information that a user enters into a browser, to include credentials, and be used as an installer for a RAT for persistence." 
+            ->  user.userInformation,
+                user.userCredentials,
+                os.persistence
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+
+        | compromisedSystems // with probability
+            ->  browser.browserExtensions
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            ->  browser.browserExtensions
+
+        # executionPrevention 
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  browser.browserExtensions
+
+        # limitSoftwareInstallation
+            info: "https://attack.mitre.org/mitigations/M1033/"
+            ->  browser.browserExtensions
+    }
+}
+
+associations {
+    User [user] 1 <--Use--> 1-* [browser] Browser
+    Employee [employee] 1 <--Use--> 1-* [browser] Browser
+    Browser [browser] 1-* <--Software--> 1 [os] OS
+}

@@ -1,0 +1,58 @@
+category Person {
+    asset User {
+        | userRights
+            -> internalNetwork.usertransmittedDataManipulation,
+               service.usertransmittedDataManipulation
+    }
+    asset Administrator {
+        | adminRights
+            -> internalNetwork.admintransmittedDataManipulation,
+               service.admintransmittedDataManipulation
+    }
+}
+
+category Software {
+    asset Service {
+        & usertransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        & admintransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        # dataEncrypted
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+        
+        # secureCommunication
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        & usertransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        & admintransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        # dataEncrypted
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+        # secureCommunication
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+    }
+}
+
+associations {
+    User [user] 1-* <--use--> 1-* [service] Service
+    Administrator [administrator] 1-* <--use--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
+
+
+}

@@ -1,0 +1,36 @@
+category Person{
+    asset User {
+        | userRights
+    }
+
+    asset Administrator {
+        | adminRights
+            -> windows.applicationShimming
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+
+    asset Windows extends OS{
+        | applicationShimming
+            -> _applicationShimming
+        & _applicationShimming
+            ->  persistence,
+                user.userRights,
+                administrator.adminRights
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/" 
+            ->  _applicationShimming
+        # userAccountControl
+            info: "https://attack.mitre.org/mitigations/M1052/"
+            ->  _applicationShimming    
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [windows] Windows
+    Administrator [administrator] 1-* <-- ui--> 1-* [windows] Windows
+}

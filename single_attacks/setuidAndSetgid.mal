@@ -1,0 +1,47 @@
+category Person {
+    asset User {
+        | userRights
+            ->  linux.setuidAndSetgid,
+                macOS.setuidAndSetgid
+    }
+}
+
+category Software {
+    asset Service {
+        | _exploitationForPrivilegeEscalation
+    }
+
+    asset OS {
+        | persistence
+
+    }
+   
+    asset MacOS extends OS {
+        & setuidAndSetgid
+            info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context."
+            ->  service._exploitationForPrivilegeEscalation,
+                persistence
+       
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  setuidAndSetgid
+    }
+
+    asset Linux extends OS {
+        & setuidAndSetgid
+            info: "An adversary can take advantage of this to either do a shell escape or exploit a vulnerability in an application with the setsuid or setgid bits to get code running in a different user’s context."
+            ->  service._exploitationForPrivilegeEscalation,
+                persistence
+       
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  setuidAndSetgid
+    }
+}
+
+associations {
+    User [linuxUser] 1 <--Ui--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    MacOS [macOS] 1 <--Contain--> 1-* [service] Service
+    Linux [linux] 1 <--Contain--> 1-* [service] Service
+}

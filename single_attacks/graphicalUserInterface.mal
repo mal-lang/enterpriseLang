@@ -1,0 +1,42 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.graphicalUserInterface
+    }
+
+    asset Administrator {
+        | adminRights
+            ->  os.graphicalUserInterface
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  os.graphicalUserInterface
+    } 
+}
+
+category Software{
+    abstractAsset OS{
+        | graphicalUserInterface
+            info: "Adversaries may use a system's GUI during an operation, commonly through a remote interactive session such as Remote Desktop Protocol, to search for information and execute files via mouse double-click events, the Windows Run command, or other potentially difficult to monitor interactions."
+            ->  windows.remoteDesktopProtocol // leads to Remote Desktop Protocol attack on Windows
+    }
+
+    asset Windows extends OS{
+        | remoteDesktopProtocol 
+    }
+}
+
+category Hardware {
+    asset Computer {
+        | infectedWindowsComputer
+
+    }
+}    
+
+associations{   
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    OS [os] 1-* <--Ui--> 1 [system] SYSTEM
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}

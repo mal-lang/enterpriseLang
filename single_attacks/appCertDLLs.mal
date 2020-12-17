@@ -1,0 +1,43 @@
+category Person{    
+    asset Administrator {
+        | adminRights
+    }
+    
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin._appCertDLLs
+    }
+    
+    asset SYSTEM {
+        | systemRights
+            ->  windows._appCertDLLs
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+    
+    asset Windows extends OS{
+        | _appCertDLLs
+            -> appCertDLLs
+            
+        & appCertDLLs
+            info: "This value can be abused to obtain persistence and privilege escalation by causing a malicious DLL to be loaded and run in the context of separate processes on the computer."
+            ->  persistence,
+                systemWindows.systemRights,
+                windowsAdmin.adminRights
+                
+        # executionPrevention 
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            ->  appCertDLLs
+    }
+}
+
+associations {
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}

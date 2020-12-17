@@ -1,0 +1,60 @@
+category Hardware {
+    asset Computer {
+        | infectedComputer 
+            -> os.uncommonlyUsedPortsConnection
+    }
+}
+
+category Software {
+    abstractAsset OS {   
+        & uncommonlyUsedPortsConnection
+            info: "Adversaries may conduct C2 communications over a non-standard port to bypass proxies and firewalls that have been improperly configured."
+            ->  c2Server.c2Connected,
+                firewall._bypassFirewall,
+                internalNetwork.bypassProxies 
+    }
+}
+
+category Network {
+    asset C2Server {
+        | c2Connected
+    }
+    
+    asset ExternalNetwork {       
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.uncommonlyUsedPortsConnection
+            
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.uncommonlyUsedPortsConnection
+    }
+
+    asset InternalNetwork {
+        | bypassProxies
+        
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.uncommonlyUsedPortsConnection
+            
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.uncommonlyUsedPortsConnection
+    }
+    
+    asset Firewall {
+        & _bypassFirewall
+        
+        # networkSegmentation // Properly configure firewalls and proxies to limit outgoing traffic to only necessary ports for that particular network segment.
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.uncommonlyUsedPortsConnection
+    }    
+}
+
+associations {
+    OS [os] 1 <--System--> 1-* [computer] Computer
+    OS [os] 1-* <--Connect--> 1-* [c2Server] C2Server
+    Firewall [firewall] 0-1 <--Protect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+}

@@ -1,0 +1,46 @@
+category Person {
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.lSASS_Driver
+    } 
+    
+    asset SYSTEM {
+        | systemRights
+            ->  windows.lSASS_Driver
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | persistence
+    } 
+
+    asset Windows extends OS {   
+        & lSASS_Driver
+            info: "Adversaries may target lsass.exe drivers to obtain execution and/or persistence. By either replacing or adding illegitimate drivers (e.g., DLL Side-Loading or DLL Search Order Hijacking), an adversary can achieve arbitrary code execution triggered by continuous LSA operations."
+            ->  executeCode,
+                persistence
+
+        | executeCode 
+    } 
+}
+
+associations{
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows   
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

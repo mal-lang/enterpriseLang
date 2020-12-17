@@ -1,0 +1,57 @@
+category Person {
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.indicatorBlocking
+ 
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassAntivirus
+
+        | bypassLogAnalysis 
+
+        | bypassHostIntrusionPrevention
+
+        # restrictFileAndDirectoryPermissions
+
+        # softwareConfiguration
+            info: "https://attack.mitre.org/mitigations/M1054/"
+
+    } 
+
+    asset Windows extends OS {   
+        & indicatorBlocking
+            info: "An adversary may attempt to block indicators or events typically captured by sensors from being gathered and analyzed."
+            ->  bypassAntivirus,
+                bypassLogAnalysis,
+                bypassHostIntrusionPrevention
+ 
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  indicatorBlocking
+
+        # softwareConfiguration
+            info: "https://attack.mitre.org/mitigations/M1054/"
+            +>  indicatorBlocking   
+    } 
+}
+
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

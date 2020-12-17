@@ -1,0 +1,16 @@
+category Hardware {
+    asset Computer {
+        | dataCollected
+            -> scheduledExfiltration
+
+        | dataCompressed
+            -> scheduledExfiltration
+
+        | dataEncrypted
+            -> scheduledExfiltration
+
+        | scheduledExfiltration
+            //-> exfiltrationOverC2,
+            //   exfiltrationOverAternativeProtocol
+    }
+}

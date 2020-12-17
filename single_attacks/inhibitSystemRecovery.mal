@@ -1,0 +1,78 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os.inhibitSystemRecovery    
+    } 
+
+    asset Administrator {
+        | adminRights
+            ->  os.inhibitSystemRecovery  
+    } 
+
+
+    asset SYSTEM {
+        | systemRights
+            ->  os.inhibitSystemRecovery  
+    } 
+
+}
+
+category Software {
+    abstractAsset OS{
+        & userDataDestruction
+            ->  inhibitSystemRecovery // disable or delete system recovery features to augment the effects
+
+        & adminDataDestruction
+            ->  inhibitSystemRecovery  
+
+        & systemDataDestruction
+            ->  inhibitSystemRecovery  
+
+        & userDataEncryptedForImpact
+            info: "Attackers can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted"
+            ->  inhibitSystemRecovery 
+
+        & adminDataEncryptedForImpact
+            ->  inhibitSystemRecovery 
+
+        & systemDataEncryptedForImpact
+            ->  inhibitSystemRecovery 
+
+        & inhibitSystemRecovery
+            info: "Adversaries may delete or remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery."
+
+        # dataBackup
+            info: "https://attack.mitre.org/mitigations/M1053/"
+            info: "Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
+            ->  inhibitSystemRecovery
+
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            ->  inhibitSystemRecovery
+
+    } 
+
+    asset Windows extends OS {   
+        | windowsManagementInstrumentation
+            info: "Execution granted through EWM injection may allow access to both the target process's memory and possibly elevated privileges."
+            ->  os.inhibitSystemRecovery
+    } 
+}
+
+associations{
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+    SYSTEM [system] 1 <--Ui--> 1 [os] OS  
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,62 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.inputPrompt,
+                macOS.inputPrompt
+
+        | userCredentials  
+    }
+
+    asset Employee {
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  windows.inputPrompt,
+                macOS.inputPrompt 
+    }
+}
+
+category Software {
+    abstractAsset OS{
+
+    } 
+
+    asset Windows extends OS {   
+        & inputPrompt
+            info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
+            ->  bypassUserAccountControl, // leads to Bypass User Account Control attack
+                powerShell, // leads to PowerShell attack
+                user.userCredentials
+
+        & bypassUserAccountControl
+
+        & powerShell
+    } 
+
+    asset MacOS extends OS {
+        & inputPrompt
+            info: "Adversaries may mimic this functionality to prompt users for credentials with a seemingly legitimate prompt for a number of reasons that mimic normal usage."
+            ->  appleScript, // leads to AppleScript attack
+                user.userCredentials
+
+        & appleScript
+    }       
+}
+
+associations{
+    User [user] 1 <--Ui--> 1-* [os] OS
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    User [macOSUser] 1 <--Use--> 1-* [macOS] MacOS
+    Employee [employee] 1 <--Use--> 1-* [windows] Windows
+    Employee [employee] 1 <--Use--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

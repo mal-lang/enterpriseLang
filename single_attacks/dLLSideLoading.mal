@@ -1,0 +1,39 @@
+category Software {
+    asset Service {
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/"
+            ->  windows.dLLSideLoading
+    }
+
+    abstractAsset OS{
+        | bypassProcessWhitelisting
+
+        | bypassAntivirus 
+
+        # audit 
+        
+        # restrictFileAndDirectoryPermissions
+    }
+
+    asset Windows extends OS {
+        | dLLSideLoading
+            ->  os.bypassProcessWhitelisting,
+                os.bypassAntivirus
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  dLLSideLoading          
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  dLLSideLoading
+    }
+}
+   
+
+associations{   
+    Service [service] 1-* <--Contain--> 1 [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+

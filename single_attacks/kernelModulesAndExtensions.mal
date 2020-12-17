@@ -1,0 +1,67 @@
+category Person {
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  linux.kernelModulesAndExtensions,
+                macOS.kernelModulesAndExtensions
+    } 
+
+    asset Root extends Administrator {
+        | rootRights
+            ->  linux.kernelModulesAndExtensions,
+                macOS.kernelModulesAndExtensions
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | rootkit
+
+        # antivirus
+
+        # executionPrevention
+    } 
+
+    asset Linux extends OS { 
+        & kernelModulesAndExtensions
+            info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
+            ->  rootkit
+
+        # antivirus
+            info: "https://attack.mitre.org/mitigations/M1049/"
+            +>  kernelModulesAndExtensions
+
+        # executionPrevention
+            +>  kernelModulesAndExtensions
+
+    } 
+
+    asset MacOS extends OS {
+        & kernelModulesAndExtensions
+            info: "Adversaries can use loadable kernel modules to covertly persist on a system and evade defenses."
+            ->  rootkit
+
+        # antivirus
+            info: "https://attack.mitre.org/mitigations/M1049/"
+            +>  kernelModulesAndExtensions
+
+        # executionPrevention
+            +>  kernelModulesAndExtensions
+    } 
+}
+
+associations{
+    Administrator [linuxAdministrator] 1 <--Ui--> 1-* [linux] Linux
+    Administrator [macosAdministrator] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

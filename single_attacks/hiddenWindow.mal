@@ -1,0 +1,36 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.hiddenWindow
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        # executionPrevention
+    } 
+
+    asset MacOS extends OS {
+        & hiddenWindow
+            info: "A common use for this is when applications run in the system tray, but don't also want to show up in the Dock. However, adversaries can abuse this feature and hide their running window."
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  hiddenWindow
+    } 
+}
+
+associations {    
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,50 @@
+category Person {
+    asset User {
+        | userRights
+            ->  linux.trap,
+                macOS.trap
+    }
+
+    asset Administrator {
+        | adminRights
+            info: "Administrator is an actual account."  
+    }
+    
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  linux.trap,
+                macOS.trap
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+
+    asset Linux extends OS {
+        | trap
+            info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
+            ->  executeCode,
+                persistence
+
+        | executeCode
+    }
+
+    asset MacOS extends OS {
+        | trap  
+            info: "Adversaries can use this to register code to be executed when the shell encounters specific interrupts either to gain execution or as a persistence mechanism."
+            ->  executeCode,
+                persistence
+
+        | executeCode
+    }
+}
+
+associations {
+    User [linuxUser] 1 <--Ui--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootLinux] 1 <--Ui--> 1-* [linux] Linux
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}

@@ -1,0 +1,36 @@
+category Person{
+    asset User {
+        | userRights
+            ->  macOS.launchAgent
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  macOS.launchAgent
+    }
+
+    asset Administrator {
+    }
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  macOS.launchAgent
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+    }
+
+    asset MacOS extends OS{
+        & launchAgent
+            info: "Adversaries may install a new launch agent that can be configured to execute at login by using launchd or launchctl to load a plist into the appropriate directories."     
+            ->  persistence
+    }
+}
+
+associations {
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}

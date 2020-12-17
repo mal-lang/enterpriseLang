@@ -1,0 +1,11 @@
+category Software {
+    asset OS {
+        | dataCollected 
+
+        & userCommandLineInterface
+            -> dataCollected
+
+        & adminCommandLineInterface 
+            -> dataCollected
+    }
+}

@@ -1,0 +1,31 @@
+category Person{
+    asset User {
+        
+        | userRights
+            -> os.systemOwnerUserDiscovery
+
+    }
+     asset Administrator {
+        
+        | adminRights
+            -> os.systemOwnerUserDiscovery
+
+    }
+}
+
+category Software {
+    asset OS {
+        | systemOwnerUserDiscovery
+        & _systemOwnerUserDiscovery
+            info: "https://attack.mitre.org/techniques/T1033/"
+            -> discovery
+        | discovery
+        # whitelisting
+            -> _systemOwnerUserDiscovery
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <-- ui--> 1-* [os] OS
+}

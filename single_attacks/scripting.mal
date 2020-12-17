@@ -1,0 +1,39 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.scripting
+    }
+}
+
+category Software {
+    asset Service {
+        & exploitationForClientExecution
+    }
+
+    asset OS {
+        & scripting
+            info: "Adversaries may use scripts to aid in operations and perform multiple actions that would otherwise be manual."
+            ->  browser.spearphishingAttachment, // scripts can be embedded inside Office documents as macros that can be set to execute when files used in Spearphishing Attachment
+                service.exploitationForClientExecution, // malicious embedded macros are an alternative means of execution than software exploitation through Exploitation for Client Execution
+
+        # applicationIsolationAndSandboxing
+            info: "https://attack.mitre.org/mitigations/M1048/"
+            ->  scripting
+
+        # disableOrRemoveFeatureOrProgram 
+            info: "https://attack.mitre.org/techniques/T1064/"
+            ->  scripting
+    }
+}
+
+category Network {
+    asset Browser {
+        & spearphishingAttachment
+    }
+}
+
+associations {
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Browser [browser] 1-* <--Software--> 1 [os] OS
+    OS [os] 1 <--Contain--> 1-* [service] Service
+}

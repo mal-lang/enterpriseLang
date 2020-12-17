@@ -1,0 +1,63 @@
+category Person {
+    asset User {
+        | userRights
+            ->  macOS.hISTCONTROL,
+                linux.hISTCONTROL
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        # operatingSystemConfiguration    
+
+        | bypassHostForensicAnalysis    
+
+        | bypassLogAnalysis 
+    } 
+
+    asset Linux extends OS {
+        & hISTCONTROL
+            info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
+            ->  bypassLogAnalysis,
+                bypassHostForensicAnalysis
+
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  hISTCONTROL
+
+        # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
+            info: "https://attack.mitre.org/mitigations/M1039/"
+            ->  hISTCONTROL
+    } 
+
+    asset MacOS extends OS {
+        & hISTCONTROL
+            info: "Adversaries can use this to operate without leaving traces by simply prepending a space to all of their terminal commands."     
+            ->  bypassLogAnalysis,
+                bypassHostForensicAnalysis
+
+        # operatingSystemConfiguration
+            info: "https://attack.mitre.org/mitigations/M1028/" 
+            +>  hISTCONTROL
+
+        # environmentVariablePermissions // Prevent modification of environment variables by unauthorized users and groups.
+            info: "https://attack.mitre.org/mitigations/M1039/"
+            ->  hISTCONTROL
+    } 
+}
+
+associations {    
+    User [linuxUser] 1 <--Ui--> 1-* [linux] Linux   
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

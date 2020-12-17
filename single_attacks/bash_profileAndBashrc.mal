@@ -1,0 +1,57 @@
+category Person{
+    asset User {
+        | userRights
+            ->  linux._bash_profileAndBashrc,
+                macOS._bash_profileAndBashrc
+    }
+    
+     asset Administrator {
+        | adminRights
+    }
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  linux._bash_profileAndBashrc,
+                macOS._bash_profileAndBashrc
+    }            
+}
+
+category Software {
+    asset OS {
+        | persistence
+        
+        # restrictFileAndDirectoryPermissions
+    }
+    asset Linux extends OS {
+        | _bash_profileAndBashrc
+            -> bash_profileAndBashrc
+            
+        & bash_profileAndBashrc 
+            info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
+            ->  persistence
+            
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  bash_profileAndBashrc
+    }
+    asset MacOS extends OS{
+        | _bash_profileAndBashrc
+            -> bash_profileAndBashrc
+            
+        & bash_profileAndBashrc 
+            info: "Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell."
+            ->  persistence
+            
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  bash_profileAndBashrc
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [linux] Linux
+    User [user] 1 <-- ui--> 1-* [macOS] MacOS
+    Administrator [administrator] 1 <-- ui--> 1-* [linux] Linux
+    Administrator [administrator] 1 <-- ui--> 1-* [macOS] MacOS
+}

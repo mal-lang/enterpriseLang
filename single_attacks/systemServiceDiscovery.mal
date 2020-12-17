@@ -1,0 +1,44 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.systemServiceDiscovery
+    }
+
+    asset Administrator {
+        | adminRights
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.systemServiceDiscovery
+    }
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.systemServiceDiscovery
+    }
+}
+
+category Software {
+    asset Service {
+        | serviceInformation 
+    }
+
+    asset OS {       
+    }
+
+    asset Windows extends OS {
+        | systemServiceDiscovery
+            info: "Adversaries may try to get information about registered services."
+            ->  service.serviceInformation
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows   
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+    Windows [windows] 1 <--Contain--> 1-* [service] Service
+}

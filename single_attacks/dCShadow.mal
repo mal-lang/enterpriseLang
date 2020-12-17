@@ -1,0 +1,49 @@
+category Person {
+    asset Administrator {
+
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.dCShadow
+    }       
+}
+
+category Software {
+    abstractAsset OS {
+        | bypassLogAnalysis
+
+        | persistence
+    } 
+
+    asset Windows extends OS {   
+        | dCShadow
+            info: "This technique may bypass system logging and security monitors such as security information and event management (SIEM) products."
+            ->  _sIDHistoryInjection,
+                bypassLogAnalysis
+
+        & sIDHistoryInjection
+            info: "Adversaries may use SID mechanism for privilege escalation. This manipulation may result in elevated access to local resources and/or access to otherwise inaccessible domains via lateral movement techniques such as Remote Services, Windows Admin Shares, or Windows Remote Management."
+            ->  _sIDHistoryInjection
+
+        & _sIDHistoryInjection 
+            info: "This is a helper attack step. Adversaries may utilize DCShadow to perform SID-History Injection and/or manipulate AD objects (such as accounts, access control lists, schemas) to establish backdoors for Persistence."           
+            ->  persistence   
+    } 
+}
+
+associations {    
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

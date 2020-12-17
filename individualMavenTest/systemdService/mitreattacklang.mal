@@ -1,0 +1,41 @@
+category Person{
+    asset User {  
+        | userRights
+            -> linux.systemdService
+    }
+
+    asset Root {
+        | rootRights
+            -> linux.systemdService
+    }
+}
+
+category Software {
+    asset OS {
+        | persistence
+
+        | boot
+            -> persistence
+        | runCode
+            -> persistence
+        # whitelisting
+    }
+
+    asset Linux extends OS {
+        # whitelisting
+            +> _systemdService
+        # systemdServiceDefens
+            info: "https://attack.mitre.org/techniques/T1501/"
+            -> _systemdService
+        | systemdService
+            -> _systemdService
+        & _systemdService
+            ->  boot,
+                runCode
+    }
+}
+
+associations {
+    User [user] 1-* <-- ui--> 1-* [linux] Linux
+    Root [root] 1-* <-- ui--> 1-* [linux] Linux
+}

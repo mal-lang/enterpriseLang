@@ -1,0 +1,21 @@
+category Person {
+    asset User {
+        | userRights 
+            -> os.applicationWindowDiscovery
+    }
+}
+
+category Software {
+    asset OS {
+        & applicationWindowDiscovery
+            info: "get a listing of opened application windows"
+        # whitelisting 
+            -> applicationWindowDiscovery
+    
+            
+    }
+}
+
+associations{
+    User [user] 1 <-- ui--> 1-* [os] OS
+}

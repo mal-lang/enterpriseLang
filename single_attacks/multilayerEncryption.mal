@@ -1,0 +1,45 @@
+category Software {
+    abstractAsset OS{
+        & multilayerEncryption
+            info: "An adversary performs C2 communications using multiple layers of encryption, typically (but not exclusively) tunneling a custom encryption scheme within a protocol encryption scheme such as HTTPS or SMTPS."
+            ->  c2Server.c2Connected       
+    } 
+}
+
+category Network {
+
+    asset InternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.multilayerEncryption
+    } 
+
+    asset ExternalNetwork {
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.multilayerEncryption
+    } 
+}
+
+category Hardware {
+    asset C2Server {
+        | c2Connected
+    } 
+}
+
+associations {    
+    OS [os] 1-* <--Connect--> 1-* [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1-* <--Connect--> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+}
+
+
+
+
+
+
+
+
+
+
+

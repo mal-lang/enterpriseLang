@@ -1,0 +1,64 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows._dLLSearchOrderHijacking
+    }
+
+    asset Administrator {
+        | adminRights
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin._dLLSearchOrderHijacking
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows._dLLSearchOrderHijacking
+    } 
+}
+
+category Software{
+    abstractAsset OS{
+        | bypassProcessWhitelisting
+
+        # audit 
+
+        # executionPrevention     
+    }
+
+    asset Windows extends OS {
+        | _dLLSearchOrderHijacking
+            ->  dLLSearchOrderHijacking 
+
+        & dLLSearchOrderHijacking
+            info: "Adversaries may take advantage of the Windows DLL search order and programs that ambiguously specify DLLs to gain privilege escalation and persistence."
+            ->  bypassProcessWhitelisting,
+                systemWindows.systemRights,
+                windowsUser.userRights,
+                windowsAdministrator.adminRights
+
+        # executionPrevention             
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  dLLSearchOrderHijacking         
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  dLLSearchOrderHijacking
+
+        # restrictLibraryLoading 
+            info: "https://attack.mitre.org/mitigations/M1044/"
+            ->  dLLSearchOrderHijacking
+    }
+}
+   
+
+associations{   
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1-* <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+}
+
+

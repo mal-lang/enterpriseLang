@@ -1,0 +1,63 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.groupPolicyModification
+    } 
+
+    asset Administrator {
+        | adminRights
+
+        & createUserAccount 
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.groupPolicyModification
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        & uploadRemoteFile
+
+        & disablingSecurityTools
+
+        | bypassFileSystemAccessControls
+
+        | bypassSystemAccessControls
+    } 
+
+    asset Windows extends OS {   
+        & groupPolicyModification
+            info: "Malicious GPO modifications can be used to implement Scheduled Task, Disabling Security Tools, Remote File Copy, Create Account, Service Execution and more."
+            ->  scheduledTask, // leads to Scheduled Task attack
+                disablingSecurityTools, // leads to Disabling Security Tools attack
+                uploadRemoteFile, // leads to Remote File Copy attack
+                serviceExecution, // leads to Service Execution attack
+                windowsAdministrator.createUserAccount,
+                bypassSystemAccessControls,
+                bypassFileSystemAccessControls
+
+        & scheduledTask
+
+        & serviceExecution
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows 
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,89 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.pathInterception
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.pathInterception
+    } 
+
+    asset Administrator {
+
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            info: "WindowsAdmin account is equivalent to Unix Root account."
+            +>  windowsWindowsAdmin.pathInterception
+    }   
+
+    asset SYSTEM {
+        | systemRights
+            info: "A SYSTEM is a security principal. If the computer is joined to a domain, processes running as SYSTEM can access domain servers in the context of the computer's domain account. Processes running as Administrator have no access to domain computers."
+            ->  windows.pathInterception
+    }             
+}
+
+category Software {
+    abstractAsset OS {  
+        # audit 
+        # executionPrevention
+        # restrictFileAndDirectoryPermissions
+    } 
+
+    asset Windows extends OS {   
+        | executeCode 
+
+        & pathInterception
+            info: "Adversaries may take advantage of performing path interception: unquoted paths, path environment variable misconfigurations, and search order hijacking."
+            ->  unquotedPaths,
+                pathEnvironmentVariableMisconfiguration,
+                searchOrderHijacking
+
+        | unquotedPaths
+            info: "An adversary can place an executable in a higher level directory of the path, and Windows will resolve that executable instead of the intended executable."
+            ->  executeCode
+
+        | pathEnvironmentVariableMisconfiguration 
+            info: "A program may be placed in the preceding directory that is named the same as a Windows program (such as cmd, PowerShell, or Python), which will be executed when that command is executed from a script or command-line."
+            ->  executeCode
+
+        | searchOrderHijacking
+            info: "Search order hijacking occurs when an adversary abuses the order in which Windows searches for programs that are not given a path."
+            ->  _dLLSearchOrderHijacking // Search order hijacking is a common practice for DLL Search Order Hijacking
+
+        & _dLLSearchOrderHijacking
+
+        # audit 
+            info: "https://attack.mitre.org/mitigations/M1047/"
+            +>  pathInterception
+
+        # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/"
+            +>  pathInterception
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  pathInterception
+
+
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1 <--Ui--> 1-* [windows] Windows
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,51 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.uploadRemoteFile, 
+               os.downloadRemoteFile
+    }
+}
+
+category Hardware{
+    asset Computer {
+        & Remote File Copy
+            // leads to file execution attacks
+           // -> employee.userExecution
+        & downloadRemoteFile
+            info: "data collection from the user" 
+        # networkIntrusionDetection
+            info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
+            -> uploadRemoteFile, 
+               downloadRemoteFile
+    }
+}
+
+category Network {
+    asset ExternalNetwork {
+        | bypassNetworkDetection
+        
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.commonlyUsedPortsConnection
+            
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.commonlyUsedPortsConnection
+    }
+
+    asset InternalNetwork {
+        | bypassNetworkDetection
+        
+        # networkIntrusionPrevention
+            info: "https://attack.mitre.org/mitigations/M1031/"
+            ->  os.commonlyUsedPortsConnection
+            
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  os.commonlyUsedPortsConnection
+    }
+}
+
+associations{
+    User [user] 1 <-- ui--> 1 [computer] Computer
+}

@@ -1,0 +1,46 @@
+category Person {
+    asset User {
+        | userRights
+            ->  windows.networkShareConnectionRemoval
+    } 
+
+    asset Administrator {
+        | adminRights
+    } 
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.networkShareConnectionRemoval
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | bypassHostForensicAnalysis
+    } 
+
+    asset Windows extends OS {   
+        | networkShareConnectionRemoval
+            info: "Adversaries may remove share connections that are no longer useful in order to clean up traces of their operation."
+            ->  bypassHostForensicAnalysis
+
+        & windowsAdminShares
+            ->  networkShareConnectionRemoval // leads to Network Share Connection Removal attack
+    } 
+}
+
+associations {    
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows  
+}
+
+
+
+
+
+
+
+
+
+
+

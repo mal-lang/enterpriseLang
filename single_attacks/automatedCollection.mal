@@ -1,0 +1,47 @@
+category Person {
+    asset User {
+        | userRights
+            ->  os._automatedCollection
+                
+    }
+    asset Administrator {
+        | adminRights
+            ->  os._automatedCollection
+    }
+}
+
+category Software {
+    asset OS {
+        & scripting // from scripting attack
+            ->  _automatedCollection
+            
+        | fileAndDirectoryDiscovery
+            ->  _automatedCollection
+
+        & uploadRemoteFile // combined with Remote File Copy attack
+            ->  _automatedCollection
+        
+        | _automatedCollection
+            ->  automatedCollection
+
+        & automatedCollection
+            info: "Once established within a system or network, an adversary may use automated techniques for collecting internal data."
+            ->  dataCollected, 
+                sensitiveDataCollected
+
+        | dataCollected
+
+        & sensitiveDataCollected
+        
+        # encryptSensitiveInformation
+            ->  sensitiveDataCollected
+
+        # remoteDataStorage
+            ->  automatedCollection
+    }
+}
+
+associations {
+    User [user] 1 <--Ui--> 1-* [os] OS
+    Administrator [administrator] 1 <--Ui--> 1-* [os] OS
+}

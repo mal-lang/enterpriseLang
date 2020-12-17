@@ -1,0 +1,820 @@
+category Person {
+    asset User {
+        | userRights
+            -> os.accountDiscovery,
+                os.domainDiscovery,
+                os.applicationWindowDiscovery,
+                os.bruteForce,
+                os.passwordPolicyDiscovery,
+                os.runningProcessDiscovery,
+                os.remoteSystemDiscovery,
+                os.userCommandLineInterface,
+                os.processInjection,
+                computer.userDataDestruction,
+                computer.fileDiscovery,
+                computer.directoryDiscovery,
+                computer.fileDeletion,
+                computer.uploadRemoteFile, 
+                computer.downloadRemoteFile,
+                computer.collectAudio,
+                internalNetwork.usertransmittedDataManipulation,
+                service.usertransmittedDataManipulation,
+                windows.peripheralDeviceDiscovery,
+                computer.permissionGroupsDiscovery,
+                service.remoteAccessTools,
+                windows.emailStorageCollection,
+                windows.videoCollection,
+                macOS.videoCollection,
+                service._exploitationForDefenseEvasion,
+                os.systemInformationDiscovery,
+                computer.automatedCollection,
+                os.scripting,
+                macOS.spaceAfterFileName,
+                linux.spaceAfterFileName,
+                macOS.networkShareDiscovery,
+                windows.networkShareDiscovery,
+                macOS.userSecuritySoftwareDiscovery,
+                windows.userSecuritySoftwareDiscovery,
+                computer.userDiskWiped,
+                computer.userDataEncryptedForImpact
+
+        | userCredentials
+            -> windows.outlookEmailCollection,
+               internalNetwork.exchangeServerCollection
+
+        
+    }
+
+    asset Administrator {
+        | adminRights
+            -> user.userRights,
+               windows.createService,
+               computer.adminDataDestruction,
+               os.detailedRunningProcessDiscovery,
+               os.detailedRemoteSystemDiscovery,
+               os.adminCommandLineInterface,
+               windows.bootkit,
+               linux.bootkit,
+               internalNetwork.admintransmittedDataManipulation,
+               service.admintransmittedDataManipulation,
+               computer.networkServiceScan,
+               windows.scheduledTask,
+               computer.automatedCollection,
+               computer.sensitiveDataCollected,
+               computer.diskStructureWipe,
+               computer.adminDiskWiped,
+               computer.adminDataEncryptedForImpact
+
+
+    }
+    asset WindowsAdmin {
+        | systemRights
+            -> administrator.adminRights,
+               windows.executeService,
+               windows.queryRegistery,
+               windows.adminSecuritySoftwareDiscovery
+
+    }
+    asset Root extends Administrator{
+        | rootRights
+            -> macOS.adminSecuritySoftwareDiscovery
+
+    }
+    asset Employee {
+        & spearphishingLinkClicked [UniformDistribution(20,1)]
+            rationale: "20 % link https://faui1-files.cs.fau.de/filepool/publications/zina/2017-benenson-unpacking-spear-phishing.pdf"
+            -> browser.spearphishingLink
+
+        | pageVisited
+            -> browser.maliciousWebsite
+        | adLinkClicked
+            -> browser.maliciousAds
+
+
+        & spearphishingAttachmentDownload
+            -> browser.spearphishingAttachment
+        # trainedEmployee 
+            -> spearphishingAttachmentDownload, 
+               spearphishingLinkClicked, 
+               userExecution,
+               _mediaInserted
+        
+        & userExecution
+            -> computer.infectedComputer,
+               computer.infectedWindowsComputer,
+               os.scripting
+
+        | insertMedia
+            -> userExecution,
+               manualManipulation
+        | manualManipulation
+            -> user.userRights
+        | mediaInserted
+            -> _mediaInserted
+        & _mediaInserted
+            -> removableMedia.dataExfiltrated
+        
+
+    }
+    asset Adversary {
+        | maliciousWebsite
+            -> browser.maliciousWebsite, 
+               employee.pageVisited
+        | maliciousAds
+            -> browser.maliciousAds, 
+               employee.adLinkClicked
+        | spearphishingAttachmentAttack
+        -> employee.spearphishingAttachmentDownload,
+           browser.spearphishingAttachment
+
+        | spearphishingLinkAttack
+        -> employee.spearphishingLinkClicked,
+           browser.spearphishingLink
+
+
+        
+   
+    }
+}
+
+category Software {
+    asset Service {
+        & usertransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        & admintransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        # dataEncrypted
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+        
+        # secureCommunication
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+        | remoteAccessTools
+            -> internalNetwork.c2Connexion
+
+        # whitelisting
+            -> remoteAccessTools
+
+        | exploitationForDefenseEvasion //end step of securoty software discovery
+            -> _exploitationForDefenseEvasion
+
+        & _exploitationForDefenseEvasion
+            -> bypassAntivirus,
+               bypassSystemAccessControls
+        # softwareUpdated
+            -> exploitationForDefenseEvasion
+
+        # sandboxing
+            -> exploitationForDefenseEvasion
+
+        | bypassAntivirus
+
+        | bypassSystemAccessControls
+    }
+    abstractAsset OS{
+        & accountDiscovery
+            info: "get account names and information"
+
+        & domainDiscovery
+            info: "get domain names and information"
+
+        & applicationWindowDiscovery
+            info: "get a listing of opened application windows"
+
+        & runningProcessDiscovery
+            info: "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software running on systems within the network."
+            -> processInjection
+
+        & detailedRunningProcessDiscovery
+            info: "Adversaries with admin rights may get better process ownership details"
+
+        & remoteSystemDiscovery
+            info: "Adversaries will likely attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system."
+
+        & detailedRemoteSystemDiscovery
+            info: "Adversaries with admin rights may get better details of the hosts enumerated"
+        
+        & adminCommandLineInterface
+            -> computer.dataCollected// entrypoints of attacks that can be done with command line interface under admin rights
+        
+        & userCommandLineInterface
+            -> computer.dataCollected// entrypoints of attacks that can be done with command line interface under user rights
+
+        & systemInformationDiscovery
+            info:"An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture."
+        
+
+        # whitelisting
+            -> accountDiscovery,
+                domainDiscovery,
+                applicationWindowDiscovery,
+                runningProcessDiscovery,
+                detailedRunningProcessDiscovery,
+                remoteSystemDiscovery,
+                detailedRemoteSystemDiscovery,
+                adminCommandLineInterface, 
+                userCommandLineInterface,
+                processInjection,
+                systemInformationDiscovery
+
+        & processInjection
+            -> administrator.adminRights,
+               bypassAntivirus,
+               bypassWhitelisting
+
+        | bypassAntivirus
+
+        | bypassWhitelisting
+        
+        
+        | passwordPolicyDiscovery
+            -> bruteForceWithPasswordPolicy
+        & bruteForceWithPasswordPolicy
+            -> user.userCredentials //the probability distribution should be so that it has higher chance of success than the bruteforce attack
+
+        & bruteForce
+            info: "Adversaries may use brute force techniques to attempt access to accounts when passwords are unknown or when password hashes are obtained."
+            -> user.userCredentials
+        # lockoutPolicies
+            -> bruteForce
+
+        | codeDelivered
+            -> antivirusCheck
+        & antivirusCheck
+            -> runCode
+        # antivirus
+            -> antivirusCheck,
+                spearphishingAttachmentDownload,
+                spearphishingLinkDownload
+
+        | runCode
+            -> computer.infectedComputer
+
+        & spearphishingAttachmentDownload
+            -> employee.userExecution
+
+        & spearphishingLinkDownload
+            -> employee.userExecution
+
+        | scripting
+            -> _scripting
+
+        & _scripting
+            -> computer.automatedCollection
+
+        # restricedScripting
+            -> _scripting
+        # sandboxing
+            -> _scripting
+
+    }
+    asset Linux extends OS {
+        & bootkit
+            -> persistance
+        # secureBootProcess
+            -> bootkit
+        | persistance
+
+        & spaceAfterFileName
+            -> employee.userExecution
+        
+        # fileMonitoring
+            -> spaceAfterFileName
+
+    }
+    asset MacOS extends OS{
+        | videoCollection
+            -> computer.collectVideo
+
+        & spaceAfterFileName
+            -> employee.userExecution
+        
+        # fileMonitoring
+            -> spaceAfterFileName
+
+        & networkShareDiscovery
+            -> internalNetwork.networkShareDiscovery
+
+        & userSecuritySoftwareDiscovery
+            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            // -> leads to exploitation for defense evasion attack
+        & adminSecuritySoftwareDiscovery
+            // -> leads to exploitation for defense evasion attack
+        
+
+        # whitelisting
+            -> networkShareDiscovery,
+               userSecuritySoftwareDiscovery,
+               adminSecuritySoftwareDiscovery
+    }
+    asset Windows{
+        & createService
+            -> executeService
+
+        & queryRegistery
+            info:"The Registry contains a significant amount of information about the operating system, configuration, software, and security. Some of the information may help adversaries to further their operation within a network."
+            //-> os.systemInformationDiscovery,
+               //computer.configuration,
+              // software.installSoftware
+
+        & networkShareDiscovery
+            -> internalNetwork.networkShareDiscovery
+
+        & userSecuritySoftwareDiscovery
+            info: "Adversaries may attempt to get a listing of security software, configurations, defensive tools, and sensors that are installed on the system. This may include things such as local firewall rules and anti-virus. These checks may be built into early-stage remote access tools."
+            // -> leads to exploitation for defense evasion attack
+        
+        & adminSecuritySoftwareDiscovery
+            //-> leads to exploitation for defense evasion attack
+        
+
+        # whitelisting
+            -> createService,
+               scheduledTask, 
+               systemTimeDiscovery,
+               queryRegistery,
+               networkShareDiscovery,
+               userSecuritySoftwareDiscovery,
+               adminSecuritySoftwareDiscovery
+
+        & executeService
+            -> persistance
+
+        | persistance
+
+        & bootkit
+            -> persistance
+
+        # secureBootProcess
+            -> bootkit
+
+        | peripheralDeviceDiscovery
+            -> computer.peripheralDeviceDiscovery
+
+        & emailStorageCollection
+            info:"Files containing email data can be acquired from a user's system, such as Outlook storage or cache files .pst and .ost."
+            -> computer.dataCollected
+
+        & outlookEmailCollection
+            info:"Some adversaries may acquire user credentials and access externally facing webmail applications, such as Outlook Web Access."
+            -> computer.dataCollected
+
+        # dataEncryption
+            -> emailStorageCollection,
+               outlookEmailCollection
+
+        | videoCollection
+            -> computer.collectVideo
+
+        & scheduledTask
+            info: "An adversary may use task scheduling to execute programs at system startup or on a scheduled basis for persistence, to conduct remote Execution as part of Lateral Movement, to gain SYSTEM privileges, or to run a process under the context of a specified account."
+            //->  program execution attacks, scheduled persistance attacks, remote execution, gain system privilege, run process under context of specified account
+
+        & systemTimeDiscovery
+            info:"The information could be useful for performing other techniques, such as executing a file with a Scheduled Task [3], or to discover locality information based on time zone to assist in victim targeting."
+            -> scheduledTask
+      
+    }
+
+    
+    asset VideoCallApplication extends Service { 
+        | collectVideo
+            -> computer._collectVideo
+    }
+}
+
+category Network {
+    asset Browser {
+        | maliciousWebsite
+            -> checkPlugin, checkBrowser
+        & checkBrowser
+            -> os.codeDelivered
+        # nonVulnerableBrowser
+            -> checkBrowser
+        & checkPlugin
+            -> os.codeDelivered
+        # nonVulnerablePlugin
+            -> checkPlugin
+
+        | maliciousAds
+            -> compromisedBrowser
+        & compromisedBrowser
+            -> os.codeDelivered
+        # adblocker
+            -> compromisedBrowser
+        
+        & spearphishingLink
+            -> os.spearphishingLinkDownload
+
+        & spearphishingAttachment
+            -> os.spearphishingAttachmentDownload
+        # blockAttachmentsCheck 
+            info: "Block unknown or unused attachments by default that should not be transmitted over email "
+            -> spearphishingAttachment
+        # phishingdetection
+            -> spearphishingAttachment, 
+               spearphishingLink
+    }
+    asset ExternalNetwork {
+        # intrusionDetecion
+            -> c2Server.obfuscatedData
+        # signatureIdentification
+            -> c2Server.obfuscatedData
+        | bypassNetworkDetection
+
+        | dataExfiltrated
+
+    }
+    asset InternalNetwork {
+        & applicationLayerConnexion
+            -> c2Connexion,
+               bypassNetworkDetection,
+               externalNetwork.bypassNetworkDetection
+
+        & dataExfiltration
+            -> externalNetwork.dataExfiltrated
+        
+        E firewallExists
+            <- firewall
+            -> firewall._bypassFirewall
+
+            
+        # networkIntrusionDetection
+            -> dataExfiltration,
+               c2Server.dataExfiltrated,
+               applicationLayerConnexion,
+               computer.networkServiceScan,
+               c2Connexion
+
+        | bypassNetworkDetection
+
+        | bypassProxies
+
+        & usertransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        & admintransmittedDataManipulation
+            info:"By manipulating transmitted data, adversaries may attempt to affect a business process, organizational understanding, and decision making. "
+
+        # dataEncrypted
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+        # secureCommunication
+            -> usertransmittedDataManipulation,
+               admintransmittedDataManipulation
+
+    
+
+        # whitelisting
+            -> computer.networkServiceScan
+
+        & c2Connexion
+            -> c2Server.c2Connected
+
+        & exchangeServerCollection
+            info:"Adversaries may leverage a user's credentials and interact directly with the Exchange server to acquire information from within a network."
+            -> computer.dataCollected
+        # dataEncryption
+            -> exchangeServerCollection
+        # twoFactorsAuthentication
+            -> exchangeServerCollection
+
+        | networkShareDiscovery
+            info:"Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. "
+        
+    }
+
+    asset Firewall {
+        & _bypassFirewall
+            -> internalNetwork.dataExfiltration,
+               internalNetwork.c2Connexion
+
+        # uncommonlyUsedPortsLimitation
+            -> computer.uncommonlyUsedPortsConnection
+        
+        | bypassFirewall
+
+    }
+
+}
+
+category Hardware {
+    asset Computer {
+        | infectedComputer
+            -> removableMedia.infectedMedia,
+               commonlyUsedPortsConnection,
+               internalNetwork.applicationLayerConnexion,
+               uncommonlyUsedPortsConnection
+
+        & commonlyUsedPortsConnection
+            -> internalNetwork.c2Connexion,
+               firewall.bypassFirewall,
+               externalNetwork.bypassNetworkDetection,
+               internalNetwork.bypassNetworkDetection
+
+        & uncommonlyUsedPortsConnection
+            -> internalNetwork.c2Connexion,
+               firewall.bypassFirewall,
+               internalNetwork.bypassProxies
+
+        & fileDiscovery
+            info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. "
+            -> automatedCollection
+
+        & directoryDiscovery
+            info: "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. "
+            -> automatedCollection
+
+        & fileDeletion
+            info: "Adversaries may remove traces (files) over the course of an intrusion to keep their footprint low or remove them at the end as part of the post-intrusion cleanup process"
+            -> bypassHostForensicAnalysisDetection
+
+        | bypassHostForensicAnalysisDetection
+
+         & diskStructureWipe
+            info:"Adversaries may corrupt or wipe the disk data structures on hard drive necessary to boot systems; targeting specific critical systems as well as a large number of systems in a network to interrupt availability to system and network resources. "
+ 
+        # backup
+            info:"Ensure backups are stored off system and is protected from common methods adversaries may use to gain access and destroy the backups to prevent recovery."
+            -> diskStructureWipe,
+               userDiskWiped,
+               adminDiskWiped,
+               userDataDestruction,
+               adminDataDestruction
+
+        & userDiskWiped
+            info:"Instead of wiping specific disk structures or files, adversaries with destructive intent may wipe arbitrary portions of disk content."
+
+        & adminDiskWiped
+
+        & userDataEncryptedForImpact
+            info: "Attackers can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted"
+        
+        & adminDataEncryptedForImpact
+
+        # whitelisting
+            -> fileDiscovery, 
+               directoryDiscovery,
+               fileDeletion,
+               userDataDestruction,
+               adminDataDestruction, 
+               dataCompressed, 
+               collectAudio,
+               _automatedExfiltration,
+               _dataEncrypted,
+               peripheralDeviceDiscovery,
+               permissionGroupsDiscovery,
+               _dataStaged,
+               _collectVideo,
+               _automatedCollection,
+               diskStructureWipe,
+               userDiskWiped,
+               adminDiskWiped,
+               userDataEncryptedForImpact, 
+               adminDataEncryptedForImpact
+
+
+        & uploadRemoteFile
+            // leads to file execution attacks
+            -> employee.userExecution,
+               automatedCollection
+
+        | automatedCollection
+            -> _automatedCollection
+
+
+        & _automatedCollection
+            -> dataCollected, 
+               sensitiveDataCollected
+
+        & downloadRemoteFile
+            info: "data collection from the user"
+
+        # networkIntrusionDetection
+             info : "Network intrusion detection and prevention systems that use network signatures to identify traffic for specific adversary malware or unusual data transfer over known tools and protocols like FTP can be used to mitigate activity at the network level"
+            -> uploadRemoteFile, 
+               downloadRemoteFile,
+               commonlyUsedPortsConnection
+
+        & userDataDestruction
+
+        & adminDataDestruction
+
+        
+        & sensitiveDataCollected
+            -> dataCompressed,
+               exfiltrationOverPhysicalMedium,
+               dataSizedTransfer,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration,
+               dataEncrypted, 
+               dataStaged
+
+        | dataCollected
+            -> _dataCollected
+
+        & _dataCollected
+            -> dataCompressed,
+               exfiltrationOverPhysicalMedium,
+               dataSizedTransfer,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration,
+               dataEncrypted, 
+               dataStaged
+
+        & dataCompressed
+            -> exfiltrationOverPhysicalMedium,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration,
+               dataEncrypted, 
+               dataStaged
+
+        | dataEncrypted
+            info: "Data is encrypted before being exfiltrated in order to hide the information that is being exfiltrated from detection or to make the exfiltration less conspicuous upon inspection by a defender."
+            -> _dataEncrypted
+
+        & _dataEncrypted
+            -> exfiltrationOverPhysicalMedium,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration,
+               dataStaged
+        
+        | dataStaged
+            -> _dataStaged
+
+        & _dataStaged
+            -> exfiltrationOverPhysicalMedium,
+               dataSizedTransfer,
+               exfiltrationOverAternativeProtocol,
+               scheduledExfiltration,
+               exfiltrationOverC2,
+               automatedExfiltration
+        
+        | automatedExfiltration
+            -> _automatedExfiltration
+
+        | exfiltrationOverC2
+            -> c2Server.dataExfiltrated
+
+        | scheduledExfiltration
+            -> exfiltrationOverC2,
+               exfiltrationOverAternativeProtocol
+        
+        & _automatedExfiltration
+            -> exfiltrationOverAternativeProtocol,
+               exfiltrationOverC2
+        
+        | exfiltrationOverAternativeProtocol
+            -> internalNetwork.dataExfiltration
+
+        | dataSizedTransfer
+            info: "An adversary may exfiltrate data in fixed size chunks instead of whole files or limit packet sizes below certain thresholds. This approach may be used to avoid triggering network data transfer threshold alerts."
+            -> c2Server.dataExfiltrated
+
+        | exfiltrationOverPhysicalMedium
+            -> removableMedia.dataExfiltrated
+
+        | infectedWindowsComputer
+
+        E microphoneExists
+            <- microphone
+            -> microphone.collectAudio
+
+        & collectAudio
+            -> dataCollected
+        
+        & peripheralDeviceDiscovery
+            info: "Adversaries may attempt to gather information about attached peripheral devices and components connected to a computer system. The information may be used to enhance their awareness of the system and network environment or may be used for further actions."
+
+
+        & permissionGroupsDiscovery
+            info: "Adversaries may attempt to find local system or domain-level groups and permissions settings. "
+
+        & networkServiceScan
+             info: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation"
+
+        E webcamExists
+            <- webcam
+            -> webcam.collectVideo
+
+        E videoCallApplicationExists
+            <- videoCallApplication
+            -> videoCallApplication.collectVideo
+
+        | collectVideo
+            -> _collectVideo
+
+        & _collectVideo
+            -> dataCollected
+
+       
+
+    }
+    asset Webcam {
+        | collectVideo
+            -> computer._collectVideo
+    }
+    asset C2Server {
+
+        | c2Connected 
+            -> obfuscatedData
+
+        & obfuscatedData
+            -> externalNetwork.bypassNetworkDetection,
+               internalNetwork.bypassNetworkDetection
+
+        & dataExfiltrated
+
+        # thresholdAlert
+            info:" if the data transfered is to big, the attacker may use data transfer size limit attack to bypass the alert"
+            -> dataExfiltrated
+    }
+
+    asset RemovableMedia {
+        | infectedMedia
+            -> employee.insertMedia
+
+        & dataExfiltrated
+
+    }
+    asset Microphone {
+        | collectAudio
+            -> computer.collectAudio
+    }
+}
+
+associations {
+    
+    
+    Adversary [adversary] 1 <-- attack --> 1-* [employee] Employee 
+    Adversary [adversary] 1 <-- attack --> 1-* [browser] Browser 
+    Adversary [adversary] 1 <-- attack --> 1-* [os] OS 
+
+    User [user] 1 <-- ui--> 1-* [os] OS
+    User [windowsUser] 1 <-- ui--> 1-* [windows] Windows
+    User [user] 1-* <-- ui--> 1 [computer] Computer
+    User [user] 1-* <--use--> 1-* [service] Service
+    User [macOSUser] 1-* <--use--> 1 [macOS] MacOS
+    User [linuxUser] 1-* <--use--> 1 [linux] Linux
+
+    WindowsAdmin [windowsAdmin] 1 <--use--> 1 [administrator] Administrator
+
+
+    Administrator [administrator] 1 <--ui--> 1-* [user] User
+    Administrator [windowsAdministrator] 1 <--ui--> 1-* [windows] Windows
+    Administrator [linuxAdministrator] 1 <--ui--> 1-* [linux] Linux
+    Administrator [administrator] 1 <--ui--> 1-* [computer] Computer
+    Administrator [administrator] 1 <--ui--> 1-* [os] OS
+    Administrator [administrator] 1-* <--use--> 1-* [service] Service
+
+    WindowsAdmin [windowsAdmin] 1-* <--ui--> 1 [windows] Windows
+
+    Employee [employee] 1 <--use--> 1-* [browser] Browser
+    Employee [employee] 1 <--use--> 1-* [computer] Computer
+    Employee [employee] 1 <--use--> 1-* [user] User
+    Employee [employee] 1 <--use--> 1-* [os] OS
+    Employee [employee] 1 <--use--> 1-* [macOS] MacOS
+    Employee [employee] 1 <--use--> 1-* [linux] Linux
+    Employee [employee] 1 <--use--> 1-* [removableMedia] RemovableMedia
+
+    Computer [computer] 1 <--use--> 1-* [removableMedia] RemovableMedia
+    Computer [computer] 1 <--Control--> 1 [c2Server] C2Server
+
+
+    Browser [browser] 1-* <-- software --> 1 [os] OS
+    OS [os] 1 <-- system --> 1-* [computer] Computer
+    Windows [windows] 1 <--software--> 1 [computer] Computer
+    Computer [computer] 1-* <--software--> 1 [macOS] MacOS
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1 [c2Server] C2Server
+    ExternalNetwork [externalNetwork] 1 <--Contain--> 1-* [computer] Computer
+
+    InternalNetwork [ internalNetwork ] 1 <-- Protect --> 1 [firewall] Firewall
+    InternalNetwork [internalNetwork] 1 <--connects--> 1-* [externalNetwork] ExternalNetwork
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [user] User
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [administrator] Administrator
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [computer] Computer
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [macOS] MacOS
+    InternalNetwork [internalNetwork] 1 <--contain--> 1-* [service] Service
+    Computer [computer] 1-* <--protects--> 1 [firewall] Firewall
+
+    Root [root] 1-* <--use--> 1 [macOS] MacOS
+
+    VideoCallApplication [videoCallApplication] 1-* <--software--> 1 [computer] Computer
+    Webcam [webcam] 1 <--hardware--> 1 [computer] Computer
+    Computer [computer] 1 <--use--> 1 [microphone] Microphone
+}

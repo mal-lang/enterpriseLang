@@ -1,0 +1,19 @@
+category Hardware {
+    asset Computer{
+        | dataCollected
+            -> automatedExfiltration
+
+        | dataCompressed
+            -> automatedExfiltration
+
+        | dataEncrypted
+            -> automatedExfiltration
+
+        | automatedExfiltration
+            // -> exfiltration over c2server, exfiltration over alternative protocol
+
+    
+
+    }
+}
+

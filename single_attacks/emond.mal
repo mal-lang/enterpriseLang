@@ -1,0 +1,51 @@
+category Person {
+    asset Administrator {
+
+    }
+
+    asset Root extends Administrator {
+        | rootRights
+            ->  macOS.emond
+
+    }
+}
+
+category Software {
+    asset Service {
+        | _exploitationForPrivilegeEscalation
+    } 
+
+    abstractAsset OS { 
+        | persistence
+
+        # disableOrRemoveFeatureOrProgram
+
+    } 
+
+    asset MacOS extends OS {
+        & emond
+            info: "Adversaries may use Event Monitor Daemon (emond) to establish persistence by scheduling malicious commands to run on predictable event triggers."
+            ->  persistence,
+                service._exploitationForPrivilegeEscalation  
+
+        # disableOrRemoveFeatureOrProgram
+            info: "https://attack.mitre.org/mitigations/M1042/"
+            +>  emond
+    } 
+}
+
+associations{
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+    MacOS [macOS] 1 <--Contain--> 1-* [service] Service
+}
+
+
+
+
+
+
+
+
+
+
+

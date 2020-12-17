@@ -1,0 +1,59 @@
+category Person {    
+    asset Administrator {
+        | adminRights
+            ->  service.applicationDeploymentSystems   
+
+        # privilegedAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  service.applicationDeploymentSystems   
+    }      
+}
+
+category Network {
+    asset InternalNetwork {
+        | remoteAccess
+
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  remoteAccess
+    }
+}
+
+category Software {
+
+    asset Service {
+        & applicationDeploymentSystems   
+          
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/"
+            ->  internalNetwork.remoteAccess
+    }
+
+    asset OS {
+        & applicationDeploymentSoftware
+            info:"Access to a network-wide or enterprise-wide software deployment system enables an adversary to have remote code execution on all systems that are connected to such a system."
+            ->  executeCode
+
+        | executeCode 
+            ->  internalNetwork.remoteAccess
+
+        # codeSigning
+            info: "https://attack.mitre.org/mitigations/M1045/" 
+            ->  applicationDeploymentSoftware         
+
+        # multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/" 
+            ->  applicationDeploymentSoftware
+    }
+}
+
+
+associations {
+    Administrator [administrator] 1-* <--Use--> 1-* [service] Service
+    InternalNetwork [internalNetwork] 1-* <-- Contain --> 1-* [os] OS
+    InternalNetwork [internalNetwork] 1 <--Contain--> 1-* [service] Service
+} 
+
+
+
+

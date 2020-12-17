@@ -1,0 +1,36 @@
+category Person {
+    asset User {
+        | userRights
+            ->  browser.stealWebSessionCookie
+
+        # userTraining 
+            info: "https://attack.mitre.org/mitigations/M1017/"        
+            ->  browser.stealWebSessionCookie
+    }
+}
+
+category Software {
+    abstractAsset OS {   
+        # softwareConfiguration
+            ->  browser.stealWebSessionCookie
+
+        # multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/" 
+            ->  browser.stealWebSessionCookie
+    }
+}
+
+category Network {
+    asset Browser {
+        & stealWebSessionCookie
+            info: "An adversary may steal web application or service session cookies and use them to gain access web applications or Internet services as an authenticated user without needing credentials."
+            ->  webSessionCookie // after an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application
+
+        & webSessionCookie
+    }
+}
+
+associations {
+    User [user] 1 <--Use--> 1-* [browser] Browser
+    Browser [browser] 1-* <--Software--> 1 [os] OS
+}

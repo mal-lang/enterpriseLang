@@ -1,0 +1,30 @@
+category Person{
+    asset Administrator {
+        | adminRights
+            -> windows.appInitDLLs
+    }
+}
+category Software {
+    asset OS {
+        | persistence
+    }
+
+    asset Windows extends OS {
+         # executionPrevention
+            info: "https://attack.mitre.org/mitigations/M1038/" 
+            +>  appInitDLLs
+        & appInitDLLs 
+            ->  persistence 
+        #  updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/" 
+            +>  appInitDLLs
+
+    
+    }
+}
+
+
+associations {
+    Administrator [administrator] 1-*<-- ui--> 1-* [windows] Windows
+}
+

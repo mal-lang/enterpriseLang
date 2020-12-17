@@ -1,0 +1,22 @@
+category Person{
+    asset Administrator {
+    }
+    asset WindowsAdmin extends Administrator{
+        | adminRights
+            +>  computer.windowsAdminShares
+    }
+}
+
+category Hardware {
+     asset Computer {
+        &  windowsAdminShares 
+            
+        # whitelisting
+            -> windowsAdminShares
+
+    }
+}
+
+associations {
+    Computer [computer] 1-* <-- ui--> 1-* [windowsAdmin] WindowsAdmin
+}

@@ -1,0 +1,24 @@
+category Person{
+    asset User {
+        
+        | userRights
+            -> os.accountDiscovery, os.domainDiscovery
+
+    }
+}
+
+category Software {
+    asset OS {
+        & accountDiscovery  
+        
+        & domainDiscovery 
+
+        #  operatingSystemConfiguration 
+            info: "https://attack.mitre.org/mitigations/M1028/"
+            -> accountDiscovery, domainDiscovery
+    }
+}
+
+associations {
+    User [user] 1 <-- ui--> 1-* [os] OS
+}

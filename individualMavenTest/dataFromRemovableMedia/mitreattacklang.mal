@@ -1,0 +1,19 @@
+category Hardware {
+    asset Computer {
+        | infectedComputer
+            ->  dataFromRemovableMedia
+       
+        | dataFromRemovableMedia
+            -> removableMedia.data
+
+    }
+    asset RemovableMedia {
+        | data
+
+    }
+
+}
+
+associations {
+    Computer [computer] 1 <-- ui--> 1-* [removableMedia] RemovableMedia
+}

@@ -1,0 +1,37 @@
+category Person {
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  os.disablingSecurityTools
+    }
+}
+
+category Software {
+    abstractAsset OS{
+        & disablingSecurityTools
+           info: "Adversaries may disable security tools to avoid possible detection of their tools and activities."
+            -> bypassFileMonitoring,
+               computer.bypassHostIntrusionPrevention,
+               bypassSignatureBasedDetection,
+               bypassLogAnalysis,
+               bypassAntivirus
+
+        | bypassFileMonitoring
+
+        | bypassSignatureBasedDetection
+
+        | bypassHostIntrusionPrevention
+
+        | bypassLogAnalysis
+
+        | bypassAntivirus
+
+        # restrictFileAndDirectoryPermissions 
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            ->  disablingSecurityTools
+    }
+}
+
+associations {
+    User [user] 1 <--Ui--> 1-* [os] OS
+}

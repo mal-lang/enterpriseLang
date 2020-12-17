@@ -1,0 +1,99 @@
+category Person {
+    asset User {
+        | userRights
+            ->  thirdpartySoftware._useThirdpartySoftware
+
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  thirdpartySoftware._useThirdpartySoftware                       
+    }
+
+    asset Employee {
+        # userTraining 
+            ->  thirdpartySoftware.useThirdpartySoftware 
+    }
+
+    asset Administrator {
+        | adminRights
+            ->  thirdpartySoftware._useThirdpartySoftware
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  thirdpartySoftware._useThirdpartySoftware // grant access to application deployment systems only to a limited number of authorized administrators
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  thirdpartySoftware._useThirdpartySoftware
+    } 
+}
+
+category Software{
+    asset Service {
+        & exploitationForPrivilegeEscalation
+            ->  thirdpartySoftware._useThirdpartySoftware
+
+    }
+
+    asset ThirdpartySoftware extends Service {      
+        & _useThirdpartySoftware 
+            ->  useThirdpartySoftware
+
+        & useThirdpartySoftware 
+            info: "Adversaries may gain access to and use third-party application deployment systems installed within an enterprise network." 
+            ->  os.executeCode 
+    }
+
+    abstractAsset OS {   
+        | executeCode  
+
+        # activeDirectoryConfiguration
+            info: "https://attack.mitre.org/mitigations/M1015/"
+            ->  thirdpartySoftware.useThirdpartySoftware
+
+        # multiFactorAuthentication
+            info: "https://attack.mitre.org/mitigations/M1032/" 
+            ->  thirdpartySoftware.useThirdpartySoftware
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            ->  thirdpartySoftware.useThirdpartySoftware
+
+        # remoteDataStorage 
+            info: "https://attack.mitre.org/mitigations/M1029/"
+            ->  thirdpartySoftware.useThirdpartySoftware
+
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/"
+            ->  service.exploitationForPrivilegeEscalation
+
+    } 
+}
+
+
+category Network {
+    asset Firewall {
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  thirdpartySoftware.useThirdpartySoftware
+    } 
+}
+
+
+associations{
+    Service [service] 1-* <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware
+    OS [os] 1  <--Contain--> 1-* [service] Service
+    OS [os] 1  <--Contain--> 1-* [thirdpartySoftware] ThirdpartySoftware   
+    User [user] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
+    Employee [employee] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
+    Administrator [administrator] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
+    SYSTEM [system] 1 <--Use--> 1-* [thirdpartySoftware] ThirdpartySoftware
+    Firewall [firewall] 0-1 <--Protect--> 1-* [thirdpartySoftware] ThirdpartySoftware
+  
+}
+
+
+
+
+
+

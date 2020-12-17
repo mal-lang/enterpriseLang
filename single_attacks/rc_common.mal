@@ -1,0 +1,45 @@
+category Person {
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  macOS.rc_common
+    } 
+
+    asset Administrator {
+
+    } 
+
+    asset Root extends Administrator {
+        | rootRights
+            info: "Unix Root account is equivalent to WindowsAdmin account."
+            ->  macOS.rc_common
+    } 
+}
+
+category Software {
+    abstractAsset OS{
+        | persistence
+    } 
+
+    asset MacOS extends OS {
+        & rc_common
+            info: "Adversaries can use the rc.common file as a way to hide code for persistence that will execute on each reboot as the root user."
+            ->  persistence 
+    } 
+}
+
+associations {    
+    User [macOSUser] 1 <--Ui--> 1-* [macOS] MacOS
+    Root [rootMac] 1 <--Ui--> 1-* [macOS] MacOS
+}
+
+
+
+
+
+
+
+
+
+
+

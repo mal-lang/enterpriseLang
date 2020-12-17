@@ -1,0 +1,52 @@
+category Person {
+    asset User {
+        # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.sharedWebroot
+    }
+
+    asset Administrator {
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            ->  windows.sharedWebroot
+    }
+}
+
+category Software {
+    abstractAsset OS {  
+        # restrictFileAndDirectoryPermissions
+    }
+
+    asset Windows extends OS {  
+        & sharedWebroot
+            info: "Adversaries may add malicious content to an internally accessible website through an open network file share that contains the website's webroot or Web content directory and then browse to that content with a Web browser to cause the server to execute the malicious content."
+            ->  browser.executionThroughMaliciousContent
+
+        # restrictFileAndDirectoryPermissions
+            info: "https://attack.mitre.org/mitigations/M1022/"
+            +>  sharedWebroot
+    }
+}
+
+category Network {
+    asset Browser {
+        | executionThroughMaliciousContent
+    }   
+
+    asset InternalNetwork {
+        # limitAccessToResourceOverNetwork
+            info: "https://attack.mitre.org/mitigations/M1035/"   
+            ->  windows.sharedWebroot
+
+        # networkSegmentation
+            info: "https://attack.mitre.org/mitigations/M1030/"
+            ->  windows.sharedWebroot
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    Administrator [windowsAdministrator] 1 <--Ui--> 1-* [windows] Windows 
+    Browser [browser] 1-* <--Software--> 1 [windows] Windows
+    InternalNetwork [internalNetworkWindows] 1 <--Connect--> 1 [windows] Windows
+}

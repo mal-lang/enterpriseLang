@@ -1,0 +1,15 @@
+category Software {
+    asset OS {
+        | dataCollected
+            -> dataStaged
+
+        | dataCompressed
+            -> dataStaged
+
+        | dataEncrypted
+            -> dataStaged
+
+        | dataStaged    
+            //-> all exfiltration attacks
+    }
+}

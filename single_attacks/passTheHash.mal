@@ -1,0 +1,53 @@
+category Person {
+    asset User {
+         # userAccountManagement  
+            info: "https://attack.mitre.org/mitigations/M1018/"     
+            ->  windows.passTheHash 
+    }
+}
+
+category Software {
+    abstractAsset OS {
+        # passwordPolicies 
+
+        # privilegedAccountManagement
+
+        # updateSoftware
+
+        # userAccountControl  
+    }
+
+    asset Windows extends OS {
+        & passTheHash
+            info: "This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash."
+            ->  internalNetwork.remoteSystemsConnection // PtH may be used to perform actions on local or remote systems
+
+        # passwordPolicies 
+            info: "https://attack.mitre.org/mitigations/M1027/" 
+            +>  passTheHash
+
+        # privilegedAccountManagement
+            info: "https://attack.mitre.org/mitigations/M1026/"
+            +>  passTheHash
+
+        # updateSoftware
+            info: "https://attack.mitre.org/mitigations/M1051/" 
+            +>  passTheHash
+
+        # userAccountControl
+            info: "https://attack.mitre.org/mitigations/M1052/"
+            +>  passTheHash
+    }
+}
+
+category Network {
+    asset InternalNetwork {
+        | remoteSystemsConnection
+    }
+}
+
+associations {
+    User [windowsUser] 1 <--Ui--> 1-* [windows] Windows
+    InternalNetwork [internalNetwork] 1-* <--Connect--> 1-* [os] OS
+    //InternalNetwork [internalNetworkWindows] 1-* <--Connect--> 1-* [windows] Windows
+}

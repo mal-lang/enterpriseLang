@@ -1,0 +1,64 @@
+category Person {
+    asset User {
+        | userRights
+            -> windows.controlPanelItems
+    }
+
+    asset Administrator {
+        | adminRights
+    }
+
+    asset WindowsAdmin extends Administrator {
+        | adminRights
+            +>  windowsWindowsAdmin.controlPanelItems
+    }
+
+    asset SYSTEM {
+        | systemRights
+            ->  windows.controlPanelItems
+    }
+}
+
+category Software{
+    abstractAsset OS{
+        # executionPrevention
+
+        # restrictFileAndDirectoryPermissions  
+
+        | bypassApplicationWhitelisting
+
+        | bypassProcessWhitelisting  
+    }
+
+    asset Windows extends OS{
+        & controlPanelItems
+            info:"Adversaries can use Control Panel items as execution payloads to execute arbitrary commands."
+            -> executeCode,
+               bypassApplicationWhitelisting,
+               bypassProcessWhitelisting
+
+        | executeCode
+
+        # executionPrevention
+            +>  controlPanelItems
+
+        # restrictFileAndDirectoryPermissions
+            +>  controlPanelItems
+    }
+}
+   
+
+category Network {
+    asset Browser {
+        & spearphishingAttachment // malicious Control Panel items can be delivered via Spearphishing Attachment campaigns.
+            -> windows.controlPanelItems
+    }
+}
+
+associations{
+    User [windowsUser] 1 <--Use--> 1-* [windows] Windows    
+    WindowsAdmin [windowsAdmin] 1-* <--Ui--> 1 [windowsWindowsAdmin] Windows
+    SYSTEM [systemWindows] 1-* <--Ui--> 1-* [windows] Windows
+    OS [os] 1 <--Contain--> 1 [windows] Windows
+    Browser [browser] 1-* <-- Software --> 1 [windows] Windows
+}
