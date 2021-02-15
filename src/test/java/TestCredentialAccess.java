@@ -39,6 +39,7 @@ public class TestCredentialAccess extends EnterpriseLangTest {
             model.os.oSCredentialDumping.assertCompromisedInstantaneously();
             model.windows.cachedDomainCredentials.assertCompromisedInstantaneously();
             model.windows.collectHashInformation.assertCompromisedInstantaneously();
+            model.windows.attemptPassTheHash.assertCompromisedInstantaneously(); 
             model.windows.passTheHash.assertCompromisedInstantaneously();
             model.windows.bypassSystemAccessControls.assertCompromisedInstantaneously();
     } 
@@ -62,7 +63,6 @@ public class TestCredentialAccess extends EnterpriseLangTest {
         public final Service service = new Service("service");
         public final OS os = new OS("os");
         public final Windows windows = new Windows("windows");
-
         public UserRightsUserCredentialAccessModel() {
             os.addService(service);
             os.addUserAccount(userAccount);
@@ -85,6 +85,7 @@ public class TestCredentialAccess extends EnterpriseLangTest {
             model.os.oSCredentialDumping.assertCompromisedInstantaneously();
             model.windows.cachedDomainCredentials.assertCompromisedInstantaneously();
             model.windows.collectHashInformation.assertCompromisedInstantaneously();
+            model.windows.attemptPassTheHash.assertCompromisedInstantaneously();           
             model.windows.passTheHash.assertCompromisedInstantaneously();
             model.windows.bypassSystemAccessControls.assertCompromisedInstantaneously();
     } 

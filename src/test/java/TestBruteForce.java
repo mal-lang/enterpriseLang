@@ -38,7 +38,7 @@ public class TestBruteForce extends EnterpriseLangTest {
         }
     }
 
-    @Test // Test attack path SpearphishingViaService -> SpearphishingViaSocialMedia -> BruteForce -> UserCredentials (RDU) -> EmailCollection -> RemoteDesktopProtocol -> ExfiltrationOverC2Channel
+    @Test // Test attack path SpearphishingViaService -> SpearphishingViaSocialMedia -> BruteForce -> UserCredentials (RDU) -> EmailCollection -> remoteEmailCollection -> RemoteDesktopProtocol -> fileTransferProtocols -> ExfiltrationOverC2Channel
     public void testBruteForceAttacksWithCyberActors() {
             var model = new BruteForceAttacksModel();
 
@@ -51,7 +51,6 @@ public class TestBruteForce extends EnterpriseLangTest {
             model.userAccount.userCredentials.assertCompromisedInstantaneously();
             model.windows.emailCollection.assertCompromisedInstantaneously();
             model.windows.remoteDesktopProtocol.assertCompromisedInstantaneously();
-            model.os.fileTransferProtocols.assertCompromisedInstantaneously();
             model.victimNetwork.exfiltrationOverC2Channel.assertCompromisedInstantaneously();
     }  
 }
