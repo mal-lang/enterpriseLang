@@ -576,8 +576,7 @@ category Software {
         & spearphishingViaService
             user info: "Adversaries send messages through various social media services, personal webmail, and other non-enterprise controlled services."
             ->  spearphishingViaPersonalEmail,
-                spearphishingViaSocialMedia,
-                os.computer.user.attemptUserExecution
+                spearphishingViaSocialMedia
         
         | spearphishingViaPersonalEmail [Bernoulli(0.712)*Exponential(1)]
             developer info: "Sources for distribution result: https://ieeexplore.ieee.org/abstract/document/5665797; https://www.sans.org/reading-room/whitepapers/analyst/endpoint-protection-response-survey-38460; https://www.businesswire.com/news/home/20100804005348/en/Cyveillance-Testing-Finds-AV-Vendors-Detect-Average; https://academic.oup.com/jcmc/article/20/1/83/4067561; https://www.blackhat.com/docs/us-16/materials/us-16-Seymour-Tully-Weaponizing-Data-Science-For-Social-Engineering-Automated-E2E-Spear-Phishing-On-Twitter-wp.pdf"
@@ -994,7 +993,7 @@ category Software {
                 service.os.computer.router.externalNetwork.exfiltrationOverWebService
     }
 
-    asset OS {
+    abstract asset OS {
         | accountManipulation [Bernoulli(0.101)]
             user info: "Account manipulation may aid adversaries in maintaining access to credentials and certain permission levels within an environment." 
             developer info: "Sources used for probability distribution result: https://www.fireeye.com/current-threats/annual-threat-report/mtrends.html, https://attack.mitre.org/techniques/T1098/, https://www.us-cert.gov/ncas/alerts/TA18-074A" 
@@ -1191,9 +1190,7 @@ category Software {
             ->  processInjection
 
         | collectHashInformation
-            ->  attemptPasswordCracking, // leads to Brute Force: Password Cracking attack  
-                windows.attemptPassTheHash, // leads to Pass the Hash attack
-                windows.networkSniffing // leads to Network Sniffing attack
+            ->  attemptPasswordCracking // leads to Brute Force: Password Cracking attack  
 
         & compileAfterDelivery    
             developer info: "Binary probability distribution. Probability carried by obfuscatedFilesOrInformation" 
@@ -2551,6 +2548,10 @@ category Software {
             user info: "Adversaries may create, acquire, or steal code signing materials to sign their malware or tools."
             developer info: "Sources for distribution results:https://www.venafi.com/blog/study-how-well-are-you-protecting-code-signing-certificates#:~:text=The%20study%20found%20that%20although,process%20for%20code%20signing%20certificates,https://duo.com/decipher/attackers-are-signing-malware-with-valid-certificates,https://cqureacademy.com/blog/windows-internals/code-signing"
             ->  attemptBypassUserAccessControl
+
+        | collectHashInformation
+            +>  attemptPassTheHash, // leads to Pass the Hash attack
+                networkSniffing // leads to Network Sniffing attack
 
         | attemptComponentObjectModel @hidden
             user info: "Adversaries may use the Windows Component Object Model (COM) and Distributed Component Object Model (DCOM) for local code execution or to execute on remote systems as part of lateral movement. By default, only Administrators may remotely activate and launch COM objects through DCOM."
@@ -4901,7 +4902,6 @@ category Hardware {
 associations {
     User [user] * <--Uses--> * [computer] Computer
     User [user] * <--Logsin--> * [userAccount] UserAccount
-    User [user] * <--Logsin--> * [adminAccount] AdminAccount
     AdminAccount [adminAccount] * <--Manages--> * [userAccount] UserAccount
     RemoteDesktopUser [remoteDesktopUser] * <--Extends--> * [userAccount] UserAccount
     UserAccount [userAccount] * <--Access--> * [os] OS
