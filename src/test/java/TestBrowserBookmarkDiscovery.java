@@ -21,8 +21,8 @@ public class  TestBrowserBookmarkDiscovery extends EnterpriseLangTest{
     // Attack no defens aktiv.
     private static class browserExtensionsPresistens{
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false);
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount");
+        public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
 

@@ -19,8 +19,8 @@ public class TestUkrainePowerGrid extends EnterpriseLangTest {
         */
 
         public final User user = new User("user",false); // userTraining is set to false; if is set to true, then spearphishingAttachmentDownload.assertUncompromised();
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false);
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount");
+        public final Browser browser = new Browser("browser");
         public final Computer computer = new Computer("computer");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
@@ -33,7 +33,6 @@ public class TestUkrainePowerGrid extends EnterpriseLangTest {
             os.addService(service);
             os.addComputer(computer);
             os.addUserAccount(userAccount);
-            os.addWindows(windows);
             computer.addUser(user);
             computer.addRouter(router);
             router.addFirewall(firewall);
@@ -56,9 +55,9 @@ public class TestUkrainePowerGrid extends EnterpriseLangTest {
             model.os.validAccounts.assertCompromisedInstantaneously();
             model.os.domainAccounts.assertCompromisedInstantaneously();
             model.service.externalRemoteServices.assertCompromisedInstantaneously();
-            model.windows.attemptSystemFirmware.assertCompromisedInstantaneously();
-            model.windows.systemFirmware.assertCompromisedInstantaneously();
-            model.windows.systemShutdownOrReboot.assertCompromisedInstantaneously(); // systemShutdown reached
+            model.os.attemptSystemFirmware.assertCompromisedInstantaneously();
+ //           model.windows.systemFirmware.assertCompromisedInstantaneously();
+            model.os.systemShutdownOrReboot.assertCompromisedInstantaneously(); // systemShutdown reached
     } 
 
     private static class UkrainePowerGridServiceStopModel {
@@ -75,7 +74,6 @@ public class TestUkrainePowerGrid extends EnterpriseLangTest {
 
         public UkrainePowerGridServiceStopModel() {
             os.addService(service);
-            os.addWindows(windows);
         }
     }
 
@@ -88,7 +86,6 @@ public class TestUkrainePowerGrid extends EnterpriseLangTest {
             attacker.attack();
 
             model.os.serviceExhaustionFlood.assertCompromisedInstantaneously();
-            model.windows.serviceStop.assertCompromisedInstantaneously();
     } 
 }
 

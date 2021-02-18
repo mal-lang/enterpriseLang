@@ -21,8 +21,8 @@ public class  TestBrowserExtensions extends EnterpriseLangTest{
     // persistence no defens aktiv.
     private static class browserExtensionsPresistens{
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false);
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount");
+        public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
 
@@ -48,8 +48,8 @@ public class  TestBrowserExtensions extends EnterpriseLangTest{
     // persistence white defens aktiv.
     private static class browserExtensionsPresistensDefens{
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",true,false); // userTraining defens 
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount"); // userTraining defens 
+        public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
 
@@ -80,8 +80,8 @@ public class  TestBrowserExtensions extends EnterpriseLangTest{
     // User information white defens aktiv.
     private static class browserExtensionsUserInformation{
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false); // userTraining defens 
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount"); // userTraining defens 
+        public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
 
@@ -108,8 +108,8 @@ public class  TestBrowserExtensions extends EnterpriseLangTest{
     // User information white userTraining defens aktiv.
     private static class browserExtensionsUserInformationDefens{
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",true,false); // userTraining defens 
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount"); // userTraining defens 
+        public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
 
@@ -140,8 +140,8 @@ public class  TestBrowserExtensions extends EnterpriseLangTest{
     // User credentiols white no defens aktiv.
     private static class browserExtensionsUserCredentials{
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",false,false); // userTraining defens 
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount"); // userTraining defens 
+        public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
 
@@ -170,8 +170,8 @@ public class  TestBrowserExtensions extends EnterpriseLangTest{
     // User credentiols white userTraining defens aktiv.
     private static class browserExtensionsUserCredentialsDefens{
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",true,false); // userTraining defens is aktiv 
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount"); // userTraining defens is aktiv 
+        public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
         public final OS os = new OS("os");
 
@@ -197,11 +197,10 @@ public class  TestBrowserExtensions extends EnterpriseLangTest{
     // User credentiols white userTraining defens aktiv.
     private static class browserExtensionsUserCredentialsDefens2{
         public final User user = new User("user");
-        public final UserAccount userAccount = new UserAccount("userAccount",true,false); 
-        public final Browser browser = new Browser("browser",false);
+        public final UserAccount userAccount = new UserAccount("userAccount"); 
+        public final Browser browser = new Browser("browser");
         public final Service service = new Service("service");
-        public final OS os = new OS("os",true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true);
-	//limitSoftwareInstallation defens is true
+        public final OS os = new OS("os");
         public browserExtensionsUserCredentialsDefens2() {
             browser.addService(service);
             os.addService(service);
@@ -217,7 +216,7 @@ public class  TestBrowserExtensions extends EnterpriseLangTest{
         attacker.addAttackPoint(model.browser.installExtensions);
         attacker.attack();
 
-       model.userAccount.userCredentials.assertUncompromised();
+       model.userAccount.userCredentials.assertCompromisedInstantaneously();
        
     }
 }

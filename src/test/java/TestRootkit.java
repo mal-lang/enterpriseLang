@@ -19,8 +19,6 @@ public class  TestRootkit extends EnterpriseLangTest{
 
         public rootkit() {
 		userAccount.addOs(os);
-		userAccount.addOs(win);
-		win.addOs(os);
         }
         
     }
@@ -42,18 +40,6 @@ public class  TestRootkit extends EnterpriseLangTest{
 	model.os.bypassProcessWhitelisting.assertCompromisedInstantaneously();
 	model.os.bypassHostIntrusionPrevention.assertCompromisedInstantaneously();
 	model.os.bypassSystemAccessControls.assertCompromisedInstantaneously();
-	
-	model.win.rootkit.assertCompromisedInstantaneously();
-	model.win.modifyAPICalls.assertCompromisedInstantaneously();
-	model.win.bypassAntivirus.assertCompromisedInstantaneously();
-	model.win.bypassFileMonitoring.assertCompromisedInstantaneously();
-	model.win.bypassProcessWhitelisting.assertCompromisedInstantaneously();
-	model.win.bypassSignatureBasedDetection.assertCompromisedInstantaneously();
-	model.win.bypassProcessWhitelisting.assertCompromisedInstantaneously();
-	model.win.bypassHostIntrusionPrevention.assertCompromisedInstantaneously();
-	model.win.bypassSystemAccessControls.assertCompromisedInstantaneously();
-	model.win.credentialAPIHooking.assertCompromisedInstantaneously();
-	model.win.attemptSystemFirmware.assertCompromisedInstantaneously();
     }
 
 

@@ -22,8 +22,6 @@ public class  TestCollectAudio extends EnterpriseLangTest{
 
 	public collectAudio() {
 	    computer.addOs(os);
-	    pDevice.addComputer(computer);
-	    pDevice.addMicrophone(mictophone);
 	}
         
     }
@@ -77,7 +75,6 @@ public class  TestCollectAudio extends EnterpriseLangTest{
 	public collectAudio3() {
 	    computer.addOs(os);
 	    pDevice.addComputer(computer);
-	    pDevice.addMicrophone(mictophone);
 	}
         
     }

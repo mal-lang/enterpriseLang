@@ -22,15 +22,12 @@ public class  TestAccountManipulation extends EnterpriseLangTest{
     private static class trustedRelationshipNoDefens{
 	public final UserAccount userAccount = new UserAccount("userAccount");
 	public final Computer computer = new Computer("computer");
-	public final Windows win = new Windows("win");
-	public final WindowsAdmin winAdmin = new WindowsAdmin("winAdmin");	
+	public final Windows win = new Windows("win");	
 	public final OS os = new OS("internalSystems");
 
 	public trustedRelationshipNoDefens() {
-	    win.addAdminAccount(winAdmin);
 	    win.addUserAccount(userAccount);
 	    win.addComputer(computer);
-	    win.addOs(os);
 	    computer.addOs(os);
 	}
         
@@ -72,16 +69,13 @@ public class  TestAccountManipulation extends EnterpriseLangTest{
 	public final AdminAccount adminAccount = new AdminAccount("adminAccount");
 	public final Computer computer = new Computer("computer");
 	public final Windows win = new Windows("win");
-	public final WindowsAdmin winAdmin = new WindowsAdmin("winAdmin");	
 	public final OS os = new OS("internalSystems");
 	
 	public trustedRelationshipDefens() {
 	    //win.addAdminAccount(winAdmin);
 	    win.addAdminAccount(adminAccount);
-	    winAdmin.addAdminAccount(adminAccount);
 	    win.addUserAccount(userAccount);
 	    win.addComputer(computer);
-	    win.addOs(os);
 	    computer.addOs(os);
 	}
 

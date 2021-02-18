@@ -31,7 +31,6 @@ public class TestBruteForce extends EnterpriseLangTest {
         public BruteForceAttacksModel() {
             os.addService(service);
             os.addUserAccount(userAccount);
-            os.addWindows(windows);
             os.addComputer(computer);
             computer.addRouter(router);
             router.addInternalNetwork(victimNetwork);
@@ -49,8 +48,7 @@ public class TestBruteForce extends EnterpriseLangTest {
             model.service.spearphishingViaSocialMedia.assertCompromisedInstantaneously();
             model.os.bruteForce.assertCompromisedInstantaneously();
             model.userAccount.userCredentials.assertCompromisedInstantaneously();
-            model.windows.emailCollection.assertCompromisedInstantaneously();
-            model.windows.remoteDesktopProtocol.assertCompromisedInstantaneously();
+            model.os.emailCollection.assertCompromisedInstantaneously();
             model.victimNetwork.exfiltrationOverC2Channel.assertCompromisedInstantaneously();
     }  
 }
