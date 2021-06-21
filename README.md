@@ -3,7 +3,9 @@
 enterpriseLang is a domain-specific MAL language based on the MITRE ATT&CK® Matrix, which intends to assess the cyber security of enterprise systems from a holistic point of view.
 
 The detailed development process of enterpriseLang and how it would be practically usable is described in our journal paper: https://doi.org/10.1007/s10270-021-00898-7.
+
 The project can be cited as follows:
+
 Wenjun Xiong, Emeline Legrand, Oscar Åberg & Robert Lagerström. Cyber security threat modeling based on the MITRE Enterprise ATT&CK Matrix. Software and Systems Modeling (2021).
 
 * We keep updating the file `enterpriselang.mal` and the folder `securiCAD_models`. The files within the folder `single_attacks` are not up-to-date, please refer to the file `enterpriselang.mal`. The `pom.xml` shall be used to support advanced distributions.
